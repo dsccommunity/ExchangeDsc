@@ -1,0 +1,39 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchMailboxDatabase")]
+class MSFT_xExchMailboxDatabase : OMI_BaseResource
+{
+    [Key] String Name; //Name of the database
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange    
+    [Required] Uint32 DatabaseCopyCount; //The number of copies that the database will have once fully configured
+    [Required] String Server; //Server to create the database on 
+    [Required] String EdbFilePath; //Full path to where the database file will be located
+    [Required] String LogFolderPath; //Folder where logs for the DB will exist
+
+    //Remaining props correspond to Set-MailboxDatabase parameters
+    //http://technet.microsoft.com/en-us/library/bb123971%28v=exchg.150%29.aspx
+    [Write] Boolean AllowServiceRestart;
+    [Write] Boolean AutoDagExcludeFromMonitoring;
+    [Write] Boolean BackgroundDatabaseMaintenance;
+    [Write] String CalendarLoggingQuota;
+    [Write] Boolean CircularLoggingEnabled; //Will not be enabled until all copies have been added
+    [Write, ValueMap{"None","SecondCopy","SecondDatacenter","AllDatacenters","AllCopies"}, Values{"None","SecondCopy","SecondDatacenter","AllDatacenters","AllCopies"}] String DataMoveReplicationConstraint;
+    [Write] String DeletedItemRetention;
+    [Write] String DomainController;
+    [Write] String EventHistoryRetentionPeriod;
+    [Write] Boolean IndexEnabled;
+    [Write] Boolean IsExcludedFromProvisioning;
+    [Write] String IssueWarningQuota;
+    [Write] Boolean IsSuspendedFromProvisioning;
+    [Write] String JournalRecipient;
+    [Write] String MailboxRetention;
+    [Write] Boolean MountAtStartup;
+    [Write] String OfflineAddressBook;
+    [Write] String ProhibitSendQuota;
+    [Write] String ProhibitSendReceiveQuota;
+    [Write] String RecoverableItemsQuota;
+    [Write] String RecoverableItemsWarningQuota;
+    [Write] Boolean RetainDeletedItemsUntilBackup;
+};
+
+
+

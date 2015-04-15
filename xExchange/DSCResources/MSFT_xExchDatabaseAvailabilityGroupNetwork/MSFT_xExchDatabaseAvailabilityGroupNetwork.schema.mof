@@ -1,0 +1,19 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchDatabaseAvailabilityGroupNetwork")]
+class MSFT_xExchDatabaseAvailabilityGroupNetwork : OMI_BaseResource
+{
+    [Key] String Name; //The name of the DAG network
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+    [Required] String DatabaseAvailabilityGroup; //The DAG where the network will live
+    [Required, ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure; //Whethe the DAG network should exist or not
+
+    //Remaining properties correspond directly to Set-DatabaseAvailabilityGroupNetwork parameters
+    //http://technet.microsoft.com/en-us/library/dd298008(v=exchg.150).aspx
+    [Write] String DomainController;
+    [Write] Boolean IgnoreNetwork;
+    [Write] Boolean ReplicationEnabled;
+    [Write] String Subnets[];
+};
+
+
+

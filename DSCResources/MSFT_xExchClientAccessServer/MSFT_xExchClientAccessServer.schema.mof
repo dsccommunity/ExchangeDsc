@@ -1,0 +1,16 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchClientAccessServer")]
+class MSFT_xExchClientAccessServer : OMI_BaseResource
+{
+    [Key] String Identity; //The hostname of the Client Access Server
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+
+    //Remaining properties correspond directly to Set-ClientAccessServer parameters
+    //http://technet.microsoft.com/en-us/library/bb125157(v=exchg.150).aspx
+    [Write] String AutoDiscoverServiceInternalUri;
+    [Write] String AutoDiscoverSiteScope[];
+    [Write] String DomainController;
+};
+
+
+

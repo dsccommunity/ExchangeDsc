@@ -1,0 +1,12 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchUMCallRouterSettings")]
+class MSFT_xExchUMCallRouterSettings : OMI_BaseResource
+{
+    [Key, Description("Hostname of the UM server to configure")] String Server;
+    [Required, Description("Credentials used to establish a remote Powershell session to Exchange"), EmbeddedInstance("MSFT_Credential")] String Credential;
+    [Required, Description("UMStartupMode for the UM call router"), ValueMap{"TCP","TLS","Dual"}, Values{"TCP","TLS","Dual"}] String UMStartupMode;
+    [Write, Description("Optional Domain Controller to connect to")] String DomainController;
+};
+
+
+

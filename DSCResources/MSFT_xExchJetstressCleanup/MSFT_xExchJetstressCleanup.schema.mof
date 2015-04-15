@@ -1,0 +1,15 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchJetstressCleanup")]
+class MSFT_xExchJetstressCleanup : OMI_BaseResource
+{
+    [Key, Description("The path to the folder where Jetstress is installed, and which contains JetstressCmd.exe")] String JetstressPath;
+    [Write, Description("Either ConfigFilePath, or DatabasePaths AND LogPaths MUST be specified. ConfigFilePath takes precedence. This is the full path to the JetstressConfig.xml file. If ConfigFilePath is specified, the config file will be used to determine the database and log folders that need to be removed")] String ConfigFilePath;
+    [Write, Description("Either ConfigFilePath, or DatabasePaths AND LogPaths MUST be specified. DatabasePaths specifies the paths to database directories that should be cleaned up.")] String DatabasePaths[];
+    [Write, Description("Defaults to $false. If specified, indicates that mount points associated with the Jetstress database and log paths should be removed")] Boolean DeleteAssociatedMountPoints;
+    [Write, Description("Either ConfigFilePath, or DatabasePaths AND LogPaths MUST be specified. LogPaths specifies the paths to log directories that should be cleaned up.")] String LogPaths[];
+    [Write, Description("If RemoveBinaries is set to $true and Jetstress output was saved to the default location (the installation path of Jetstress), specifies the folder path to copy the Jetstress output files to.")] String OutputSaveLocation;
+    [Write, Description("Specifies that the files in the Jetstress installation directory should be removed")] Boolean RemoveBinaries;
+};
+
+
+

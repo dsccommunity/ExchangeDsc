@@ -1,0 +1,13 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchWaitForDAG")]
+class MSFT_xExchWaitForDAG : OMI_BaseResource
+{
+    [Key] String Identity; //The name of the DAG
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+    [Write] String DomainController; //Domain controller to talk to when running Get-DatabaseAvailabilityGroup
+    [Write] Uint32 RetryIntervalSec; //How many seconds to wait between retries when checking whether the DAG exists. Defaults to 60.
+    [Write] Uint32 RetryCount; //Mount many retry attempts should be made to find the DAG before an exception is thrown. Defaults to 5.
+};
+
+
+

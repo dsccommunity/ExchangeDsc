@@ -1,0 +1,19 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchAutoMountPoint")]
+class MSFT_xExchAutoMountPoint : OMI_BaseResource
+{
+    [Key] String Identity; //The name of the server. Not actually used for anything
+    [Required] String AutoDagDatabasesRootFolderPath; //The parent folder for Exchange database mount point folders
+    [Required] String AutoDagVolumesRootFolderPath; //The parent folder for Exchange volume mount point folders
+    [Required] String DiskToDBMap[]; //An array of strings containing the databases for each disk. Databases on the same disk should be in the same string, and comma separated. Example: "DB1,DB2","DB3,DB4". This puts DB1 and DB2 on one disk, and DB3 and DB4 on another.
+    [Required] Uint32 SpareVolumeCount; //How many spare volumes will be available
+    [Write] Boolean CreateSubfolders; //Defaults to $false. If $true, specifies that DBNAME.db and DBNAME.log subfolders should be automatically created underneath the ExchangeDatabase mount points
+    [Write, ValueMap{"NTFS","REFS"}, Values{"NTFS","REFS"}] String FileSystem; //The file system to use when formatting the volume. Defaults to NTFS.
+    [Write] String MinDiskSize; //The minimum size of a disk to consider using. Defaults to none. Should be in a format like "1024MB" or "1TB".
+    [Write, ValueMap{"MBR","GPT"}, Values{"MBR","GPT"}] String PartitioningScheme; //The partitioning scheme for the volume. Defaults to GPT.
+    [Write] String UnitSize; //The unit size to use when formatting the disk. Defaults to 64k.
+    [Write] String VolumePrefix; //The prefix to give to Exchange Volume folders. Defaults to EXVOL
+};
+
+
+

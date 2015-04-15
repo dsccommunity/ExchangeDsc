@@ -1,0 +1,26 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchOutlookAnywhere")]
+class MSFT_xExchOutlookAnywhere : OMI_BaseResource
+{
+    [Key] String Identity; //The Identity of the OAB Virtual Directory
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+    [Write] Boolean AllowServiceRestart; //Whether it is OK to recycle the app pool after making changes. Defaults to $true.
+
+    //Remaining props correspond directly to Set-OutlookAnywhere parameters
+    //http://technet.microsoft.com/en-us/library/bb123545(v=exchg.150).aspx
+    [Write] String DomainController;
+    [Write] Boolean ExternalClientsRequireSsl;
+    [Write] String ExtendedProtectionFlags[];
+    [Write] String ExtendedProtectionSPNList[];
+    [Write, ValueMap{"Allow","None","Require"}, Values{"Allow","None","Require"}] String ExtendedProtectionTokenChecking;
+    [Write, ValueMap{"Ntlm","Basic","Negotiate"}, Values{"Ntlm","Basic","Negotiate"}] String ExternalClientAuthenticationMethod;
+    [Write] String ExternalHostname;
+    [Write] String IISAuthenticationMethods[];
+    [Write, ValueMap{"Ntlm","Basic","Negotiate"}, Values{"Ntlm","Basic","Negotiate"}] String InternalClientAuthenticationMethod;
+    [Write] Boolean InternalClientsRequireSsl;
+    [Write] String InternalHostname;
+    [Write] Boolean SSLOffloading;
+};
+
+
+

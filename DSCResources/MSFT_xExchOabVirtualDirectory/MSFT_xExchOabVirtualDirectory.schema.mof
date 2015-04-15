@@ -1,0 +1,25 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchOabVirtualDirectory")]
+class MSFT_xExchOabVirtualDirectory : OMI_BaseResource
+{
+    [Key] String Identity; //Identity of OAB Vdir. Should be in the format 'SERVERNAME\Vdir', as in 'SERVER\OAB (Default Web Site)'
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+    [Write] String OABsToDistribute[]; //An array of names of Offline Address Books that this virtual directory should be added as a distribution point for.
+    [Write] Boolean AllowServiceRestart; //Whether it is OK to recycle the app pool after making changes. Defaults to $true.
+
+    //Remaining props correspond directly to Set-OabVirtualDirectory parameters
+    //http://technet.microsoft.com/en-us/library/bb124707(v=exchg.150).aspx
+    [Write] Boolean BasicAuthentication;
+    [Write] String DomainController;
+    [Write] String ExtendedProtectionFlags[];
+    [Write] String ExtendedProtectionSPNList[];
+    [Write, ValueMap{"None","Allow","Require"}, Values{"None","Allow","Require"}] String ExtendedProtectionTokenChecking;
+    [Write] String ExternalUrl;
+    [Write] String InternalUrl;
+    [Write] Sint32 PollInterval;
+    [Write] Boolean RequireSSL;
+    [Write] Boolean WindowsAuthentication;
+};
+
+
+

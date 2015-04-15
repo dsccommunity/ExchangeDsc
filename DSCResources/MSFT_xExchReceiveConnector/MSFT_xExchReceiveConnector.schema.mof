@@ -1,0 +1,63 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchReceiveConnector")]
+class MSFT_xExchReceiveConnector : OMI_BaseResource
+{
+    [Key] String Identity; //Identity of the Receive Connector. Needs to be in format 'SERVERNAME\CONNECTORNAME' (no quotes)
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+    [Required, ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure; //Whether the connector should be present or not
+
+    //Remaining properties correspond directly to Set-ReceiveConnector parameters
+    //http://technet.microsoft.com/en-us/library/bb125140(v=exchg.150).aspx
+    [Write] Boolean AdvertiseClientSettings;
+    [Write] String AuthMechanism[];
+    [Write] String Banner;
+    [Write] Boolean BareLinefeedRejectionEnabled;
+    [Write] Boolean BinaryMimeEnabled;
+    [Write] String Bindings[];
+    [Write] Boolean ChunkingEnabled;
+    [Write] String Comment;
+    [Write] String ConnectionInactivityTimeout;
+    [Write] String ConnectionTimeout;
+    [Write] String DefaultDomain;
+    [Write] Boolean DeliveryStatusNotificationEnabled;
+    [Write] String DomainController;
+    [Write] Boolean DomainSecureEnabled;
+    [Write] Boolean EightBitMimeEnabled;
+    [Write] Boolean EnableAuthGSSAPI;
+    [Write] Boolean Enabled;
+    [Write] Boolean EnhancedStatusCodesEnabled;
+    [Write, ValueMap{"None","Allow","Require"}, Values{"None","Allow","Require"}] String ExtendedProtectionPolicy;
+    [Write] String Fqdn;
+    [Write] Boolean LongAddressesEnabled;
+    [Write] String MaxAcknowledgementDelay;
+    [Write] String MaxHeaderSize;
+    [Write] Sint32 MaxHopCount;
+    [Write] String MaxInboundConnection;
+    [Write] Sint32 MaxInboundConnectionPercentagePerSource;
+    [Write] String MaxInboundConnectionPerSource;
+    [Write] Sint32 MaxLocalHopCount;
+    [Write] Sint32 MaxLogonFailures;
+    [Write] String MaxMessageSize;
+    [Write] String MaxProtocolErrors;
+    [Write] Sint32 MaxRecipientsPerMessage;
+    [Write] String MessageRateLimit;
+    [Write, ValueMap{"None","IPAddress","User","All"}, Values{"None","IPAddress","User","All"}] String MessageRateSource;
+    [Write] Boolean OrarEnabled;
+    [Write] String PermissionGroups[];
+    [Write] Boolean PipeliningEnabled;
+    [Write, ValueMap{"None","Verbose"}, Values{"None","Verbose"}] String ProtocolLoggingLevel;
+    [Write] String RemoteIPRanges[];
+    [Write] Boolean RequireEHLODomain;
+    [Write] Boolean RequireTLS;
+    [Write] String ServiceDiscoveryFqdn;
+    [Write, ValueMap{"Enabled","Disabled","EnabledWithoutValue"}, Values{"Enabled","Disabled","EnabledWithoutValue"}] String SizeEnabled;
+    [Write] Boolean SuppressXAnonymousTls;
+    [Write] String TarpitInterval;
+    [Write] String TlsCertificateName;
+    [Write] String TlsDomainCapabilities[];
+    [Write, ValueMap{"FrontendTransport","HubTransport"}, Values{"FrontendTransport","HubTransport"}] String TransportRole;
+    [Write, ValueMap{"Client","Internal","Internet","Partner","Custom"}, Values{"Client","Internal","Internet","Partner","Custom"}] String Usage;
+};
+
+
+

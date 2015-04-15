@@ -1,0 +1,16 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchExchangeCertificate")]
+class MSFT_xExchExchangeCertificate : OMI_BaseResource
+{
+    [Key] String Thumbprint; //Thumbprint of the certificate to work on
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+    [Required, ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure; //Whether the certificate should be present or not
+    [Write] Boolean AllowExtraServices; //Get-ExchangeCertificate sometimes displays more services than are actually enabled. Setting this to true allows tests to pass in that situation as long as the requested services are present.
+    [Write, EmbeddedInstance("MSFT_Credential")] String CertCreds; //Credentials containing the password to the .pfx file in CertFilePath
+    [Write] String CertFilePath; //The file path to the certificate .pfx file that should be imported
+    [Write] String DomainController; //Domain Controller to talk to 
+    [Write] String Services[]; //Services to enable on the certificate. See: http://technet.microsoft.com/en-us/library/aa997231(v=exchg.150).aspx    
+};
+
+
+

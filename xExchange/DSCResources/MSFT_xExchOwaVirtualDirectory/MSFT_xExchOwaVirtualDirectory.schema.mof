@@ -1,0 +1,27 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchOwaVirtualDirectory")]
+class MSFT_xExchOwaVirtualDirectory : OMI_BaseResource
+{
+    [Key] String Identity; //The Identity of the OWA Virtual Directory
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+
+    //Remaining props correspond directly to Set-OwaVirtualDirectory parameters
+    //http://technet.microsoft.com/en-us/library/bb123515(v=exchg.150).aspx
+    [Write] Boolean AdfsAuthentication;
+    [Write] Boolean AllowServiceRestart;
+    [Write] Boolean BasicAuthentication;    
+    [Write] Boolean DigestAuthentication;
+    [Write] String DomainController;
+    [Write] String ExternalAuthenticationMethods[];
+    [Write] String ExternalUrl;
+    [Write] Boolean FormsAuthentication;
+    [Write] String InternalUrl;
+    [Write] Boolean InstantMessagingEnabled;
+    [Write] String InstantMessagingCertificateThumbprint;
+    [Write] String InstantMessagingServerName;
+    [Write, ValueMap{"None","Ocs"}, Values{"None","Ocs"}] String InstantMessagingType;
+    [Write] Boolean WindowsAuthentication;
+};
+
+
+

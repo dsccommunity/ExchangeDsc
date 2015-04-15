@@ -1,0 +1,12 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchUMService")]
+class MSFT_xExchUMService : OMI_BaseResource
+{
+    [Key] String Identity; //Hostname of the UM server to configure
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+    [Required, ValueMap{"TCP","TLS","Dual"}, Values{"TCP","TLS","Dual"}] String UMStartupMode; //UMStartupMode for the UM server
+    [Write] String DomainController; //Optional Domain Controller to connect to
+};
+
+
+

@@ -1,0 +1,34 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchDatabaseAvailabilityGroup")]
+class MSFT_xExchDatabaseAvailabilityGroup : OMI_BaseResource
+{
+    [Key] String Name; //The name of the DAG
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+
+    //Remaining properties correspond directly to Set-DatabaseAvailabilityGroup parameters
+    //http://technet.microsoft.com/en-us/library/dd297934(v=exchg.150).aspx
+    [Required] SInt32 AutoDagTotalNumberOfServers; //Required so that we can determine when all DAG members have been added
+    [Write] String AlternateWitnessDirectory;
+    [Write] String AlternateWitnessServer;
+    [Write] Boolean AutoDagAutoReseedEnabled;
+    [Write] SInt32 AutoDagDatabaseCopiesPerDatabase;
+    [Write] SInt32 AutoDagDatabaseCopiesPerVolume;
+    [Write] String AutoDagDatabasesRootFolderPath;
+    [Write] Boolean AutoDagDiskReclaimerEnabled;
+    [Write] SInt32 AutoDagTotalNumberOfDatabases;
+    [Write] String AutoDagVolumesRootFolderPath;
+    [Write] String DatabaseAvailabilityGroupIpAddresses[];
+    [Write, ValueMap{"Off","DagOnly"}, Values{"Off","DagOnly"}] String DatacenterActivationMode;
+    [Write] String DomainController;
+    [Write] Boolean ManualDagNetworkConfiguration;
+    [Write, ValueMap{"Disabled","Enabled","InterSubnetOnly","SeedOnly"}, Values{"Disabled","Enabled","InterSubnetOnly","SeedOnly"}] String NetworkCompression;
+    [Write, ValueMap{"Disabled","Enabled","InterSubnetOnly","SeedOnly"}, Values{"Disabled","Enabled","InterSubnetOnly","SeedOnly"}] String NetworkEncryption;
+    [Write] Boolean ReplayLagManagerEnabled;
+    [Write] Uint16 ReplicationPort;
+    [Write] Boolean SkipDagValidation;
+    [Write] String WitnessDirectory;
+    [Write] String WitnessServer;    
+};
+
+
+

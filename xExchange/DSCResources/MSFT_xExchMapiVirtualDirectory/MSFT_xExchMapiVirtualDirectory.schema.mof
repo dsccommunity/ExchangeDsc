@@ -1,0 +1,18 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchMapiVirtualDirectory")]
+class MSFT_xExchMapiVirtualDirectory : OMI_BaseResource
+{
+    [Key] String Identity; //Identity of Mapi Vdir. Should be in the format 'SERVERNAME\Vdir', as in 'SERVER\mapi (Default Web Site)'
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+    [Write] Boolean AllowServiceRestart; //Whether it is Ok to recycle the Mapi App Pools after making changes
+
+    //Remaining props correspond directly to Set-MapiVirtualDirectory parameters
+    //http://technet.microsoft.com/en-US/library/dn595082%28v=exchg.150%29.aspx
+    [Write] String DomainController;
+    [Write] String ExternalUrl;
+    [Required] String IISAuthenticationMethods[];
+    [Write] String InternalUrl;
+};
+
+
+

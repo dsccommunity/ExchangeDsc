@@ -1,0 +1,24 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchWebServicesVirtualDirectory")]
+class MSFT_xExchWebServicesVirtualDirectory : OMI_BaseResource
+{
+    [Key] String Identity; //The Identity of the EWS Virtual Directory
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+    [Write] Boolean AllowServiceRestart; //Whether it is OK to recycle the app pool after making changes. Defaults to $true.
+
+    //Remaining props correspond directly to Set-WebServicesVirtualDirectory parameters
+    //http://technet.microsoft.com/en-us/library/aa997233(v=exchg.150).aspx
+    [Write] Boolean BasicAuthentication;
+    [Write] Boolean CertificateAuthentication;
+    [Write] Boolean DigestAuthentication;
+    [Write] String DomainController;
+    [Write] String ExternalUrl;
+    [Write] String InternalNLBBypassUrl;
+    [Write] String InternalUrl;
+    [Write] Boolean OAuthAuthentication;
+    [Write] Boolean WindowsAuthentication;
+    [Write] Boolean WSSecurityAuthentication;
+};
+
+
+

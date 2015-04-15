@@ -1,0 +1,20 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchExchangeServer")]
+class MSFT_xExchExchangeServer : OMI_BaseResource
+{
+    [Key] String Identity; //The hostname of the Exchange Server to configure
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+    [Write] Boolean AllowServiceRestart;
+
+    //Remaining properties correspond directly to Set-ExchangeServer parameters
+    //http://technet.microsoft.com/en-us/library/bb123716(v=exchg.150).aspx
+    [Write] Boolean CustomerFeedbackEnabled;
+    [Write] String DomainController;
+    [Write] String InternetWebProxy;
+    [Write] String MonitoringGroup;
+    [Write] String ProductKey;
+    [Write] String WorkloadManagementPolicy;    
+};
+
+
+

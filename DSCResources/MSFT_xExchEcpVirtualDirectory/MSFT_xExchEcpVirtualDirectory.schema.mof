@@ -1,0 +1,23 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchEcpVirtualDirectory")]
+class MSFT_xExchEcpVirtualDirectory : OMI_BaseResource
+{
+    [Key] String Identity; //The Identity of the ECP Virtual Directory
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+    [Write] Boolean AllowServiceRestart; //Whether it is OK to recycle the app pool after making changes. Defaults to $true.
+    
+    //Remaining properties correspond directly to Set-EcpVirtualDirectory parameters
+    //http://technet.microsoft.com/en-us/library/dd297991(v=exchg.150).aspx
+    [Write] Boolean AdfsAuthentication;
+    [Write] Boolean BasicAuthentication;    
+    [Write] Boolean DigestAuthentication;
+    [Write] String DomainController;
+    [Write] String ExternalAuthenticationMethods[];
+    [Write] Boolean FormsAuthentication;
+    [Write] String ExternalUrl;
+    [Write] String InternalUrl;
+    [Write] Boolean WindowsAuthentication;    
+};
+
+
+
