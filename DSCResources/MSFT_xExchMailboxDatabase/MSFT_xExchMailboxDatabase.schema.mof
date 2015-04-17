@@ -8,6 +8,8 @@ class MSFT_xExchMailboxDatabase : OMI_BaseResource
     [Required] String Server; //Server to create the database on 
     [Required] String EdbFilePath; //Full path to where the database file will be located
     [Required] String LogFolderPath; //Folder where logs for the DB will exist
+    [Write] String AdServerSettingsPreferredServer; //An optional domain controller to pass to Set-AdServerSettings -PreferredServer
+    [Write] Boolean SkipInitialDatabaseMount; //Whether the initial mount of databases should be skipped after database creation
 
     //Remaining props correspond to Set-MailboxDatabase parameters
     //http://technet.microsoft.com/en-us/library/bb123971%28v=exchg.150%29.aspx

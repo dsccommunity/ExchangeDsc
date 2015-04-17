@@ -28,8 +28,14 @@ function Get-TargetResource
         [System.String]
         $ReplayLagTime,
 
+        [System.Boolean]
+        $SeedingPostponed,
+
         [System.String]
-        $TruncationLagTime
+        $TruncationLagTime,
+
+        [System.String]
+        $AdServerSettingsPreferredServer
     )
 
     #Load helper module
@@ -38,7 +44,12 @@ function Get-TargetResource
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MailboxDatabase","*DatabaseCopy*" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MailboxDatabase","*DatabaseCopy*","Set-AdServerSettings" -VerbosePreference $VerbosePreference
+
+    if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
+    {
+        Set-ADServerSettings –PreferredServer "$($AdServerSettingsPreferredServer)"
+    }
 
     $db = GetMailboxDatabase @PSBoundParameters
 
@@ -126,8 +137,14 @@ function Set-TargetResource
         [System.String]
         $ReplayLagTime,
 
+        [System.Boolean]
+        $SeedingPostponed,
+
         [System.String]
-        $TruncationLagTime
+        $TruncationLagTime,
+
+        [System.String]
+        $AdServerSettingsPreferredServer
     )
 
     #Load helper module
@@ -138,15 +155,56 @@ function Set-TargetResource
     #Don't need to establish remote session, as Get-TargetResource will do it
     $copy = Get-TargetResource @PSBoundParameters
 
+    $copyCount = 0
+    $existingDb = GetMailboxDatabase @PSBoundParameters -ErrorAction SilentlyContinue
+    
+    if ($existingDb -ne $null)
+    {
+        $copyCount = $existingDb.DatabaseCopies.Count
+    }
+
     if ($copy -eq $null) #We need to add a new copy
     {
+        Write-Verbose "A copy of database '$($Identity)' does not exist on server '$($MailboxServer)'. Adding."
+
+        #Increment the copy count to what it will be when this copy is added
+        $copyCount++
+
         #Create a copy of the original parameters
         $originalPSBoundParameters = @{} + $PSBoundParameters
 
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential","AllowServiceRestart"
+        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential","AllowServiceRestart","AdServerSettingsPreferredServer"
+        
+        #Only send in ActivationPreference if it is less than or equal to the future copy count after adding this copy
+        if ($PSBoundParameters.ContainsKey("ActivationPreference") -and $ActivationPreference -gt $copyCount)
+        {
+            Write-Warning "Desired activation preference '$($ActivationPreference)' is higher than the future copy count '$($copyCount)'. Skipping setting ActivationPreference at this point."
+            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "ActivationPreference"
+        }
+
+        #If SeedingPostponed was passed, turn it into a switch parameter instead of a bool
+        if ($PSBoundParameters.ContainsKey("SeedingPostponed"))
+        {
+            if ($SeedingPostponed -eq $true)
+            {
+                $PSBoundParameters.Remove("SeedingPostponed")
+                $PSBoundParameters.Add("SeedingPostponed", $null)
+            }
+            else
+            {
+                $PSBoundParameters.Remove("SeedingPostponed")
+            }
+        }        
 
         #Create the database
-        Add-MailboxDatabaseCopy @PSBoundParameters -SeedingPostponed
+        NotePreviousError
+
+        Add-MailboxDatabaseCopy @PSBoundParameters
+
+        ThrowIfNewErrorsEncountered -CmdletBeingRun "Add-MailboxDatabaseCopy" -VerbosePreference $VerbosePreference
+
+        #Increment the copy count, as if we made it here, we didn't fail
+        $copyCount++
 
         #Add original props back
         AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
@@ -154,13 +212,8 @@ function Set-TargetResource
         #See if we can find the new copy
         $copy = Get-TargetResource @PSBoundParameters
 
-        if ($copy -ne $null) #Need to seed the database
+        if ($copy -ne $null)
         {
-            AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = "$($Identity)\$($MailboxServer)"}
-            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
-
-            Resume-MailboxDatabaseCopy @PSBoundParameters
-
             #Again, add original props back
             AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
 
@@ -177,14 +230,19 @@ function Set-TargetResource
         }
         else
         {
-            throw "Failed to add database copy"
+            throw "Failed to find database copy after running Add-MailboxDatabaseCopy"
         }
     }
-
-    if ($copy -ne $null) #Need to set props on copy
+    else #($copy -ne $null) #Need to set props on copy
     {
         AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = "$($Identity)\$($MailboxServer)"}
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential","AllowServiceRestart","MailboxServer"
+        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential","AllowServiceRestart","MailboxServer","AdServerSettingsPreferredServer","SeedingPostponed"
+
+        if ($PSBoundParameters.ContainsKey("ActivationPreference") -and $ActivationPreference -gt $copyCount)
+        {
+            Write-Warning "Desired activation preference '$($ActivationPreference)' is higher than current copy count '$($copyCount)'. Skipping setting ActivationPreference at this point."
+            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "ActivationPreference"
+        }
 
         Set-MailboxDatabaseCopy @PSBoundParameters
     }  
@@ -221,8 +279,14 @@ function Test-TargetResource
         [System.String]
         $ReplayLagTime,
 
+        [System.Boolean]
+        $SeedingPostponed,
+
         [System.String]
-        $TruncationLagTime
+        $TruncationLagTime,
+
+        [System.String]
+        $AdServerSettingsPreferredServer
     )
 
     #Load helper module
@@ -287,8 +351,14 @@ function GetMailboxDatabase
         [System.String]
         $ReplayLagTime,
 
+        [System.Boolean]
+        $SeedingPostponed,
+
         [System.String]
-        $TruncationLagTime
+        $TruncationLagTime,
+
+        [System.String]
+        $AdServerSettingsPreferredServer
     )
 
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"

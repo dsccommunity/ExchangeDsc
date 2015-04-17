@@ -679,6 +679,12 @@ function StartScheduledTask
         [System.String]
         $WorkingDirectory,
 
+        [System.UInt32]
+        $MaxWaitMinutes = 0,
+
+        [System.UInt32]
+        $TaskPriority = 4,
+
         $VerbosePreference
     )
 
@@ -716,6 +722,12 @@ function StartScheduledTask
     }
     elseif ($task -ne $null -and $task.State -eq "Ready")
     {
+        #Set a time limit on the task
+        $taskSettings = $task.Settings
+        $taskSettings.ExecutionTimeLimit = "PT$($MaxWaitMinutes)M"
+        $taskSettings.Priority = $TaskPriority
+        Set-ScheduledTask -TaskName "$($task.TaskName)" -Settings $taskSettings
+
         Write-Verbose "Starting task at: $([DateTime]::Now)"
 
         $task | Start-ScheduledTask
@@ -726,5 +738,49 @@ function StartScheduledTask
     }
 }
 
+function CheckForCmdletParameter
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param([string]$CmdletName, [string]$ParameterName)
+
+    [bool]$hasParameter = $false
+
+    $command = Get-Command -Name "$($CmdletName)" -ErrorAction SilentlyContinue
+
+    if ($command -ne $null -and $command.Parameters -ne $null)
+    {
+        if ($command.Parameters.ContainsKey($ParameterName))
+        {
+            $hasParameter = $true
+        }
+    }
+
+    return $hasParameter
+}
+
+function NotePreviousError
+{
+    $Global:previousError = $null
+
+    if ($Global:error -ne $null -and $Global:error.Count -gt 0)
+    {
+        $Global:previousError = $Global:error[0]
+    }    
+}
+
+function ThrowIfNewErrorsEncountered
+{
+    [CmdletBinding()]
+    param([string]$CmdletBeingRun, $VerbosePreference)
+
+    #Throw an exception if errors were encountered
+    if ($Global:error -ne $null -and $Global:error.Count -gt 0 -and $Global:previousError -ne $Global:error[0])
+    {
+        [string]$errorMsg = "Failed to run $($CmdletBeingRun) with: " + $Global:error[0]
+        Write-Error $errorMsg
+        throw $errorMsg
+    }
+}
 
 Export-ModuleMember -Function *

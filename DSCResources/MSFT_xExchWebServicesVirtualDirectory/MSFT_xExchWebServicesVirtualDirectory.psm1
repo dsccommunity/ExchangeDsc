@@ -322,6 +322,9 @@ function GetWebServicesVirtualDirectory
     return (Get-WebServicesVirtualDirectory @PSBoundParameters)
 }
 
+
 Export-ModuleMember -Function *-TargetResource
+
+
 
 
