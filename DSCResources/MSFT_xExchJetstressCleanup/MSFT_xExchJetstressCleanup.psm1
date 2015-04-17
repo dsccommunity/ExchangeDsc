@@ -87,12 +87,11 @@ function Set-TargetResource
     {
         [xml]$configFile = LoadConfigXml -ConfigFilePath "$($ConfigFilePath)"
 
-        [string[]]$FoldersToRemove = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path + $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
+        [string[]]$DatabasePaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path
+        [string[]]$LogPaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
     }
-    else
-    {
-        [string[]]$FoldersToRemove = $DatabasePaths + $LogPaths
-    }
+
+    [string[]]$FoldersToRemove = $DatabasePaths + $LogPaths
 
     #Now delete the specified directories
     [Hashtable]$ParentFoldersToRemove = @{} #Only used if $DeleteAssociatedMountPoints is $true
@@ -151,7 +150,7 @@ function Set-TargetResource
             }
 
             $outputFiles = Get-ChildItem -LiteralPath "$($JetstressPath)" | `
-                where {$_.Name -like "Performance*" -or $_.Name -like "DBChecksum*" -or $_.Name -like "XmlConfig*" -or $_.Name -like "*.evt" -or $_.Name -like "*.log"}
+                where {$_.Name -like "Performance*" -or $_.Name -like "Stress*" -or $_.Name -like "DBChecksum*" -or $_.Name -like "XmlConfig*" -or $_.Name -like "*.evt" -or $_.Name -like "*.log"}
 
             $outputFiles | Move-Item -Destination "$($OutputSaveLocation)" -Confirm:$false -Force
         }

@@ -7,6 +7,7 @@ class MSFT_xExchAutoMountPoint : OMI_BaseResource
     [Required] String AutoDagVolumesRootFolderPath; //The parent folder for Exchange volume mount point folders
     [Required] String DiskToDBMap[]; //An array of strings containing the databases for each disk. Databases on the same disk should be in the same string, and comma separated. Example: "DB1,DB2","DB3,DB4". This puts DB1 and DB2 on one disk, and DB3 and DB4 on another.
     [Required] Uint32 SpareVolumeCount; //How many spare volumes will be available
+    [Write] Boolean EnsureExchangeVolumeMountPointIsLast;
     [Write] Boolean CreateSubfolders; //Defaults to $false. If $true, specifies that DBNAME.db and DBNAME.log subfolders should be automatically created underneath the ExchangeDatabase mount points
     [Write, ValueMap{"NTFS","REFS"}, Values{"NTFS","REFS"}] String FileSystem; //The file system to use when formatting the volume. Defaults to NTFS.
     [Write] String MinDiskSize; //The minimum size of a disk to consider using. Defaults to none. Should be in a format like "1024MB" or "1TB".
