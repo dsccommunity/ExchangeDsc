@@ -21,12 +21,12 @@ Configuration ConfigureDatabasesFromCalculator
         $primaryDbList = DBListFromMailboxDatabasesCsv `
                             -MailboxDatabasesCsvPath "$($PSScriptRoot)\CalculatorAndScripts\MailboxDatabases.csv" `
                             -ServerNameInCsv $Node.ServerNameInCsv `
-                            -DbNameReplacements @{"-nn-" = "-01-"}
+                            -DbNameReplacements $Node.DbNameReplacements
 
         $copyDbList = DBListFromMailboxDatabaseCopiesCsv `
                             -MailboxDatabaseCopiesCsvPath "$($PSScriptRoot)\CalculatorAndScripts\MailboxDatabaseCopies.csv" `
                             -ServerNameInCsv $Node.ServerNameInCsv `
-                            -DbNameReplacements @{"-nn-" = "-01-"}
+                            -DbNameReplacements $Node.DbNameReplacements
 
         #Create primary databases
         foreach ($DB in $primaryDbList)

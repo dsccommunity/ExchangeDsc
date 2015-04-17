@@ -92,7 +92,7 @@ Configuration PostInstallationConfiguration
     {
         $dagSettings = $ConfigurationData[$Node.DAGId] #Look up and retrieve the DAG settings for this node
 
-        #Can't join until the DAG exists...
+		#Can't join until the DAG exists...
         xExchWaitForDAG WaitForDAG
         {
             Identity   = $dagSettings.DAGName
@@ -199,7 +199,7 @@ Configuration PostInstallationConfiguration
             AllowServiceRestart           = $true
         }
 
-        #Configure URL's and for NTLM and negotiate auth
+		#Configure URL's and for NTLM and negotiate auth
         xExchMapiVirtualDirectory MAPIVdir
         {
             Identity                 = "$($Node.NodeName)\mapi (Default Web Site)"
@@ -210,7 +210,7 @@ Configuration PostInstallationConfiguration
             AllowServiceRestart      = $true
         }
 
-        #Configure URL's and add any OABs this vdir should distribute
+		#Configure URL's and add any OABs this vdir should distribute
         xExchOabVirtualDirectory OABVdir
         {
             Identity            = "$($Node.NodeName)\OAB (Default Web Site)"
@@ -221,7 +221,7 @@ Configuration PostInstallationConfiguration
             AllowServiceRestart = $true
         }
 
-        #Configure URL's and auth settings
+		#Configure URL's and auth settings
         xExchOutlookAnywhere OAVdir
         {
             Identity                           = "$($Node.NodeName)\Rpc (Default Web Site)"
@@ -256,7 +256,7 @@ Configuration PostInstallationConfiguration
             DependsOn                             = '[xExchExchangeCertificate]Certificate' #Can't configure the IM cert until it's valid
         }
 
-        #Turn on Windows Integrated auth for remote powershell connections
+		#Turn on Windows Integrated auth for remote powershell connections
         xExchPowerShellVirtualDirectory PSVdir
         {
             Identity              = "$($Node.NodeName)\PowerShell (Default Web Site)"
@@ -265,7 +265,7 @@ Configuration PostInstallationConfiguration
             AllowServiceRestart   = $true
         }
 
-        #Configure URL's
+		#Configure URL's
         xExchWebServicesVirtualDirectory EWSVdir
         {
             Identity            = "$($Node.NodeName)\EWS (Default Web Site)"

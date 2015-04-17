@@ -1,7 +1,7 @@
 #Establishes a Exchange remote powershell session to the local server. Reuses the session if it already exists.
 function GetRemoteExchangeSession
 {
-    [CmdletBinding()]
+	[CmdletBinding()]
     param([PSCredential]$Credential, [string[]]$CommandsToLoad, $VerbosePreference)
 
     #See if the session already exists
@@ -84,7 +84,7 @@ function GetRemoteExchangeSession
 #Removes any Remote Sessions that have been setup by us
 function RemoveExistingRemoteSession
 {
-    [CmdletBinding()]
+	[CmdletBinding()]
     param($VerbosePreference)
 
     $sessions = Get-PSSession -Name "DSCExchangeSession" -ErrorAction SilentlyContinue
@@ -100,7 +100,7 @@ function RemoveExistingRemoteSession
 #Ensures that Exchange is installed, and that it is the correct version (2013)
 function VerifyServerVersion
 {
-    [CmdletBinding()]
+	[CmdletBinding()]
     param($VerbosePreference)
 
     if ($global:alreadyConfirmedServerVersion -eq $true)
@@ -192,22 +192,22 @@ function GetExchangeInstallStatus
     }
 
     $returnValue = @{
-        Path = $Path
-        Arguments = $Arguments
+		Path = $Path
+		Arguments = $Arguments
         SetupRunning = $setupRunning
         SetupComplete = $setupComplete
         ExchangePresent = $exchangePresent
         SetupPartiallyComplete = $setupPartiallyComplete
-        ShouldStartInstall = $shouldStartInstall
+		ShouldStartInstall = $shouldStartInstall
     }
 
-    return $returnValue
+	return $returnValue
 }
 
 #If Verbose is specified, outputs the install status from GetExchangeInstallStatus to the screen
 function ReportInstallStatus
 {
-    [CmdletBinding()]
+	[CmdletBinding()]
     param([Hashtable]$InstallStatus, $VerbosePreference)
 
     if ($InstallStatus.ShouldStartInstall -eq $true)
@@ -543,8 +543,8 @@ function SetEmptyStringParamsToNull
 
 function VerifySetting
 {
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
+	[CmdletBinding()]
+	[OutputType([System.Boolean])]
     param([string]$Name, [string]$Type, $ExpectedValue, $ActualValue, $PSBoundParametersIn, $VerbosePreference)
 
     $returnValue = $true
@@ -660,27 +660,33 @@ function LogFunctionEntry
 
 function StartScheduledTask
 {
-    [CmdletBinding()]
-    param
-    (
-        [parameter(Mandatory = $true)]
-        [System.String]
-        $Path,
+	[CmdletBinding()]
+	param
+	(
+		[parameter(Mandatory = $true)]
+		[System.String]
+		$Path,
 
-        [System.String]
-        $Arguments,
+		[System.String]
+		$Arguments,
 
-        [System.Management.Automation.PSCredential]
-        $Credential,
+		[System.Management.Automation.PSCredential]
+		$Credential,
 
-        [System.String]
-        $TaskName,
+		[System.String]
+		$TaskName,
 
-        [System.String]
-        $WorkingDirectory,
+		[System.String]
+		$WorkingDirectory,
+
+		[System.UInt32]
+        $MaxWaitMinutes = 0,
+
+		[System.UInt32]
+        $TaskPriority = 4,
 
         $VerbosePreference
-    )
+	)
 
     $tName = "$([guid]::NewGuid().ToString())"
 
@@ -714,17 +720,67 @@ function StartScheduledTask
     {
         throw $errRegister[0]
     }
-    elseif ($task -ne $null -and $task.State -eq "Ready")
-    {
+	elseif ($task -ne $null -and $task.State -eq "Ready")
+	{
+        #Set a time limit on the task
+        $taskSettings = $task.Settings
+        $taskSettings.ExecutionTimeLimit = "PT$($MaxWaitMinutes)M"
+        $taskSettings.Priority = $TaskPriority
+        Set-ScheduledTask -TaskName "$($task.TaskName)" -Settings $taskSettings
+
         Write-Verbose "Starting task at: $([DateTime]::Now)"
 
-        $task | Start-ScheduledTask
-    }
-    else
-    {
-        throw "Failed to register Scheduled Task"
-    }
+		$task | Start-ScheduledTask
+	}
+	else
+	{
+		throw "Failed to register Scheduled Task"
+	}
 }
 
+function CheckForCmdletParameter
+{
+	[CmdletBinding()]
+	[OutputType([System.Boolean])]
+    param([string]$CmdletName, [string]$ParameterName)
+
+    [bool]$hasParameter = $false
+
+    $command = Get-Command -Name "$($CmdletName)" -ErrorAction SilentlyContinue
+
+    if ($command -ne $null -and $command.Parameters -ne $null)
+    {
+        if ($command.Parameters.ContainsKey($ParameterName))
+        {
+            $hasParameter = $true
+        }
+    }
+
+    return $hasParameter
+}
+
+function NotePreviousError
+{
+    $Global:previousError = $null
+
+    if ($Global:error -ne $null -and $Global:error.Count -gt 0)
+    {
+        $Global:previousError = $Global:error[0]
+    }    
+}
+
+function ThrowIfNewErrorsEncountered
+{
+	[CmdletBinding()]
+    param([string]$CmdletBeingRun, $VerbosePreference)
+
+    #Throw an exception if errors were encountered
+    if ($Global:error -ne $null -and $Global:error.Count -gt 0 -and $Global:previousError -ne $Global:error[0])
+    {
+        [string]$errorMsg = "Failed to run $($CmdletBeingRun) with: " + $Global:error[0]
+        Write-Error $errorMsg
+        throw $errorMsg
+    }
+}
 
 Export-ModuleMember -Function *

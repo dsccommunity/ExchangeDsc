@@ -1,6 +1,6 @@
 @{
     AllNodes = @(
-        #Settings under 'NodeName = *' apply to all nodes.
+		#Settings under 'NodeName = *' apply to all nodes.
         @{
             NodeName        = '*'
 
@@ -9,7 +9,7 @@
                         #The location on the compiling machine of the public key export of the certfificate which will be used to encrypt credentials            CertificateFile = 'C:\publickey.cer'             #Thumbprint of the certificate being used for encrypting credentials            Thumbprint      = '651bc10c5deade112744256edfd87503e30691eb' 
         }
 
-        #Individual target nodes are defined next
+		#Individual target nodes are defined next
         @{
             NodeName = 'e15-1'
             CASID    = 'Site1CAS'
@@ -21,8 +21,8 @@
         }
     );
 
-    #CAS settings that are unique per site will go in separate hash table entries.
-    Site1CAS = @(
+	#CAS settings that are unique per site will go in separate hash table entries.
+	Site1CAS = @(
         @{
             ExternalUrlActiveSync   = "https://mail.mikelab.local/Microsoft-Server-ActiveSync" 
             ExternalUrlECP          = "https://mail.mikelab.local/ecp"
@@ -37,7 +37,7 @@
         }
     );
 
-    Site2CAS = @(
+	Site2CAS = @(
         @{
             ExternalUrlActiveSync   = ""
             ExternalUrlECP          = ""

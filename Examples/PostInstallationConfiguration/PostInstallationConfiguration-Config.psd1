@@ -1,6 +1,6 @@
 @{
     AllNodes = @(
-        #Settings under 'NodeName = *' apply to all nodes.
+		#Settings under 'NodeName = *' apply to all nodes.
         @{
             NodeName        = '*'
 
@@ -9,7 +9,7 @@
                         #The location on the compiling machine of the public key export of the certfificate which will be used to encrypt credentials            CertificateFile = 'C:\publickey.cer'             #Thumbprint of the certificate being used for encrypting credentials            Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673' 
         }
 
-        #Individual target nodes are defined next
+		#Individual target nodes are defined next
         @{
             NodeName      = 'e15-1'
             Fqdn          = 'e15-1.mikelab.local'
@@ -17,7 +17,7 @@
             DAGId         = 'DAG1' #Used to determine which DAG settings the servers should use. Corresponds to DAG1 hashtable entry below.
             CASId         = 'Site1CAS' #Used to determine which CAS settings the server should use. Corresponds to Site1CAS hashtable entry below.
 
-            #DB's that should be on the same disk must be in the same string, and comma separated. In this example, DB1 and DB2 will go on one disk, and DB3 and DB4 will go on another
+			#DB's that should be on the same disk must be in the same string, and comma separated. In this example, DB1 and DB2 will go on one disk, and DB3 and DB4 will go on another
             DiskToDBMap   = 'DB1,DB2','DB3,DB4'
 
             #Configure the databases whose primary copies will reside on this server
@@ -88,7 +88,7 @@
         }
     );
 
-    #Settings that are unique per DAG will go in separate hash table entries.
+	#Settings that are unique per DAG will go in separate hash table entries.
     DAG1 = @(
         @{
             ###DAG Settings###
@@ -120,8 +120,8 @@
         }
     );
 
-    #CAS settings that are unique per site will go in separate hash table entries as well.
-    Site1CAS = @(
+	#CAS settings that are unique per site will go in separate hash table entries as well.
+	Site1CAS = @(
         @{
             InternalNLBFqdn            = 'mail-site1.mikelab.local'
             ExternalNLBFqdn            = 'mail.mikelab.local'
@@ -137,7 +137,7 @@
         }
     );
 
-    Site2CAS = @(
+	Site2CAS = @(
         @{
             InternalNLBFqdn            = 'mail-site2.mikelab.local'
             ExternalNLBFqdn            = 'mail.mikelab.local'

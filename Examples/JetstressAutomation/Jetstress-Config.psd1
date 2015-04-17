@@ -1,7 +1,7 @@
 @{
     AllNodes = @(
         @{
-            NodeName = "dscpull-1"
+            NodeName = "e15-1"
         }
     );
 }

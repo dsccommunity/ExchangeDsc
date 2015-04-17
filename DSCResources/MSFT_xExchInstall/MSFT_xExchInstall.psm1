@@ -1,10 +1,10 @@
 function Get-TargetResource 
 {
     [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
+	[OutputType([System.Collections.Hashtable])]
     param
     (
-        [Parameter(Mandatory=$true)]
+	    [Parameter(Mandatory=$true)]
         [System.String]
         $Path,
 
@@ -23,11 +23,11 @@ function Get-TargetResource
     LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -VerbosePreference $VerbosePreference
 
     $returnValue = @{
-        Path = $Path
-        Arguments = $Arguments
+		Path = $Path
+		Arguments = $Arguments
     }
 
-    $returnValue
+	$returnValue
 }
 
 function Set-TargetResource
@@ -35,7 +35,7 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory=$true)]
+	    [Parameter(Mandatory=$true)]
         [System.String]
         $Path,
 
@@ -114,10 +114,10 @@ function Set-TargetResource
 function Test-TargetResource 
 {
     [CmdletBinding()]
-    [OutputType([System.Boolean])]
+	[OutputType([System.Boolean])]
      param
     (
-        [Parameter(Mandatory=$true)]
+	    [Parameter(Mandatory=$true)]
         [System.String]
         $Path,
 
@@ -179,10 +179,10 @@ function GetInstallStatus
         SetupComplete = $setupComplete
         ExchangePresent = $exchangePresent
         SetupPartiallyComplete = $setupPartiallyComplete
-        ShouldStartInstall = $shouldStartInstall
+		ShouldStartInstall = $shouldStartInstall
     }
 
-    $returnValue
+	$returnValue
 }
 
 #Check for missing registry keys that may cause Exchange setup to try to restart WinRM mid setup , which will in turn cause the DSC resource to fail

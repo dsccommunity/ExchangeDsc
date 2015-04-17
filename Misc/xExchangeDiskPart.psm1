@@ -1,15 +1,15 @@
 #Adds the array of commands to a single temp file, and has disk part execute the temp file
 function StartDiskpart
 {
-    [CmdletBinding()]
-    [OutputType([System.String])]
+	[CmdletBinding()]
+	[OutputType([System.String])]
     Param ([Array]$Commands, [Boolean]$ShowOutput = $true, $VerbosePreference)
 
     $Tempfile = [System.IO.Path]::GetTempFileName()
 
     foreach ($Com in $Commands)
     {
-        $CMDLine = $CMDLine + $Com + ", "
+		$CMDLine = $CMDLine + $Com + ", "
         Add-Content $Tempfile $Com
     }
 
