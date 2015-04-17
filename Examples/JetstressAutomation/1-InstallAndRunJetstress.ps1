@@ -4,15 +4,15 @@ Configuration InstallAndRunJetstress
 
     Node $AllNodes.NodeName
     {
-        #Create mount points for use with Jetstress. Here I prefer to use the same database names for ALL servers,
-        #that way I can use the same JetstressConfig.xml for all of them.
+		#Create mount points for use with Jetstress. Here I prefer to use the same database names for ALL servers,
+		#that way I can use the same JetstressConfig.xml for all of them.
         xExchAutoMountPoint AMPForJetstress
         {
             Identity                       = $Node.NodeName            AutoDagDatabasesRootFolderPath = 'C:\ExchangeDatabases'            AutoDagVolumesRootFolderPath   = 'C:\ExchangeVolumes'            DiskToDBMap                    = 'DB1,DB2,DB3,DB4','DB5,DB6,DB7,DB8'            SpareVolumeCount               = 0            VolumePrefix                   = 'EXVOL'
             CreateSubfolders               = $true
         }
 
-        #Copy the Jetstress install file
+		#Copy the Jetstress install file
         File CopyJetstress
         {
             Ensure          = 'Present'
@@ -20,7 +20,7 @@ Configuration InstallAndRunJetstress
             DestinationPath = 'C:\Jetstress\Jetstress.msi'
         }
 
-        #Install Jetstress
+		#Install Jetstress
         Package InstallJetstress
         {
             Ensure    = 'Present'
@@ -31,19 +31,19 @@ Configuration InstallAndRunJetstress
             DependsOn = '[xExchAutoMountPoint]AMPForJetstress','[File]CopyJetstress'
         }
 
-        #Copy required ESE DLL's to the Jetstress installation directory
+		#Copy required ESE DLL's to the Jetstress installation directory
         File CopyESEDlls
         {
             Ensure          = 'Present'
             Type            = 'Directory'
             Recurse         = $true
-            SourcePath      = '\\rras-1\Jetstress\ESEDlls(Cu6)'
+            SourcePath      = '\\rras-1\Jetstress\ESEDlls(CU7)'
             DestinationPath = 'C:\Program Files\Exchange Jetstress'
 
             DependsOn       = '[Package]InstallJetstress'
         }
 
-        #Copy JetstressConfig.xml to the Jetstress installation directory
+		#Copy JetstressConfig.xml to the Jetstress installation directory
         File CopyJetstressConfig
         {
             Ensure          = 'Present'
@@ -53,12 +53,13 @@ Configuration InstallAndRunJetstress
             DependsOn       = '[Package]InstallJetstress'
         }
 
-        #Run the Jetstress test, and evaluate the results
+		#Run the Jetstress test, and evaluate the results
         xExchJetstress RunJetstress
         {
-            Type            = 'Performance'
+			Type            = 'Performance'
             JetstressPath   = 'C:\Program Files\Exchange Jetstress'
             JetstressParams = '/c "C:\Program Files\Exchange Jetstress\JetstressConfig.xml"'
+			MinAchievedIOPS = 500
 
             DependsOn       = '[File]CopyESEDlls','[File]CopyJetstressConfig'
         }

@@ -1,57 +1,57 @@
 function Get-TargetResource
 {
-    [CmdletBinding()]
-    [OutputType([System.Collections.Hashtable])]
-    param
-    (
-        [parameter(Mandatory = $true)]
-        [System.String]
-        $Identity,
+	[CmdletBinding()]
+	[OutputType([System.Collections.Hashtable])]
+	param
+	(
+		[parameter(Mandatory = $true)]
+		[System.String]
+		$Identity,
 
-        [parameter(Mandatory = $true)]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+		[parameter(Mandatory = $true)]
+		[System.Management.Automation.PSCredential]
+		$Credential,
 
-        [System.Boolean]
-        $AllowServiceRestart = $false,
+		[System.Boolean]
+		$AllowServiceRestart = $false,
 
-        [System.Boolean]
-        $AutoCertBasedAuth = $false,
+		[System.Boolean]
+		$AutoCertBasedAuth = $false,
 
-        [System.String]
-        $AutoCertBasedAuthThumbprint,
+		[System.String]
+		$AutoCertBasedAuthThumbprint,
 
-        [System.String[]]
-        $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443","127.0.0.1:443"),
+		[System.String[]]
+		$AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443","127.0.0.1:443"),
 
-        [System.Boolean]
-        $BasicAuthEnabled,
+		[System.Boolean]
+		$BasicAuthEnabled,
 
-        [ValidateSet("Ignore","Allowed","Required")]
-        [System.String]
-        $ClientCertAuth,
+		[ValidateSet("Ignore","Allowed","Required")]
+		[System.String]
+		$ClientCertAuth,
 
-        [System.Boolean]
-        $CompressionEnabled,
+		[System.Boolean]
+		$CompressionEnabled,
 
-        [System.String]
-        $DomainController,
+		[System.String]
+		$DomainController,
 
-        [System.String[]]
-        $ExternalAuthenticationMethods,
+		[System.String[]]
+		$ExternalAuthenticationMethods,
 
-        [System.String]
-        $ExternalUrl,
+		[System.String]
+		$ExternalUrl,
 
-        [System.String[]]
-        $InternalAuthenticationMethods,
+		[System.String[]]
+		$InternalAuthenticationMethods,
 
-        [System.String]
-        $InternalUrl,
+		[System.String]
+		$InternalUrl,
 
-        [System.Boolean]
-        $WindowsAuthEnabled
-    )
+		[System.Boolean]
+		$WindowsAuthEnabled
+	)
     
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
@@ -59,80 +59,80 @@ function Get-TargetResource
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ActiveSyncVirtualDirectory' -VerbosePreference $VerbosePreference
+	GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ActiveSyncVirtualDirectory' -VerbosePreference $VerbosePreference
 
     $EasVdir = GetActiveSyncVirtualDirectory @PSBoundParameters
     
     if ($EasVdir -ne $null)
     {
-        $returnValue = @{
-            Identity = $Identity
-            InternalUrl = $EasVdir.InternalUrl.AbsoluteUri
-            ExternalUrl = $EasVdir.ExternalUrl.AbsoluteUri
-            BasicAuthEnabled = $EasVdir.BasicAuthEnabled
-            WindowsAuthEnabled = $EasVdir.WindowsAuthEnabled
-            CompressionEnabled = $EasVdir.CompressionEnabled
-            ClientCertAuth = $EasVdir.ClientCertAuth
-        }
+	    $returnValue = @{
+		    Identity = $Identity
+		    InternalUrl = $EasVdir.InternalUrl.AbsoluteUri
+		    ExternalUrl = $EasVdir.ExternalUrl.AbsoluteUri
+		    BasicAuthEnabled = $EasVdir.BasicAuthEnabled
+		    WindowsAuthEnabled = $EasVdir.WindowsAuthEnabled
+		    CompressionEnabled = $EasVdir.CompressionEnabled
+		    ClientCertAuth = $EasVdir.ClientCertAuth
+	    }
     }
 
-    $returnValue    
+	$returnValue	
     
 }
 
 function Set-TargetResource
 {
-    [CmdletBinding()]
-    param
-    (
-        [parameter(Mandatory = $true)]
-        [System.String]
-        $Identity,
+	[CmdletBinding()]
+	param
+	(
+		[parameter(Mandatory = $true)]
+		[System.String]
+		$Identity,
 
-        [parameter(Mandatory = $true)]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+		[parameter(Mandatory = $true)]
+		[System.Management.Automation.PSCredential]
+		$Credential,
 
-        [System.Boolean]
-        $AllowServiceRestart = $false,
+		[System.Boolean]
+		$AllowServiceRestart = $false,
 
-        [System.Boolean]
-        $AutoCertBasedAuth = $false,
+		[System.Boolean]
+		$AutoCertBasedAuth = $false,
 
-        [System.String]
-        $AutoCertBasedAuthThumbprint,
+		[System.String]
+		$AutoCertBasedAuthThumbprint,
 
-        [System.String[]]
-        $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443","127.0.0.1:443"),
+		[System.String[]]
+		$AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443","127.0.0.1:443"),
 
-        [System.Boolean]
-        $BasicAuthEnabled,
+		[System.Boolean]
+		$BasicAuthEnabled,
 
-        [ValidateSet("Ignore","Allowed","Required")]
-        [System.String]
-        $ClientCertAuth,
+		[ValidateSet("Ignore","Allowed","Required")]
+		[System.String]
+		$ClientCertAuth,
 
-        [System.Boolean]
-        $CompressionEnabled,
+		[System.Boolean]
+		$CompressionEnabled,
 
-        [System.String]
-        $DomainController,
+		[System.String]
+		$DomainController,
 
-        [System.String[]]
-        $ExternalAuthenticationMethods,
+		[System.String[]]
+		$ExternalAuthenticationMethods,
 
-        [System.String]
-        $ExternalUrl,
+		[System.String]
+		$ExternalUrl,
 
-        [System.String[]]
-        $InternalAuthenticationMethods,
+		[System.String[]]
+		$InternalAuthenticationMethods,
 
-        [System.String]
-        $InternalUrl,
+		[System.String]
+		$InternalUrl,
 
-        [System.Boolean]
-        $WindowsAuthEnabled
-    )
+		[System.Boolean]
+		$WindowsAuthEnabled
+	)
 
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
@@ -140,7 +140,7 @@ function Set-TargetResource
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-ActiveSyncVirtualDirectory' -VerbosePreference $VerbosePreference
+	GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-ActiveSyncVirtualDirectory' -VerbosePreference $VerbosePreference
 
     #Ensure an empty string is $null and not a string
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
@@ -150,7 +150,7 @@ function Set-TargetResource
 
     #Configure everything but CBA
     Set-ActiveSyncVirtualDirectory @PSBoundParameters
-    
+	
     if ($AutoCertBasedAuth -eq $true) #Need to configure CBA
     {
         CheckForCertBasedAuthPreReqs
@@ -196,58 +196,58 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [parameter(Mandatory = $true)]
-        [System.String]
-        $Identity,
+	[CmdletBinding()]
+	[OutputType([System.Boolean])]
+	param
+	(
+		[parameter(Mandatory = $true)]
+		[System.String]
+		$Identity,
 
-        [parameter(Mandatory = $true)]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+		[parameter(Mandatory = $true)]
+		[System.Management.Automation.PSCredential]
+		$Credential,
 
-        [System.Boolean]
-        $AllowServiceRestart = $false,
+		[System.Boolean]
+		$AllowServiceRestart = $false,
 
-        [System.Boolean]
-        $AutoCertBasedAuth = $false,
+		[System.Boolean]
+		$AutoCertBasedAuth = $false,
 
-        [System.String]
-        $AutoCertBasedAuthThumbprint,
+		[System.String]
+		$AutoCertBasedAuthThumbprint,
 
-        [System.String[]]
-        $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443","127.0.0.1:443"),
+		[System.String[]]
+		$AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443","127.0.0.1:443"),
 
-        [System.Boolean]
-        $BasicAuthEnabled,
+		[System.Boolean]
+		$BasicAuthEnabled,
 
-        [ValidateSet("Ignore","Allowed","Required")]
-        [System.String]
-        $ClientCertAuth,
+		[ValidateSet("Ignore","Allowed","Required")]
+		[System.String]
+		$ClientCertAuth,
 
-        [System.Boolean]
-        $CompressionEnabled,
+		[System.Boolean]
+		$CompressionEnabled,
 
-        [System.String]
-        $DomainController,
+		[System.String]
+		$DomainController,
 
-        [System.String[]]
-        $ExternalAuthenticationMethods,
+		[System.String[]]
+		$ExternalAuthenticationMethods,
 
-        [System.String]
-        $ExternalUrl,
+		[System.String]
+		$ExternalUrl,
 
-        [System.String[]]
-        $InternalAuthenticationMethods,
+		[System.String[]]
+		$InternalAuthenticationMethods,
 
-        [System.String]
-        $InternalUrl,
+		[System.String]
+		$InternalUrl,
 
-        [System.Boolean]
-        $WindowsAuthEnabled
-    )
+		[System.Boolean]
+		$WindowsAuthEnabled
+	)
 
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
@@ -255,7 +255,7 @@ function Test-TargetResource
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ActiveSyncVirtualDirectory' -VerbosePreference $VerbosePreference
+	GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ActiveSyncVirtualDirectory' -VerbosePreference $VerbosePreference
 
     #Ensure an empty string is $null and not a string
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
@@ -336,73 +336,73 @@ function Test-TargetResource
 
 function GetActiveSyncVirtualDirectory
 {
-    [CmdletBinding()]
-    param
-    (
-        [parameter(Mandatory = $true)]
-        [System.String]
-        $Identity,
+	[CmdletBinding()]
+	param
+	(
+		[parameter(Mandatory = $true)]
+		[System.String]
+		$Identity,
 
-        [parameter(Mandatory = $true)]
-        [System.Management.Automation.PSCredential]
-        $Credential,
+		[parameter(Mandatory = $true)]
+		[System.Management.Automation.PSCredential]
+		$Credential,
 
-        [System.Boolean]
-        $AllowServiceRestart = $false,
+		[System.Boolean]
+		$AllowServiceRestart = $false,
 
-        [System.Boolean]
-        $AutoCertBasedAuth = $false,
+		[System.Boolean]
+		$AutoCertBasedAuth = $false,
 
-        [System.String]
-        $AutoCertBasedAuthThumbprint,
+		[System.String]
+		$AutoCertBasedAuthThumbprint,
 
-        [System.String[]]
-        $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443","127.0.0.1:443"),
+		[System.String[]]
+		$AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443","127.0.0.1:443"),
 
-        [System.Boolean]
-        $BasicAuthEnabled,
+		[System.Boolean]
+		$BasicAuthEnabled,
 
-        [ValidateSet("Ignore","Allowed","Required")]
-        [System.String]
-        $ClientCertAuth,
+		[ValidateSet("Ignore","Allowed","Required")]
+		[System.String]
+		$ClientCertAuth,
 
-        [System.Boolean]
-        $CompressionEnabled,
+		[System.Boolean]
+		$CompressionEnabled,
 
-        [System.String]
-        $DomainController,
+		[System.String]
+		$DomainController,
 
-        [System.String[]]
-        $ExternalAuthenticationMethods,
+		[System.String[]]
+		$ExternalAuthenticationMethods,
 
-        [System.String]
-        $ExternalUrl,
+		[System.String]
+		$ExternalUrl,
 
-        [System.String[]]
-        $InternalAuthenticationMethods,
+		[System.String[]]
+		$InternalAuthenticationMethods,
 
-        [System.String]
-        $InternalUrl,
+		[System.String]
+		$InternalUrl,
 
-        [System.Boolean]
-        $WindowsAuthEnabled
-    )
+		[System.Boolean]
+		$WindowsAuthEnabled
+	)
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
+	RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
 
     return (Get-ActiveSyncVirtualDirectory @PSBoundParameters)
 }
 
 function ConfigureCertBasedAuth
 {
-    param
-    (
-        [System.String]
-        $AutoCertBasedAuthThumbprint,
+	param
+	(
+		[System.String]
+		$AutoCertBasedAuthThumbprint,
 
-        [System.String[]]
-        $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443","127.0.0.1:443")
-    )
+		[System.String[]]
+		$AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443","127.0.0.1:443")
+	)
     
     #Enable cert auth in IIS, and require SSL on the AS vdir
     $output = Invoke-Expression -Command "$($env:SystemRoot)\System32\inetsrv\appcmd.exe set config -section:system.webServer/security/authentication/clientCertificateMappingAuthentication /enabled:`"True`" /commit:apphost"
@@ -428,14 +428,14 @@ function ConfigureCertBasedAuth
 
 function TestCertBasedAuth
 {
-    param
-    (
-        [System.String]
-        $AutoCertBasedAuthThumbprint,
+	param
+	(
+		[System.String]
+		$AutoCertBasedAuthThumbprint,
 
-        [System.String[]]
-        $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443","127.0.0.1:443")
-    )
+		[System.String[]]
+		$AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443","127.0.0.1:443")
+	)
 
     $serverWideClientCertMappingAuth = Invoke-Expression -Command "$($env:SystemRoot)\System32\inetsrv\appcmd.exe list config -section:system.webServer/security/authentication/clientCertificateMappingAuthentication"
 
@@ -610,6 +610,5 @@ function CheckForCertBasedAuthPreReqs
 
 
 Export-ModuleMember -Function *-TargetResource
-
 
 

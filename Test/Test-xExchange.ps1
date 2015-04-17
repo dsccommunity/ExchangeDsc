@@ -95,6 +95,17 @@ $autoMountPointParams1 = @{
     MinDiskSize = "10MB"
 }
 
+$autoMountPointParams2 = @{
+    Identity = $testServerHostname
+    DiskToDBMap = @("DB1","DB2","DB3","DB4","DB5","DB6","DB7","DB8","DB9","DB10","DB11","DB12","DB13","DB14","DB15","DB16","DB17","DB18","DB19","DB20","DB21","DB22")
+    SpareVolumeCount = 0
+    AutoDagDatabasesRootFolderPath = "C:\ExchangeDatabases" 
+    AutoDagVolumesRootFolderPath = "C:\ExchangeVolumes" 
+    VolumePrefix = "EXVOL" 
+    MinDiskSize = "10MB"
+    CreateSubfolders = $true
+}
+
 $casParams1 = @{
     Identity = $testServerHostname
     AutoDiscoverServiceInternalUri = ""
@@ -591,6 +602,7 @@ $installParams = @{
 }
 
 $jetstressParams1 = @{
+    Type = "Performance"
     JetstressPath = "C:\Program Files\Exchange Jetstress"
     JetstressParams = '/c "C:\Program Files\Exchange Jetstress\JetstressConfig.xml"'
 }
@@ -764,7 +776,7 @@ function RunTests
 
     if ("TestAutoMountPoint" -like $Filter)
     {
-        RunTest -TestName "TestAutoMountPoint1" -ModulesToImport "MSFT_xExchAutoMountPoint" -Parameters $autoMountPointParams1
+        RunTest -TestName "TestAutoMountPoint2" -ModulesToImport "MSFT_xExchAutoMountPoint" -Parameters $autoMountPointParams2
     }
 
     if ("TestCAS" -like $Filter)
@@ -893,4 +905,4 @@ function RunTests
     }
 }
 
-RunTests -Filter "TestWaitForADPrep*"
+RunTests -Filter "TestAutoMount*"

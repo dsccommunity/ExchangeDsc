@@ -95,7 +95,7 @@ Configuration CreateAndConfigureDAG
     {
         $dagSettings = $ConfigurationData[$Node.DAGId] #Look up and retrieve the DAG settings for this node
 
-        #Can't join until the DAG exists...
+		#Can't join until the DAG exists...
         xExchWaitForDAG WaitForDAG
         {
             Identity   = $dagSettings.DAGName

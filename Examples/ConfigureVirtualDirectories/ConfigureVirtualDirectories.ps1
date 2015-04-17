@@ -71,7 +71,7 @@ Configuration ConfigureVirtualDirectories
             AllowServiceRestart           = $true
         }
 
-        #Configure URL's and for NTLM and negotiate auth
+		#Configure URL's and for NTLM and negotiate auth
         xExchMapiVirtualDirectory MAPIVdir
         {
             Identity                 = "$($Node.NodeName)\mapi (Default Web Site)"
@@ -82,7 +82,7 @@ Configuration ConfigureVirtualDirectories
             AllowServiceRestart      = $true
         }
 
-        #Configure URL's and add any OABs this vdir should distribute
+		#Configure URL's and add any OABs this vdir should distribute
         xExchOabVirtualDirectory OABVdir
         {
             Identity            = "$($Node.NodeName)\OAB (Default Web Site)"
@@ -93,7 +93,7 @@ Configuration ConfigureVirtualDirectories
             AllowServiceRestart = $true
         }
 
-        #Configure URL's and auth settings
+		#Configure URL's and auth settings
         xExchOutlookAnywhere OAVdir
         {
             Identity                           = "$($Node.NodeName)\Rpc (Default Web Site)"
@@ -122,7 +122,7 @@ Configuration ConfigureVirtualDirectories
             AllowServiceRestart                   = $true
         }
 
-        #Turn on Windows Integrated auth for remote powershell connections
+		#Turn on Windows Integrated auth for remote powershell connections
         xExchPowerShellVirtualDirectory PSVdir
         {
             Identity              = "$($Node.NodeName)\PowerShell (Default Web Site)"
@@ -131,7 +131,7 @@ Configuration ConfigureVirtualDirectories
             AllowServiceRestart   = $true
         }
 
-        #Configure URL's
+		#Configure URL's
         xExchWebServicesVirtualDirectory EWSVdir
         {
             Identity            = "$($Node.NodeName)\EWS (Default Web Site)"
