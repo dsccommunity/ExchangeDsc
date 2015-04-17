@@ -5,6 +5,7 @@ class MSFT_xExchMailboxDatabaseCopy : OMI_BaseResource
     [Key] String Identity; //Name of database
     [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
     [Required] String MailboxServer; //Server to add copy to. Should be the host name, not the FQDN.
+    [Write] String AdServerSettingsPreferredServer; //An optional domain controller to pass to Set-AdServerSettings -PreferredServer
     [Write] Boolean AllowServiceRestart; //Whether it is OK to restart Information Store after adding copy
 
     //Remaing props, and some of the above, correspond directly to Add-MailboxDatabaseCopy parameters
@@ -12,7 +13,8 @@ class MSFT_xExchMailboxDatabaseCopy : OMI_BaseResource
     [Write] Uint32 ActivationPreference; 
     [Write] String DomainController;
     [Write] String ReplayLagTime;
-    [Write] String TruncationLagTime;
+    [Write] Boolean SeedingPostponed;
+    [Write] String TruncationLagTime;    
 };
 
 

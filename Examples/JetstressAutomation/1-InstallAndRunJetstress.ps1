@@ -37,7 +37,7 @@ Configuration InstallAndRunJetstress
             Ensure          = 'Present'
             Type            = 'Directory'
             Recurse         = $true
-            SourcePath      = '\\rras-1\Jetstress\ESEDlls(Cu6)'
+            SourcePath      = '\\rras-1\Jetstress\ESEDlls(CU7)'
             DestinationPath = 'C:\Program Files\Exchange Jetstress'
 
             DependsOn       = '[Package]InstallJetstress'
@@ -59,6 +59,7 @@ Configuration InstallAndRunJetstress
             Type            = 'Performance'
             JetstressPath   = 'C:\Program Files\Exchange Jetstress'
             JetstressParams = '/c "C:\Program Files\Exchange Jetstress\JetstressConfig.xml"'
+            MinAchievedIOPS = 500
 
             DependsOn       = '[File]CopyESEDlls','[File]CopyJetstressConfig'
         }
