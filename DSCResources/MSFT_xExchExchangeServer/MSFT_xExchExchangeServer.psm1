@@ -40,7 +40,13 @@ function Get-TargetResource
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ExchangeServer" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ExchangeServer","Set-ExchangeServer" -VerbosePreference $VerbosePreference
+
+    if ($PSBoundParameters.ContainsKey("WorkloadManagementPolicy") -and (CheckForCmdletParameter -CmdletName "Set-ExchangeServer" -ParameterName "WorkloadManagementPolicy") -eq $false)
+    {
+        Write-Warning "WorkloadManagementPolicy has been removed from the Set-ExchangeServer cmdlet. This parameter will be ignored."
+        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "WorkloadManagementPolicy"
+    }
 
     $server = GetExchangeServer @PSBoundParameters
 
@@ -111,6 +117,12 @@ function Set-TargetResource
 
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ExchangeServer","Set-ExchangeServer" -VerbosePreference $VerbosePreference
+
+    if ($PSBoundParameters.ContainsKey("WorkloadManagementPolicy") -and (CheckForCmdletParameter -CmdletName "Set-ExchangeServer" -ParameterName "WorkloadManagementPolicy") -eq $false)
+    {
+        Write-Warning "WorkloadManagementPolicy has been removed from the Set-ExchangeServer cmdlet. This parameter will be ignored."
+        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "WorkloadManagementPolicy"
+    }
 
     #Check existing config first to see if we are currently licensing a server
     $server = GetExchangeServer @PSBoundParameters
@@ -188,7 +200,13 @@ function Test-TargetResource
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ExchangeServer" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ExchangeServer","Set-ExchangeServer" -VerbosePreference $VerbosePreference
+
+    if ($PSBoundParameters.ContainsKey("WorkloadManagementPolicy") -and (CheckForCmdletParameter -CmdletName "Set-ExchangeServer" -ParameterName "WorkloadManagementPolicy") -eq $false)
+    {
+        Write-Warning "WorkloadManagementPolicy has been removed from the Set-ExchangeServer cmdlet. This parameter will be ignored."
+        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "WorkloadManagementPolicy"
+    }
 
     $server = GetExchangeServer @PSBoundParameters
 

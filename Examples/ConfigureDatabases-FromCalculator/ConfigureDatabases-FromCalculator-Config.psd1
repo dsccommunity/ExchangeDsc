@@ -11,13 +11,15 @@
 
         #Individual target nodes are defined next
         @{
-            NodeName        = 'e15-1'
-            ServerNameInCsv = 'SRV-nn-01'
+            NodeName           = 'e15-1'
+            ServerNameInCsv    = 'SRV-nn-01'
+            DbNameReplacements = @{"-nn-" = "-01-"}
         }
 
         @{
-            NodeName        = 'e15-2'
-            ServerNameInCsv = 'SRV-nn-02'
+            NodeName           = 'e15-2'
+            ServerNameInCsv    = 'SRV-nn-02'
+            DbNameReplacements = @{"-nn-" = "-01-"}
         }
     );
 }

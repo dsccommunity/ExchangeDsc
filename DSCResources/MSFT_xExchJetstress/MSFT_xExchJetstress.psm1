@@ -18,7 +18,10 @@ function Get-TargetResource
         $JetstressParams,
 
         [System.UInt32]
-        $MaxWaitMinutes = 4320
+        $MaxWaitMinutes = 0,
+
+        [System.UInt32]
+        $MinAchievedIOPS = 0
     )
 
     #Load helper module
@@ -55,7 +58,10 @@ function Set-TargetResource
         $JetstressParams,
 
         [System.UInt32]
-        $MaxWaitMinutes = 4320
+        $MaxWaitMinutes = 0,
+
+        [System.UInt32]
+        $MinAchievedIOPS = 0
     )
 
     #Load helper module
@@ -132,10 +138,7 @@ function Set-TargetResource
         }
     }
 
-    #If we made it here, Jetstress is running. Wait for it to complete for $MaxWaitMinutes minutes
-    $checkMaxTime = [DateTime]::Now.AddMinutes($MaxWaitMinutes)
-
-    while ($jetstressRunning -eq $true -and $checkMaxTime -gt [DateTime]::Now)
+    while ($jetstressRunning -eq $true)
     {
         Write-Verbose "Jetstress is still running at '$([DateTime]::Now)'."
 
@@ -156,9 +159,9 @@ function Set-TargetResource
     {
         Write-Verbose "Jetstress testing finished at '$([DateTime]::Now)'."
 
-        $testSuccessful = JetstressTestSuccessful @PSBoundParameters
+        $overallTestSuccessful = JetstressTestSuccessful @PSBoundParameters
 
-        if ($testSuccessful -eq $false)
+        if ($overallTestSuccessful -eq $false)
         {
             throw "Jetstress finished running, but the test did not complete successfully"
         }
@@ -194,7 +197,10 @@ function Test-TargetResource
         $JetstressParams,
 
         [System.UInt32]
-        $MaxWaitMinutes = 4320
+        $MaxWaitMinutes = 0,
+
+        [System.UInt32]
+        $MinAchievedIOPS = 0
     )
 
     #Load helper module
@@ -244,14 +250,17 @@ function StartJetstress
         $JetstressParams,
 
         [System.UInt32]
-        $MaxWaitMinutes = 4320
+        $MaxWaitMinutes = 0,
+
+        [System.UInt32]
+        $MinAchievedIOPS = 0
     )
 
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     $fullPath = Join-Path -Path "$($JetstressPath)" -ChildPath "JetstressCmd.exe"
 
-    StartScheduledTask -Path "$($fullPath)" -Arguments "$($JetstressParams)" -WorkingDirectory "$($JetstressPath)" -TaskName "Jetstress" -VerbosePreference $VerbosePreference
+    StartScheduledTask -Path "$($fullPath)" -Arguments "$($JetstressParams)" -WorkingDirectory "$($JetstressPath)" -TaskName "Jetstress" -MaxWaitMinutes $MaxWaitMinutes -VerbosePreference $VerbosePreference -TaskPriority 1
 }
 
 #Looks in the latest Type*.html file to determine whether the last Jetstress run passed
@@ -275,10 +284,14 @@ function JetstressTestSuccessful
         $JetstressParams,
 
         [System.UInt32]
-        $MaxWaitMinutes = 4320
+        $MaxWaitMinutes = 0,
+
+        [System.UInt32]
+        $MinAchievedIOPS = 0
     )
 
-    $testSuccessful = $false
+    $overallTestSuccessful = $false
+    $achievedIOPSTarget = $false
 
     $outputFiles = Get-ChildItem -LiteralPath "$($JetstressPath)" | where {$_.Name -like "$($Type)*.html"}
 
@@ -290,31 +303,60 @@ function JetstressTestSuccessful
 
         $content = Get-Content -LiteralPath "$($latest.FullName)"
 
-        $foundResults = $false
+        $foundOverallResults = $false
+        $foundAchievedIOPS = $false
 
-        for ($i = 0; $i -lt $content.Length -and $foundResults -eq $false; $i++)
+        for ($i = 0; $i -lt $content.Length -and ($foundOverallResults -eq $false -or $foundAchievedIOPS -eq $false); $i++)
         {
-            if ($content[$i].Contains("<td class=`"grid_row_header`">Overall Test Result</td>"))
+            if ($content[$i].Contains("<td class=`"grid_row_header`">Overall Test Result</td>") -or $content[$i].Contains("<td class=`"grid_row_header`">Achieved Transactional I/O per Second</td>"))
             {
                 $resultStart = $content[$i + 1].IndexOf('>') + 1
                 $resultEnd = $content[$i + 1].LastIndexOf('<')
 
                 $result = $content[$i + 1].Substring($resultStart, $resultEnd - $resultStart)
 
-                $foundResults = $true
-                
-                Write-Verbose "File $($latest.FullName)'' has an 'Overall Test Result' of '$($result)'"
-
-                if ($result -like "Pass")
+                if ($content[$i].Contains("<td class=`"grid_row_header`">Overall Test Result</td>"))
                 {
-                    $testSuccessful = $true
+                    $foundOverallResults = $true
+
+                    Write-Verbose "File $($latest.FullName)'' has an 'Overall Test Result' of '$($result)'"
+
+                    if ($result -like "Pass")
+                    {
+                        $overallTestSuccessful = $true
+                    }
+                }
+                else
+                {
+                    $foundAchievedIOPS = $true
+
+                    if ([string]::IsNullOrEmpty($result) -eq $false)
+                    {
+                        Write-Verbose "File $($latest.FullName)'' has an 'Achieved Transactional I/O per Second' value of '$($result)'"
+
+                        [Decimal]$decResult = [Decimal]::Parse($result)
+
+                        if ($decResult -ge $MinAchievedIOPS)
+                        {
+                            $achievedIOPSTarget = $true
+                        }
+                    }
+                    else
+                    {
+                        Write-Verbose "Value for 'Achieved Transactional I/O per Second' is empty"
+                    }
                 }
             }
         }
 
-        if ($foundResults -eq $false)
+        if ($foundOverallResults -eq $false)
         {
             Write-Verbose "Unable to find 'Overall Test Result' in file '$($latest.FullName)'"
+        }
+
+        if ($foundAchievedIOPS -eq $false)
+        {
+            Write-Verbose "Unable to find 'Achieved Transactional I/O per Second' in file '$($latest.FullName)'"
         }
     }
     else
@@ -322,7 +364,7 @@ function JetstressTestSuccessful
         Write-Verbose "Unable to find any files matching '$($Type)*.html' in folder '$($JetstressPath)'"
     }
 
-    return $testSuccessful
+    return ($overallTestSuccessful -eq $true -and $achievedIOPSTarget -eq $true)
 }
 
 Export-ModuleMember -Function *-TargetResource
