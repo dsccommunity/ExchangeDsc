@@ -15,6 +15,6 @@ class MSFT_xExchWaitForADPrep : OMI_BaseResource
 
     [Write, Description("The FQDN's of domains that should be checked for DomainVersion in addition to the domain that this Exchange server belongs to")] String ExchangeDomains[];
     [Write, Description("How many seconds to wait between retries when checking whether AD has been prepped. Defaults to 60.")] Uint32 RetryIntervalSec;
-    [Write, Description("Mount many retry attempts should be made to see if AD has been prepped before an exception is thrown. Defaults to 30.")] Uint32 RetryCount;
+    [Write, Description("How many retry attempts should be made to see if AD has been prepped before an exception is thrown. Defaults to 30.")] Uint32 RetryCount;
 };
 
