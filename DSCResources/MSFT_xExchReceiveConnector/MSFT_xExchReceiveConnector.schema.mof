@@ -60,4 +60,3 @@ class MSFT_xExchReceiveConnector : OMI_BaseResource
 };
 
 
-

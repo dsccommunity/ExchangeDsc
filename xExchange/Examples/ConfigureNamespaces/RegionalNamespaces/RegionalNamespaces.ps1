@@ -103,3 +103,4 @@ RegionalNamespaces -ConfigurationData $PSScriptRoot\RegionalNamespaces-Config.ps
 
 ###Pushes configuration and waits for execution
 #Start-DscConfiguration -Path .\RegionalNamespaces -Verbose -Wait 
+

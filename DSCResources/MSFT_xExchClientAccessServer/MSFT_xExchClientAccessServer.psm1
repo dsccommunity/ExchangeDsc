@@ -176,4 +176,3 @@ function GetClientAccessServer
 
 Export-ModuleMember -Function *-TargetResource
 
-

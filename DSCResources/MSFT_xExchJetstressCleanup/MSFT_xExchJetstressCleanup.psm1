@@ -87,12 +87,11 @@ function Set-TargetResource
     {
         [xml]$configFile = LoadConfigXml -ConfigFilePath "$($ConfigFilePath)"
 
-        [string[]]$FoldersToRemove = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path + $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
+        [string[]]$DatabasePaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path
+        [string[]]$LogPaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
     }
-    else
-    {
-        [string[]]$FoldersToRemove = $DatabasePaths + $LogPaths
-    }
+
+    [string[]]$FoldersToRemove = $DatabasePaths + $LogPaths
 
     #Now delete the specified directories
     [Hashtable]$ParentFoldersToRemove = @{} #Only used if $DeleteAssociatedMountPoints is $true
@@ -430,6 +429,5 @@ function IsJetstressInstalled
 
 
 Export-ModuleMember -Function *-TargetResource
-
 
 

@@ -127,3 +127,4 @@ Set-DscLocalConfigurationManager -Path .\CreateAndConfigureDAG -Verbose
 
 ###Pushes configuration and waits for execution
 Start-DscConfiguration -Path .\CreateAndConfigureDAG -Verbose -Wait 
+

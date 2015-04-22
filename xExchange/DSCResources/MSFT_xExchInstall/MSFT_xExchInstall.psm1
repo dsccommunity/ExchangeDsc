@@ -218,3 +218,4 @@ function CheckWSManConfig
 }
 
 Export-ModuleMember -Function *-TargetResource
+

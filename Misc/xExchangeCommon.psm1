@@ -679,6 +679,12 @@ function StartScheduledTask
         [System.String]
         $WorkingDirectory,
 
+        [System.UInt32]
+        $MaxWaitMinutes = 0,
+
+        [System.UInt32]
+        $TaskPriority = 4,
+
         $VerbosePreference
     )
 
@@ -716,6 +722,12 @@ function StartScheduledTask
     }
     elseif ($task -ne $null -and $task.State -eq "Ready")
     {
+        #Set a time limit on the task
+        $taskSettings = $task.Settings
+        $taskSettings.ExecutionTimeLimit = "PT$($MaxWaitMinutes)M"
+        $taskSettings.Priority = $TaskPriority
+        Set-ScheduledTask -TaskName "$($task.TaskName)" -Settings $taskSettings
+
         Write-Verbose "Starting task at: $([DateTime]::Now)"
 
         $task | Start-ScheduledTask

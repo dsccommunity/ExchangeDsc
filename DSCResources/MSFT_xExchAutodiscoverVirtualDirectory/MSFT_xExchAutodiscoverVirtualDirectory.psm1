@@ -235,4 +235,3 @@ function GetAutodiscoverVirtualDirectory
 Export-ModuleMember -Function *-TargetResource
 
 
-

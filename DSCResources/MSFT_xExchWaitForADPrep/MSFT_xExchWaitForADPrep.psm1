@@ -382,4 +382,3 @@ function DomainDNFromFQDN
 Export-ModuleMember -Function *-TargetResource
 
 
-

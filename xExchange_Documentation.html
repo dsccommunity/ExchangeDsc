@@ -29,7 +29,7 @@ also great community resources, such as <a href="http://powershell.org/wp/tag/ds
 </ul>
 
 <h1 style="color:#2e74b5; font-family:Calibri Light; font-size:large">Requirements</h1>
-<p>This module is designed to be used with Exchange 2013. The latest version, 1.0.3.6, has only been tested on Exchange 2013 CU6 and CU7 servers running Windows Server 2012, or Windows Server 2012 R2. The module requires the latest version of PowerShell (v4.0, which ships in Windows 8.1 or Windows Server 2012R2). To easily use PowerShell 4.0 on older operating systems,
+<p>This module is designed to be used with Exchange 2013. The latest version, 1.0.3.11, has only been tested on Exchange 2013 CU6 and CU7 servers running Windows Server 2012, or Windows Server 2012 R2. The module requires the latest version of PowerShell (v4.0, which ships in Windows 8.1 or Windows Server 2012R2). To easily use PowerShell 4.0 on older operating systems,
 <a href="http://www.microsoft.com/en-us/download/details.aspx?id=40855"><span style="color:#0000ff">install WMF 4.0</span></a>. Please read the installation instructions 
 that are present on both the download page and the release notes for WMF 4.0.</p>
 
@@ -434,7 +434,7 @@ that are present on both the download page and the release notes for WMF 4.0.</p
 </li>
 </ul>
 
-<p><strong>xExchJetstress</strong> is used to automatically run Jetstress using the <strong>JetstressCmd.exe</strong> command line executable. The resource looks for the existence of <strong>TYPE*.html</strong> files in the Jetstress installation directory to determine whether Jetstress has already been run, or if it needs to be executed. <strong>TYPE</strong> corresponds to the Type defined in the <strong>JetstressConfig.xml</strong> file, where valid values are <strong>Performance</strong>, <strong>Stress</strong>, <strong>DatabaseBackup</strong>, or <strong>SoftRecovery</strong>. If <strong>TYPE*.html</strong> files exist, the newest file is inspected to determine whether the Jetstress run resulted in a <strong>Pass</strong> or <strong>Fail</strong>. Note that a <strong>TYPE*.html</strong> file is not written until Jetstress has finished it&#39;s initialization phase, and has also finished the testing phase with either a <strong>Pass</strong> or a <strong>Fail</strong>. A crash of the <strong>JetstressCmd.exe</strong> process will also prevent the file from being written.</p>
+<p><strong>xExchJetstress</strong> is used to automatically run Jetstress using the <strong>JetstressCmd.exe</strong> command line executable. The resource launches Jetstress via a Scheduled Task, then monitors for <strong>JetstressCmd.exe</strong> to determine whether Jetstress is running. Once <strong>JetstressCmd.exe</strong> has finished, <strong>xExchJetstress</strong> looks for the existence of <strong>TYPE*.html</strong> files in the Jetstress installation directory to determine whether Jetstress has already been run, or if it needs to be executed. <strong>TYPE</strong> corresponds to the Type defined in the <strong>JetstressConfig.xml</strong> file, where valid values are <strong>Performance</strong>, <strong>Stress</strong>, <strong>DatabaseBackup</strong>, or <strong>SoftRecovery</strong>. If <strong>TYPE*.html</strong> files exist, the newest file is inspected to determine whether the Jetstress run resulted in a <strong>Pass</strong> or <strong>Fail</strong>. Note that a <strong>TYPE*.html</strong> file is not written until Jetstress has finished it&#39;s initialization phase, and has also finished the testing phase with either a <strong>Pass</strong> or a <strong>Fail</strong>. A crash of the <strong>JetstressCmd.exe</strong> process will also prevent the file from being written.</p>
 <ul style="list-style-type:disc; direction:ltr">
 <li>
 	<span style="width: 250px; float: left; font-weight: bold;">*Type:</span>Specifies the Type which was defined in the <strong>JetstressConfig.xml</strong> file. Valid values are <strong>Performance</strong>, <strong>Stress</strong>, <strong>DatabaseBackup</strong>, or <strong>SoftRecovery</strong>.
@@ -446,7 +446,10 @@ that are present on both the download page and the release notes for WMF 4.0.</p
 	<span style="width: 250px; float: left; font-weight: bold;">*JetstressParams:</span>Command line parameters to pass into <strong>JetstressCmd.exe</strong>.
 </li>
 <li>
-	<span style="width: 250px; float: left; font-weight: bold;">MaxWaitMinutes:</span>The maximum amount of time that the <strong>JetstressCmd.exe</strong> process can run for. Defaults to 4320.
+	<span style="width: 250px; float: left; font-weight: bold;">MaxWaitMinutes:</span>The maximum amount of time that the Scheduled Task which runs Jetstress can execute for. Defaults to 0, which means there is no time limit.
+</li>
+<li>
+	<span style="width: 250px; float: left; font-weight: bold;">MinAchievedIOPS:</span>The minimum value reported in the <strong>Achieved Transactional I/O per Second</strong> section of the Jetstress report for the run to be considered successful. Defaults to 0.
 </li>
 <p></p>
 <p><strong>WARNING 1:</strong> Jetstress should <strong>NEVER</strong> be run on a server that already has Exchange installed. Jetstress is only meant to be used for pre-installation server validation. As such, it is recommended that <strong>xExchJetstress</strong> be used in a one time script which is separate from the script that performs ongoing server configuration validation.</p>
@@ -1033,7 +1036,7 @@ that are present on both the download page and the release notes for WMF 4.0.</p
 	<span style="width: 250px; float: left; font-weight: bold;">RetryIntervalSec</span>How many seconds to wait between retries when checking whether AD has been prepped. Defaults to 60.
 </li>
 <li>
-	<span style="width: 250px; float: left; font-weight: bold;">RetryCount</span>Mount many retry attempts should be made to see if AD has been prepped before an exception is thrown. Defaults to 30.
+	<span style="width: 250px; float: left; font-weight: bold;">RetryCount</span>How many retry attempts should be made to see if AD has been prepped before an exception is thrown. Defaults to 30.
 </li>
 </ul>
 
@@ -1156,6 +1159,37 @@ that are present on both the download page and the release notes for WMF 4.0.</p
 
 
 <h1 style="color:#2e74b5; font-family:Calibri Light; font-size:large">Versions</h1>
+<p>1.0.3.11</p>
+<ul style="list-style-type:disc; direction:ltr">
+
+<li>xExchJetstress Changes:
+<ul style="list-style-type:circle">
+<li>
+Changed default for MaxWaitMinutes from 4320 to 0
+</li>
+<li>
+Added property MinAchievedIOPS
+</li>
+<li>
+Changed priority of the JetstressCmd.exe Scheduled Task from the default of 7 to 4
+</li>
+</ul>
+
+<li>xExchJetstressCleanup Changes:
+<ul style="list-style-type:circle">
+<li>
+Fixed issue which caused the cleanup to not work properly when only a single database is used in JetstressConfig.xml
+</li>
+</ul>
+
+<li>xExchAutoMountPoint Changes:
+<ul style="list-style-type:circle">
+<li>
+    Updated resource to choose the next available EXVOL mount point to use for databases numerically by volume number instead of alphabetically by volume number (i.e. EXVOL2 would be selected after EXVOL1 instead of EXVOL11, which is alphabetically closer).</li>
+</ul>
+</li>
+</ul>
+
 <p>1.0.3.6</p>
 <ul style="list-style-type:disc; direction:ltr">
 

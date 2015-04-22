@@ -26,3 +26,4 @@ if ($ShellCreds -eq $null)
 
 ###Compiles the example
 QuickStartTemplate -ConfigurationData $PSScriptRoot\QuickStartTemplate-Config.psd1 -ShellCreds $ShellCreds
+

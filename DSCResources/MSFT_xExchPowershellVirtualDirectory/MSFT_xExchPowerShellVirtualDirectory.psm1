@@ -268,4 +268,3 @@ function GetPowerShellVirtualDirectory
 Export-ModuleMember -Function *-TargetResource
 
 
-

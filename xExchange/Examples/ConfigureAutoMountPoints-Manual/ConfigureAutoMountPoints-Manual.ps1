@@ -24,3 +24,4 @@ ConfigureAutoMountPointsManual -ConfigurationData $PSScriptRoot\ConfigureAutoMou
 
 ###Pushes configuration and waits for execution
 Start-DscConfiguration -Path .\ConfigureAutoMountPointsManual -Verbose -Wait 
+

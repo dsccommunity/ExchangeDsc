@@ -322,4 +322,3 @@ function CompareCertServices
 Export-ModuleMember -Function *-TargetResource
 
 
-

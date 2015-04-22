@@ -552,4 +552,3 @@ function GetDatabaseAvailabilityGroup
 Export-ModuleMember -Function *-TargetResource
 
 
-

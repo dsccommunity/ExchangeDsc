@@ -77,3 +77,4 @@ Set-DscLocalConfigurationManager -Path .\ConfigureDatabasesManual -Verbose
 
 ###Pushes configuration and waits for execution
 Start-DscConfiguration -Path .\ConfigureDatabasesManual -Verbose -Wait 
+

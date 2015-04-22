@@ -297,4 +297,3 @@ function SubnetsToArray
 Export-ModuleMember -Function *-TargetResource
 
 
-

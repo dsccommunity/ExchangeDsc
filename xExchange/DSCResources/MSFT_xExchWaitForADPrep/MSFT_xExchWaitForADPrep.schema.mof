@@ -18,3 +18,4 @@ class MSFT_xExchWaitForADPrep : OMI_BaseResource
     [Write, Description("Mount many retry attempts should be made to see if AD has been prepped before an exception is thrown. Defaults to 30.")] Uint32 RetryCount;
 };
 
+

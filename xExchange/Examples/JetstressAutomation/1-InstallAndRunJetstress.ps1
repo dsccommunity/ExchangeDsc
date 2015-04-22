@@ -70,3 +70,4 @@ InstallAndRunJetstress -ConfigurationData $PSScriptRoot\Jetstress-Config.psd1
 
 ###Pushes configuration and waits for execution
 Start-DscConfiguration -Path .\InstallAndRunJetstress -Verbose -Wait
+

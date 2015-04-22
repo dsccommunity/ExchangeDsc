@@ -101,3 +101,4 @@ SingleNamespace -ConfigurationData $PSScriptRoot\SingleNamespace-Config.psd1 -Sh
 
 ###Pushes configuration and waits for execution
 #Start-DscConfiguration -Path .\SingleNamespace -Verbose -Wait 
+

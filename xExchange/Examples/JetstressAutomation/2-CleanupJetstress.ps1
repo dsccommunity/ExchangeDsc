@@ -40,3 +40,4 @@ Set-DscLocalConfigurationManager -Path .\CleanupJetstress -Verbose
 
 ###Pushes configuration and waits for execution
 Start-DscConfiguration -Path .\CleanupJetstress -Verbose -Wait
+

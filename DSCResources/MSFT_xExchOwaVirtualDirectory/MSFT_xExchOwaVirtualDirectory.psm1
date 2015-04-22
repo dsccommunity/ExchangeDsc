@@ -375,4 +375,3 @@ function GetOwaVirtualDirectory
 
 Export-ModuleMember -Function *-TargetResource
 
-

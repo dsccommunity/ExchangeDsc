@@ -368,4 +368,3 @@ function GetOutlookAnywhere
 Export-ModuleMember -Function *-TargetResource
 
 
-

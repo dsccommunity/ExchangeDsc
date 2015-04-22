@@ -103,3 +103,4 @@ InternetFacingSite -ConfigurationData $PSScriptRoot\InternetFacingSite-Config.ps
 
 ###Pushes configuration and waits for execution
 #Start-DscConfiguration -Path .\InternetFacingSite -Verbose -Wait 
+

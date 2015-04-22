@@ -33,3 +33,4 @@ ConfigureAutoMountPointsFromCalculator -ConfigurationData $PSScriptRoot\Configur
 
 ###Pushes configuration and waits for execution
 Start-DscConfiguration -Path .\ConfigureAutoMountPointsFromCalculator -Verbose -Wait
+

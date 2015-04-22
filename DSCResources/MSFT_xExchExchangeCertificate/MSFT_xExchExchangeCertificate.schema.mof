@@ -13,4 +13,3 @@ class MSFT_xExchExchangeCertificate : OMI_BaseResource
 };
 
 
-

@@ -156,3 +156,4 @@ Set-DscLocalConfigurationManager -Path .\ConfigureVirtualDirectories -Verbose
 
 ###Pushes configuration and waits for execution
 Start-DscConfiguration -Path .\ConfigureVirtualDirectories -Verbose -Wait 
+

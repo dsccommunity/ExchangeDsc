@@ -90,3 +90,4 @@ Set-DscLocalConfigurationManager -Path .\ConfigureDatabasesFromCalculator -Verbo
 
 ###Pushes configuration and waits for execution
 Start-DscConfiguration -Path .\ConfigureDatabasesFromCalculator -Verbose -Wait 
+

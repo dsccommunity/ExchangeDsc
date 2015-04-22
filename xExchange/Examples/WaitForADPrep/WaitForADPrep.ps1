@@ -39,3 +39,4 @@ WaitForADPrep -ConfigurationData $PSScriptRoot\WaitForADPrep-Config.psd1 -Creds 
 ###Pushes configuration and waits for execution
 #Start-DscConfiguration -Path .\WaitForADPrep -Verbose -Wait
 
+

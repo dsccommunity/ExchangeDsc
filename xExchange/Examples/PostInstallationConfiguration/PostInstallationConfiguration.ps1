@@ -375,3 +375,4 @@ Set-DscLocalConfigurationManager -Path .\PostInstallationConfiguration -Verbose
 
 ###Pushes configuration and waits for execution
 Start-DscConfiguration -Path .\PostInstallationConfiguration -Verbose -Wait 
+

@@ -5,4 +5,3 @@ class MSFT_xExchInstall : OMI_BaseResource
     [Required, Description("Command line arguments to pass to setup.exe")] String Arguments;
     [Required, Description("The credentials to use to perform the installation"), EmbeddedInstance("MSFT_Credential")] String Credential;
 };
-
