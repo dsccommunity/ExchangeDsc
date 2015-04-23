@@ -599,6 +599,37 @@ Defaults to $false.
 
 ## Versions
 
+## 1.1.0.0
+
+* xExchAutoMountPoint:
+    - Added parameter `EnsureExchangeVolumeMountPointIsLast`
+
+* xExchExchangeCertificate: Added error logging for the `Enable-ExchangeCertificate` cmdlet
+
+* xExchExchangeServer: Added pre-check for deprecated Set-ExchangeServer parameter, WorkloadManagementPolicy
+
+* xExchJetstressCleanup: When OutputSaveLocation is specified, Stress* files will also now be saved
+
+* xExchMailboxDatabase:     
+    - Added `AdServerSettingsPreferredServer` parameter
+    - Added `SkipInitialDatabaseMount` parameter, which can help in an enviroments where databases need time to be able to mount successfully after creation
+    - Added better error logging for `Mount-Database`
+    - Databases will only be mounted at initial database creation if `MountAtStartup` is `$true` or not specified
+
+* xExchMailboxDatabaseCopy:     
+    - Added `SeedingPostponed` parameter 
+    - Added `AdServerSettingsPreferredServer` parameter
+    - Changed so that `ActivationPreference` will only be set if the number of existing copies for the database is greater than or equal to the specified ActivationPreference
+    - Changed so that a seed of a new copy is only performed if `SeedingPostponed` is not specified or set to `$false`
+    - Added better error logging for `Add-MailboxDatabaseCopy`
+    - Added missing tests for `EdbFilePath` and `LogFolderPath`
+
+* xExchOwaVirtualDirectory: Added missing test for `InstantMessagingServerName`
+
+* xExchWaitForMailboxDatabase: Added `AdServerSettingsPreferredServer` parameter
+
+* ExchangeConfigHelper.psm1: Updated `DBListFromMailboxDatabaseCopiesCsv` so that the DB copies that are returned are sorted by Activation Preference in ascending order.
+
 ### 1.0.3.11
 
 * xExchJetstress Changes: 
