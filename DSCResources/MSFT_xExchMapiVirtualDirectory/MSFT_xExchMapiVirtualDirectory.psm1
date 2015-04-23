@@ -217,4 +217,3 @@ function GetMapiVirtualDirectory
 Export-ModuleMember -Function *-TargetResource
 
 
-

@@ -1121,4 +1121,3 @@ function ValidateIdentity
 Export-ModuleMember -Function *-TargetResource
 
 
-

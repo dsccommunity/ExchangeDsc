@@ -16,4 +16,3 @@ class MSFT_xExchDatabaseAvailabilityGroupNetwork : OMI_BaseResource
 };
 
 
-

@@ -15,4 +15,3 @@ class MSFT_xExchMapiVirtualDirectory : OMI_BaseResource
 };
 
 
-

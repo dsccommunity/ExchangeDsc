@@ -11,4 +11,3 @@ class MSFT_xExchWaitForMailboxDatabase : OMI_BaseResource
 };
 
 
-

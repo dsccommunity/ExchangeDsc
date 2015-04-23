@@ -67,4 +67,3 @@ Set-DscLocalConfigurationManager -Path .\InstallExchange -Verbose
 
 ###Pushes configuration and waits for execution
 Start-DscConfiguration -Path .\InstallExchange -Verbose -Wait
-

@@ -12,4 +12,3 @@ class MSFT_xExchJetstressCleanup : OMI_BaseResource
 };
 
 
-

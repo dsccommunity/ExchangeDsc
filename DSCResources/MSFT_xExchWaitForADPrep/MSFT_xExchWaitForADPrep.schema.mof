@@ -17,4 +17,3 @@ class MSFT_xExchWaitForADPrep : OMI_BaseResource
     [Write, Description("How many seconds to wait between retries when checking whether AD has been prepped. Defaults to 60.")] Uint32 RetryIntervalSec;
     [Write, Description("How many retry attempts should be made to see if AD has been prepped before an exception is thrown. Defaults to 30.")] Uint32 RetryCount;
 };
-
