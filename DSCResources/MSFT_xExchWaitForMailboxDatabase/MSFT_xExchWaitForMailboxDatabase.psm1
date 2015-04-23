@@ -19,7 +19,10 @@ function Get-TargetResource
         $RetryIntervalSec = 60,
 
         [System.UInt32]
-        $RetryCount = 5
+        $RetryCount = 5,
+
+        [System.String]
+        $AdServerSettingsPreferredServer
     )
 
     #Load helper module
@@ -28,7 +31,12 @@ function Get-TargetResource
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MailboxDatabase" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MailboxDatabase","Set-AdServerSettings" -VerbosePreference $VerbosePreference
+
+    if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
+    {
+        Set-ADServerSettings –PreferredServer "$($AdServerSettingsPreferredServer)"
+    }
 
     $db = GetMailboxDatabase @PSBoundParameters
 
@@ -63,7 +71,10 @@ function Set-TargetResource
         $RetryIntervalSec = 60,
 
         [System.UInt32]
-        $RetryCount = 5
+        $RetryCount = 5,
+
+        [System.String]
+        $AdServerSettingsPreferredServer
     )
 
     #Load helper module
@@ -72,7 +83,12 @@ function Set-TargetResource
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MailboxDatabase" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MailboxDatabase","Set-AdServerSettings" -VerbosePreference $VerbosePreference
+
+    if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
+    {
+        Set-ADServerSettings –PreferredServer "$($AdServerSettingsPreferredServer)"
+    }
 
     $db = GetMailboxDatabase @PSBoundParameters
 
@@ -119,7 +135,10 @@ function Test-TargetResource
         $RetryIntervalSec = 60,
 
         [System.UInt32]
-        $RetryCount = 5
+        $RetryCount = 5,
+
+        [System.String]
+        $AdServerSettingsPreferredServer
     )
 
     #Load helper module
@@ -128,7 +147,12 @@ function Test-TargetResource
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MailboxDatabase" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MailboxDatabase","Set-AdServerSettings" -VerbosePreference $VerbosePreference
+
+    if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
+    {
+        Set-ADServerSettings –PreferredServer "$($AdServerSettingsPreferredServer)"
+    }
 
     $db = GetMailboxDatabase @PSBoundParameters
 
@@ -149,7 +173,16 @@ function GetMailboxDatabase
         $Credential,
 
         [System.String]
-        $DomainController
+        $DomainController,
+
+        [System.UInt32]
+        $RetryIntervalSec = 60,
+
+        [System.UInt32]
+        $RetryCount = 5,
+
+        [System.String]
+        $AdServerSettingsPreferredServer
     )
 
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"

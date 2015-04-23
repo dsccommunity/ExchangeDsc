@@ -300,6 +300,10 @@ function Test-TargetResource
             return $false
         }
 
+        if (!(VerifySetting -Name "InstantMessagingServerName" -Type "String" -ExpectedValue $InstantMessagingServerName -ActualValue $OwaVdir.InstantMessagingServerName -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
         if (!(VerifySetting -Name "ExternalAuthenticationMethods" -Type "Array" -ExpectedValue $ExternalAuthenticationMethods -ActualValue $OwaVdir.ExternalAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false

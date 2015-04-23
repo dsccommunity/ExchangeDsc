@@ -25,6 +25,9 @@ function Get-TargetResource
         $SpareVolumeCount,
 
         [System.Boolean]
+        $EnsureExchangeVolumeMountPointIsLast = $false,
+
+        [System.Boolean]
         $CreateSubfolders = $false,
 
         [ValidateSet("NTFS","REFS")]
@@ -96,6 +99,8 @@ function Set-TargetResource
         [System.UInt32]
         $SpareVolumeCount,
 
+        [System.Boolean]
+        $EnsureExchangeVolumeMountPointIsLast = $false,
 
         [System.Boolean]
         $CreateSubfolders = $false,
@@ -149,20 +154,23 @@ function Set-TargetResource
     #Now see if any Mount Points are ordered incorrectly. Jetstress wants ExchangeDatabase mount points to be listed before ExchangeVolume mount points
     GetDiskInfo
 
-    while($true)
+    if ($EnsureExchangeVolumeMountPointIsLast -eq $true)
     {
-        $volNum = VolumeMountPointNotLastInList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath
-
-        if ($volNum -ne -1)
+        while($true)
         {
-            SendVolumeMountPointToEndOfList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -VolumeNumber $volNum
+            $volNum = VolumeMountPointNotLastInList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath
 
-            #Update DiskInfo for next iteration
-            GetDiskInfo
-        }
-        else
-        {
-            break
+            if ($volNum -ne -1)
+            {
+                SendVolumeMountPointToEndOfList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -VolumeNumber $volNum
+
+                #Update DiskInfo for next iteration
+                GetDiskInfo
+            }
+            else
+            {
+                break
+            }
         }
     }
 }
@@ -193,6 +201,8 @@ function Test-TargetResource
         [System.UInt32]
         $SpareVolumeCount,
 
+        [System.Boolean]
+        $EnsureExchangeVolumeMountPointIsLast = $false,
 
         [System.Boolean]
         $CreateSubfolders = $false,
@@ -247,7 +257,7 @@ function Test-TargetResource
     }
 
     #Now check if any ExchangeVolume mount points are higher ordered than ExchangeDatabase mount points. ExchangeDatabase MP's must be listed first for logical disk counters to function properly
-    if ((VolumeMountPointNotLastInList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath) -ne -1)
+    if ($EnsureExchangeVolumeMountPointIsLast -eq $true -and (VolumeMountPointNotLastInList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath) -ne -1)
     {
         Write-Verbose "One or more volumes have an $($AutoDagVolumesRootFolderPath) mount point ordered before a $($AutoDagDatabasesRootFolderPath) mount point"
         return $false

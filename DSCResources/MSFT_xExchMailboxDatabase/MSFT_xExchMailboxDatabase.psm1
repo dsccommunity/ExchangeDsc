@@ -93,7 +93,13 @@ function Get-TargetResource
         $RecoverableItemsWarningQuota,
 
         [System.Boolean]
-        $RetainDeletedItemsUntilBackup
+        $RetainDeletedItemsUntilBackup,
+
+        [System.String]
+        $AdServerSettingsPreferredServer,
+
+        [System.Boolean]
+        $SkipInitialDatabaseMount
     )
 
     #Load helper module
@@ -102,7 +108,12 @@ function Get-TargetResource
     LogFunctionEntry -Parameters @{"Name" = $Name} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MailboxDatabase" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MailboxDatabase","Set-AdServerSettings" -VerbosePreference $VerbosePreference
+
+    if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
+    {
+        Set-ADServerSettings –PreferredServer "$($AdServerSettingsPreferredServer)"
+    }
 
     $db = GetMailboxDatabase @PSBoundParameters
 
@@ -235,7 +246,13 @@ function Set-TargetResource
         $RecoverableItemsWarningQuota,
 
         [System.Boolean]
-        $RetainDeletedItemsUntilBackup
+        $RetainDeletedItemsUntilBackup,
+
+        [System.String]
+        $AdServerSettingsPreferredServer,
+
+        [System.Boolean]
+        $SkipInitialDatabaseMount
     )
 
     #Load helper module
@@ -244,7 +261,12 @@ function Set-TargetResource
     LogFunctionEntry -Parameters @{"Name" = $Name} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "*MailboxDatabase","Move-DatabasePath","Mount-Database" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "*MailboxDatabase","Move-DatabasePath","Mount-Database","Set-AdServerSettings" -VerbosePreference $VerbosePreference
+
+    if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
+    {
+        Set-ADServerSettings –PreferredServer "$($AdServerSettingsPreferredServer)"
+    }
 
     $db = GetMailboxDatabase @PSBoundParameters
 
@@ -273,9 +295,18 @@ function Set-TargetResource
             {
                 Write-Warning "The configuration will not take effect until MSExchangeIS is manually restarted."
             }
+            
+            #If MountAtStartup is not explicitly set to $false, mount the new database
+            if ($PSBoundParameters.ContainsKey("SkipInitialDatabaseMount") -eq $true -and $SkipInitialDatabaseMount -eq $true)
+            {
+                #Don't mount the DB, regardless of what else is set.
+            }
+            elseif ($PSBoundParameters.ContainsKey("MountAtStartup") -eq $false -or $MountAtStartup -eq $true)
+            {                            
+                Write-Verbose "Attempting to mount database."
 
-            #Mount the DB if the service restart didn't take care of it already
-            MountDatabase @PSBoundParameters
+                MountDatabase @PSBoundParameters
+            }
         }
         else
         {
@@ -297,13 +328,13 @@ function Set-TargetResource
             }
             else
             {
-                Write-Error "Database must have only a single copy for the DB path or log path to be moved"
+                throw "Database must have only a single copy for the DB path or log path to be moved"
             }
         }
         
         #setup params
         AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = $Name}
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Name","Server","DatabaseCopyCount","AllowServiceRestart","EdbFilePath","LogFolderPath","Credential"
+        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Name","Server","DatabaseCopyCount","AllowServiceRestart","EdbFilePath","LogFolderPath","Credential","AdServerSettingsPreferredServer","SkipInitialDatabaseMount"
 
         #Remove parameters that depend on all copies being added
         if ($db.DatabaseCopies.Count -lt $DatabaseCopyCount)
@@ -411,7 +442,13 @@ function Test-TargetResource
         $RecoverableItemsWarningQuota,
 
         [System.Boolean]
-        $RetainDeletedItemsUntilBackup
+        $RetainDeletedItemsUntilBackup,
+
+        [System.String]
+        $AdServerSettingsPreferredServer,
+
+        [System.Boolean]
+        $SkipInitialDatabaseMount
     )
 
     #Load helper module
@@ -420,7 +457,12 @@ function Test-TargetResource
     LogFunctionEntry -Parameters @{"Name" = $Name} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MailboxDatabase","Get-Mailbox" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MailboxDatabase","Get-Mailbox","Set-AdServerSettings" -VerbosePreference $VerbosePreference
+
+    if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
+    {
+        Set-ADServerSettings –PreferredServer "$($AdServerSettingsPreferredServer)"
+    }
 
     $db = GetMailboxDatabase @PSBoundParameters
 
@@ -464,6 +506,11 @@ function Test-TargetResource
             return $false
         }
 
+        if (!(VerifySetting -Name "EdbFilePath" -Type "String" -ExpectedValue $EdbFilePath -ActualValue $db.EdbFilePath.PathName -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
         if (!(VerifySetting -Name "EventHistoryRetentionPeriod" -Type "Timespan" -ExpectedValue $EventHistoryRetentionPeriod -ActualValue $db.EventHistoryRetentionPeriod -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
@@ -490,6 +537,11 @@ function Test-TargetResource
         }
 
         if (!(VerifySetting -Name "JournalRecipient" -Type "ADObjectID" -ExpectedValue $JournalRecipient -ActualValue $db.JournalRecipient -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (!(VerifySetting -Name "LogFolderPath" -Type "String" -ExpectedValue $LogFolderPath -ActualValue $db.LogFolderPath.PathName -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -651,7 +703,13 @@ function GetMailboxDatabase
         $RecoverableItemsWarningQuota,
 
         [System.Boolean]
-        $RetainDeletedItemsUntilBackup
+        $RetainDeletedItemsUntilBackup,
+
+        [System.String]
+        $AdServerSettingsPreferredServer,
+
+        [System.Boolean]
+        $SkipInitialDatabaseMount
     )
 
     AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = $Name}
@@ -755,7 +813,13 @@ function MoveDatabaseOrLogPath
         $RecoverableItemsWarningQuota,
 
         [System.Boolean]
-        $RetainDeletedItemsUntilBackup
+        $RetainDeletedItemsUntilBackup,
+
+        [System.String]
+        $AdServerSettingsPreferredServer,
+
+        [System.Boolean]
+        $SkipInitialDatabaseMount
     )
     
     AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = $Name}
@@ -859,13 +923,23 @@ function MountDatabase
         $RecoverableItemsWarningQuota,
 
         [System.Boolean]
-        $RetainDeletedItemsUntilBackup
+        $RetainDeletedItemsUntilBackup,
+
+        [System.String]
+        $AdServerSettingsPreferredServer,
+
+        [System.Boolean]
+        $SkipInitialDatabaseMount
     )
     
     AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = $Name}
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
 
+    NotePreviousError
+
     Mount-Database @PSBoundParameters
+
+    ThrowIfNewErrorsEncountered -CmdletBeingRun "Mount-Database" -VerbosePreference $VerbosePreference
 }
 
 Export-ModuleMember -Function *-TargetResource

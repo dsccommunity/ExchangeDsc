@@ -29,7 +29,7 @@ also great community resources, such as <a href="http://powershell.org/wp/tag/ds
 </ul>
 
 <h1 style="color:#2e74b5; font-family:Calibri Light; font-size:large">Requirements</h1>
-<p>This module is designed to be used with Exchange 2013. The latest version, 1.0.3.11, has only been tested on Exchange 2013 CU6 and CU7 servers running Windows Server 2012, or Windows Server 2012 R2. The module requires the latest version of PowerShell (v4.0, which ships in Windows 8.1 or Windows Server 2012R2). To easily use PowerShell 4.0 on older operating systems,
+<p>This module is designed to be used with Exchange 2013. The latest version, UNRELEASED, has only been tested on Exchange 2013 CU7 and CU8 servers running Windows Server 2012, or Windows Server 2012 R2. The module requires the latest version of PowerShell (v4.0, which ships in Windows 8.1 or Windows Server 2012R2). To easily use PowerShell 4.0 on older operating systems,
 <a href="http://www.microsoft.com/en-us/download/details.aspx?id=40855"><span style="color:#0000ff">install WMF 4.0</span></a>. Please read the installation instructions 
 that are present on both the download page and the release notes for WMF 4.0.</p>
 
@@ -137,6 +137,9 @@ that are present on both the download page and the release notes for WMF 4.0.</p
 </li>
 <li>
 	<span style="width: 250px; float: left; font-weight: bold;">CreateSubfolders:</span>Defaults to $false. If $true, specifies that DBNAME.db and DBNAME.log subfolders should be automatically created underneath the ExchangeDatabase mount points.
+</li>
+<li>
+	<span style="width: 250px; float: left; font-weight: bold;">EnsureExchangeVolumeMountPointIsLast:</span>Defaults to $false. If $true, specifies that the ExchangeVolume mount point should be put as the last entry in the list of mount points for a disk.
 </li>
 <li>
 	<span style="width: 250px; float: left; font-weight: bold;">FileSystem:</span>The file system to use when formatting the volume. Defaults to NTFS.
@@ -338,9 +341,6 @@ that are present on both the download page and the release notes for WMF 4.0.</p
 <li>
 	<span style="width: 250px; float: left; font-weight: bold;">WindowsAuthentication</span>
 </li>
-<li>
-	<span style="width: 250px; float: left; font-weight: bold;">WSSecurityAuthentication</span>
-</li>
 </ul>
 
 <p><strong>xExchExchangeCertificate</strong> is used to install, remove, or configure an ExchangeCertificate using *-ExchangeCertificate cmdlets, and has the following properties.</p>
@@ -396,9 +396,6 @@ that are present on both the download page and the release notes for WMF 4.0.</p
 </li>
 <li>
 	<span style="width: 250px; float: left; font-weight: bold;">ProductKey</span>
-</li>
-<li>
-	<span style="width: 250px; float: left; font-weight: bold;">WorkloadManagementPolicy</span>
 </li>
 </ul>
 
@@ -506,7 +503,13 @@ that are present on both the download page and the release notes for WMF 4.0.</p
 	<span style="width: 250px; float: left; font-weight: bold;">*Server:</span>The server to create the database on
 </li>
 <li>
+	<span style="width: 250px; float: left; font-weight: bold;">AdServerSettingsPreferredServer:</span>An optional Domain Controller to pass to Set-AdServerSettings -PreferredServer
+</li>
+<li>
 	<span style="width: 250px; float: left; font-weight: bold;">AllowServiceRestart:</span>Whether it is OK to restart the Information Store service after adding a database. Defaults to $false.
+</li>
+<li>
+	<span style="width: 250px; float: left; font-weight: bold;">SkipInitialDatabaseMount:</span>Whether the initial mount of databases should be skipped after database creation.
 </li>
 <li>
 	<span style="width: 250px; float: left; font-weight: bold;">AutoDagExcludeFromMonitoring</span>
@@ -582,6 +585,9 @@ that are present on both the download page and the release notes for WMF 4.0.</p
 	<span style="width: 250px; float: left; font-weight: bold;">*MailboxServer:</span>The server to create the database copy on
 </li>
 <li>
+	<span style="width: 250px; float: left; font-weight: bold;">AdServerSettingsPreferredServer:</span>An optional Domain Controller to pass to Set-AdServerSettings -PreferredServer
+</li>
+<li>
 	<span style="width: 250px; float: left; font-weight: bold;">AllowServiceRestart:</span>Whether it is OK to restart the Information Store service after adding a database copy. Defaults to $false.
 </li>
 <li>
@@ -592,6 +598,9 @@ that are present on both the download page and the release notes for WMF 4.0.</p
 </li>
 <li>
 	<span style="width: 250px; float: left; font-weight: bold;">ReplayLagTime</span>
+</li>
+<li>
+	<span style="width: 250px; float: left; font-weight: bold;">SeedingPostponed</span>
 </li>
 <li>
 	<span style="width: 250px; float: left; font-weight: bold;">TruncationLagTime</span>
@@ -764,9 +773,6 @@ that are present on both the download page and the release notes for WMF 4.0.</p
 </li>
 <li>
 	<span style="width: 250px; float: left; font-weight: bold;">WindowsAuthentication</span>
-</li>
-<li>
-	<span style="width: 250px; float: left; font-weight: bold;">WSSecurityAuthentication</span>
 </li>
 </ul>
 
@@ -1068,6 +1074,9 @@ that are present on both the download page and the release notes for WMF 4.0.</p
 	<span style="width: 250px; float: left; font-weight: bold;">*Credential:</span>Credentials used to establish a remote Powershell session to Exchange
 </li>
 <li>
+	<span style="width: 250px; float: left; font-weight: bold;">AdServerSettingsPreferredServer:</span>An optional Domain Controller to pass to Set-AdServerSettings -PreferredServer
+</li>
+<li>
 	<span style="width: 250px; float: left; font-weight: bold;">DomainController</span>Domain controller to talk to when running Get-MailboxDatabase
 </li>
 <li>
@@ -1159,6 +1168,86 @@ that are present on both the download page and the release notes for WMF 4.0.</p
 
 
 <h1 style="color:#2e74b5; font-family:Calibri Light; font-size:large">Versions</h1>
+
+<p>UNRELEASED</p>
+<ul style="list-style-type:disc; direction:ltr">
+
+<li>xExchAutoMountPoint:
+<ul style="list-style-type:circle">
+<li>
+    Added parameter EnsureExchangeVolumeMountPointIsLast</li>
+</ul>
+
+<li>xExchExchangeCertificate:
+<ul style="list-style-type:circle">
+<li>
+    Added error logging for the Enable-ExchangeCertificate cmdlet</li>
+</ul>
+
+<li>xExchExchangeServer:
+<ul style="list-style-type:circle">
+<li>
+    Added pre-check for deprecated Set-ExchangeServer parameter, WorkloadManagementPolicy</li>
+</ul>
+
+<li>xExchJetstressCleanup:
+<ul style="list-style-type:circle">
+<li>
+    When OutputSaveLocation is specified, Stress* files will also now be saved</li>
+</ul>
+
+<li>xExchMailboxDatabase Changes:
+<ul style="list-style-type:circle">
+<li>
+    Added AdServerSettingsPreferredServer parameter</li>
+    <li>
+        Added SkipInitialDatabaseMount parameter, which can help in an enviroments where databases need time to be able to mount successfully after creation</li>
+    <li>
+        Added better error logging for Mount-Database</li>
+    <li>
+        Databases will only be mounted at initial database creation if MountAtStartup is $true or not specified</li>
+</ul>
+
+<li>xExchMailboxDatabaseCopy Changes:
+<ul style="list-style-type:circle">
+<li>
+Added SeedingPostponed parameter
+</li>
+<li>
+Added AdServerSettingsPreferredServer parameter</li>
+<li>
+Changed so that ActivationPreference will only be set if the number of existing copies for the database is greater than or equal to the specified ActivationPreference</li>
+<li>
+Changed so that a seed of a new copy is only performed if SeedingPostponed is not specified or set to $false</li>
+<li>
+Added better error logging
+    for Add-MailboxDatabaseCopy</li>
+    <li>
+        Added missing tests for EdbFilePath and LogFolderPath
+</li>
+</ul>
+
+<li>xExchOwaVirtualDirectory Changes:
+<ul style="list-style-type:circle">
+<li>
+Added missing test for InstantMessagingServerName</li>
+</ul>
+
+<li>xExchWaitForMailboxDatabase Changes:
+<ul style="list-style-type:circle">
+<li>
+Added AdServerSettingsPreferredServer parameter</li>
+</ul>
+
+<li>ExchangeConfigHelper.psm1 Changes:
+<ul style="list-style-type:circle">
+<li>
+Updated DBListFromMailboxDatabaseCopiesCsv so that the DB copies that are returned are sorted by Activation Preference in ascending order.</li>
+</ul>
+
+</li>
+</ul>
+
 <p>1.0.3.11</p>
 <ul style="list-style-type:disc; direction:ltr">
 
@@ -1168,10 +1257,10 @@ that are present on both the download page and the release notes for WMF 4.0.</p
 Changed default for MaxWaitMinutes from 4320 to 0
 </li>
 <li>
-Added property MinAchievedIOPS
+Added parameter MinAchievedIOPS
 </li>
 <li>
-Changed priority of the JetstressCmd.exe Scheduled Task from the default of 7 to 4
+Changed priority of the JetstressCmd.exe Scheduled Task from the default of 7 to 1
 </li>
 </ul>
 
@@ -1368,11 +1457,11 @@ xExchWebServicesVirtualDirectory
 </li>
 </ul>
 
-<h1 style="margin-bottom:0pt; font-family:Calibri Light; color:#2e74b5; font-size:large">Example: ConfigureAutoMountPoint-FromCalculator</h1>
+<h1 style="margin-bottom:0pt; font-family:Calibri Light; color:#2e74b5; font-size:large">Example: ConfigureAutoMountPoints-FromCalculator</h1>
 Configures ExchangeDatabase and ExchangeVolume mount points automatically using the <strong>xExchAutoMountPoint</strong> resource. Shows how to feed the .CSV files from the Server Role Requirements Calculator into the resource. The example code for ConfigureAutoMountPoint-FromCalculator is located in "ConfigureAutoMountPoints-FromCalculator.ps1" in the module folder under ...\xExchange\Examples\ConfigureAutoMountPoint-FromCalculator.  
 <p></p>
 
-<h1 style="margin-bottom:0pt; font-family:Calibri Light; color:#2e74b5; font-size:large">Example: ConfigureAutoMountPoint-Manual</h1>
+<h1 style="margin-bottom:0pt; font-family:Calibri Light; color:#2e74b5; font-size:large">Example: ConfigureAutoMountPoints-Manual</h1>
 Configures ExchangeDatabase and ExchangeVolume mount points automatically using the <strong>xExchAutoMountPoint</strong> resource. Configures disk map manually. The example code for ConfigureAutoMountPoint-Manual is located in "ConfigureAutoMountPoints-Manual.ps1" in the module folder under ...\xExchange\Examples\ConfigureAutoMountPoints-Manual.</br>
     <p></p>
 

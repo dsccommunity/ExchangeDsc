@@ -150,7 +150,7 @@ function Set-TargetResource
             }
 
             $outputFiles = Get-ChildItem -LiteralPath "$($JetstressPath)" | `
-                where {$_.Name -like "Performance*" -or $_.Name -like "DBChecksum*" -or $_.Name -like "XmlConfig*" -or $_.Name -like "*.evt" -or $_.Name -like "*.log"}
+                where {$_.Name -like "Performance*" -or $_.Name -like "Stress*" -or $_.Name -like "DBChecksum*" -or $_.Name -like "XmlConfig*" -or $_.Name -like "*.evt" -or $_.Name -like "*.log"}
 
             $outputFiles | Move-Item -Destination "$($OutputSaveLocation)" -Confirm:$false -Force
         }

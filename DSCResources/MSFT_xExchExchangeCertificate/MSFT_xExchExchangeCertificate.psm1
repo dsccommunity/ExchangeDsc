@@ -162,7 +162,11 @@ function Set-TargetResource
     {
         if ($cert -ne $null)
         {
+            NotePreviousError
+
             Enable-ExchangeCertificate -Thumbprint $Thumbprint -Services $Services -Force
+
+            ThrowIfNewErrorsEncountered -CmdletBeingRun "Enable-ExchangeCertificate" -VerbosePreference $VerbosePreference
         }
         else
         {
