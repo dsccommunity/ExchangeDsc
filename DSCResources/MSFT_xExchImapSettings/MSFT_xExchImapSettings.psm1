@@ -20,7 +20,13 @@ function Get-TargetResource
 
         [ValidateSet("PlainTextLogin","PlainTextAuthentication","SecureLogin")]
         [System.String]
-        $LoginType
+        $LoginType,
+
+        [System.String[]]
+        $ExternalConnectionSettings,
+
+        [System.String]
+        $X509CertificateName
     )
 
     #Load helper module
@@ -40,6 +46,8 @@ function Get-TargetResource
         $returnValue = @{
             Server = $Identity
             LoginType = $imap.LoginType
+            ExternalConnectionSettings = $imap.ExternalConnectionSettings
+            X509CertificateName = $imap.X509CertificateName
         }
     }
 
@@ -68,7 +76,13 @@ function Set-TargetResource
 
         [ValidateSet("PlainTextLogin","PlainTextAuthentication","SecureLogin")]
         [System.String]
-        $LoginType
+        $LoginType,
+
+        [System.String[]]
+        $ExternalConnectionSettings,
+
+        [System.String]
+        $X509CertificateName
     )
 
     #Load helper module
@@ -79,7 +93,7 @@ function Set-TargetResource
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Set-ImapSettings" -VerbosePreference $VerbosePreference
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential"
+    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential","AllowServiceRestart"
 
     Set-ImapSettings @PSBoundParameters
 
@@ -118,7 +132,13 @@ function Test-TargetResource
 
         [ValidateSet("PlainTextLogin","PlainTextAuthentication","SecureLogin")]
         [System.String]
-        $LoginType
+        $LoginType,
+
+        [System.String[]]
+        $ExternalConnectionSettings,
+
+        [System.String]
+        $X509CertificateName
     )
 
     #Load helper module
@@ -129,9 +149,9 @@ function Test-TargetResource
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ImapSettings" -VerbosePreference $VerbosePreference
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Server","DomainController"
+    SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    $imap = Get-ImapSettings @PSBoundParameters
+    $imap = GetImapSettings @PSBoundParameters
 
     if ($imap -eq $null)
     {
@@ -142,12 +162,56 @@ function Test-TargetResource
         if (!(VerifySetting -Name "LoginType" -Type "String" -ExpectedValue $LoginType -ActualValue $imap.LoginType -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
-        }   
+        }  
+        
+        if (!(VerifySetting -Name "ExternalConnectionSettings" -Type "Array" -ExpectedValue $ExternalConnectionSettings -ActualValue $imap.ExternalConnectionSettings -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        } 
+        
+        if (!(VerifySetting -Name "X509CertificateName" -Type "String" -ExpectedValue $X509CertificateName -ActualValue $imap.X509CertificateName -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }  
     }
 
     return $true
 }
 
+function GetImapSettings
+{
+    [CmdletBinding()]
+    param
+    (
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Server,
+
+        [parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $Credential,
+
+        [System.Boolean]
+        $AllowServiceRestart = $false,
+
+        [System.String]
+        $DomainController,
+
+        [ValidateSet("PlainTextLogin","PlainTextAuthentication","SecureLogin")]
+        [System.String]
+        $LoginType,
+
+        [System.String[]]
+        $ExternalConnectionSettings,
+
+        [System.String]
+        $X509CertificateName
+    )
+
+    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Server","DomainController"
+
+    return (Get-ImapSettings @PSBoundParameters)
+}
 
 Export-ModuleMember -Function *-TargetResource
 
