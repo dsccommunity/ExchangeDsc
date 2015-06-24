@@ -39,7 +39,7 @@ function Get-TargetResource
 
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Server","DomainController"
 
-    $imap = Get-ImapSettings @PSBoundParameters
+    $imap = GetImapSettings @PSBoundParameters
 
     if ($imap -ne $null)
     {

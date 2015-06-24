@@ -39,7 +39,7 @@ function Get-TargetResource
 
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Server","DomainController"
 
-    $pop = Get-PopSettings @PSBoundParameters
+    $pop = GetPopSettings @PSBoundParameters
 
     if ($pop -ne $null)
     {
