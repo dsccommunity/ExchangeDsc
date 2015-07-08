@@ -22,6 +22,9 @@ function Get-TargetResource
         $BasicAuthentication,
 
         [System.Boolean]
+        $ChangePasswordEnabled,
+
+        [System.Boolean]
         $DigestAuthentication,
 
         [System.String]
@@ -53,6 +56,12 @@ function Get-TargetResource
         $InternalUrl,
 
         [System.Boolean]
+        $LogonPagePublicPrivateSelectionEnabled,
+
+        [System.Boolean]
+        $LogonPageLightSelectionEnabled,
+
+        [System.Boolean]
         $WindowsAuthentication
     )
 
@@ -75,12 +84,15 @@ function Get-TargetResource
             FormsAuthentication = $OwaVdir.FormsAuthentication
             WindowsAuthentication = $OwaVdir.WindowsAuthentication
             BasicAuthentication = $OwaVdir.BasicAuthentication
+            ChangePasswordEnabled = $OwaVdir.ChangePasswordEnabled
             DigestAuthentication = $OwaVdir.DigestAuthentication
             AdfsAuthentication = $OwaVdir.AdfsAuthentication
             InstantMessagingType = $OwaVdir.InstantMessagingType
             InstantMessagingEnabled = $OwaVdir.InstantMessagingEnabled
             InstantMessagingServerName = $OwaVdir.InstantMessagingServerName
             InstantMessagingCertificateThumbprint = $OwaVdir.InstantMessagingCertificateThumbprint
+            LogonPagePublicPrivateSelectionEnabled = $OwaVdir.LogonPagePublicPrivateSelectionEnabled
+            LogonPageLightSelectionEnabled = $OwaVdir.LogonPageLightSelectionEnabled
             ExternalAuthenticationMethods = $OwaVdir.ExternalAuthenticationMethods
         }
     }
@@ -111,6 +123,9 @@ function Set-TargetResource
         $BasicAuthentication,
 
         [System.Boolean]
+        $ChangePasswordEnabled,
+
+        [System.Boolean]
         $DigestAuthentication,
 
         [System.String]
@@ -140,6 +155,12 @@ function Set-TargetResource
 
         [System.String]
         $InternalUrl,
+
+        [System.Boolean]
+        $LogonPagePublicPrivateSelectionEnabled,
+
+        [System.Boolean]
+        $LogonPageLightSelectionEnabled,
 
         [System.Boolean]
         $WindowsAuthentication
@@ -197,6 +218,9 @@ function Test-TargetResource
         $BasicAuthentication,
 
         [System.Boolean]
+        $ChangePasswordEnabled,
+
+        [System.Boolean]
         $DigestAuthentication,
 
         [System.String]
@@ -226,6 +250,12 @@ function Test-TargetResource
 
         [System.String]
         $InternalUrl,
+
+        [System.Boolean]
+        $LogonPagePublicPrivateSelectionEnabled,
+
+        [System.Boolean]
+        $LogonPageLightSelectionEnabled,
 
         [System.Boolean]
         $WindowsAuthentication
@@ -275,6 +305,11 @@ function Test-TargetResource
             return $false
         }
 
+        if (!(VerifySetting -Name "ChangePasswordEnabled" -Type "Boolean" -ExpectedValue $ChangePasswordEnabled -ActualValue $OwaVdir.ChangePasswordEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
         if (!(VerifySetting -Name "DigestAuthentication" -Type "Boolean" -ExpectedValue $DigestAuthentication -ActualValue $OwaVdir.DigestAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
@@ -304,6 +339,17 @@ function Test-TargetResource
         {
             return $false
         }
+
+        if (!(VerifySetting -Name "LogonPagePublicPrivateSelectionEnabled" -Type "Boolean" -ExpectedValue $LogonPagePublicPrivateSelectionEnabled -ActualValue $OwaVdir.LogonPagePublicPrivateSelectionEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (!(VerifySetting -Name "LogonPageLightSelectionEnabled" -Type "Boolean" -ExpectedValue $LogonPageLightSelectionEnabled -ActualValue $OwaVdir.LogonPageLightSelectionEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
         if (!(VerifySetting -Name "ExternalAuthenticationMethods" -Type "Array" -ExpectedValue $ExternalAuthenticationMethods -ActualValue $OwaVdir.ExternalAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
@@ -337,6 +383,9 @@ function GetOwaVirtualDirectory
         $BasicAuthentication,
 
         [System.Boolean]
+        $ChangePasswordEnabled,
+
+        [System.Boolean]
         $DigestAuthentication,
 
         [System.String]
@@ -366,6 +415,12 @@ function GetOwaVirtualDirectory
 
         [System.String]
         $InternalUrl,
+
+        [System.Boolean]
+        $LogonPagePublicPrivateSelectionEnabled,
+
+        [System.Boolean]
+        $LogonPageLightSelectionEnabled,
 
         [System.Boolean]
         $WindowsAuthentication
