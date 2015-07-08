@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/k9oq77p9xn6bo2j6/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xexchange/branch/master)
+﻿[![Build status](https://ci.appveyor.com/api/projects/status/k9oq77p9xn6bo2j6/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xexchange/branch/master)
 
 # xExchange
 
@@ -248,7 +248,9 @@ Defaults to $false.
 * **AllowServiceRestart**: Whether it is OK to restart the IMAP services after making changes. 
 Defaults to $false.
 * **DomainController**: Optional Domain Controller to connect to.
+* **ExternalConnectionSettings**: Specifies the host name, port, and encryption type that Exchange uses when IMAP clients connect to their email from the outside.
 * **LoginType**: The LoginType to be used for IMAP.
+* **X509CertificateName**: Specifies the host name in the SSL certificate from the Associated Subject field.
 
 ### xExchInstall 
 
@@ -418,6 +420,7 @@ Where no description is listed, properties correspond directly to [Set-OwaVirtua
 Defaults to $false.
 * **AdfsAuthentication**
 * **BasicAuthentication**
+* **ChangePasswordEnabled**
 * **DigestAuthentication**
 * **DomainController**
 * **ExternalAuthenticationMethods**
@@ -428,6 +431,8 @@ Defaults to $false.
 * **InstantMessagingCertificateThumbprint**
 * **InstantMessagingServerName**
 * **InstantMessagingType**
+* **LogonPagePublicPrivateSelectionEnabled**
+* **LogonPageLightSelectionEnabled**
 * **WindowsAuthentication**
 * **WSSecurityAuthentication**
 
@@ -440,7 +445,9 @@ xExchPopSettings configures POP settings using Set-PopSettings.
 * **AllowServiceRestart**: Whether it is OK to restart the POP services after making changes. 
 Defaults to $false.
 * **DomainController**: Optional Domain Controller to connect to.
-* **LoginType**: The LoginType to be used for POP.
+* **ExternalConnectionSettings**: Specifies the host name, port, and encryption type that Exchange uses when POP clients connect to their email from the outside.
+* **LoginType**: The LoginType to be used for POP
+* **X509CertificateName**: Specifies the host name in the SSL certificate from the Associated Subject field.
 
 ### xExchPowerShellVirtualDirectory
 
@@ -598,6 +605,21 @@ Defaults to $false.
 * **WSSecurityAuthentication**
 
 ## Versions
+
+### Unreleased
+
+* xExchOwaVirtualDirectory:
+    - Added `ChangePasswordEnabled` parameter
+    - Added `LogonPagePublicPrivateSelectionEnabled` parameter
+    - Added `LogonPageLightSelectionEnabled` parameter
+
+* xExchImapSettings:
+    - Added `ExternalConnectionSettings` parameter
+    - Added `X509CertificateName` parameter
+
+* xExchPopSettings:
+    - Added `ExternalConnectionSettings` parameter
+    - Added `X509CertificateName` parameter
 
 ## 1.1.0.0
 
