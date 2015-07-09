@@ -94,24 +94,43 @@ function Set-TargetResource
         if ($initializingESE -eq $true)
         {
             Write-Verbose "Jetstress has never initialized performance counters for ESE. Waiting a full 60 seconds for this to occurr"
-            Start-Sleep -Seconds 60
+            
+            Start-Sleep -Seconds 5
 
-            $jetstressRunning = IsJetstressRunning
+            for ($i = 55; $i -gt 0; $i--)
+            {
+                $jetstressRunning = IsJetstressRunning
+
+                if ($jetstressRunning -eq $false)
+                {
+                    break
+                }
+                else
+                {
+                    Start-Sleep -Seconds 1
+                }
+            }
 
             #I've found that Jetstress doesn't always restart after loading ESE when running as local system in a scheduled task in the background
-            #If Jetstress isn't running at this point, but the perf counters were registered, try to start Jetstress one more time just to make sure this didn't happen.
+            #If Jetstress isn't running at this point, but the perf counters were registered, we probably need to reboot the server
+            #If Jetstress isn't running and ESE is not registered, something failed.
             if ($jetstressRunning -eq $false)
             {
                 if ((Test-Path -LiteralPath "$($env:SystemRoot)\Inf\ESE\eseperf.ini") -eq $true)
                 {
-                    Write-Verbose "ESE performance counters were registered, but JetstressCmd.exe is not currently running. Attempting to start it one more time"
+                    Write-Verbose "ESE performance counters were registered. Need to reboot server."
 
-                    StartJetstress @PSBoundParameters
+                    $global:DSCMachineStatus = 1
+                    return
                 }
                 else
                 {
                     throw "Jetstress failed to register MSExchange Database performance counters"
                 }
+            }
+            else
+            {
+                #Looks like Jetstress restarted itself successfully. Let's let it run.
             }
         }
         else

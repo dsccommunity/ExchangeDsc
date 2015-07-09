@@ -608,6 +608,9 @@ Defaults to $false.
 
 ### Unreleased
 
+* xExchJetstress:
+    - Added fix for an issue where JetstressCmd.exe would not relaunch successfully after ESE initialization. If Jetstress doesn't restart, the resource will now require a reboot before proceeding.
+
 * xExchOwaVirtualDirectory:
     - Added `ChangePasswordEnabled` parameter
     - Added `LogonPagePublicPrivateSelectionEnabled` parameter
