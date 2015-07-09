@@ -112,7 +112,8 @@ function Set-TargetResource
             }
 
             #I've found that Jetstress doesn't always restart after loading ESE when running as local system in a scheduled task in the background
-            #If Jetstress isn't running at this point, but the perf counters were registered, try to start Jetstress one more time just to make sure this didn't happen.
+            #If Jetstress isn't running at this point, but the perf counters were registered, we probably need to reboot the server
+            #If Jetstress isn't running and ESE is not registered, something failed.
             if ($jetstressRunning -eq $false)
             {
                 if ((Test-Path -LiteralPath "$($env:SystemRoot)\Inf\ESE\eseperf.ini") -eq $true)
