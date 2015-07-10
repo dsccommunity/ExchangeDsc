@@ -624,6 +624,8 @@ Defaults to $false.
     - Added `ExternalConnectionSettings` parameter
     - Added `X509CertificateName` parameter
 
+* Added EndToEndExample
+
 ## 1.1.0.0
 
 * xExchAutoMountPoint:
@@ -769,6 +771,11 @@ The example code for ConfigureVirtualDirectories is located in "ConfigureVirtual
 
 Creates a Database Availability Group, creates two new DAG networks and removes the default DAG network, and adds members to the DAG. 
 The example code for CreateAndConfigureDAG is located in "CreateAndConfigureDAG.ps1" in the module folder under ...\xExchange\Examples\CreateAndConfigureDAG.
+
+### EndToEndExample
+
+An end to end example of how to deploy and configure an Exchange Server. The example scripts run Jetstress, install Exchange, create the DAG and databases, and configure other Exchange settings.
+The example code for EndToEndExample is located in in the module folder under ...\xExchange\Examples\EndToEndExample.
 
 ### InstallExchange
 
