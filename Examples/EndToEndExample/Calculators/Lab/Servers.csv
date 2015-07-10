@@ -1,0 +1,6 @@
+"ServerName","StartDrive","DbPerVolume","AutoReseedVolumes","DbLogIsolation","VolumesRootFolder","DatabasesRootFolder","DbMap"
+"VersionNumber","2.1","6.6",,,,""
+"E15-1","5",4,"1","0","C:\ExchangeVolumes","C:\ExchangeDatabases","DAG-nn-DB1,DAG-nn-DB2,DAG-nn-DB3,DAG-nn-DB4"
+"E15-3","5",4,"1","0","C:\ExchangeVolumes","C:\ExchangeDatabases","DAG-nn-DB1,DAG-nn-DB2,DAG-nn-DB3,DAG-nn-DB4"
+"E15-2","5",4,"1","0","C:\ExchangeVolumes","C:\ExchangeDatabases","DAG-nn-DB1,DAG-nn-DB2,DAG-nn-DB3,DAG-nn-DB4"
+"E15-4","5",4,"1","0","C:\ExchangeVolumes","C:\ExchangeDatabases","DAG-nn-DB1,DAG-nn-DB2,DAG-nn-DB3,DAG-nn-DB4"
