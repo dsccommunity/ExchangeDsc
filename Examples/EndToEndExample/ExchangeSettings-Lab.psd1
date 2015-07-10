@@ -25,7 +25,7 @@
             #endregion
         }
 
-		#region Individual Node Settings
+        #region Individual Node Settings
         #region DAG01 Nodes
         @{
             NodeName        = 'e15-1'
@@ -86,8 +86,8 @@
         }
     )
 
-	#Settings that will apply only to Quincy CAS
-	Site1CAS = @(
+    #Settings that will apply only to Quincy CAS
+    Site1CAS = @(
         @{
             InternalNamespace          = 'mail-site1.mikelab.local'
             AutoDiscoverSiteScope      = 'Site1'
@@ -96,8 +96,8 @@
         }
     );
 
-	#Settings that will apply only to Phoenix CAS
-	Site2CAS = @(
+    #Settings that will apply only to Phoenix CAS
+    Site2CAS = @(
         @{
             InternalNamespace          = 'mail-site2.mikelab.local'
             AutoDiscoverSiteScope      = 'Site2'

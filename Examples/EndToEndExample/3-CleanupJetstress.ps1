@@ -4,7 +4,7 @@ Configuration CleanupJetstress
 
     Node $AllNodes.NodeName
     {
-		#Uninstall Jetstress from the computer
+        #Uninstall Jetstress from the computer
         Package UninstallJetstress
         {
             Ensure    = 'Absent'
@@ -13,7 +13,7 @@ Configuration CleanupJetstress
             ProductId = '75189587-0D84-4404-8F02-79C39728FA64'
         }
 
-		#Clean up Jetstress databases, mount points, and binaries
+        #Clean up Jetstress databases, mount points, and binaries
         xExchJetstressCleanup CleanupJetstress
         {
             JetstressPath               = "C:\Program Files\Exchange Jetstress"

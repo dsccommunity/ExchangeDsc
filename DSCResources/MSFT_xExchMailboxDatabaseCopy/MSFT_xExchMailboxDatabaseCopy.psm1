@@ -48,7 +48,7 @@ function Get-TargetResource
 
     if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
-        Set-ADServerSettings –PreferredServer "$($AdServerSettingsPreferredServer)"
+        Set-ADServerSettings â€“PreferredServer "$($AdServerSettingsPreferredServer)"
     }
 
     $db = GetMailboxDatabase @PSBoundParameters

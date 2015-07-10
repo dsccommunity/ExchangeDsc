@@ -9,15 +9,15 @@ Configuration InstallAndRunJetstress
 
     Node $AllNodes.NodeName
     {
-		#Create mount points for use with Jetstress. Here I prefer to use the same database names for ALL servers,
-		#that way I can use the same JetstressConfig.xml for all of them.
+        #Create mount points for use with Jetstress. Here I prefer to use the same database names for ALL servers,
+        #that way I can use the same JetstressConfig.xml for all of them.
         xExchAutoMountPoint AMPForJetstress
         {
             Identity                       = $Node.NodeName            AutoDagDatabasesRootFolderPath = 'C:\ExchangeDatabases'            AutoDagVolumesRootFolderPath   = 'C:\ExchangeVolumes'            DiskToDBMap                    = $Node.JetstressDiskToDBMap            SpareVolumeCount               = 0            VolumePrefix                   = 'EXVOL'
             CreateSubfolders               = $true
         }
 
-		#Copy the Jetstress install file
+        #Copy the Jetstress install file
         File CopyJetstress
         {
             Ensure          = 'Present'
@@ -26,7 +26,7 @@ Configuration InstallAndRunJetstress
             Credential      = $FileCopyCreds
         }
 
-		#Install Jetstress
+        #Install Jetstress
         Package InstallJetstress
         {
             Ensure    = 'Present'
@@ -37,7 +37,7 @@ Configuration InstallAndRunJetstress
             DependsOn = '[xExchAutoMountPoint]AMPForJetstress','[File]CopyJetstress'
         }
 
-		#Copy required ESE DLL's to the Jetstress installation directory
+        #Copy required ESE DLL's to the Jetstress installation directory
         File CopyESEDlls
         {
             Ensure          = 'Present'
@@ -50,7 +50,7 @@ Configuration InstallAndRunJetstress
             DependsOn       = '[Package]InstallJetstress'
         }
 
-		#Copy JetstressConfig.xml to the Jetstress installation directory
+        #Copy JetstressConfig.xml to the Jetstress installation directory
         File CopyJetstressConfig
         {
             Ensure          = 'Present'
@@ -61,7 +61,7 @@ Configuration InstallAndRunJetstress
             DependsOn       = '[Package]InstallJetstress'
         }
 
-		#Run the Jetstress test, and evaluate the results
+        #Run the Jetstress test, and evaluate the results
         xExchJetstress RunJetstress
         {
             Type            = 'Performance'

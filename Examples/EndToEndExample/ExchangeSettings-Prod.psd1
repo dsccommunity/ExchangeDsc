@@ -25,7 +25,7 @@
             #endregion
         }
 
-		#region Individual Node Settings
+        #region Individual Node Settings
         #region DAG01 Nodes
         @{
             NodeName        = 'SRV-01-01'
@@ -208,8 +208,8 @@
         }
     )
 
-	#Settings that will apply only to Quincy CAS
-	Site1CAS = @(
+    #Settings that will apply only to Quincy CAS
+    Site1CAS = @(
         @{
             InternalNamespace          = 'mail-site1.contoso.com'
             AutoDiscoverSiteScope      = 'Site1','Site3','Site5'
@@ -218,8 +218,8 @@
         }
     );
 
-	#Settings that will apply only to Phoenix CAS
-	Site2CAS = @(
+    #Settings that will apply only to Phoenix CAS
+    Site2CAS = @(
         @{
             InternalNamespace          = 'mail-site2.contoso.com'
             AutoDiscoverSiteScope      = 'Site2','Site4','Site6'

@@ -1,4 +1,4 @@
-﻿Configuration InstallExchange
+Configuration InstallExchange
 {
     param
     (
@@ -11,7 +11,7 @@
 
     Node $AllNodes.NodeName
     {
-		#Copy the Exchange setup files locally
+        #Copy the Exchange setup files locally
         File ExchangeBinaries
         {
             Ensure          = 'Present'
@@ -22,15 +22,15 @@
             Credential      = $FileCopyCreds
         }
 
-		#Check if a reboot is needed before installing Exchange
+        #Check if a reboot is needed before installing Exchange
         xPendingReboot BeforeExchangeInstall
         {
             Name      = "BeforeExchangeInstall"
 
-			DependsOn = '[File]ExchangeBinaries'
+            DependsOn = '[File]ExchangeBinaries'
         }
 
-		#Do the Exchange install
+        #Do the Exchange install
         xExchInstall InstallExchange
         {
             Path       = "C:\Binaries\E2K13CU8\Setup.exe"
@@ -51,7 +51,7 @@
             DependsOn           = '[xExchInstall]InstallExchange'
         }
 
-		#See if a reboot is required after installing Exchange
+        #See if a reboot is required after installing Exchange
         xPendingReboot AfterExchangeInstall
         {
             Name      = "AfterExchangeInstall"
