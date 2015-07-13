@@ -726,7 +726,7 @@ function StartScheduledTask
         $taskSettings = $task.Settings
         $taskSettings.ExecutionTimeLimit = "PT$($MaxWaitMinutes)M"
         $taskSettings.Priority = $TaskPriority
-        Set-ScheduledTask -TaskName "$($task.TaskName)" -Settings $taskSettings
+        Set-ScheduledTask @credParams -TaskName "$($task.TaskName)" -Settings $taskSettings
 
         Write-Verbose "Starting task at: $([DateTime]::Now)"
 
