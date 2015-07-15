@@ -626,6 +626,8 @@ Defaults to $false.
 
 * Added EndToEndExample
 
+* Fixed bug where StartScheduledTask would throw an error message and fail to set ExecutionTimeLimit and Priority when using domain credentials
+
 ## 1.1.0.0
 
 * xExchAutoMountPoint:
