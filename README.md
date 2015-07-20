@@ -26,6 +26,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xExchJetstressCleanup** cleans up the database and log directories created by Jetstress.
 * **xExchMailboxDatabase**
 * **xExchMailboxDatabaseCopy**
+* **xExchMalwareFiltering**
 * **xExchMapiVirtualDirectory**
 * **xExchOabVirtualDirectory**
 * **xExchOutlookAnywhere**
@@ -356,6 +357,14 @@ Defaults to $false.
 * **ReplayLagTime**
 * **TruncationLagTime**
 
+### xExchMalwareFiltering
+
+Where no description is listed, properties correspond directly to [Set-MapiVirtualDirectory](http://technet.microsoft.com/en-US/library/dn595082%28v=exchg.150%29.aspx) parameters.
+
+* **Enabled**: Whether Exchange Malware Filtering should be Enabled.
+* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
+* **AllowServiceRestart**: Whether the Transport services should be automatically restarted after a status change.
+
 ### xExchMapiVirtualDirectory
 
 Where no description is listed, properties correspond directly to [Set-MapiVirtualDirectory](http://technet.microsoft.com/en-US/library/dn595082%28v=exchg.150%29.aspx) parameters.
@@ -627,6 +636,8 @@ Defaults to $false.
 * Added EndToEndExample
 
 * Fixed bug where StartScheduledTask would throw an error message and fail to set ExecutionTimeLimit and Priority when using domain credentials
+
+* Added xExchMalwareFiltering resource
 
 ## 1.1.0.0
 
