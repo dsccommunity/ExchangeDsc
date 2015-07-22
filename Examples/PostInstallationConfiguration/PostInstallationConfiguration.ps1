@@ -292,6 +292,13 @@ Configuration PostInstallationConfiguration
             Usage            = 'Custom'
         }
 
+        #Ensures that Exchange built in AntiMalware Scanning is enabled or disabled
+        xExchAntiMalwareScanning AMS
+        {
+            Enabled    = $true
+            Credential = $ShellCreds
+        }
+
         
         ###Mailbox Server settings###
         #Create database and volume mount points for AutoReseed
@@ -368,7 +375,7 @@ if ($CertCreds -eq $null)
 }
 
 ###Compiles the example
-EndToEndExample -ConfigurationData $PSScriptRoot\PostInstallationConfiguration-Config.psd1 -ShellCreds $ShellCreds -CertCreds $CertCreds
+PostInstallationConfiguration -ConfigurationData $PSScriptRoot\PostInstallationConfiguration-Config.psd1 -ShellCreds $ShellCreds -CertCreds $CertCreds
 
 ###Sets up LCM on target computers to decrypt credentials.
 Set-DscLocalConfigurationManager -Path .\PostInstallationConfiguration -Verbose
