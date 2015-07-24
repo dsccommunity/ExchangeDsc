@@ -617,6 +617,10 @@ Defaults to $false.
 
 ### Unreleased
 
+### 1.2.0.0
+
+* Added xExchAntiMalwareScanning resource
+
 * xExchJetstress:
     - Added fix for an issue where JetstressCmd.exe would not relaunch successfully after ESE initialization. If Jetstress doesn't restart, the resource will now require a reboot before proceeding.
 
@@ -637,9 +641,7 @@ Defaults to $false.
 
 * Fixed bug where StartScheduledTask would throw an error message and fail to set ExecutionTimeLimit and Priority when using domain credentials
 
-* Added xExchAntiMalwareScanning resource
-
-## 1.1.0.0
+### 1.1.0.0
 
 * xExchAutoMountPoint:
     - Added parameter `EnsureExchangeVolumeMountPointIsLast`
