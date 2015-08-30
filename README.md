@@ -619,6 +619,9 @@ Defaults to $false.
 
 ### 1.2.0.0
 
+* xExchWaitForADPrep
+    - Removed `VerbosePreference` parameter of Test-TargetResource function to resolve schema mismatch error.
+
 * Added xExchAntiMalwareScanning resource
 
 * xExchJetstress:
