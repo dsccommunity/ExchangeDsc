@@ -174,7 +174,7 @@ function Set-TargetResource
 
     LogFunctionEntry -VerbosePreference $VerbosePreference
 
-    $testResults = Test-TargetResource @PSBoundParameters -VerbosePreference SilentlyContinue
+    $testResults = Test-TargetResource @PSBoundParameters
 
     for ($i = 0; $i -lt $RetryCount; $i++)
     {
@@ -183,7 +183,7 @@ function Set-TargetResource
             Write-Verbose "AD has still not been fully prepped as of $([DateTime]::Now). Sleeping for $($RetryIntervalSec) seconds."
             Start-Sleep -Seconds $RetryIntervalSec
 
-            $testResults = Test-TargetResource @PSBoundParameters -VerbosePreference SilentlyContinue
+            $testResults = Test-TargetResource @PSBoundParameters
         }
         else
         {
@@ -227,9 +227,7 @@ function Test-TargetResource
         $RetryIntervalSec = 60,
 
         [System.UInt32]
-        $RetryCount = 30,
-
-        $VerbosePreference
+        $RetryCount = 30
     )
 
     #Load helper module
