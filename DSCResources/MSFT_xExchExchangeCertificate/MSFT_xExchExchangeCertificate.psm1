@@ -145,7 +145,7 @@ function Set-TargetResource
         #If the cert is null and it's supposed to be present, then we need to import one
         if ($Ensure -eq "Present")
         {
-            $cert = Import-ExchangeCertificate -FileData ([Byte[]]$(Get-Content -Path "$($CertFilePath)" -Encoding Byte -ReadCount 0)) -Password:$CertCreds.Password
+            $cert = Import-ExchangeCertificate -FileData ([Byte[]]$(Get-Content -Path "$($CertFilePath)" -Encoding Byte -ReadCount 0)) -Password:$CertCreds.Password -Server $env:COMPUTERNAME
         }
     }
     else
@@ -153,7 +153,7 @@ function Set-TargetResource
         #cert is present and it shouldn't be. Remove it
         if ($Ensure -eq "Absent")
         {
-            Remove-ExchangeCertificate -Thumbprint $Thumbprint -Confirm:$false
+            Remove-ExchangeCertificate -Thumbprint $Thumbprint -Confirm:$false -Server $env:COMPUTERNAME
         }
     }
 
@@ -164,7 +164,7 @@ function Set-TargetResource
         {
             NotePreviousError
 
-            Enable-ExchangeCertificate -Thumbprint $Thumbprint -Services $Services -Force
+            Enable-ExchangeCertificate -Thumbprint $Thumbprint -Services $Services -Force -Server $env:COMPUTERNAME
 
             ThrowIfNewErrorsEncountered -CmdletBeingRun "Enable-ExchangeCertificate" -VerbosePreference $VerbosePreference
         }
@@ -291,7 +291,7 @@ function GetExchangeCertificate
     #Remove params we don't want to pass into the next command
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Thumbprint","DomainController"
 
-    return (Get-ExchangeCertificate @PSBoundParameters -ErrorAction SilentlyContinue)
+    return (Get-ExchangeCertificate @PSBoundParameters -ErrorAction SilentlyContinue -Server $env:COMPUTERNAME)
 }
 
 #Compares whether services from a certificate object match the services that were requested.
@@ -324,6 +324,6 @@ function CompareCertServices
 
 
 Export-ModuleMember -Function *-TargetResource
-
+Export-ModuleMember -Function CompareCertServices
 
 

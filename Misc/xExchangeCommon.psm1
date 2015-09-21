@@ -1,11 +1,23 @@
+#Gets the existing Remote PowerShell session to Exchange, if it exists
+function GetExistingExchangeSession
+{
+    return (Get-PSSession -Name "DSCExchangeSession" -ErrorAction SilentlyContinue)
+}
+
 #Establishes a Exchange remote powershell session to the local server. Reuses the session if it already exists.
 function GetRemoteExchangeSession
 {
     [CmdletBinding()]
-    param([PSCredential]$Credential, [string[]]$CommandsToLoad, $VerbosePreference)
+    param([PSCredential]$Credential, [string[]]$CommandsToLoad, $VerbosePreference, $SetupProcessName = "ExSetup*")
+
+    #Check if Exchange Setup is running. If so, we need to throw an exception, as a running Exchange DSC resource will block Exchange Setup from working properly.
+    if (IsSetupRunning -SetupProcessName $SetupProcessName)
+    {
+        throw "Exchange Setup is currently running. Preventing creation of new Remote PowerShell session to Exchange."
+    }
 
     #See if the session already exists
-    $Session = Get-PSSession -Name "DSCExchangeSession" -ErrorAction SilentlyContinue
+    $Session = GetExistingExchangeSession
 
     #Attempt to reuse the session if we found one
     if ($Session -ne $null)
@@ -87,13 +99,13 @@ function RemoveExistingRemoteSession
     [CmdletBinding()]
     param($VerbosePreference)
 
-    $sessions = Get-PSSession -Name "DSCExchangeSession" -ErrorAction SilentlyContinue
+    $sessions = GetExistingExchangeSession
 
     if ($sessions -ne $null)
     {
         Write-Verbose "Removing existing remote Powershell sessions"
 
-        Get-PSSession -Name "DSCExchangeSession" -ErrorAction SilentlyContinue | Remove-PSSession
+        GetExistingExchangeSession | Remove-PSSession
     }
 }
 
@@ -260,7 +272,9 @@ function IsSetupPartiallyCompleted
 #Checks whether setup is running by looking for if the ExSetup.exe process currently exists
 function IsSetupRunning
 {
-    return ((Get-Process -Name ExSetup -ErrorAction SilentlyContinue) -ne $null)
+    param([string]$SetupProcessName = "ExSetup*")
+
+    return ((Get-Process -Name $SetupProcessName -ErrorAction SilentlyContinue) -ne $null)
 }
 
 #Checks if two strings are equal, or are both either null or empty

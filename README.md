@@ -615,6 +615,12 @@ Defaults to $false.
 
 ## Versions
 
+### Unreleased
+
+* For all -ExchangeCertificate functions in xExchExchangeCertificate, added '-Server $env:COMPUTERNAME' switch. This will prevent the resource from configuring a certificate on an incorrect server.
+* Fixed issue with reading MailboxDatabases.csv in xExchangeConfigHelper.psm1 caused by a column name changed introduced in v7.7 of the Exchange Server Role Requirements Calculator.
+* Changed function GetRemoteExchangeSession so that it will throw an exception if Exchange setup is in progress. This will prevent resources from trying to execute while setup is running.
+
 ### 1.3.0.0
 
 * MSFT_xExchWaitForADPrep: Removed obsolete VerbosePreference parameter from Test-TargetResource
