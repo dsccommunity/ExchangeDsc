@@ -1,4 +1,4 @@
-﻿
+
 [ClassVersion("1.0.0.0"), FriendlyName("xExchOwaVirtualDirectory")]
 class MSFT_xExchOwaVirtualDirectory : OMI_BaseResource
 {

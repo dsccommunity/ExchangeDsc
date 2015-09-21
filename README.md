@@ -11,6 +11,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 ## Resources
 
 * **xExchActiveSyncVirtualDirectory**
+* **xExchAntiMalwareScanning** is used to enable or disable Exchange Anti-malware scanning
 * **xExchAutodiscoverVirtualDirectory**
 * **xExchAutoMountPoint**
 * **xExchClientAccessServer**
@@ -64,6 +65,14 @@ Defaults to "0.0.0.0:443","127.0.0.1:443"
 * **InternalAuthenticationMethods**
 * **InternalUrl**
 * **WindowsAuthEnabled**: Auto Certificate Based Authentication Requirements: For AutoCertBasedAuth to work, the ‘Client Certificate Mapping Authentication’ and ‘IIS Client Certificate Mapping Authentication’ roles of IIS need to be installed.
+
+### xExchAntiMalwareScanning
+
+**xExchAntiMalwareScanning** is used to enable or disable Exchange Anti-malware scanning.
+
+* **Enabled**: Whether Exchange Anti-malware scanning should be Enabled.
+* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
+* **AllowServiceRestart**: Whether the Transport services should be automatically restarted after a status change.
 
 ## xExchAutodiscoverVirtualDirectory
 
@@ -606,7 +615,17 @@ Defaults to $false.
 
 ## Versions
 
-### Unreleased
+### 1.3.0.0
+
+* MSFT_xExchWaitForADPrep: Removed obsolete VerbosePreference parameter from Test-TargetResource
+* Fixed encoding
+
+### 1.2.0.0
+
+* xExchWaitForADPrep
+    - Removed `VerbosePreference` parameter of Test-TargetResource function to resolve schema mismatch error.
+
+* Added xExchAntiMalwareScanning resource
 
 * xExchJetstress:
     - Added fix for an issue where JetstressCmd.exe would not relaunch successfully after ESE initialization. If Jetstress doesn't restart, the resource will now require a reboot before proceeding.
@@ -628,7 +647,7 @@ Defaults to $false.
 
 * Fixed bug where StartScheduledTask would throw an error message and fail to set ExecutionTimeLimit and Priority when using domain credentials
 
-## 1.1.0.0
+### 1.1.0.0
 
 * xExchAutoMountPoint:
     - Added parameter `EnsureExchangeVolumeMountPointIsLast`
