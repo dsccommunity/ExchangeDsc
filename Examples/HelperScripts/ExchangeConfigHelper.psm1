@@ -98,7 +98,20 @@ function DBListFromMailboxDatabasesCsv
                 $currentDb = New-Object PSObject
 
                 $currentDb | Add-Member NoteProperty Name (StringReplaceFromHashtable -StringIn $dbIn.Name -Replacements $DbNameReplacements)
-                $currentDb | Add-Member NoteProperty DBFilePath (StringReplaceFromHashtable -StringIn $dbIn.DBFilePath -Replacements $DbNameReplacements)
+
+                if ($dbIn.DBFilePath -ne $null)
+                {
+                    $currentDb | Add-Member NoteProperty DBFilePath (StringReplaceFromHashtable -StringIn $dbIn.DBFilePath -Replacements $DbNameReplacements)
+                }
+                elseif ($dbIn.EDBFilePath -ne $null)
+                {
+                    $currentDb | Add-Member NoteProperty DBFilePath (StringReplaceFromHashtable -StringIn $dbIn.EDBFilePath -Replacements $DbNameReplacements)
+                }
+                else
+                {
+                    throw "Unable to locate column containing database file path"
+                }
+
                 $currentDb | Add-Member NoteProperty LogFolderPath (StringReplaceFromHashtable -StringIn $dbIn.LogFolderPath -Replacements $DbNameReplacements)
                 $currentDb | Add-Member NoteProperty DeletedItemRetention $dbIn.DeletedItemRetention
                 $currentDb | Add-Member NoteProperty GC $dbIn.GC
