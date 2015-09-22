@@ -52,7 +52,7 @@ function Set-TargetResource
 
     LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -VerbosePreference $VerbosePreference
 
-    $installStatus = GetInstallStatus
+    $installStatus = GetInstallStatus -Arguments $Arguments
 
     if ($installStatus.ShouldStartInstall -eq $true)
     {
@@ -115,7 +115,7 @@ function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-     param
+    param
     (
         [Parameter(Mandatory=$true)]
         [System.String]
@@ -134,11 +134,18 @@ function Test-TargetResource
 
     LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -VerbosePreference $VerbosePreference
 
-    $installStatus = GetInstallStatus
+    $installStatus = GetInstallStatus -Arguments $Arguments
 
     if ($installStatus.ShouldStartInstall -eq $true)
     {
-        Write-Verbose "Exchange is either not installed, or a previous install only partially completed."
+        if($installStatus.ShouldInstallLanguagePack -eq $true)
+        {
+            Write-Verbose "Language pack will be installed"
+        }
+        else
+        {
+            Write-Verbose "Exchange is either not installed, or a previous install only partially completed."
+        }
     }
     else
     {
@@ -158,8 +165,14 @@ function Test-TargetResource
 #Checks for the exact status of Exchange setup and returns the results in a Hashtable
 function GetInstallStatus
 {
+    param
+    (
+        $Arguments
+    )
+
     $shouldStartInstall = $false
 
+    $shouldInstallLanguagePack = ShouldInstallLanguagePack -Arguments $Arguments
     $setupRunning = IsSetupRunning
     $setupComplete = IsSetupComplete
     $exchangePresent = IsExchangePresent
@@ -167,7 +180,14 @@ function GetInstallStatus
 
     if ($setupRunning -eq $true -or $setupComplete -eq $true)
     {
-        #Do nothing. Either Install is already running, or it's already finished successfully
+        if($shouldInstallLanguagePack -eq $true -and $setupComplete -eq $true)
+        {
+            $shouldStartInstall = $true
+        }
+        else
+        {
+            #Do nothing. Either Install is already running, or it's already finished successfully
+        }
     }
     elseif ($exchangePresent -eq $false -or $setupPartiallyComplete -eq $true)
     {
@@ -175,6 +195,7 @@ function GetInstallStatus
     }
 
     $returnValue = @{
+        ShouldInstallLanguagePack = $shouldInstallLanguagePack
         SetupRunning = $setupRunning
         SetupComplete = $setupComplete
         ExchangePresent = $exchangePresent
@@ -215,6 +236,32 @@ function CheckWSManConfig
     }
 
     return $needReboot
+}
+
+function ShouldInstallLanguagePack
+{
+    param
+    (
+        [System.String]
+        $Arguments
+    )
+
+    if($Arguments -match '(?<=/AddUMLanguagePack:)(([a-z]{2}-[A-Z]{2},?)+)(?=\s)')
+    {
+        $Cultures = $Matches[0]
+        Write-Verbose "AddUMLanguagePack parameters detected: $Cultures"
+        $Cultures = $Cultures -split ","
+
+        foreach($Culture in $Cultures)
+        {
+            if((IsUMLanguagePackInstalled -Culture $Culture) -eq $false)
+            {
+                Write-Verbose "UM Language Pack: $Culture is not installed"
+                return $true
+            }
+        }
+    }
+    return $false
 }
 
 Export-ModuleMember -Function *-TargetResource

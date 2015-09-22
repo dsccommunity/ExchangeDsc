@@ -615,6 +615,10 @@ Defaults to $false.
 
 ## Versions
 
+### Unreleased
+
+* Added support for the /AddUMLanguagePack parameter in xExchInstall
+
 ### 1.3.0.0
 
 * MSFT_xExchWaitForADPrep: Removed obsolete VerbosePreference parameter from Test-TargetResource
