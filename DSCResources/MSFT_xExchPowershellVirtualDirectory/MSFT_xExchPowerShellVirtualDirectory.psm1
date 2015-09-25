@@ -123,8 +123,8 @@ function Set-TargetResource
 
         Write-Verbose "Recycling MSExchangePowerShellAppPool and MSExchangePowerShellFrontEndAppPool"
 
-        Restart-WebAppPool -Name MSExchangePowerShellAppPool
-        Restart-WebAppPool -Name MSExchangePowerShellFrontEndAppPool
+        RestartAppPoolIfExists -Name MSExchangePowerShellAppPool
+        RestartAppPoolIfExists -Name MSExchangePowerShellFrontEndAppPool
     }
     else
     {

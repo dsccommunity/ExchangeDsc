@@ -183,7 +183,7 @@ function Set-TargetResource
         {
             Write-Verbose "Recycling MSExchangeSyncAppPool"
 
-            Restart-WebAppPool -Name MSExchangeSyncAppPool
+            RestartAppPoolIfExists -Name MSExchangeSyncAppPool
         }
         else
         {

@@ -101,8 +101,8 @@ function Set-TargetResource
     {
         Write-Verbose "Recycling MSExchangeMapiFrontEndAppPool and MSExchangeMapiMailboxAppPool"
 
-        Restart-WebAppPool -Name MSExchangeMapiFrontEndAppPool
-        Restart-WebAppPool -Name MSExchangeMapiMailboxAppPool
+        RestartAppPoolIfExists -Name MSExchangeMapiFrontEndAppPool
+        RestartAppPoolIfExists -Name MSExchangeMapiMailboxAppPool
     }
     else
     {

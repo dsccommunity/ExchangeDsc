@@ -162,8 +162,8 @@ function Set-TargetResource
     {
         Write-Verbose "Recycling MSExchangeRpcProxyAppPool and MSExchangeRpcProxyFrontEndAppPool"
 
-        Restart-WebAppPool -Name MSExchangeRpcProxyAppPool
-        Restart-WebAppPool -Name MSExchangeRpcProxyFrontEndAppPool
+        RestartAppPoolIfExists -Name MSExchangeRpcProxyAppPool
+        RestartAppPoolIfExists -Name MSExchangeRpcProxyFrontEndAppPool
     }
     else
     {

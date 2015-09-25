@@ -185,7 +185,7 @@ function Set-TargetResource
     if($AllowServiceRestart -eq $true)
     {
         Write-Verbose "Recycling MSExchangeOWAAppPool"
-        Restart-WebAppPool -Name MSExchangeOWAAppPool
+        RestartAppPoolIfExists -Name MSExchangeOWAAppPool
     }
     else
     {
