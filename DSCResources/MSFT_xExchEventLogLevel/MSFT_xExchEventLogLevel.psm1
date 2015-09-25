@@ -1,22 +1,22 @@
-﻿function Get-TargetResource
+function Get-TargetResource
 {
-	[CmdletBinding()]
-	[OutputType([System.Collections.Hashtable])]
-	param
-	(
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$Identity,
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Identity,
 
-		[parameter(Mandatory = $true)]
-		[System.Management.Automation.PSCredential]
-		$Credential,
+        [parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $Credential,
 
-		[parameter(Mandatory = $true)]
-		[ValidateSet("Lowest","Low","Medium","High","Expert")]
-		[System.String]
-		$Level
-	)
+        [parameter(Mandatory = $true)]
+        [ValidateSet("Lowest","Low","Medium","High","Expert")]
+        [System.String]
+        $Level
+    )
 
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
@@ -42,22 +42,22 @@
 
 function Set-TargetResource
 {
-	[CmdletBinding()]
-	param
-	(
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$Identity,
+    [CmdletBinding()]
+    param
+    (
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Identity,
 
-		[parameter(Mandatory = $true)]
-		[System.Management.Automation.PSCredential]
-		$Credential,
+        [parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $Credential,
 
-		[parameter(Mandatory = $true)]
-		[ValidateSet("Lowest","Low","Medium","High","Expert")]
-		[System.String]
-		$Level
-	)
+        [parameter(Mandatory = $true)]
+        [ValidateSet("Lowest","Low","Medium","High","Expert")]
+        [System.String]
+        $Level
+    )
 
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
@@ -73,23 +73,23 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
-	[CmdletBinding()]
-	[OutputType([System.Boolean])]
-	param
-	(
-		[parameter(Mandatory = $true)]
-		[System.String]
-		$Identity,
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [parameter(Mandatory = $true)]
+        [System.String]
+        $Identity,
 
-		[parameter(Mandatory = $true)]
-		[System.Management.Automation.PSCredential]
-		$Credential,
+        [parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $Credential,
 
-		[parameter(Mandatory = $true)]
-		[ValidateSet("Lowest","Low","Medium","High","Expert")]
-		[System.String]
-		$Level
-	)
+        [parameter(Mandatory = $true)]
+        [ValidateSet("Lowest","Low","Medium","High","Expert")]
+        [System.String]
+        $Level
+    )
 
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
