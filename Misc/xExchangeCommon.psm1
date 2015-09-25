@@ -814,4 +814,17 @@ function RestartAppPoolIfExists
     }
 }
 
+#Checks if the UM language pack for the specified culture is installed
+function IsUMLanguagePackInstalled
+{
+    Param
+    (
+        [ValidateNotNullOrEmpty()]
+        [System.String]
+        $Culture
+    )
+
+    return [bool](Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\UnifiedMessagingRole\LanguagePacks').$Culture
+}
+
 Export-ModuleMember -Function *
