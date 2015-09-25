@@ -19,6 +19,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xExchDatabaseAvailabilityGroupMember** adds a member to a Database Availability Group.
 * **xExchDatabaseAvailabilityGroupNetwork** can add, remove, or configure a Database Availability Group Network. 
 * **xExchEcpVirtualDirectory**
+* **xExchEventLogLevel** is used to configure Exchange diagnostic logging via Set-EventLogLevel.
 * **xExchExchangeCertificate** can install, remove, or configure an ExchangeCertificate using *-ExchangeCertificate cmdlets.
 * **xExchExchangeServer**
 * **xExchImapSettings** configures IMAP settings using Set-ImapSettings.
@@ -217,6 +218,16 @@ Where no description is listed, properties correspond directly to [Set-EcpVirtua
 * **InternalUrl**
 * **WindowsAuthentication**
 * **WSSecurityAuthentication**
+
+### xExchEventLogLevel
+
+**xExchEventLogLevel** is used to configure Exchange diagnostic logging via Set-EventLogLevel.
+
+Properties correspond to [Set-EventLogLevel](https://technet.microsoft.com/en-us/library/aa998905(v=exchg.150).aspx) parameters.
+
+* **Identity**: The Identity parameter specifies the name of the event logging category for which you want to set the event logging level. Do not specify servername within the Identity.
+* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
+* **Level**: The Level parameter specifies the log level for the specific event logging category. Valid values are Lowest, Low, Medium, High, and Expert.
 
 ### xExchExchangeCertificate
 
@@ -618,13 +629,19 @@ Defaults to $false.
 ### Unreleased
 
 * For all -ExchangeCertificate functions in xExchExchangeCertificate, added '-Server $env:COMPUTERNAME' switch. This will prevent the resource from configuring a certificate on an incorrect server.
+
 * Fixed issue with reading MailboxDatabases.csv in xExchangeConfigHelper.psm1 caused by a column name changed introduced in v7.7 of the Exchange Server Role Requirements Calculator.
+
 * Changed function GetRemoteExchangeSession so that it will throw an exception if Exchange setup is in progress. This will prevent resources from trying to execute while setup is running.
+
 * Fixed issue where VirtualDirectory resources would incorrectly try to restart a Back End Application Pool on a CAS role only server.
+
+* Added **xExchEventLogLevel** resource.
 
 ### 1.3.0.0
 
 * MSFT_xExchWaitForADPrep: Removed obsolete VerbosePreference parameter from Test-TargetResource
+
 * Fixed encoding
 
 ### 1.2.0.0
