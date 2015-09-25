@@ -184,7 +184,7 @@ function Set-TargetResource
     {
         Write-Verbose "Recycling MSExchangeOABAppPool"
 
-        Restart-WebAppPool -Name MSExchangeOABAppPool
+        RestartAppPoolIfExists -Name MSExchangeOABAppPool
     }
     else
     {

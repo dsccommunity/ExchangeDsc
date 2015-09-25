@@ -137,7 +137,7 @@ function Set-TargetResource
     {
         Write-Verbose "Recycling MSExchangeECPAppPool"
 
-        Restart-WebAppPool -Name MSExchangeECPAppPool
+        RestartAppPoolIfExists -Name MSExchangeECPAppPool
     }
     else
     {

@@ -797,4 +797,21 @@ function ThrowIfNewErrorsEncountered
     }
 }
 
+function RestartAppPoolIfExists
+{
+    [CmdletBinding()]
+    param([string]$Name)
+
+    $state = Get-WebAppPoolState -Name $Name -ErrorAction SilentlyContinue
+
+    if ($state -ne $null)
+    {
+        Restart-WebAppPool -Name $Name
+    }
+    else
+    {
+        Write-Verbose "Application pool with name '$($Name)' does not exist. Skipping application pool restart."
+    }
+}
+
 Export-ModuleMember -Function *

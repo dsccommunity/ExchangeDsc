@@ -144,7 +144,7 @@ function Set-TargetResource
     if($AllowServiceRestart -eq $true)
     {
         Write-Verbose "Recycling MSExchangeServicesAppPool"
-        Restart-WebAppPool -Name MSExchangeServicesAppPool
+        RestartAppPoolIfExists -Name MSExchangeServicesAppPool
     }
     else
     {

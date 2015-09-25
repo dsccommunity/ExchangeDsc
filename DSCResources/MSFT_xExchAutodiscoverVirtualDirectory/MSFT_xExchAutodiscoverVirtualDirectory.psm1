@@ -109,7 +109,7 @@ function Set-TargetResource
     if($AllowServiceRestart -eq $true)
     {
         Write-Verbose "Recycling MSExchangeAutodiscoverAppPool"
-        Restart-WebAppPool -Name MSExchangeAutodiscoverAppPool
+        RestartAppPoolIfExists -Name MSExchangeAutodiscoverAppPool
     }
     else
     {
