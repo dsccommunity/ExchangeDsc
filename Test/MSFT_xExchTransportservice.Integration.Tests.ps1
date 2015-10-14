@@ -199,27 +199,27 @@ if ($exchangeInstalled)
     }
 
      Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set default Transport Service configuration" -ExpectedGetResults $expectedGetResults
-	 
-	 #modify configuration
+     
+     #modify configuration
      $testParams.InternalDNSServers = '192.168.1.10'
      $testParams.ExternalDNSServers = '10.1.1.10'
      $testParams.PipelineTracingSenderAddress = 'john.doe@contoso.com'
-	 
+     
      $expectedGetResults.InternalDNSServers = '192.168.1.10'
      $expectedGetResults.ExternalDNSServers = '10.1.1.10'
      $expectedGetResults.PipelineTracingSenderAddress = 'john.doe@contoso.com'
 
      Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Modify Transport Service configuration" -ExpectedGetResults $expectedGetResults
-	 
-	 #modify configuration
+     
+     #modify configuration
      $testParams.InternalDNSServers = ''
      $testParams.ExternalDNSServers = ''
      $testParams.PipelineTracingSenderAddress = ''
-	 
+     
      $expectedGetResults.InternalDNSServers = $null
      $expectedGetResults.ExternalDNSServers = $null
      $expectedGetResults.PipelineTracingSenderAddress = $null
-	 
+     
      Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Revert Transport Service configuration" -ExpectedGetResults $expectedGetResults
      }
 }
