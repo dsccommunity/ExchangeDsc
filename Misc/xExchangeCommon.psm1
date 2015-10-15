@@ -358,6 +358,10 @@ function CompareUnlimitedWithString
     {
         return (CompareStrings -String1 "Unlimited" -String2 $String -IgnoreCase)
     }
+    elseif ($Unlimited.Value.GetType() -ne [Microsoft.Exchange.Data.ByteQuantifiedSize])
+    {
+        return (CompareStrings -String1 $Unlimited -String2 $String -IgnoreCase)
+    }
     else
     {
         return (CompareByteQuantifiedSizeWithString -ByteQuantifiedSize $Unlimited -String $String)
@@ -621,6 +625,27 @@ function VerifySetting
                 $returnValue = $false
             }
         }
+        elseif ($Type -like "IPAddress")
+        {
+            if ((CompareIPAddresseWithString -IPAddress $ActualValue -String $ExpectedValue) -eq $false)
+            {
+                $returnValue = $false
+            }
+        }
+        elseif ($Type -like "IPAddresses")
+        {
+            if ((CompareIPAddressesWithArray -IPAddresses $ActualValue -Array $ExpectedValue) -eq $false)
+            {
+                $returnValue = $false
+            }
+        }
+        elseif ($Type -like "SMTPAddress")
+        {
+            if ((CompareSmtpAdressWithString -SmtpAddress $ActualValue -String $ExpectedValue) -eq $false)
+            {
+                $returnValue = $false
+            }
+        }
         else
         {
             throw "Type not found: $($Type)"
@@ -825,6 +850,90 @@ function IsUMLanguagePackInstalled
     )
 
     return [bool](Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\UnifiedMessagingRole\LanguagePacks').$Culture
+}
+
+#Compares a single IPAddress with a string
+function CompareIPAddresseWithString
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param([System.Net.IPAddress]$IPAddress, [String]$String)
+    if (($IPAddress -eq $null -and !([string]::IsNullOrEmpty($String))) -or ($IPAddress -ne $null -and [string]::IsNullOrEmpty($String)))
+    {
+        $returnValue = $false
+    }
+    elseif ($IPAddress -eq $null -and [string]::IsNullOrEmpty($String))
+    {
+        $returnValue = $true
+    }
+    else
+    {
+        $returnValue =($IPAddress.Equals([System.Net.IPAddress]::Parse($string)))
+    }
+    
+    if ($returnValue -eq $false)
+    {
+        ReportBadSetting -SettingName $IPAddress -ExpectedValue $ExpectedValue -ActualValue $IPAddress -VerbosePreference $VerbosePreference
+    }
+    return $returnValue
+}
+
+#Compares a SMTP address with a string
+function CompareSmtpAdressWithString
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param($SmtpAddress,[String]$String)
+    if (($SmtpAddress -eq $null) -and ([string]::IsNullOrEmpty($String)))
+    {
+        Write-Verbose "Expected and actual value is empty, therefore equal!"
+        return $true
+    }
+    elseif (($SmtpAddress -eq $null) -and -not ([string]::IsNullOrEmpty($String)))
+    {
+        return $false
+    }
+    elseif ($SmtpAddress.Gettype() -eq [Microsoft.Exchange.Data.SmtpAddress])
+    {
+        if ([string]::IsNullOrEmpty($String))
+        {
+            return $false
+        }
+        else
+        {
+            return($SmtpAddress.Equals([Microsoft.Exchange.Data.SmtpAddress]::Parse($string)))
+        }
+    }
+    else
+    {
+        Write-Verbose "No type of [Microsoft.Exchange.Data.SmtpAddress]!"
+        return $false
+    }
+}
+
+#Compares IPAddresses with an array
+function CompareIPAddressesWithArray
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param($IPAddresses, [Array]$Array)
+    if (([string]::IsNullOrEmpty($IPAddresses)) -and ([string]::IsNullOrEmpty($Array)))
+    {
+        $returnValue = $true
+    }
+    elseif ((([string]::IsNullOrEmpty($IPAddresses)) -and !(([string]::IsNullOrEmpty($Array)))) -or (!(([string]::IsNullOrEmpty($IPAddresses))) -and ([string]::IsNullOrEmpty($Array))))
+    {
+        $returnValue = $false
+    }
+    else
+    {
+        CompareArrayContents -Array1 $IPAddresses -Array2 $Array
+    }
+    if ($returnValue -eq $false)
+    {
+        ReportBadSetting -SettingName $IPAddresses -ExpectedValue $ExpectedValue -ActualValue $IPAddress -VerbosePreference $VerbosePreference
+    }
+    return $returnValue
 }
 
 Export-ModuleMember -Function *

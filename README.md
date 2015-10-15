@@ -35,6 +35,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xExchPopSettings** configures POP settings using Set-PopSettings.
 * **xExchPowerShellVirtualDirectory**
 * **xExchReceiveConnector**
+* **xExchTransportService**
 * **xExchUMCallRouterSettings** configures the UM Call Router service using Set-UMCallRouterSettings.
 * **xExchUMService** configures a UM server using Set-UMService.
 * **xExchWaitForADPrep** ensures that Active Directory has been prepared for Exchange 2013.
@@ -542,6 +543,109 @@ Needs to be in the format 'SERVERNAME\CONNECTORNAME' (no quotes).
 * **TransportRole**
 * **Usage**
 
+### xExchTransportService
+
+xExchTransportService configures the Transport service settings on Mailbox servers or Edge Transport servers using Set-TransportService.
+
+Where no description is listed, properties correspond directly to [Set-TransportService](https://technet.microsoft.com/library/jj215682(v=exchg.150).aspx) parameters.
+
+* **Identity**: Hostname of the server to configure.
+* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
+* **AllowServiceRestart**: Whether it is OK to restart service to make changes active
+* **ActiveUserStatisticsLogMaxAge**
+* **ActiveUserStatisticsLogMaxDirectorySize**
+* **ActiveUserStatisticsLogMaxFileSize**
+* **ActiveUserStatisticsLogPath**
+* **AgentLogEnabled**
+* **AgentLogMaxAge**
+* **AgentLogMaxDirectorySize**
+* **AgentLogMaxFileSize**
+* **AgentLogPath**
+* **ConnectivityLogEnabled**
+* **ConnectivityLogMaxAge**
+* **ConnectivityLogMaxDirectorySize**
+* **ConnectivityLogMaxFileSize**
+* **ConnectivityLogPath**
+* **ContentConversionTracingEnabled**
+* **DelayNotificationTimeout**
+* **DnsLogEnabled**
+* **DnsLogMaxAge**
+* **DnsLogMaxDirectorySize**
+* **DnsLogMaxFileSize**
+* **DnsLogPath**
+* **ExternalDNSAdapterEnabled**
+* **ExternalDNSAdapterGuid**
+* **ExternalDNSProtocolOption**
+* **ExternalDNSServers**
+* **ExternalIPAddress**
+* **InternalDNSAdapterEnabled**
+* **InternalDNSAdapterGuid**
+* **InternalDNSProtocolOption**
+* **InternalDNSServers**
+* **IntraOrgConnectorProtocolLoggingLevel**
+* **IntraOrgConnectorSmtpMaxMessagesPerConnection**
+* **IrmLogEnabled**
+* **IrmLogMaxAge**
+* **IrmLogMaxDirectorySize**
+* **IrmLogMaxFileSize**
+* **IrmLogPath**
+* **MaxConcurrentMailboxDeliveries**
+* **MaxConcurrentMailboxSubmissions**
+* **MaxConnectionRatePerMinute**
+* **MaxOutboundConnections**
+* **MaxPerDomainOutboundConnections**
+* **MessageExpirationTimeout**
+* **MessageRetryInterval**
+* **MessageTrackingLogEnabled**
+* **MessageTrackingLogMaxAge**
+* **MessageTrackingLogMaxDirectorySize**
+* **MessageTrackingLogMaxFileSize**
+* **MessageTrackingLogPath**
+* **MessageTrackingLogSubjectLoggingEnabled**
+* **OutboundConnectionFailureRetryInterval**
+* **PickupDirectoryMaxHeaderSize**
+* **PickupDirectoryMaxMessagesPerMinute**
+* **PickupDirectoryMaxRecipientsPerMessage**
+* **PickupDirectoryPath**
+* **PipelineTracingEnabled**
+* **PipelineTracingPath**
+* **PipelineTracingSenderAddress**
+* **PoisonMessageDetectionEnabled**
+* **PoisonThreshold**
+* **QueueLogMaxAge**
+* **QueueLogMaxDirectorySize**
+* **QueueLogMaxFileSize**
+* **QueueLogPath**
+* **QueueMaxIdleTime**
+* **ReceiveProtocolLogMaxAge**
+* **ReceiveProtocolLogMaxDirectorySize**
+* **ReceiveProtocolLogMaxFileSize**
+* **ReceiveProtocolLogPath**
+* **RecipientValidationCacheEnabled**
+* **ReplayDirectoryPath**
+* **RootDropDirectoryPath**
+* **RoutingTableLogMaxAge**
+* **RoutingTableLogMaxDirectorySize**
+* **RoutingTableLogPath**
+* **SendProtocolLogMaxAge**
+* **SendProtocolLogMaxDirectorySize**
+* **SendProtocolLogMaxFileSize**
+* **SendProtocolLogPath**
+* **ServerStatisticsLogMaxAge**
+* **ServerStatisticsLogMaxDirectorySize**
+* **ServerStatisticsLogMaxFileSize**
+* **ServerStatisticsLogPath**
+* **TransientFailureRetryCount**
+* **TransientFailureRetryInterval**
+* **UseDowngradedExchangeServerAuth**
+
+#### Common Issues
+To set some settings to NULL you need to set the value to '' instead of using $null. The following settings are affected:
+ExternalDNSServers
+ExternalIPAddress
+InternalDNSServers
+PipelineTracingSenderAddress
+
 ### xExchUMCallRouterSettings
 
 xExchUMCallRouterSettings configures the UM Call Router service using Set-UMCallRouterSettings.
@@ -639,6 +743,8 @@ Defaults to $false.
 * Added **xExchEventLogLevel** resource.
 
 * Added support for the /AddUMLanguagePack parameter in xExchInstall
+
+* Added xExchTransportService
 
 ### 1.3.0.0
 
