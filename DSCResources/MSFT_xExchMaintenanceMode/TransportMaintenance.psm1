@@ -58,9 +58,9 @@ function Start-TransportMaintenance
         AddExchangeSnapinIfRequired
     }
 
-	$Script:LogInfo = @{
-		Target = $Target
-	}
+    $Script:LogInfo = @{
+        Target = $Target
+    }
 
     try
     {
