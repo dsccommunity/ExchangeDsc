@@ -1,4 +1,4 @@
-﻿
+
 [ClassVersion("1.0.0.0"), FriendlyName("xExchMaintenanceMode")]
 class MSFT_xExchMaintenanceMode : OMI_BaseResource
 {
