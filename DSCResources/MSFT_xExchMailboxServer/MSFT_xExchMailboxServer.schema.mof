@@ -1,0 +1,11 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchMailboxServer")]
+class MSFT_xExchMailboxServer : OMI_BaseResource
+{
+    [Key, Description("The Identity parameter specifies the Mailbox server that you want to modify.")] String Identity;
+    [Required, Description("Credentials used to establish a remote Powershell session to Exchange"), EmbeddedInstance("MSFT_Credential")] String Credential;
+    [Write, Description("The DomainController parameter specifies the fully qualified domain name (FQDN) of the domain controller that writes this configuration change to Active Directory.")] String DomainController;
+    [Write, Description("The DatabaseCopyActivationDisabledAndMoveNow parameter specifies whether to prevent databases from being mounted on this Mailbox server if there are other healthy copies of the databases on other Mailbox servers. It will also immediately move any mounted databases on the server to other servers if copies exist and are healthy.")] Boolean DatabaseCopyActivationDisabledAndMoveNow;
+    [Write, Description("The DatabaseCopyAutoActivationPolicy parameter specifies the type of automatic activation available for mailbox database copies on the specified Mailbox server. Valid values are Blocked, IntrasiteOnly, and Unrestricted."), ValueMap{"Blocked","IntrasiteOnly","Unrestricted"}, Values{"Blocked","IntrasiteOnly","Unrestricted"}] String DatabaseCopyAutoActivationPolicy;
+};
+
