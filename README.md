@@ -407,37 +407,37 @@ Properties correspond to [Set-MailboxServer](https://technet.microsoft.com/en-us
 **xExchMaintenanceMode** performs the following steps when entering or exiting Maintenance Mode
 
 #### Entering Maintenance Mode
--Set DatabaseCopyAutoActivationPolicy to Blocked
--Set UMCallrouter to Draining
--Execute TransportMaintenance.psm1 -> Start-TransportMaintenance
-* Pause MSExchangeTransport service
-* Wait for queues to drain
-* Redirect remaining messages
-* Set HubTransport component to Inactive
-* Resume MSExchangeTransport
--Wait up to 5 minutes for active UM calls to finish
--Run StartDagServerMaintenance.psm1
-* Set HighAvailability component to Inactive
-* Suspend Cluster Node
-* Move active databases: Move-ActiveMailboxDatabase -Server SERVER
-* Move the Primary Active Manager role
--Set ServerWideOffline component to Inactive
+* Set DatabaseCopyAutoActivationPolicy to Blocked
+* Set UMCallrouter to Draining
+* Execute TransportMaintenance.psm1 -> Start-TransportMaintenance
+	* Pause MSExchangeTransport service
+	* Wait for queues to drain
+	* Redirect remaining messages
+	* Set HubTransport component to Inactive
+	* Resume MSExchangeTransport
+* Wait up to 5 minutes for active UM calls to finish
+* Run StartDagServerMaintenance.psm1
+	* Set HighAvailability component to Inactive
+	* Suspend Cluster Node
+	* Move active databases: Move-ActiveMailboxDatabase -Server SERVER
+	* Move the Primary Active Manager role
+* Set ServerWideOffline component to Inactive
 
 #### Exiting Maintenance Mode
--Set ServerWideOffline component to Active
--Set UMCallrouter to Active
--Run StopDagServerMaintenance.ps1
-* Resume Cluster Node
-* Set HubTransport component to Active
-* Set DatabaseCopyAutoActivationPolicy to Unrestricted
--Execute TransportMaintenance.psm1 -> Stop-TransportMaintenance
-* Set HubTransport component to Active
-* Restart MSExchangeTransport service
--Set Monitoring component to Active
--Set RecoveryActionsEnabled component to Active
--(OPTIONAL) Set each in an admin provided list of components to Active
--(OPTIONAL) For each of the above components, set to Active for ANY requester (this addresses the case where multiple requesters have set a component to Inactive, like HealthApi and Maintenance)
--(OPTIONAL) Move back all databases with an Activation Preference of 1
+* Set ServerWideOffline component to Active
+* Set UMCallrouter to Active
+* Run StopDagServerMaintenance.ps1
+	* Resume Cluster Node
+	* Set HubTransport component to Active
+	* Set DatabaseCopyAutoActivationPolicy to Unrestricted
+* Execute TransportMaintenance.psm1 -> Stop-TransportMaintenance
+	* Set HubTransport component to Active
+	* Restart MSExchangeTransport service
+* Set Monitoring component to Active
+* Set RecoveryActionsEnabled component to Active
+* (OPTIONAL) Set each in an admin provided list of components to Active
+* (OPTIONAL) For each of the above components, set to Active for ANY requester (this addresses the case where multiple requesters have set a component to Inactive, like HealthApi and Maintenance)
+* (OPTIONAL) Move back all databases with an Activation Preference of 1
 
 ### xExchMapiVirtualDirectory
 
@@ -1008,7 +1008,7 @@ The example code for JetstressAutomation is located in "1-InstallAndRunJetstress
 
 ### MaintenanceMode
 
-Shows examples of how to prepare for maintenance mode, enter maintenance mode, and exit maintenance mode.
+Shows examples of how to prepare for maintenance mode, enter maintenance mode, and exit maintenance mode. MaintenanceModePrep.ps1 prepares a server for maintenance mode by setting DatabaseCopyAutoActivationPolicy to Blocked using a Domain Controller in both the primary and secondary site. If multiple servers are going to be entering maintenance mode at the same time, this step can help prevent these servers from failing over databases to eachother. MaintenanceModeStart.ps1 puts a server into maintenance mode. MaintenanceModeStop.ps1 takes a server out of maintenance mode.
 
 ### PostInstallationConfiguration
 
