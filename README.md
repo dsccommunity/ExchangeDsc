@@ -792,30 +792,22 @@ Defaults to $false.
 
 ## Versions
 
-### Unreleased
+### 1.4.0.0
 
+* Added following resources:
+  * xExchMaintenanceMode
+  * xExchMailboxServer
+  * xExchTransportService
+  * xExchEventLogLevel
 * For all -ExchangeCertificate functions in xExchExchangeCertificate, added '-Server $env:COMPUTERNAME' switch. This will prevent the resource from configuring a certificate on an incorrect server.
-
 * Fixed issue with reading MailboxDatabases.csv in xExchangeConfigHelper.psm1 caused by a column name changed introduced in v7.7 of the Exchange Server Role Requirements Calculator.
-
 * Changed function GetRemoteExchangeSession so that it will throw an exception if Exchange setup is in progress. This will prevent resources from trying to execute while setup is running.
-
 * Fixed issue where VirtualDirectory resources would incorrectly try to restart a Back End Application Pool on a CAS role only server.
-
-* Added **xExchEventLogLevel** resource.
-
 * Added support for the /AddUMLanguagePack parameter in xExchInstall
-
-* Added xExchTransportService
-
-* Added **xExchMailboxServer** resource.
-
-* Added **xExchMaintenanceMode** resource.
 
 ### 1.3.0.0
 
 * MSFT_xExchWaitForADPrep: Removed obsolete VerbosePreference parameter from Test-TargetResource
-
 * Fixed encoding
 
 ### 1.2.0.0
