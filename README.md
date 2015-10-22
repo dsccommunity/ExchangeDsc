@@ -808,7 +808,6 @@ Defaults to $false.
 ### 1.3.0.0
 
 * MSFT_xExchWaitForADPrep: Removed obsolete VerbosePreference parameter from Test-TargetResource
-
 * Fixed encoding
 
 ### 1.2.0.0
