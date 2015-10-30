@@ -44,4 +44,18 @@ function Test-AllTargetResourceFunctions
     }
 }
 
+function Test-ArrayContents
+{
+    [CmdletBinding()]
+    param([Hashtable]$TestParams, [string[]]$DesiredArrayContents, [string]$GetResultParameterName, [string]$ContextLabel, [string]$ItLabel)
+
+    Context $ContextLabel {
+        [Hashtable]$getResult = Get-TargetResource @TestParams
+
+        It $ItLabel {
+            CompareArrayContents -Array1 $DesiredArrayContents -Array2 $getResult."$($GetResultParameterName)" -IgnoreCase | Should Be $true
+        }
+    }
+}
+
 Export-ModuleMember -Function *

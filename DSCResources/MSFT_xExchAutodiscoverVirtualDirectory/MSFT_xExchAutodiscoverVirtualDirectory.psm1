@@ -49,7 +49,6 @@ function Get-TargetResource
             BasicAuthentication = $AutoDVdir.BasicAuthentication
             DigestAuthentication = $AutoDVdir.DigestAuthentication
             WindowsAuthentication = $AutoDVdir.WindowsAuthentication
-            OAuthAuthentication =$AutoDVdir.OAuthAuthentication
             WSSecurityAuthentication = $AutoDVdir.WSSecurityAuthentication
         }
     }
