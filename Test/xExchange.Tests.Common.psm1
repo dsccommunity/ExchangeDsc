@@ -7,10 +7,10 @@ function Test-AllTargetResourceFunctions
     param([Hashtable]$Params, [string]$ContextLabel, [Hashtable]$ExpectedGetResults, [bool]$ExpectedTestResult = $true)
 
     Context $ContextLabel {
-        Set-TargetResource @Params
+        Set-TargetResource @Params -Verbose
 
-        [Hashtable]$getResult = Get-TargetResource @Params
-        [bool]$testResult = Test-TargetResource @Params
+        [Hashtable]$getResult = Get-TargetResource @Params -Verbose
+        [bool]$testResult = Test-TargetResource @Params -Verbose
 
         #The ExpectedGetResults are $null, so let's check that what we got back is $null
         if ($ExpectedGetResults -eq $null)

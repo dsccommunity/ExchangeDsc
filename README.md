@@ -28,6 +28,8 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xExchJetstressCleanup** cleans up the database and log directories created by Jetstress.
 * **xExchMailboxDatabase**
 * **xExchMailboxDatabaseCopy**
+* **xExchMailboxServer**
+* **xExchMaintenanceMode**
 * **xExchMapiVirtualDirectory**
 * **xExchOabVirtualDirectory**
 * **xExchOutlookAnywhere**
@@ -376,6 +378,66 @@ Defaults to $false.
 * **DomainController**
 * **ReplayLagTime**
 * **TruncationLagTime**
+
+### xExchMailboxServer
+
+**xExchMailboxServer** is used to configure Mailbox Server properties via Set-MailboxServer.
+
+Properties correspond to [Set-MailboxServer](https://technet.microsoft.com/en-us/library/aa998651(v=exchg.150).aspx) parameters.
+
+* **Identity**: The Identity parameter specifies the Mailbox server that you want to modify.
+* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
+* **DomainController**: The DomainController parameter specifies the fully qualified domain name (FQDN) of the domain controller that writes this configuration change to Active Directory.
+* **DatabaseCopyActivationDisabledAndMoveNow**: The DatabaseCopyActivationDisabledAndMoveNow parameter specifies whether to prevent databases from being mounted on this Mailbox server if there are other healthy copies of the databases on other Mailbox servers. It will also immediately move any mounted databases on the server to other servers if copies exist and are healthy.
+* **DatabaseCopyAutoActivationPolicy**: The DatabaseCopyAutoActivationPolicy parameter specifies the type of automatic activation available for mailbox database copies on the specified Mailbox server. Valid values are Blocked, IntrasiteOnly, and Unrestricted.
+
+### xExchMaintenanceMode
+
+**xExchMaintenanceMode** is used for putting a Database Availability Group member in and out of maintenance mode. Only works with servers that have both the Client Access and Mailbox Server roles.
+
+* **Enabled**: Whether the server should be put into Maintenance Mode. When Enabled is set to True, the server will be put in Maintenance Mode. If False, the server will be taken out of Maintenance Mode.
+* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
+* **AdditionalComponentsToActivate**: When taking a server out of Maintenance Mode, the following components will be set to Active by default: ServerWideOffline, UMCallRouter, HighAvailability, Monitoring, RecoveryActionsEnabled. This parameter specifies an additional list of components to set to Active.
+* **DomainController**: The DomainController parameter specifies the fully qualified domain name (FQDN) of the domain controller that writes this configuration change to Active Directory.
+* **MovePreferredDatabasesBack**: Whether to move back databases with an Activation Preference of one for this server after taking the server out of Maintenance Mode. Defaults to False.
+* **SetInactiveComponentsFromAnyRequesterToActive**: Whether components that were set to Inactive by outside Requesters should also be set to Active when exiting Maintenance Mode. Defaults to False.
+* **UpgradedServerVersion**: Optional string to specify what the server version will be after applying a Cumulative Update. If the server is already at this version, requests to put the server in Maintenance Mode will be ignored. Version should be in the format ##.#.####.#, as in 15.0.1104.5.
+
+#### Maintenance Mode Procedures
+**xExchMaintenanceMode** performs the following steps when entering or exiting Maintenance Mode
+
+#### Entering Maintenance Mode
+* Set DatabaseCopyAutoActivationPolicy to Blocked
+* Set UMCallrouter to Draining
+* Execute TransportMaintenance.psm1 -> Start-TransportMaintenance
+	* Pause MSExchangeTransport service
+	* Wait for queues to drain
+	* Redirect remaining messages
+	* Set HubTransport component to Inactive
+	* Resume MSExchangeTransport
+* Wait up to 5 minutes for active UM calls to finish
+* Run StartDagServerMaintenance.psm1
+	* Set HighAvailability component to Inactive
+	* Suspend Cluster Node
+	* Move active databases: Move-ActiveMailboxDatabase -Server SERVER
+	* Move the Primary Active Manager role
+* Set ServerWideOffline component to Inactive
+
+#### Exiting Maintenance Mode
+* Set ServerWideOffline component to Active
+* Set UMCallrouter to Active
+* Run StopDagServerMaintenance.ps1
+	* Resume Cluster Node
+	* Set HubTransport component to Active
+	* Set DatabaseCopyAutoActivationPolicy to Unrestricted
+* Execute TransportMaintenance.psm1 -> Stop-TransportMaintenance
+	* Set HubTransport component to Active
+	* Restart MSExchangeTransport service
+* Set Monitoring component to Active
+* Set RecoveryActionsEnabled component to Active
+* (OPTIONAL) Set each in an admin provided list of components to Active
+* (OPTIONAL) For each of the above components, set to Active for ANY requester (this addresses the case where multiple requesters have set a component to Inactive, like HealthApi and Maintenance)
+* (OPTIONAL) Move back all databases with an Activation Preference of 1
 
 ### xExchMapiVirtualDirectory
 
@@ -730,26 +792,22 @@ Defaults to $false.
 
 ## Versions
 
-### Unreleased
+### 1.4.0.0
 
+* Added following resources:
+  * xExchMaintenanceMode
+  * xExchMailboxServer
+  * xExchTransportService
+  * xExchEventLogLevel
 * For all -ExchangeCertificate functions in xExchExchangeCertificate, added '-Server $env:COMPUTERNAME' switch. This will prevent the resource from configuring a certificate on an incorrect server.
-
 * Fixed issue with reading MailboxDatabases.csv in xExchangeConfigHelper.psm1 caused by a column name changed introduced in v7.7 of the Exchange Server Role Requirements Calculator.
-
 * Changed function GetRemoteExchangeSession so that it will throw an exception if Exchange setup is in progress. This will prevent resources from trying to execute while setup is running.
-
 * Fixed issue where VirtualDirectory resources would incorrectly try to restart a Back End Application Pool on a CAS role only server.
-
-* Added **xExchEventLogLevel** resource.
-
 * Added support for the /AddUMLanguagePack parameter in xExchInstall
-
-* Added xExchTransportService
 
 ### 1.3.0.0
 
 * MSFT_xExchWaitForADPrep: Removed obsolete VerbosePreference parameter from Test-TargetResource
-
 * Fixed encoding
 
 ### 1.2.0.0
@@ -939,6 +997,10 @@ The example code for InstallExchange is located in "InstallExchange.ps1" in the 
 
 Contains two separate example scripts which show how to use the **xExchJetstress** resource to automate running Jetstress, and the **xExchJetstressCleanup** resource to cleanup a Jetstress installation. 
 The example code for JetstressAutomation is located in "1-InstallAndRunJetstress.ps1" and "2-CleanupJetstress.ps1" in the module folder under ...\xExchange\Examples\JetstressAutomation.  
+
+### MaintenanceMode
+
+Shows examples of how to prepare for maintenance mode, enter maintenance mode, and exit maintenance mode. MaintenanceModePrep.ps1 prepares a server for maintenance mode by setting DatabaseCopyAutoActivationPolicy to Blocked using a Domain Controller in both the primary and secondary site. If multiple servers are going to be entering maintenance mode at the same time, this step can help prevent these servers from failing over databases to eachother. MaintenanceModeStart.ps1 puts a server into maintenance mode. MaintenanceModeStop.ps1 takes a server out of maintenance mode.
 
 ### PostInstallationConfiguration
 

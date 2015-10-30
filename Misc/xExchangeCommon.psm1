@@ -86,7 +86,7 @@ function GetRemoteExchangeSession
             $moduleInfo = Import-PSSession $Session -WarningAction SilentlyContinue -DisableNameChecking -AllowClobber -Verbose:0
         }
 
-        Import-Module $moduleInfo -Global
+        Import-Module $moduleInfo -Global -DisableNameChecking
 
         #Set Verbose back
         $VerbosePreference = $oldVerbose

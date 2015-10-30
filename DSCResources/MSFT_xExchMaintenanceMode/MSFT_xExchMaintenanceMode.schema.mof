@@ -1,0 +1,13 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchMaintenanceMode")]
+class MSFT_xExchMaintenanceMode : OMI_BaseResource
+{
+    [Key, Description("Whether the server should be put into Maintenance Mode. When Enabled is set to True, the server will be put in Maintenance Mode. If False, the server will be taken out of Maintenance Mode.")] Boolean Enabled;
+    [Required, Description("Credentials used to establish a remote Powershell session to Exchange"), EmbeddedInstance("MSFT_Credential")] String Credential;
+    [Write, Description("When taking a server out of Maintenance Mode, the following components will be set to Active by default: ServerWideOffline, UMCallRouter, HighAvailability, Monitoring, RecoveryActionsEnabled. This parameter specifies an additional list of components to set to Active.")] String AdditionalComponentsToActivate[];
+    [Write, Description("The DomainController parameter specifies the fully qualified domain name (FQDN) of the domain controller that writes this configuration change to Active Directory.")] String DomainController;
+    [Write, Description("Whether to move back databases with an Activation Preference of one for this server after taking the server out of Maintenance Mode. Defaults to False.")] Boolean MovePreferredDatabasesBack;
+    [Write, Description("Whether components that were set to Inactive by outside Requesters should also be set to Active when exiting Maintenance Mode. Defaults to False.")] Boolean SetInactiveComponentsFromAnyRequesterToActive;
+    [Write, Description("Optional string to specify what the server version will be after applying a Cumulative Update. If the server is already at this version, requests to put the server in Maintenance Mode will be ignored. Version should be in the format ##.#.####.#, as in 15.0.1104.5.")] String UpgradedServerVersion;
+};
+
