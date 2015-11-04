@@ -26,6 +26,8 @@ class MSFT_xExchReceiveConnector : OMI_BaseResource
     [Write] Boolean EnableAuthGSSAPI;
     [Write] Boolean Enabled;
     [Write] Boolean EnhancedStatusCodesEnabled;
+    [Write, EmbeddedInstance("MSFT_KeyValuePair")] String ExtendedRightAllowEntries[];
+    [Write, EmbeddedInstance("MSFT_KeyValuePair")] String ExtendedRightDenyEntries[];
     [Write, ValueMap{"None","Allow","Require"}, Values{"None","Allow","Require"}] String ExtendedProtectionPolicy;
     [Write] String Fqdn;
     [Write] Boolean LongAddressesEnabled;
@@ -58,6 +60,4 @@ class MSFT_xExchReceiveConnector : OMI_BaseResource
     [Write, ValueMap{"FrontendTransport","HubTransport"}, Values{"FrontendTransport","HubTransport"}] String TransportRole;
     [Write, ValueMap{"Client","Internal","Internet","Partner","Custom"}, Values{"Client","Internal","Internet","Partner","Custom"}] String Usage;
 };
-
-
 
