@@ -17,12 +17,6 @@ function Get-TargetResource
         [System.String]
         $Ensure,
 
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightAllowEntries,
-
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightDenyEntries,
-
         [System.Boolean]
         $AdvertiseClientSettings,
 
@@ -211,8 +205,6 @@ function Get-TargetResource
             Enabled = $connector.Enabled
             EnhancedStatusCodesEnabled = $connector.EnhancedStatusCodesEnabled
             ExtendedProtectionPolicy = $connector.ExtendedProtectionPolicy
-            ExtendedRightAllowEntries = $ExtendedRightAllowEntries | %{"$($_.key)=$($_.Value)"}
-            ExtendedRightDenyEntries = $ExtendedRightDenyEntries | %{"$($_.key)=$($_.Value)"}
             Fqdn = $connector.Fqdn
             LongAddressesEnabled = $connector.LongAddressesEnabled
             MaxAcknowledgementDelay = $connector.MaxAcknowledgementDelay
@@ -266,12 +258,6 @@ function Set-TargetResource
         [System.String]
         $Ensure,
 
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightAllowEntries,
-
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightDenyEntries,
-
         [System.Boolean]
         $AdvertiseClientSettings,
 
@@ -434,7 +420,7 @@ function Set-TargetResource
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "*ReceiveConnector","*ADPermission" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "*ReceiveConnector" -VerbosePreference $VerbosePreference
 
     $connector = GetReceiveConnector @PSBoundParameters
 
@@ -461,7 +447,7 @@ function Set-TargetResource
             $originalPSBoundParameters = @{} + $PSBoundParameters
 
             #The following aren't valid for New-ReceiveConnector 
-            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Identity","BareLinefeedRejectionEnabled","ExtendedRightAllowEntries","ExtendedRightDenyEntries"
+            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Identity","BareLinefeedRejectionEnabled"
 
             #Parse out the server name and connector name from the given Identity
             $serverName = $Identity.Substring(0, $Identity.IndexOf("\"))
@@ -492,28 +478,9 @@ function Set-TargetResource
         if ($connector -ne $null)
         {
             #Usage is not a valid command for Set-ReceiveConnector
-            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Usage","ExtendedRightAllowEntries","ExtendedRightDenyEntries"
+            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Usage"
 
             Set-ReceiveConnector @PSBoundParameters
-            
-            #set AD permissions
-            if ($ExtendedRightAllowEntries)
-            {
-                foreach ($ExtendedRightAllowEntry in $ExtendedRightAllowEntries) {
-                    foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(","))) {
-                        $connector | Add-ADPermission -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
-                    }
-                }
-            }
-            
-            if ($ExtendedRightDenyEntries)
-            {
-                foreach ($ExtendedRightDenyEntry in $ExtendedRightDenyEntries) {
-                    foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(","))) {
-                        $connector | Remove-ADPermission -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Confirm:$false
-                    }
-                }
-            }
         }
     }
 }
@@ -537,12 +504,6 @@ function Test-TargetResource
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure,
-
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightAllowEntries,
-
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightDenyEntries,
 
         [System.Boolean]
         $AdvertiseClientSettings,
@@ -706,16 +667,10 @@ function Test-TargetResource
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ReceiveConnector","Get-ADPermission" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ReceiveConnector" -VerbosePreference $VerbosePreference
 
     $connector = GetReceiveConnector @PSBoundParameters
 
-    #get AD permissions if necessary
-    if (($ExtendedRightAllowEntries) -or ($ExtendedRightDenyEntries))
-    {
-        $ADPermissions = $connector | Get-ADPermission | ?{$_.IsInherited -eq $false}
-    }
-    
     if ($connector -eq $null)
     {
         if ($Ensure -eq "Present")
@@ -735,9 +690,6 @@ function Test-TargetResource
         }
         else
         {
-            #remove "Custom" from PermissionGroups
-            $connector.PermissionGroups = ($connector.PermissionGroups -split "," ) -notmatch "Custom" -join ","
-
             if (!(VerifySetting -Name "AdvertiseClientSettings" -Type "Boolean" -ExpectedValue $AdvertiseClientSettings -ActualValue $connector.AdvertiseClientSettings -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
@@ -972,23 +924,6 @@ function Test-TargetResource
             {
                 return $false
             }
-            
-            #check AD permissions if necessary
-            if ($ExtendedRightAllowEntries)
-            {
-                if (!(ExtendedRightExists -ADPermissions $ADPermissions -ExtendedRights $ExtendedRightAllowEntries -ShouldbeTrue:$True -VerbosePreference $VerbosePreference))
-                {
-                    return $false
-                }
-            }
-            
-            if ($ExtendedRightDenyEntries)
-            {
-                if (ExtendedRightExists -ADPermissions $ADPermissions -ExtendedRights $ExtendedRightDenyEntries -ShouldbeTrue:$false -VerbosePreference $VerbosePreference)
-                {
-                    return $false
-                }
-            }
         }
     }
 
@@ -1014,12 +949,6 @@ function GetReceiveConnector
         [ValidateSet("Present","Absent")]
         [System.String]
         $Ensure,
-
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightAllowEntries,
-
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightDenyEntries,
 
         [System.Boolean]
         $AdvertiseClientSettings,
@@ -1188,45 +1117,8 @@ function ValidateIdentity
     }
 }
 
-#check a connector for specific extended rights
-function ExtendedRightExists
-{
-[cmdletbinding()]
-    param(
-    $ADPermissions,
-    [Microsoft.Management.Infrastructure.CimInstance[]]$ExtendedRights,
-    [boolean]$ShouldbeTrue,
-    $VerbosePreference
-    )
-    $returnvalue = $false
-    foreach ($Right in $ExtendedRights)
-    {
-        foreach ($Value in $($Right.Value.Split(",")))
-        {
-            if (($ADPermissions | ?{($_.User.RawIdentity -eq $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value)}) -ne $null)
-            {
-                $returnvalue = $true
-                if (!($ShouldbeTrue))
-                {
-                    Write-Verbose "Should report exist!"
-                    ReportBadSetting -SettingName "ExtendedRight" -ExpectedValue "User:$($Right.Key) Value:$($Value)" -ActualValue "Present" -VerbosePreference $VerbosePreference
-                    return $returnvalue
-                    exit;
-                }
-            }
-            else
-            {
-                $returnvalue = $false
-                if ($ShouldbeTrue)
-                {
-                    ReportBadSetting -SettingName "ExtendedRight" -ExpectedValue "User:$($Right.Key) Value:$($Value)" -ActualValue "Absent" -VerbosePreference $VerbosePreference
-                    return $returnvalue
-                    exit;
-                }
-            }
-        }
-    }
-return $returnvalue
-}
 
 Export-ModuleMember -Function *-TargetResource
+
+
+
