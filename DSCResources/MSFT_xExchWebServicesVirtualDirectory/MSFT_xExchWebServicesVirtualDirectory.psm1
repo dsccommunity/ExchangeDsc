@@ -70,6 +70,7 @@ function Get-TargetResource
             OAuthAuthentication = $EwsVdir.OAuthAuthentication
             WSSecurityAuthentication = $EwsVdir.WSSecurityAuthentication
             InternalNLBBypassUrl = $EwsVdir.InternalNLBBypassUrl
+            WindowsAuthentication = $EwsVdir.WindowsAuthentication
         }
     }
 

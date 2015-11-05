@@ -37,8 +37,6 @@ function Get-TargetResource
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-PopSettings" -VerbosePreference $VerbosePreference
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Server","DomainController"
-
     $pop = GetPopSettings @PSBoundParameters
 
     if ($pop -ne $null)

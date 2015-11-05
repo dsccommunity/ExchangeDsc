@@ -36,7 +36,7 @@ function Get-TargetResource
     if ($umService -ne $null)
     {
         $returnValue = @{
-            Server = $Identity
+            Server = $Server
             UMStartupMode = $umService.UMStartupMode
         }
     }
