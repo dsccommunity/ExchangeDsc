@@ -555,6 +555,9 @@ Where no description is listed, properties correspond directly to [Set-ReceiveCo
 Needs to be in the format 'SERVERNAME\CONNECTORNAME' (no quotes).
 * **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
 * **Ensure**: Whether the Receive Connector should exist or not: { Present | Absent }
+* **ExtendedRightAllowEntries**: additional AD permissions, which should be add to the connector. Can have multiple entries. Example:
+@{"NT AUTHORITY\ANONYMOUS LOGON"="Ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-XShadow";"Domain Users"="Ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-Bypass-Anti-Spam"}
+* **ExtendedRightDenyEntries**: Similar as ExtendedRightAllowEntries, but to make sure the defined permission is not set
 * **AdvertiseClientSettings**
 * **AuthMechanism**
 * **Banner**
@@ -792,10 +795,8 @@ Defaults to $false.
 
 ## Versions
 
-### Unreleased
-
-* Added Pester tests for the following resources: xExchActiveSyncVirtualDirectory, xExchAutodiscoverVirtualDirectory, xExchClientAccessServer, xExchEcpVirtualDirectory, xExchExchangeServer, xExchImapSettings, xExchMapiVirtualDirectory, xExchOabVirtualDirectory, xExchOutlookAnywhere, xExchOwaVirtualDirectory, xExchPopSettings, xExchPowershellVirtualDirectory, xExchUMCallRouterSettings, xExchUMService, xExchWebServicesVirtualDirectory
-* Fixed minor Get-TargetResource issues in xExchAutodiscoverVirtualDirectory, xExchImapSettings, xExchPopSettings, xExchUMCallRouterSettings, and xExchWebServicesVirtualDirectory
+* Added support for extended rights to resource xExchReceiveConnector (ExtendedRightAllowEntries/ExtendedRightDenyEntries)
+* Fixed issue where Set-Targetresource is triggered each time consistency check runs in xExchReceiveConnector due to extended permissions on Receive Connector
 
 ### 1.4.0.0
 
