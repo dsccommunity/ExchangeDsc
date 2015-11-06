@@ -51,13 +51,9 @@ if ($exchangeInstalled)
         RemoveExistingPSSessions
         
 
-        #Simulate that setup is running, and try to establish a new session. This should fail
+        #Simulate that setup is running (using notepad.exe), and try to establish a new session. This should fail
         Context 'Make sure PS session is not established when setup process is running' {
-            While ((Get-Process -Name notepad -ErrorAction SilentlyContinue) -eq $null)           
-            {
-                Write-Warning "Setup tests require that notepad.exe is running"
-                Start-Sleep -Seconds 1
-            }
+            Start-Process Notepad.exe
 
             $caughtException = $false
 

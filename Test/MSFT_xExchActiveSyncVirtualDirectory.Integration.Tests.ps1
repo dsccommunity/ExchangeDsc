@@ -68,6 +68,25 @@ if ($exchangeInstalled)
         $expectedGetResults.ClientCertAuth = 'Required'
 
         Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Try enabling certificate based authentication" -ExpectedGetResults $expectedGetResults
+
+
+        #Set Authentication values back to default
+        $testParams = @{
+            Identity =  "$($env:COMPUTERNAME)\Microsoft-Server-ActiveSync (Default Web Site)"
+            Credential = $Global:ShellCredentials
+            BasicAuthEnabled = $false
+            ClientCertAuth = 'Ignore'                       
+            WindowsAuthEnabled = $true           
+        }
+
+        $expectedGetResults = @{
+            Identity =  "$($env:COMPUTERNAME)\Microsoft-Server-ActiveSync (Default Web Site)"
+            BasicAuthEnabled = $false
+            ClientCertAuth = 'Ignore'                       
+            WindowsAuthEnabled = $true
+        }
+
+        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Reset authentication to default" -ExpectedGetResults $expectedGetResults
     }
 }
 else

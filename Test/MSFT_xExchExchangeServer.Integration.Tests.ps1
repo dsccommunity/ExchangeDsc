@@ -1,4 +1,6 @@
 ###NOTE: This test module requires use of credentials. The first run through of the tests will prompt for credentials from the logged on user.
+###This module has the following additional requirements;
+### * Requires that the ActiveDirectory module is installed
 
 Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchExchangeServer\MSFT_xExchExchangeServer.psm1
 Import-Module $PSScriptRoot\..\Misc\xExchangeCommon.psm1 -Verbose:0
@@ -48,71 +50,80 @@ function VerifyServerPrepped
     }
 }
 
-#Check if Exchange is installed on this machine. If not, we can't run tests
-[bool]$exchangeInstalled = IsSetupComplete
+$adModule = Get-Module -ListAvailable ActiveDirectory -ErrorAction SilentlyContinue
 
-if ($exchangeInstalled)
+if ($adModule -ne $null)
 {
-    #Get required credentials to use for the test
-    if ($Global:ShellCredentials -eq $null)
+    #Check if Exchange is installed on this machine. If not, we can't run tests
+    [bool]$exchangeInstalled = IsSetupComplete
+
+    if ($exchangeInstalled)
     {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message "Enter credentials for connecting a Remote PowerShell session to Exchange"
-    }
-
-    if ($Global:ExchangeServerDN -eq $null)
-    {
-        GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad "Get-ExchangeServer"
-
-        $server = Get-ExchangeServer -Identity $env:COMPUTERNAME
-
-        if ($server -ne $null)
+        #Get required credentials to use for the test
+        if ($Global:ShellCredentials -eq $null)
         {
-            $Global:ExchangeServerDN = $server.DistinguishedName
+            [PSCredential]$Global:ShellCredentials = Get-Credential -Message "Enter credentials for connecting a Remote PowerShell session to Exchange"
         }
 
         if ($Global:ExchangeServerDN -eq $null)
         {
-            throw "Failed to determine distinguishedName of Exchange Server object"
+            GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad "Get-ExchangeServer"
+
+            $server = Get-ExchangeServer -Identity $env:COMPUTERNAME
+
+            if ($server -ne $null)
+            {
+                $Global:ExchangeServerDN = $server.DistinguishedName
+            }
+
+            if ($Global:ExchangeServerDN -eq $null)
+            {
+                throw "Failed to determine distinguishedName of Exchange Server object"
+            }
+        }
+
+        #Get the product key to use for testing
+        if ($Global:ProductKey -eq $null)
+        {
+            $Global:ProductKey = Read-Host -Prompt "Enter the product key to license Exchange with"
+        }
+
+        Describe "Test Setting Properties with xExchExchangeServer" {
+            #Create out initial test params
+            $testParams = @{
+                Identity = $env:COMPUTERNAME
+                Credential = $Global:ShellCredentials
+            }
+
+            #First prepare the server for tests
+            PrepTestExchangeServer
+            VerifyServerPrepped
+
+
+            #Now do tests
+            $testParams = @{
+                Identity = $env:COMPUTERNAME
+                Credential = $Global:ShellCredentials
+                InternetWebProxy = "http://someproxy.local/"
+                ProductKey = $Global:ProductKey
+            }
+
+            $expectedGetResults = @{
+                Identity = $env:COMPUTERNAME
+                InternetWebProxy = "http://someproxy.local/"
+                ProductKey = "Licensed"
+            }
+
+            Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Standard xExchExchangeServer tests" -ExpectedGetResults $expectedGetResults
         }
     }
-
-    #Get the product key to use for testing
-    if ($Global:ProductKey -eq $null)
+    else
     {
-        $Global:ProductKey = Read-Host -Prompt "Enter the product key to license Exchange with"
-    }
-
-    Describe "Test Setting Properties with xExchExchangeServer" {
-        #Create out initial test params
-        $testParams = @{
-            Identity = $env:COMPUTERNAME
-            Credential = $Global:ShellCredentials
-        }
-
-        #First prepare the server for tests
-        PrepTestExchangeServer
-        VerifyServerPrepped
-
-
-        #Now do tests
-        $testParams = @{
-            Identity = $env:COMPUTERNAME
-            Credential = $Global:ShellCredentials
-            InternetWebProxy = "http://someproxy.local/"
-            ProductKey = $Global:ProductKey
-        }
-
-        $expectedGetResults = @{
-            Identity = $env:COMPUTERNAME
-            InternetWebProxy = "http://someproxy.local/"
-            ProductKey = "Licensed"
-        }
-
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Standard xExchExchangeServer tests" -ExpectedGetResults $expectedGetResults
+        Write-Verbose "Tests in this file require that Exchange is installed to be run."
     }
 }
 else
 {
-    Write-Verbose "Tests in this file require that Exchange is installed to be run."
+    Write-Verbose "Tests in this file require that the ActiveDirectory module is installed. Run: Add-WindowsFeature RSAT-ADDS"
 }
     
