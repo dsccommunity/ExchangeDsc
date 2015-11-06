@@ -792,6 +792,11 @@ Defaults to $false.
 
 ## Versions
 
+### Unreleased
+
+* Added Pester tests for the following resources: xExchActiveSyncVirtualDirectory, xExchAutodiscoverVirtualDirectory, xExchClientAccessServer, xExchEcpVirtualDirectory, xExchExchangeServer, xExchImapSettings, xExchMapiVirtualDirectory, xExchOabVirtualDirectory, xExchOutlookAnywhere, xExchOwaVirtualDirectory, xExchPopSettings, xExchPowershellVirtualDirectory, xExchUMCallRouterSettings, xExchUMService, xExchWebServicesVirtualDirectory
+* Fixed minor Get-TargetResource issues in xExchAutodiscoverVirtualDirectory, xExchImapSettings, xExchPopSettings, xExchUMCallRouterSettings, and xExchWebServicesVirtualDirectory
+
 ### 1.4.0.0
 
 * Added following resources:
