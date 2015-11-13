@@ -353,6 +353,7 @@ Defaults to $false.
 * **EventHistoryRetentionPeriod**
 * **IndexEnabled**
 * **IsExcludedFromProvisioning**
+* **IsExcludedFromProvisioningReason**
 * **IssueWarningQuota**
 * **IsSuspendedFromProvisioning**
 * **JournalRecipient**

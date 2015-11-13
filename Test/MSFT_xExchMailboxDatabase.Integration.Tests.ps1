@@ -120,6 +120,7 @@ if ($exchangeInstalled)
             IndexEnabled = $false
             IsExcludedFromProvisioning = $true
             IsSuspendedFromProvisioning = $true
+            IsExcludedFromProvisioningReason = "Testing Excluding the Database"
             MailboxRetention = "31.00:00:00"
             MountAtStartup = $false
             OfflineAddressBook = "Default Offline Address Book (Ex2013)"

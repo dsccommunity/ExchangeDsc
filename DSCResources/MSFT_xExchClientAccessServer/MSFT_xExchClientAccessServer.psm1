@@ -28,7 +28,7 @@ function Get-TargetResource
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ClientAccessServer" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ClientAccessServ*" -VerbosePreference $VerbosePreference
 
     $cas = GetClientAccessServer @PSBoundParameters
 
@@ -79,13 +79,22 @@ function Set-TargetResource
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Set-ClientAccessServer" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Set-ClientAccessServ*" -VerbosePreference $VerbosePreference
 
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential"
 
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
     
-    Set-ClientAccessServer @PSBoundParameters
+    $exchange2013Present = IsExchange2013Present
+
+    if ($exchange2013Present -eq $false)
+    {
+        Set-ClientAccessService @PSBoundParameters
+    }
+    else
+    {
+        Set-ClientAccessServer @PSBoundParameters
+    }
 }
 
 
@@ -119,7 +128,7 @@ function Test-TargetResource
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ClientAccessServer" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ClientAccessServ*" -VerbosePreference $VerbosePreference
 
     $cas = GetClientAccessServer @PSBoundParameters
 
@@ -170,7 +179,16 @@ function GetClientAccessServer
     #Remove params we don't want to pass into the next command
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
 
-    return (Get-ClientAccessServer @PSBoundParameters)
+    $exchange2013Present = IsExchange2013Present
+
+    if ($exchange2013Present -eq $false)
+    {
+        return (Get-ClientAccessService @PSBoundParameters)
+    }
+    else
+    {
+        return (Get-ClientAccessServer @PSBoundParameters)
+    }   
 }
 
 
