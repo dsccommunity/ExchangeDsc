@@ -63,6 +63,9 @@ function Get-TargetResource
         $IsExcludedFromProvisioning,
 
         [System.String]
+        $IsExcludedFromProvisioningReason,
+
+        [System.String]
         $IssueWarningQuota,
 
         [System.Boolean]
@@ -146,6 +149,13 @@ function Get-TargetResource
             RecoverableItemsWarningQuota = $db.RecoverableItemsWarningQuota
             RetainDeletedItemsUntilBackup = $db.RetainDeletedItemsUntilBackup
         }
+
+        $exchange2013Present = IsExchange2013Present
+
+        if ($exchange2013Present -eq $false )
+        {
+            $returnValue.Add("IsExcludedFromProvisioningReason", $db.IsExcludedFromProvisioningReason)
+        }
     }
 
     $returnValue
@@ -216,6 +226,9 @@ function Set-TargetResource
         $IsExcludedFromProvisioning,
 
         [System.String]
+        $IsExcludedFromProvisioningReason,
+
+        [System.String]
         $IssueWarningQuota,
 
         [System.Boolean]
@@ -262,6 +275,18 @@ function Set-TargetResource
 
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "*MailboxDatabase","Move-DatabasePath","Mount-Database","Set-AdServerSettings" -VerbosePreference $VerbosePreference
+
+    #Check for non-existent parameters in Exchange 2013
+    if ($PSBoundParameters.ContainsKey("IsExcludedFromProvisioningReason"))
+    {
+        $exchange2013Present = IsExchange2013Present
+
+        if ($exchange2013Present -eq $true )
+        {
+            Write-Warning "IsExcludedFromProvisioningReason is not a valid parameter for xExchMailboxDatabase in Exchange 2013. Skipping usage."
+            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "IsExcludedFromProvisioningReason"
+        }
+    }
 
     if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
@@ -410,6 +435,9 @@ function Test-TargetResource
 
         [System.Boolean]
         $IsExcludedFromProvisioning,
+
+        [System.String]
+        $IsExcludedFromProvisioningReason,
 
         [System.String]
         $IssueWarningQuota,
@@ -673,6 +701,9 @@ function GetMailboxDatabase
         $IsExcludedFromProvisioning,
 
         [System.String]
+        $IsExcludedFromProvisioningReason,
+
+        [System.String]
         $IssueWarningQuota,
 
         [System.Boolean]
@@ -783,6 +814,9 @@ function MoveDatabaseOrLogPath
         $IsExcludedFromProvisioning,
 
         [System.String]
+        $IsExcludedFromProvisioningReason,
+
+        [System.String]
         $IssueWarningQuota,
 
         [System.Boolean]
@@ -891,6 +925,9 @@ function MountDatabase
 
         [System.Boolean]
         $IsExcludedFromProvisioning,
+
+        [System.String]
+        $IsExcludedFromProvisioningReason,
 
         [System.String]
         $IssueWarningQuota,

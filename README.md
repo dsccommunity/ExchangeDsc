@@ -2,7 +2,7 @@
 
 # xExchange
 
-The **xExchange** module contains many DSC resources for configuring and managing Exchange 2013 servers including individual server properties, databases, mount points, and Database Availability Groups.
+The **xExchange** module contains many DSC resources for configuring and managing Exchange 2013 and 2016 servers including individual server properties, databases, mount points, and Database Availability Groups.
 
 ## Contributing
 Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
@@ -23,7 +23,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xExchExchangeCertificate** can install, remove, or configure an ExchangeCertificate using *-ExchangeCertificate cmdlets.
 * **xExchExchangeServer**
 * **xExchImapSettings** configures IMAP settings using Set-ImapSettings.
-* **xExchInstall** installs Exchange 2013.
+* **xExchInstall** installs Exchange 2013 or 2016.
 * **xExchJetstress** automatically runs Jetstress using the **JetstressCmd.exe** command line executable. 
 * **xExchJetstressCleanup** cleans up the database and log directories created by Jetstress.
 * **xExchMailboxDatabase**
@@ -40,7 +40,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xExchTransportService**
 * **xExchUMCallRouterSettings** configures the UM Call Router service using Set-UMCallRouterSettings.
 * **xExchUMService** configures a UM server using Set-UMService.
-* **xExchWaitForADPrep** ensures that Active Directory has been prepared for Exchange 2013.
+* **xExchWaitForADPrep** ensures that Active Directory has been prepared for Exchange 2013 or 2016.
 * **xExchWaitForDAG**
 * **xExchWaitForMailboxDatabase**
 * **xExchWebServicesVirtualDirectory**
@@ -277,9 +277,9 @@ Defaults to $false.
 
 ### xExchInstall 
 
-**xExchInstall** installs Exchange 2013.
+**xExchInstall** installs Exchange 2013 or 2016.
 
-* **Path**: Full path to setup.exe in the Exchange 2013 setup directory.
+* **Path**: Full path to setup.exe in the Exchange 2013 or 2016 setup directory.
 * **Arguments**: Command line arguments to pass to setup.exe
 * **Credential**: The credentials to use to perform the installation.
 
@@ -353,6 +353,7 @@ Defaults to $false.
 * **EventHistoryRetentionPeriod**
 * **IndexEnabled**
 * **IsExcludedFromProvisioning**
+* **IsExcludedFromProvisioningReason**
 * **IssueWarningQuota**
 * **IsSuspendedFromProvisioning**
 * **JournalRecipient**
@@ -731,14 +732,14 @@ xExchUMService configures a UM server using Set-UMService.
 
 ### xExchWaitForADPrep
 
-xExchWaitForADPrep ensures that Active Directory has been prepared for Exchange 2013 using setup /PrepareSchema, /PrepareAD, and /PrepareDomain. 
+xExchWaitForADPrep ensures that Active Directory has been prepared for Exchange 2013 or 2016 using setup /PrepareSchema, /PrepareAD, and /PrepareDomain. 
 To find appropriate version values for the SchemaVersion, OrganizationVersion, and DomainVersion parameters, consult the 'Exchange 2013 Active Directory versions' section of the article [Prepare Active Directory and domains](http://technet.microsoft.com/en-us/library/bb125224(v=exchg.150).aspx).
 
 * **Identity**: Not actually used. Enter anything, as long as it's not null.
 * **Credential**: Credentials used to perform Active Directory lookups against the Schema, Configuration, and Domain naming contexts.
-* **SchemaVersion**: Specifies that the Active Directory schema should have been prepared using Exchange 2013 'setup /PrepareSchema', and should be at the specified version.
-* **OrganizationVersion**: Specifies that the Exchange Organization should have been prepared using Exchange 2013 'setup /PrepareAD', and should be at the specified version.
-* **DomainVersion**: Specifies that the domain containing the target Exchange 2013 server was prepared using setup /PrepareAD, /PrepareDomain, or /PrepareAllDomains, and should be at the specified version.
+* **SchemaVersion**: Specifies that the Active Directory schema should have been prepared using Exchange 2013 or 2016 'setup /PrepareSchema', and should be at the specified version.
+* **OrganizationVersion**: Specifies that the Exchange Organization should have been prepared using Exchange 2013 or 2016 'setup /PrepareAD', and should be at the specified version.
+* **DomainVersion**: Specifies that the domain containing the target Exchange 2013 or 2016 server was prepared using setup /PrepareAD, /PrepareDomain, or /PrepareAllDomains, and should be at the specified version.
 * **ExchangeDomains**: The FQDN's of domains that should be checked for DomainVersion in addition to the domain that this Exchange server belongs to.
 * **RetryIntervalSec**: How many seconds to wait between retries when checking whether AD has been prepped. 
 Defaults to 60.
@@ -796,7 +797,8 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased  
- 
+
+* Added support for Exchange 2016!
 * Added Pester tests for the following resources: xExchActiveSyncVirtualDirectory, xExchAutodiscoverVirtualDirectory, xExchClientAccessServer, xExchDatabaseAvailabilityGroup, xExchDatabaseAvailabilityGroupMember, xExchEcpVirtualDirectory, xExchExchangeServer, xExchImapSettings, xExchMailboxDatabase, xExchMailboxDatabaseCopy, xExchMapiVirtualDirectory, xExchOabVirtualDirectory, xExchOutlookAnywhere, xExchOwaVirtualDirectory, xExchPopSettings, xExchPowershellVirtualDirectory, xExchUMCallRouterSettings, xExchUMService, xExchWebServicesVirtualDirectory  
 * Fixed minor Get-TargetResource issues in xExchAutodiscoverVirtualDirectory, xExchImapSettings, xExchPopSettings, xExchUMCallRouterSettings, and xExchWebServicesVirtualDirectory  
 * Added support for extended rights to resource xExchReceiveConnector (ExtendedRightAllowEntries/ExtendedRightDenyEntries)

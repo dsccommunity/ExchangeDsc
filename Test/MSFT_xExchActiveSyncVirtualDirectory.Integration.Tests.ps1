@@ -21,10 +21,29 @@ if ($exchangeInstalled)
         $Global:ServerFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
-    #Get the thumbprint to use for ActiveSync Cert Based Auth
-    if ($Global:CBACertThumbprint -eq $null)
+    if ($Global:WebCertAuthInstalled -eq $null)
     {
-        $Global:CBACertThumbprint = Read-Host -Prompt "Enter the thumbprint of an Exchange certificate to use when enabling Certificate Based Authentication"
+        $webCertAuth = Get-WindowsFeature -Name Web-Cert-Auth
+
+        if ($webCertAuth.InstallState -ne "Installed")
+        {
+            $Global:WebCertAuthInstalled = $false
+            Write-Verbose "Web-Cert-Auth is not installed. Skipping certificate based authentication tests."
+        }
+        else
+        {
+            $Global:WebCertAuthInstalled = $true
+        }
+
+    }
+
+    if ($Global:WebCertAuthInstalled -eq $true)
+    {
+        #Get the thumbprint to use for ActiveSync Cert Based Auth
+        if ($Global:CBACertThumbprint -eq $null)
+        {
+            $Global:CBACertThumbprint = Read-Host -Prompt "Enter the thumbprint of an Exchange certificate to use when enabling Certificate Based Authentication"
+        }
     }
 
     Describe "Test Setting Properties with xExchActiveSyncVirtualDirectory" {
@@ -62,12 +81,15 @@ if ($exchangeInstalled)
         Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Try with empty URL's" -ExpectedGetResults $expectedGetResults
 
 
-        $testParams.AutoCertBasedAuth = $true
-        $testParams.AutoCertBasedAuthThumbprint = $Global:CBACertThumbprint
-        $testParams.ClientCertAuth = 'Required'
-        $expectedGetResults.ClientCertAuth = 'Required'
+        if ($Global:WebCertAuthInstalled -eq $true)
+        {
+            $testParams.AutoCertBasedAuth = $true
+            $testParams.AutoCertBasedAuthThumbprint = $Global:CBACertThumbprint
+            $testParams.ClientCertAuth = 'Required'
+            $expectedGetResults.ClientCertAuth = 'Required'
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Try enabling certificate based authentication" -ExpectedGetResults $expectedGetResults
+            Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Try enabling certificate based authentication" -ExpectedGetResults $expectedGetResults
+        }
 
 
         #Set Authentication values back to default
