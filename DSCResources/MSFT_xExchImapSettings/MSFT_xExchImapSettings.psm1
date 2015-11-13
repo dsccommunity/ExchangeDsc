@@ -37,8 +37,6 @@ function Get-TargetResource
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ImapSettings" -VerbosePreference $VerbosePreference
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Server","DomainController"
-
     $imap = GetImapSettings @PSBoundParameters
 
     if ($imap -ne $null)
