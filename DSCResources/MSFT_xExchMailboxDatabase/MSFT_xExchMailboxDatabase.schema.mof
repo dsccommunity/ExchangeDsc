@@ -24,6 +24,7 @@ class MSFT_xExchMailboxDatabase : OMI_BaseResource
     [Write] String EventHistoryRetentionPeriod;
     [Write] Boolean IndexEnabled;
     [Write] Boolean IsExcludedFromProvisioning;
+    [Write] String IsExcludedFromProvisioningReason;
     [Write] String IssueWarningQuota;
     [Write] Boolean IsSuspendedFromProvisioning;
     [Write] String JournalRecipient;

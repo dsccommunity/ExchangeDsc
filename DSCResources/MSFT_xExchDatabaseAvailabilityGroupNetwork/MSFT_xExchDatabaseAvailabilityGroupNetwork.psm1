@@ -49,7 +49,6 @@ function Get-TargetResource
         $returnValue = @{
             Name = $Name
             DatabaseAvailabilityGroup = $DatabaseAvailabilityGroup
-            Description = $dagNet.Description
             IgnoreNetwork = $dagNet.IgnoreNetwork
             ReplicationEnabled = $dagNet.ReplicationEnabled
             Subnets = $dagNet.Subnets
@@ -101,7 +100,7 @@ function Set-TargetResource
     LogFunctionEntry -Parameters @{"Name" = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "*DatabaseAvailabilityGroupNetwork" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "*DatabaseAvailabilityGroup*" -VerbosePreference $VerbosePreference
 
     $dagId = "$($DatabaseAvailabilityGroup)\$($Name)"
 
@@ -132,6 +131,7 @@ function Set-TargetResource
         if ($dagNet -eq $null) #Need to create a new network
         {
             $dagNet = New-DatabaseAvailabilityGroupNetwork @PSBoundParameters
+            Set-DatabaseAvailabilityGroup -Identity $DatabaseAvailabilityGroup -DiscoverNetworks
         }
         else #Set props on the existing network
         {

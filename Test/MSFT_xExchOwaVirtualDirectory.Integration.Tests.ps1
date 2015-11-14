@@ -31,7 +31,7 @@ if ($exchangeInstalled)
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
             Credential = $Global:ShellCredentials
-            AdfsAuthentication = $false
+            #AdfsAuthentication = $false #Don't test AdfsAuthentication changes in dedicated OWA tests, as they have to be done to ECP at the same time
             BasicAuthentication = $true
             ChangePasswordEnabled = $true
             DigestAuthentication = $false
@@ -49,7 +49,6 @@ if ($exchangeInstalled)
 
         $expectedGetResults = @{
             Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
-            AdfsAuthentication = $false
             BasicAuthentication = $true
             ChangePasswordEnabled = $true
             DigestAuthentication = $false
@@ -71,7 +70,6 @@ if ($exchangeInstalled)
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
             Credential = $Global:ShellCredentials
-            AdfsAuthentication = $true
             BasicAuthentication = $false
             ChangePasswordEnabled = $false
             DigestAuthentication = $true
@@ -89,7 +87,6 @@ if ($exchangeInstalled)
 
         $expectedGetResults = @{
             Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
-            AdfsAuthentication = $true
             BasicAuthentication = $false
             ChangePasswordEnabled = $false
             DigestAuthentication = $true
@@ -106,6 +103,27 @@ if ($exchangeInstalled)
         }
 
         Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Try with the opposite of each property value" -ExpectedGetResults $expectedGetResults
+
+
+        #Set Authentication values back to default
+        $testParams = @{
+            Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
+            Credential = $Global:ShellCredentials
+            BasicAuthentication = $true
+            DigestAuthentication = $false
+            FormsAuthentication = $true                      
+            WindowsAuthentication = $false        
+        }
+
+        $expectedGetResults = @{
+            Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
+            BasicAuthentication = $true
+            DigestAuthentication = $false
+            FormsAuthentication = $true                      
+            WindowsAuthentication = $false   
+        }
+
+        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Reset authentication to default" -ExpectedGetResults $expectedGetResults
     }
 }
 else
