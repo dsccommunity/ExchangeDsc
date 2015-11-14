@@ -99,7 +99,6 @@ function Set-TargetResource
 
     Set-MailboxServer @PSBoundParameters
 
-    }
 }
 
 
