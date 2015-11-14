@@ -94,34 +94,11 @@ function Set-TargetResource
     #Setup params for next command
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential"
 
-    if ($PSBoundParameters.ContainsKey('MaximumActiveDatabases'))
-    {
-        if ([string]::IsNullOrEmpty($MaximumActiveDatabases))
-        {
-            Write-Verbose "MaximumActiveDatabases is NULL"
-            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "MaximumActiveDatabases"
-            $Arguments += '-MaximumActiveDatabases $null '
-        }
-    }
+    #Ensure an empty string is $null and not a string
+    SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    if ($PSBoundParameters.ContainsKey('MaximumPreferredActiveDatabases'))
-    {
-        if ([string]::IsNullOrEmpty($MaximumPreferredActiveDatabases))
-        {
-                Write-Verbose "MaximumPreferredActiveDatabases is NULL"
-                RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "MaximumPreferredActiveDatabases"
-                $Arguments += '-MaximumPreferredActiveDatabases $null '
-        }
-    }
+    Set-MailboxServer @PSBoundParameters
 
-    if ($arguments)
-    {
-        $expression = 'Set-MailboxServer @PSBoundParameters '+$Arguments
-        Invoke-Expression $expression
-    }
-    else
-    {
-        Set-MailboxServer @PSBoundParameters
     }
 }
 
