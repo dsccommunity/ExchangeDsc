@@ -800,6 +800,8 @@ Defaults to $false.
 
 ### Unreleased  
 
+### 1.5.0.0
+
 * Added support for Exchange 2016!
 * Added Pester tests for the following resources: xExchActiveSyncVirtualDirectory, xExchAutodiscoverVirtualDirectory, xExchClientAccessServer, xExchDatabaseAvailabilityGroup, xExchDatabaseAvailabilityGroupMember, xExchEcpVirtualDirectory, xExchExchangeServer, xExchImapSettings, xExchMailboxDatabase, xExchMailboxDatabaseCopy, xExchMapiVirtualDirectory, xExchOabVirtualDirectory, xExchOutlookAnywhere, xExchOwaVirtualDirectory, xExchPopSettings, xExchPowershellVirtualDirectory, xExchUMCallRouterSettings, xExchUMService, xExchWebServicesVirtualDirectory  
 * Fixed minor Get-TargetResource issues in xExchAutodiscoverVirtualDirectory, xExchImapSettings, xExchPopSettings, xExchUMCallRouterSettings, and xExchWebServicesVirtualDirectory  
