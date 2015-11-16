@@ -20,7 +20,13 @@ function Get-TargetResource
 
         [ValidateSet("Blocked","IntrasiteOnly","Unrestricted")]
         [System.String]
-        $DatabaseCopyAutoActivationPolicy
+        $DatabaseCopyAutoActivationPolicy,
+
+        [System.String]
+        $MaximumActiveDatabases,
+
+        [System.String]
+        $MaximumPreferredActiveDatabases
     )
 
     #Load helper module
@@ -39,6 +45,8 @@ function Get-TargetResource
             Identity = $Identity
             DatabaseCopyActivationDisabledAndMoveNow = $server.DatabaseCopyActivationDisabledAndMoveNow
             DatabaseCopyAutoActivationPolicy = $server.DatabaseCopyAutoActivationPolicy
+            MaximumActiveDatabases = $server.MaximumActiveDatabases
+            MaximumPreferredActiveDatabases = $server.MaximumPreferredActiveDatabases
         }
     }
 
@@ -66,7 +74,13 @@ function Set-TargetResource
 
         [ValidateSet("Blocked","IntrasiteOnly","Unrestricted")]
         [System.String]
-        $DatabaseCopyAutoActivationPolicy
+        $DatabaseCopyAutoActivationPolicy,
+
+        [System.String]
+        $MaximumActiveDatabases,
+
+        [System.String]
+        $MaximumPreferredActiveDatabases
     )
     
     #Load helper module
@@ -80,7 +94,11 @@ function Set-TargetResource
     #Setup params for next command
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential"
 
+    #Ensure an empty string is $null and not a string
+    SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
+
     Set-MailboxServer @PSBoundParameters
+
 }
 
 
@@ -106,7 +124,13 @@ function Test-TargetResource
 
         [ValidateSet("Blocked","IntrasiteOnly","Unrestricted")]
         [System.String]
-        $DatabaseCopyAutoActivationPolicy
+        $DatabaseCopyAutoActivationPolicy,
+
+        [System.String]
+        $MaximumActiveDatabases,
+
+        [System.String]
+        $MaximumPreferredActiveDatabases
     )
 
     #Load helper module
@@ -131,6 +155,16 @@ function Test-TargetResource
         }
 
         if (!(VerifySetting -Name "DatabaseCopyAutoActivationPolicy" -Type "String" -ExpectedValue $DatabaseCopyAutoActivationPolicy -ActualValue $server.DatabaseCopyAutoActivationPolicy -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (!(VerifySetting -Name "MaximumActiveDatabases" -Type "String" -ExpectedValue $MaximumActiveDatabases -ActualValue $server.MaximumActiveDatabases -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (!(VerifySetting -Name "MaximumPreferredActiveDatabases" -Type "String" -ExpectedValue $MaximumPreferredActiveDatabases -ActualValue $server.MaximumPreferredActiveDatabases -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -161,7 +195,13 @@ function GetMailboxServer
 
         [ValidateSet("Blocked","IntrasiteOnly","Unrestricted")]
         [System.String]
-        $DatabaseCopyAutoActivationPolicy
+        $DatabaseCopyAutoActivationPolicy,
+
+        [System.String]
+        $MaximumActiveDatabases,
+
+        [System.String]
+        $MaximumPreferredActiveDatabases
     )
 
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
