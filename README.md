@@ -731,6 +731,7 @@ xExchUMService configures a UM server using Set-UMService.
 * **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
 * **UMStartupMode**: UMStartupMode for the UM server.
 * **DomainController**: Optional Domain Controller to connect to.
+* **DialPlans**: Specifies all dial plans that the Unified Messaging service handles incoming calls for.
 
 ### xExchWaitForADPrep
 
@@ -799,6 +800,8 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased  
+
+* Added DialPlans parameter to xExchUMService
 
 ### 1.5.0.0
 
