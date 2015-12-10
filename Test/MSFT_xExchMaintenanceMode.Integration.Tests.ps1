@@ -91,7 +91,7 @@ if ($exchangeInstalled)
     #Make sure server is a DAG member
     if ($Global:IsDagMember -eq $null)
     {
-        GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad "Get-MailboxServer","Get-MailboxDatabaseCopyStatus"
+        GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad "Get-MailboxServer","Get-MailboxDatabaseCopyStatus","Get-MailboxDatabase"
 
         $mbxServer = Get-MailboxServer $env:COMPUTERNAME
 
@@ -101,6 +101,23 @@ if ($exchangeInstalled)
     if ($Global:IsDagMember -eq $false)
     {
         Write-Verbose "Tests in this file require that this server be a member of a Database Availability Group"
+        return
+    }
+
+    #Make sure server only has replicated DB's
+    if ($Global:HasNonReplicationDBs -eq $null)
+    {
+        $nonReplicatedDBs = Get-MailboxDatabase -Server $env:COMPUTERNAME -ErrorAction SilentlyContinue | where {$_.ReplicationType -like "None"}
+
+        if ($nonReplicatedDBs -ne $null)
+        {
+            $Global:HasNonReplicationDBs = $true
+        }
+    }
+
+    if ($Global:HasNonReplicationDBs -eq $true)
+    {
+        Write-Verbose "Tests in this file require that all databases on this server must have copies on other DAG members."
         return
     }
 
