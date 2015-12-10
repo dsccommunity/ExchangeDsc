@@ -57,6 +57,28 @@ if ($exchangeInstalled)
         $expectedGetResults.InternalUrl = $null
 
         Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Try with empty URL's" -ExpectedGetResults $expectedGetResults
+
+
+        #Set Authentication values back to default
+        $testParams = @{
+            Identity =  "$($env:COMPUTERNAME)\EWS (Default Web Site)"
+            Credential = $Global:ShellCredentials
+            BasicAuthentication = $false
+            DigestAuthentication = $false
+            OAuthAuthentication = $true                       
+            WindowsAuthentication = $true
+            WSSecurityAuthentication = $true          
+        }
+
+        $expectedGetResults = @{
+            BasicAuthentication = $false
+            DigestAuthentication = $false
+            OAuthAuthentication = $true                       
+            WindowsAuthentication = $true
+            WSSecurityAuthentication = $true     
+        }
+
+        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Reset authentication to default" -ExpectedGetResults $expectedGetResults
     }
 }
 else

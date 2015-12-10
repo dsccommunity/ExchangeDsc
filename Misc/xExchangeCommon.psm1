@@ -109,61 +109,87 @@ function RemoveExistingRemoteSession
     }
 }
 
-#Ensures that Exchange is installed, and that it is the correct version (2013)
+#Ensures that Exchange is installed, and that it is the correct version (2013 or 2016)
 function VerifyServerVersion
 {
     [CmdletBinding()]
     param($VerbosePreference)
 
-    if ($global:alreadyConfirmedServerVersion -eq $true)
+    $unsupportedMsg = "A supported version of Exchange is either not present, or not fully installed on this machine."
+
+    if ($Global:ServerVersionGood -eq $true)
     {
-        return
+        #Do nothing
+    }
+    elseif ($Global:ServerVersionGood -eq $false)
+    {
+        throw $unsupportedMsg
     }
     else
     {
-        #First check for the presence of Exchange 2013 specific setup reg keys
-        $key = Get-ItemProperty HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\Setup -ErrorAction SilentlyContinue
+        $setupComplete = IsSetupComplete
 
-        if ($key -eq $null)
+        if ($setupComplete -eq $false)
         {
-            throw "Exchange is not installed on this machine"
+            $Global:ServerVersionGood = $false
+
+            throw $unsupportedMsg
         }
         else
         {
-            $version = $key.MsiProductMajor
-
-            if ($version -ne 15)
-            {
-                throw "Server running an unsupported version of Exchange. Major version must be 15. Major version detected as $($key.MsiProductMajor)."
-            }
+            $Global:ServerVersionGood = $true
         }
-
-        #Check if setup is partially completed.
-        $setupPartiallyComplete = IsSetupPartiallyCompleted
-
-        if ($setupPartiallyComplete -eq $true)
-        {
-            $setupRunning = IsSetupRunning
-
-            if ($setupRunning -eq $true)
-            {
-                throw "Exchange setup is currently running. Wait for setup to complete before running this xExchange resource."
-            }
-            else
-            {
-                throw "Exchange setup is in a partially completed state, but setup is not currently running. You must successfully finish Exchange setup before running this xExchange resource."
-            }
-        }
-
-        #If we made it here, everything is good. No need to check again in the future
-        $global:alreadyConfirmedServerVersion = $true
     }
 }
 
-#Checks whether Exchange is at least partially installed by looking for Exchange 2013's product GUID
-function IsExchangePresent
+#Gets the WMI object corresponding to the Exchange Product
+function GetExchangeProduct
 {
-    return ((Get-WmiObject -Class Win32_Product -Filter "IdentifyingNumber = '{4934D1EA-BE46-48B1-8847-F1AF20E892C1}'") -ne $null)
+    if ($Global:CheckedExchangeProduct -eq $null -or $Global:CheckedExchangeProduct -eq $false)
+    {
+        $Global:ExchangeProduct = Get-WmiObject -Class Win32_Product -Filter {Name = "Microsoft Exchange Server"}
+
+        $Global:CheckedExchangeProduct = $true
+    }
+
+    return $Global:ExchangeProduct
+}
+
+#Checks whether a supported version of Exchange is at least partially installed by looking for Exchange's product GUID
+function IsExchangePresent
+{   
+    $product = GetExchangeProduct
+
+    if ($product -ne $null)
+    {
+        if ($product.IdentifyingNumber -eq '{4934D1EA-BE46-48B1-8847-F1AF20E892C1}' -or ` #Exchange 2013
+            $product.IdentifyingNumber -eq '{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}')      #Exchange 2016
+        {
+            return $true
+        }
+        else
+        {
+            return $false
+        }      
+    }
+    else
+    {
+        return $false
+    }
+}
+
+function IsExchange2013Present
+{
+    $product = GetExchangeProduct
+
+    if ($product -ne $null -and $product.IdentifyingNumber -eq '{4934D1EA-BE46-48B1-8847-F1AF20E892C1}')
+    {
+        return $true
+    }
+    else
+    {
+        return $false
+    }
 }
 
 #Checks whether Setup fully completed
@@ -182,61 +208,6 @@ function IsSetupComplete
     }
 
     return $isSetupComplete
-}
-
-#Returns a hashtable containing properties showing the exact status of Exchange setup.
-function GetExchangeInstallStatus
-{
-    $shouldStartInstall = $false
-
-    $setupRunning = IsSetupRunning
-    $setupComplete = IsSetupComplete
-    $exchangePresent = IsExchangePresent
-    $setupPartiallyComplete = IsSetupPartiallyCompleted
-
-    if ($setupRunning -eq $true -or $setupComplete -eq $true)
-    {
-        #Do nothing. Either Install is already running, or it's already finished successfully
-    }
-    elseif ($exchangePresent -eq $false -or $setupPartiallyComplete -eq $true)
-    {
-        $shouldStartInstall = $true
-    }
-
-    $returnValue = @{
-        Path = $Path
-        Arguments = $Arguments
-        SetupRunning = $setupRunning
-        SetupComplete = $setupComplete
-        ExchangePresent = $exchangePresent
-        SetupPartiallyComplete = $setupPartiallyComplete
-        ShouldStartInstall = $shouldStartInstall
-    }
-
-    return $returnValue
-}
-
-#If Verbose is specified, outputs the install status from GetExchangeInstallStatus to the screen
-function ReportInstallStatus
-{
-    [CmdletBinding()]
-    param([Hashtable]$InstallStatus, $VerbosePreference)
-
-    if ($InstallStatus.ShouldStartInstall -eq $true)
-    {
-        Write-Verbose "Exchange is either not installed, or a previous install only partially completed."
-    }
-    else
-    {
-        if ($InstallStatus.SetupComplete)
-        {
-            Write-Verbose "Exchange setup has already successfully completed."
-        }
-        else
-        {
-            Write-Verbose "Exchange setup is already in progress."
-        }
-    }
 }
 
 #Checks whether any Setup watermark keys exist which means that a previous installation of setup had already started but not completed
