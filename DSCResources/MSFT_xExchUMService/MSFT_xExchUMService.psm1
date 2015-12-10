@@ -16,7 +16,10 @@ function Get-TargetResource
         [ValidateSet("TCP","TLS","Dual")]
         [System.String]
         $UMStartupMode,
-
+        
+        [System.String[]]
+        $DialPlans,
+        
         [System.String]
         $DomainController
     )
@@ -38,6 +41,7 @@ function Get-TargetResource
         $returnValue = @{
             Identity = $Identity
             UMStartupMode = $umService.UMStartupMode
+            DialPlans = $umService.DialPlans.Name
         }
     }
 
@@ -62,6 +66,9 @@ function Set-TargetResource
         [ValidateSet("TCP","TLS","Dual")]
         [System.String]
         $UMStartupMode,
+                
+        [System.String[]]
+        $DialPlans,
 
         [System.String]
         $DomainController
@@ -99,7 +106,10 @@ function Test-TargetResource
         [ValidateSet("TCP","TLS","Dual")]
         [System.String]
         $UMStartupMode,
-
+        
+        [System.String[]]
+        $DialPlans,
+        
         [System.String]
         $DomainController
     )
@@ -120,7 +130,11 @@ function Test-TargetResource
         if (!(VerifySetting -Name "UMStartupMode" -Type "String" -ExpectedValue $UMStartupMode -ActualValue $umService.UMStartupMode -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
-        }        
+        }
+        if (!(VerifySetting -Name "DialPlans" -Type "Array" -ExpectedValue $DialPlans -ActualValue $umService.DialPlans.Name -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
     }
 
     return $true
@@ -128,6 +142,3 @@ function Test-TargetResource
 
 
 Export-ModuleMember -Function *-TargetResource
-
-
-

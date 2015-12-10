@@ -19,21 +19,25 @@ if ($exchangeInstalled)
         $testParams = @{
             Identity =  $env:COMPUTERNAME
             Credential = $Global:ShellCredentials
-            UMStartupMode = "TLS"       
+            UMStartupMode = "TLS"
+            DialPlans = @()
         }
 
         $expectedGetResults = @{
             Identity =  $env:COMPUTERNAME
-            UMStartupMode = "TLS"  
+            UMStartupMode = "TLS"
         }
 
         Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
-
+        Test-ArrayContents -TestParams $testParams -DesiredArrayContents $testParams.DialPlans -GetResultParameterName "DialPlans" -ContextLabel "Verify DialPlans" -ItLabel "DialPlans should be empty"
 
         $testParams.UMStartupMode = "Dual"
+        $testParams.DialPlans = @('DefaulUMDialPlan')
         $expectedGetResults.UMStartupMode = "Dual"
+        $expectedGetResults.DialPlans = @('DefaulUMDialPlan')
 
         Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Change some parameters" -ExpectedGetResults $expectedGetResults
+        Test-ArrayContents -TestParams $testParams -DesiredArrayContents $testParams.DialPlans -GetResultParameterName "DialPlans" -ContextLabel "Verify DialPlans" -ItLabel "DialPlans should contain a value"
     }
 }
 else
