@@ -62,7 +62,14 @@ function Get-TargetResource
         $LogonPageLightSelectionEnabled,
 
         [System.Boolean]
-        $WindowsAuthentication
+        $WindowsAuthentication,
+
+        [ValidateSet("FullDomain","UserName","PrincipalName")]
+        [System.String]
+        $LogonFormat,
+
+        [System.String]
+        $DefaultDomain
     )
 
     #Load helper module
@@ -94,6 +101,8 @@ function Get-TargetResource
             LogonPagePublicPrivateSelectionEnabled = $OwaVdir.LogonPagePublicPrivateSelectionEnabled
             LogonPageLightSelectionEnabled = $OwaVdir.LogonPageLightSelectionEnabled
             ExternalAuthenticationMethods = $OwaVdir.ExternalAuthenticationMethods
+            LogonFormat = $OwaVdir.LogonFormat
+            DefaultDomain = $OwaVdir.DefaultDomain
         }
     }
 
@@ -163,7 +172,14 @@ function Set-TargetResource
         $LogonPageLightSelectionEnabled,
 
         [System.Boolean]
-        $WindowsAuthentication
+        $WindowsAuthentication,
+
+        [ValidateSet("FullDomain","UserName","PrincipalName")]
+        [System.String]
+        $LogonFormat,
+
+        [System.String]
+        $DefaultDomain
     )
 
     #Load helper module
@@ -258,7 +274,14 @@ function Test-TargetResource
         $LogonPageLightSelectionEnabled,
 
         [System.Boolean]
-        $WindowsAuthentication
+        $WindowsAuthentication,
+
+        [ValidateSet("FullDomain","UserName","PrincipalName")]
+        [System.String]
+        $LogonFormat,
+
+        [System.String]
+        $DefaultDomain
     )
 
     #Load helper module
@@ -354,6 +377,16 @@ function Test-TargetResource
         {
             return $false
         }
+
+        if (!(VerifySetting -Name "LogonFormat" -Type "String" -ExpectedValue $LogonFormat -ActualValue $OwaVdir.LogonFormats -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (!(VerifySetting -Name "DefaultDomain" -Type "String" -ExpectedValue $DefaultDomain -ActualValue $OwaVdir.DefaultDomain -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
     }
 
     #If the code made it this for all properties are in a desired state   
@@ -423,7 +456,14 @@ function GetOwaVirtualDirectory
         $LogonPageLightSelectionEnabled,
 
         [System.Boolean]
-        $WindowsAuthentication
+        $WindowsAuthentication,
+
+        [ValidateSet("FullDomain","UserName","PrincipalName")]
+        [System.String]
+        $LogonFormat,
+
+        [System.String]
+        $DefaultDomain
     )
 
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
