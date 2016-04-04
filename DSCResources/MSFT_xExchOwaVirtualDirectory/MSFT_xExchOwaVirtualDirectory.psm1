@@ -378,7 +378,7 @@ function Test-TargetResource
             return $false
         }
 
-        if (!(VerifySetting -Name "LogonFormat" -Type "String" -ExpectedValue $LogonFormat -ActualValue $OwaVdir.LogonFormats -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "LogonFormat" -Type "String" -ExpectedValue $LogonFormat -ActualValue $OwaVdir.LogonFormat -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }

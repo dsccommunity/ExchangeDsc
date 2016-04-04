@@ -45,8 +45,8 @@ if ($exchangeInstalled)
             LogonPagePublicPrivateSelectionEnabled = $true
             LogonPageLightSelectionEnabled = $true   
             WindowsAuthentication = $false
-            LogonFormat = 'FullDomain'
-            DefaultDomain = $null       
+            LogonFormat = 'PrincipalName'
+            DefaultDomain = 'contoso.local'      
         }
 
         $expectedGetResults = @{
@@ -64,8 +64,8 @@ if ($exchangeInstalled)
             LogonPagePublicPrivateSelectionEnabled = $true
             LogonPageLightSelectionEnabled = $true   
             WindowsAuthentication = $false
-            LogonFormat = 'FullDomain'
-            DefaultDomain = $null  
+            LogonFormat = 'PrincipalName'
+            DefaultDomain = 'contoso.local' 
         }
 
         Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
@@ -87,8 +87,8 @@ if ($exchangeInstalled)
             LogonPagePublicPrivateSelectionEnabled = $false
             LogonPageLightSelectionEnabled = $false   
             WindowsAuthentication = $true 
-            LogonFormat = 'PrincipalName'
-            DefaultDomain = $null        
+            LogonFormat = 'FullDomain'
+            DefaultDomain = ''      
         }
 
         $expectedGetResults = @{
@@ -106,8 +106,8 @@ if ($exchangeInstalled)
             LogonPagePublicPrivateSelectionEnabled = $false
             LogonPageLightSelectionEnabled = $false   
             WindowsAuthentication = $true
-            LogonFormat = 'PrincipalName'
-            DefaultDomain = $null     
+            LogonFormat = 'FullDomain'
+            DefaultDomain = ''    
         }
 
         Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Try with the opposite of each property value" -ExpectedGetResults $expectedGetResults
