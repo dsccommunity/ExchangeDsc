@@ -56,7 +56,7 @@ Defaults to $false.
 * **AutoCertBasedAuth**: Automates the IIS configuration portion of certificate based authentication. 
 Only works against the Default Web Site. 
 Does not configure ClientCertAuth parameter, which must be specified separately. 
-Does not install ‘Client Certificate Mapping Authentication’ or ‘IIS Client Certificate Mapping Authentication’ roles of IIS, which also must be configured separately.
+Does not install ï¿½Client Certificate Mapping Authenticationï¿½ or ï¿½IIS Client Certificate Mapping Authenticationï¿½ roles of IIS, which also must be configured separately.
 * **AutoCertBasedAuthThumbprint**: The thumbprint of the in use Exchange certificate for IIS.
 * **AutoCertBasedAuthHttpsBindings**: The (IP:PORT)'s of the HTTPS bindings on the Default Web Site. 
 Defaults to "0.0.0.0:443","127.0.0.1:443"
@@ -68,7 +68,7 @@ Defaults to "0.0.0.0:443","127.0.0.1:443"
 * **ExternalUrl**
 * **InternalAuthenticationMethods**
 * **InternalUrl**
-* **WindowsAuthEnabled**: Auto Certificate Based Authentication Requirements: For AutoCertBasedAuth to work, the ‘Client Certificate Mapping Authentication’ and ‘IIS Client Certificate Mapping Authentication’ roles of IIS need to be installed.
+* **WindowsAuthEnabled**: Auto Certificate Based Authentication Requirements: For AutoCertBasedAuth to work, the ï¿½Client Certificate Mapping Authenticationï¿½ and ï¿½IIS Client Certificate Mapping Authenticationï¿½ roles of IIS need to be installed.
 
 ### xExchAntiMalwareScanning
 
@@ -476,6 +476,7 @@ Defaults to $false.
 * **RequireSSL**
 * **WindowsAuthentication**
 
+
 ### xExchOutlookAnywhere
 
 Where no description is listed, properties correspond directly to [Set-OutlookAnywhere](http://technet.microsoft.com/en-us/library/bb123545(v=exchg.150).aspx) parameters.
@@ -521,6 +522,8 @@ Defaults to $false.
 * **LogonPageLightSelectionEnabled**
 * **WindowsAuthentication**
 * **WSSecurityAuthentication**
+* **LogonFormat**
+* **DefaultDomain**
 
 ### xExchPopSettings
 
@@ -800,6 +803,10 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased
+
+* xExchOwaVirtualDirectory
+    - Added `LogonFormat` parameter.
+    - Added `DefaultDomain` parameter.
 
 ### 1.6.0.0  
 
