@@ -85,13 +85,13 @@ function Set-TargetResource
 
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
     
-    $exchange2013Present = IsExchange2013Present
+    $serverVersion = GetExchangeVersion -ThrowIfUnknownVersion $true
 
-    if ($exchange2013Present -eq $false)
+    if ($serverVersion -eq "2016")
     {
         Set-ClientAccessService @PSBoundParameters
     }
-    else
+    elseif ($serverVersion -eq "2013")
     {
         Set-ClientAccessServer @PSBoundParameters
     }
@@ -179,16 +179,16 @@ function GetClientAccessServer
     #Remove params we don't want to pass into the next command
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
 
-    $exchange2013Present = IsExchange2013Present
+    $serverVersion = GetExchangeVersion -ThrowIfUnknownVersion $true
 
-    if ($exchange2013Present -eq $false)
+    if ($serverVersion -eq "2016")
     {
         return (Get-ClientAccessService @PSBoundParameters)
     }
-    else
+    elseif ($serverVersion -eq "2013")
     {
         return (Get-ClientAccessServer @PSBoundParameters)
-    }   
+    } 
 }
 
 

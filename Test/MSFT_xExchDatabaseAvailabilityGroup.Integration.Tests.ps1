@@ -174,13 +174,21 @@ if ($adModule -ne $null)
                     AutoDagDiskReclaimerEnabled = $true
                     AutoDagTotalNumberOfServers = 2
                     AutoDagTotalNumberOfDatabases = 2
-                    AutoDagVolumesRootFolderPath = "C:\ExchangeVolumes"         
+                    AutoDagVolumesRootFolderPath = "C:\ExchangeVolumes"      
                     ManualDagNetworkConfiguration = $true
                     NetworkCompression = "Enabled"
                     NetworkEncryption = "InterSubnetOnly"
                     ReplayLagManagerEnabled = $true
                     WitnessDirectory = "C:\FSW"
                     WitnessServer = $Global:Witness1
+                }
+
+                $serverVersion = GetExchangeVersion
+
+                if ($serverVersion -eq "2016")
+                {
+                    $dagTestParams.Add("FileSystem", "ReFS")
+                    $dagExpectedGetResults.Add("FileSystem", "ReFS")
                 }
 
                 Test-AllTargetResourceFunctions -Params $dagTestParams -ContextLabel "Create the test DAG" -ExpectedGetResults $dagExpectedGetResults

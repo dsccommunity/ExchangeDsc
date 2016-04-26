@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/k9oq77p9xn6bo2j6/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xexchange/branch/master)
+﻿[![Build status](https://ci.appveyor.com/api/projects/status/k9oq77p9xn6bo2j6/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xexchange/branch/master)
 
 # xExchange
 
@@ -161,6 +161,7 @@ DatacenterActivationMode will not be set until that occurs.
 * **DatabaseAvailabilityGroupIpAddresses**
 * **DatacenterActivationMode**
 * **DomainController**
+* **FileSystem**
 * **ManualDagNetworkConfiguration**
 * **NetworkCompression**
 * **NetworkEncryption**
@@ -807,6 +808,7 @@ Defaults to $false.
 * xExchOwaVirtualDirectory
     - Added `LogonFormat` parameter.
     - Added `DefaultDomain` parameter.
+* Added FileSystem parameter to xExchDatabaseAvailabilityGroup
 
 ### 1.6.0.0  
 

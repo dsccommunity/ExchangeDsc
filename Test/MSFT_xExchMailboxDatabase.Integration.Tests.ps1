@@ -100,8 +100,7 @@ if ($exchangeInstalled)
             RecoverableItemsWarningQuota = "1,000,448"
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Create Test Database" -ExpectedGetResults $expectedGetResults
-
+        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Create Test Database" -ExpectedGetResults $expectedGetResults        
 
         $testParams = @{
             Name = $TestDBName
@@ -120,7 +119,6 @@ if ($exchangeInstalled)
             IndexEnabled = $false
             IsExcludedFromProvisioning = $true
             IsSuspendedFromProvisioning = $true
-            IsExcludedFromProvisioningReason = "Testing Excluding the Database"
             MailboxRetention = "31.00:00:00"
             MountAtStartup = $false
             OfflineAddressBook = "Default Offline Address Book (Ex2013)"
@@ -156,6 +154,14 @@ if ($exchangeInstalled)
             ProhibitSendReceiveQuota = "2.5 GB"
             RecoverableItemsQuota = "2 GB"
             RecoverableItemsWarningQuota = "1.5 GB"
+        }
+
+        $serverVersion = GetExchangeVersion
+
+        if ($serverVersion -eq "2016")
+        {
+            $testParams.Add("IsExcludedFromProvisioningReason", "Testing Excluding the Database")
+            $expectedGetResults.Add("IsExcludedFromProvisioningReason", "Testing Excluding the Database")
         }
 
         Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Change many DB properties" -ExpectedGetResults $expectedGetResults
