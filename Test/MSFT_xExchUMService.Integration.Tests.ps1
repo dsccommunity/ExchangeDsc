@@ -15,6 +15,11 @@ if ($exchangeInstalled)
         [PSCredential]$Global:ShellCredentials = Get-Credential -Message "Enter credentials for connecting a Remote PowerShell session to Exchange"
     }
 
+    if ($Global:UMDialPlan -eq $null)
+    {
+        $Global:UMDialPlan = Read-Host -Prompt "Enter the name of the existing UM Dial Plan to test with"
+    }
+
     Describe "Test Setting Properties with xExchUMService" {
         $testParams = @{
             Identity =  $env:COMPUTERNAME
@@ -32,9 +37,9 @@ if ($exchangeInstalled)
         Test-ArrayContents -TestParams $testParams -DesiredArrayContents $testParams.DialPlans -GetResultParameterName "DialPlans" -ContextLabel "Verify DialPlans" -ItLabel "DialPlans should be empty"
 
         $testParams.UMStartupMode = "Dual"
-        $testParams.DialPlans = @('DefaulUMDialPlan')
+        $testParams.DialPlans = @($Global:UMDialPlan)
         $expectedGetResults.UMStartupMode = "Dual"
-        $expectedGetResults.DialPlans = @('DefaulUMDialPlan')
+        $expectedGetResults.DialPlans = @($Global:UMDialPlan)
 
         Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Change some parameters" -ExpectedGetResults $expectedGetResults
         Test-ArrayContents -TestParams $testParams -DesiredArrayContents $testParams.DialPlans -GetResultParameterName "DialPlans" -ContextLabel "Verify DialPlans" -ItLabel "DialPlans should contain a value"
