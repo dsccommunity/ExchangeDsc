@@ -383,16 +383,16 @@ function Enable-CertBasedAuth
     $appCmdExe = "$($env:SystemRoot)\System32\inetsrv\appcmd.exe"
 
     #Enable cert auth in IIS, and require SSL on the AS vdir
-    $output = &$appCmdExe set config -section:system.webServer/security/authentication/clientCertificateMappingAuthentication /enabled:`"True`" /commit:apphost
+    $output = &$appCmdExe set config -section:system.webServer/security/authentication/clientCertificateMappingAuthentication /enabled:"True" /commit:apphost
     Write-Verbose "$output"
     
-    $output = &$appCmdExe set config `"Default Web Site`" -section:system.webServer/security/authentication/clientCertificateMappingAuthentication /enabled:`"True`" /commit:apphost
+    $output = &$appCmdExe set config "Default Web Site" -section:system.webServer/security/authentication/clientCertificateMappingAuthentication /enabled:"True" /commit:apphost
     Write-Verbose "$output"
     
-    $output = &$appCmdExe set config `"Default Web Site/Microsoft-Server-ActiveSync`" /section:access /sslFlags:`"Ssl, SslNegotiateCert, SslRequireCert, Ssl128`" /commit:apphost
+    $output = &$appCmdExe set config "Default Web Site/Microsoft-Server-ActiveSync" /section:access /sslFlags:"Ssl, SslNegotiateCert, SslRequireCert, Ssl128" /commit:apphost
     Write-Verbose "$output"
     
-    $output = &$appCmdExe set config `"Default Web Site/Microsoft-Server-ActiveSync`" -section:system.webServer/security/authentication/clientCertificateMappingAuthentication /enabled:`"True`" /commit:apphost
+    $output = &$appCmdExe set config "Default Web Site/Microsoft-Server-ActiveSync" -section:system.webServer/security/authentication/clientCertificateMappingAuthentication /enabled:"True" /commit:apphost
     Write-Verbose "$output"
 
     #Set DSMapperUsage to enabled on all the required SSL bindings
@@ -424,21 +424,21 @@ function Test-CertBasedAuth
         return $false
     }
 
-    $clientCertMappingAuth = &$appCmdExe list config `"Default Web Site`" -section:system.webServer/security/authentication/clientCertificateMappingAuthentication
+    $clientCertMappingAuth = &$appCmdExe list config "Default Web Site" -section:system.webServer/security/authentication/clientCertificateMappingAuthentication
 
     if (-not (Test-AppCmdOutputContainsString -AppCmdOutput $clientCertMappingAuth -SearchString "clientCertificateMappingAuthentication enabled=`"true`""))
     {
         return $false
     }
 
-    $asClientCertMappingAuth = &$appCmdExe list config `"Default Web Site/Microsoft-Server-ActiveSync`" -section:system.webServer/security/authentication/clientCertificateMappingAuthentication
+    $asClientCertMappingAuth = &$appCmdExe list config "Default Web Site/Microsoft-Server-ActiveSync" -section:system.webServer/security/authentication/clientCertificateMappingAuthentication
 
     if (-not (Test-AppCmdOutputContainsString -appCmdOutput $asClientCertMappingAuth -searchString "clientCertificateMappingAuthentication enabled=`"true`""))
     {
         return $false
     }
 
-    $sslFlags = &$appCmdExe list config `"Default Web Site/Microsoft-Server-ActiveSync`" /section:access
+    $sslFlags = &$appCmdExe list config "Default Web Site/Microsoft-Server-ActiveSync" /section:access
 
     if (-not (Test-AppCmdOutputContainsString -appCmdOutput $sslFlags -searchString "access sslFlags=`"Ssl, SslNegotiateCert, SslRequireCert, Ssl128`""))
     {
