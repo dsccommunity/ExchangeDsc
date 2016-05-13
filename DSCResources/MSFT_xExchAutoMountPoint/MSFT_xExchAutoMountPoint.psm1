@@ -888,8 +888,8 @@ function PrepareVolume
 
         Start-Sleep -Seconds 15
 
-		Get-Partition -DiskNumber $DiskNumber -PartitionNumber 2| Format-Volume –AllocationUnitSize $UnitSizeBytes –FileSystem REFS –NewFileSystemLabel $Label –SetIntegrityStreams:$false -Confirm:$false
-		Add-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber 2 -AccessPath $Folder -PassThru | Set-Partition -NoDefaultDriveLetter $true
+        Get-Partition -DiskNumber $DiskNumber -PartitionNumber 2| Format-Volume â€“AllocationUnitSize $UnitSizeBytes â€“FileSystem REFS â€“NewFileSystemLabel $Label â€“SetIntegrityStreams:$false -Confirm:$false
+        Add-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber 2 -AccessPath $Folder -PassThru | Set-Partition -NoDefaultDriveLetter $true
     }
 }
 
