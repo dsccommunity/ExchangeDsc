@@ -809,6 +809,7 @@ Defaults to $false.
     - Added `LogonFormat` parameter.
     - Added `DefaultDomain` parameter.
 * Added FileSystem parameter to xExchDatabaseAvailabilityGroup
+* Fixed PSSA issues in MSFT_xExchAutodiscoverVirtualDirectory and MSFT_xExchActiveSyncVirtualDirectory
 * Updated xExchAutoMountPoint to disable Integrity Checking when formatting volumes as ReFS. This aligns with the latest version of DiskPart.ps1 from the Exchange Server Role Requirements Calculator.
 
 ### 1.6.0.0  
