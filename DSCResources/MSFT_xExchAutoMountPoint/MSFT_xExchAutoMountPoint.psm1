@@ -865,7 +865,7 @@ function PrepareVolume
     }    
 
     #Create the partition and format the drive
-    if ($FileSytem -eq "NTFS")
+    if ($FileSystem -eq "NTFS")
     {
         $formatString = "Format FS=$($FileSystem) UNIT=$($UnitSize) Label=$($Label) QUICK"
 
