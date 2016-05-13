@@ -809,7 +809,7 @@ Defaults to $false.
     - Added `LogonFormat` parameter.
     - Added `DefaultDomain` parameter.
 * Added FileSystem parameter to xExchDatabaseAvailabilityGroup
-* Fixed PSSA issues in MSFT_xExchAutodiscoverVirtualDirectory
+* Fixed PSSA issues in MSFT_xExchAutodiscoverVirtualDirectory and MSFT_xExchActiveSyncVirtualDirectory
 
 ### 1.6.0.0  
 
