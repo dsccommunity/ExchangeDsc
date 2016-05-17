@@ -117,7 +117,7 @@ Should be in a format like "1024MB" or "1TB".
 * **PartitioningScheme**: The partitioning scheme for the volume. 
 Defaults to GPT.
 * **UnitSize**: The unit size to use when formatting the disk. 
-Defaults to 64k.
+Defaults to 64k. Specified value should end in a number, indicating bytes, or with a k, indicating the value is kilobytes.
 * **VolumePrefix**: The prefix to give to Exchange Volume folders. 
 Defaults to EXVOL
 
@@ -810,6 +810,7 @@ Defaults to $false.
     - Added `DefaultDomain` parameter.
 * Added FileSystem parameter to xExchDatabaseAvailabilityGroup
 * Fixed PSSA issues in MSFT_xExchAutodiscoverVirtualDirectory and MSFT_xExchActiveSyncVirtualDirectory
+* Updated xExchAutoMountPoint to disable Integrity Checking when formatting volumes as ReFS. This aligns with the latest version of DiskPart.ps1 from the Exchange Server Role Requirements Calculator.
 
 ### 1.6.0.0  
 
