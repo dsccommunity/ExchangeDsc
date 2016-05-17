@@ -841,7 +841,7 @@ function SendVolumeMountPointToEndOfList
 function PrepareVolume
 {
     [CmdletBinding()]
-    param([int]$DiskNumber, [string]$Folder, [ValidateSet("NTFS","REFS")][string]$FileSystem, [string]$UnitSize, [string]$PartitioningScheme, [string]$Label)
+    param([int]$DiskNumber, [string]$Folder, [ValidateSet("NTFS","REFS")][string]$FileSystem = "NTFS", [string]$UnitSize, [string]$PartitioningScheme, [string]$Label)
     
     #Initialize the disk and put in MBR format
     StartDiskpart -Commands "select disk $($DiskNumber)","clean" -VerbosePreference $VerbosePreference | Out-Null
