@@ -1,4 +1,4 @@
-﻿[![Build status](https://ci.appveyor.com/api/projects/status/k9oq77p9xn6bo2j6/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xexchange/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/k9oq77p9xn6bo2j6/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xexchange/branch/master)
 
 # xExchange
 
@@ -56,7 +56,7 @@ Defaults to $false.
 * **AutoCertBasedAuth**: Automates the IIS configuration portion of certificate based authentication. 
 Only works against the Default Web Site. 
 Does not configure ClientCertAuth parameter, which must be specified separately. 
-Does not install �Client Certificate Mapping Authentication� or �IIS Client Certificate Mapping Authentication� roles of IIS, which also must be configured separately.
+Does not install ?Client Certificate Mapping Authentication? or ?IIS Client Certificate Mapping Authentication? roles of IIS, which also must be configured separately.
 * **AutoCertBasedAuthThumbprint**: The thumbprint of the in use Exchange certificate for IIS.
 * **AutoCertBasedAuthHttpsBindings**: The (IP:PORT)'s of the HTTPS bindings on the Default Web Site. 
 Defaults to "0.0.0.0:443","127.0.0.1:443"
@@ -68,7 +68,7 @@ Defaults to "0.0.0.0:443","127.0.0.1:443"
 * **ExternalUrl**
 * **InternalAuthenticationMethods**
 * **InternalUrl**
-* **WindowsAuthEnabled**: Auto Certificate Based Authentication Requirements: For AutoCertBasedAuth to work, the �Client Certificate Mapping Authentication� and �IIS Client Certificate Mapping Authentication� roles of IIS need to be installed.
+* **WindowsAuthEnabled**: Auto Certificate Based Authentication Requirements: For AutoCertBasedAuth to work, the ?Client Certificate Mapping Authentication? and ?IIS Client Certificate Mapping Authentication? roles of IIS need to be installed.
 
 ### xExchAntiMalwareScanning
 
@@ -804,6 +804,8 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased
+
+### 1.7.0.0
 
 * xExchOwaVirtualDirectory
     - Added `LogonFormat` parameter.
