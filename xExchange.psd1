@@ -12,7 +12,7 @@
 # RootModule = ''
 
 # Version number of this module.
-ModuleVersion = '1.6.0.0'
+ModuleVersion = '1.7.0.0'
 
 # ID used to uniquely identify this module
 GUID = '9a908ca3-8a67-485c-a014-66ba37fcc2a4'
@@ -101,7 +101,14 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        # ReleaseNotes = ''
+        ReleaseNotes = '* xExchOwaVirtualDirectory
+    - Added `LogonFormat` parameter.
+    - Added `DefaultDomain` parameter.
+* Added FileSystem parameter to xExchDatabaseAvailabilityGroup
+* Fixed PSSA issues in MSFT_xExchAutodiscoverVirtualDirectory and MSFT_xExchActiveSyncVirtualDirectory
+* Updated xExchAutoMountPoint to disable Integrity Checking when formatting volumes as ReFS. This aligns with the latest version of DiskPart.ps1 from the Exchange Server Role Requirements Calculator.
+
+'
 
     } # End of PSData hashtable
 

@@ -131,7 +131,7 @@ function Test-TargetResource
         {
             return $false
         }
-        if (!(VerifySetting -Name "DialPlans" -Type "Array" -ExpectedValue $DialPlans -ActualValue $umService.DialPlans.Name -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "DialPlans" -Type "Array" -ExpectedValue $DialPlans -ActualValue $umService.DialPlans -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }

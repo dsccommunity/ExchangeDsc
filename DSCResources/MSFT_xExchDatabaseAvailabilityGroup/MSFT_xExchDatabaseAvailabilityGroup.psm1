@@ -53,6 +53,10 @@ function Get-TargetResource
         [System.String]
         $DomainController,
 
+        [ValidateSet("NTFS","ReFS")]
+        [System.String]
+        $FileSystem,
+
         [System.Boolean]
         $ManualDagNetworkConfiguration,
 
@@ -114,6 +118,13 @@ function Get-TargetResource
             WitnessDirectory = $dag.WitnessDirectory
             WitnessServer = $dag.WitnessServer
         }
+
+        $serverVersion = GetExchangeVersion
+
+        if ($serverVersion -eq "2016")
+        {
+            $returnValue.Add("FileSystem", $dag.FileSystem)
+        }
     }
 
     $returnValue
@@ -173,6 +184,10 @@ function Set-TargetResource
         [System.String]
         $DomainController,
 
+        [ValidateSet("NTFS","ReFS")]
+        [System.String]
+        $FileSystem,
+
         [System.Boolean]
         $ManualDagNetworkConfiguration,
 
@@ -208,6 +223,9 @@ function Set-TargetResource
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-DatabaseAvailabilityGroup","Set-DatabaseAvailabilityGroup","New-DatabaseAvailabilityGroup" -VerbosePreference $VerbosePreference
   
+    #Check for non-existent parameters in Exchange 2013
+    RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "FileSystem" -ResourceName "xExchDatabaseAvailabilityGroup" -ParamExistsInVersion "2016"
+
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     $dag = GetDatabaseAvailabilityGroup @PSBoundParameters
@@ -311,6 +329,10 @@ function Test-TargetResource
         [System.String]
         $DomainController,
 
+        [ValidateSet("NTFS","ReFS")]
+        [System.String]
+        $FileSystem,
+
         [System.Boolean]
         $ManualDagNetworkConfiguration,
 
@@ -345,6 +367,9 @@ function Test-TargetResource
 
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-DatabaseAvailabilityGroup" -VerbosePreference $VerbosePreference
+
+    #Check for non-existent parameters in Exchange 2013
+    RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "FileSystem" -ResourceName "xExchDatabaseAvailabilityGroup" -ParamExistsInVersion "2016"
 
     $dag = GetDatabaseAvailabilityGroup @PSBoundParameters
 
@@ -405,6 +430,11 @@ function Test-TargetResource
         }
 
         if (!(VerifySetting -Name "DatabaseAvailabilityGroupIpAddresses" -Type "Array" -ExpectedValue $DatabaseAvailabilityGroupIpAddresses -ActualValue $dag.DatabaseAvailabilityGroupIpAddresses -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (!(VerifySetting -Name "FileSystem" -Type "String" -ExpectedValue $FileSystem -ActualValue $dag.FileSystem -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -515,6 +545,10 @@ function GetDatabaseAvailabilityGroup
 
         [System.String]
         $DomainController,
+
+        [ValidateSet("NTFS","ReFS")]
+        [System.String]
+        $FileSystem,
 
         [System.Boolean]
         $ManualDagNetworkConfiguration,
