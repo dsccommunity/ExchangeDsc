@@ -150,9 +150,9 @@ function Get-TargetResource
             RetainDeletedItemsUntilBackup = $db.RetainDeletedItemsUntilBackup
         }
 
-        $exchange2013Present = IsExchange2013Present
+        $serverVersion = GetExchangeVersion
 
-        if ($exchange2013Present -eq $false )
+        if ($serverVersion -eq "2016")
         {
             $returnValue.Add("IsExcludedFromProvisioningReason", $db.IsExcludedFromProvisioningReason)
         }
@@ -277,16 +277,7 @@ function Set-TargetResource
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "*MailboxDatabase","Move-DatabasePath","Mount-Database","Set-AdServerSettings" -VerbosePreference $VerbosePreference
 
     #Check for non-existent parameters in Exchange 2013
-    if ($PSBoundParameters.ContainsKey("IsExcludedFromProvisioningReason"))
-    {
-        $exchange2013Present = IsExchange2013Present
-
-        if ($exchange2013Present -eq $true )
-        {
-            Write-Warning "IsExcludedFromProvisioningReason is not a valid parameter for xExchMailboxDatabase in Exchange 2013. Skipping usage."
-            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "IsExcludedFromProvisioningReason"
-        }
-    }
+    RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "IsExcludedFromProvisioningReason" -ResourceName "xExchMailboxDatabase" -ParamExistsInVersion "2016"
 
     if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
@@ -486,6 +477,9 @@ function Test-TargetResource
 
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MailboxDatabase","Get-Mailbox","Set-AdServerSettings" -VerbosePreference $VerbosePreference
+
+    #Check for non-existent parameters in Exchange 2013
+    RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "IsExcludedFromProvisioningReason" -ResourceName "xExchMailboxDatabase" -ParamExistsInVersion "2016"
 
     if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {

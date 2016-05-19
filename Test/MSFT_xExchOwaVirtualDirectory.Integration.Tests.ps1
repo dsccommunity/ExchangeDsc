@@ -44,7 +44,9 @@ if ($exchangeInstalled)
             InternalUrl = "https://$($Global:ServerFqdn)/owa"     
             LogonPagePublicPrivateSelectionEnabled = $true
             LogonPageLightSelectionEnabled = $true   
-            WindowsAuthentication = $false        
+            WindowsAuthentication = $false
+            LogonFormat = 'PrincipalName'
+            DefaultDomain = 'contoso.local'      
         }
 
         $expectedGetResults = @{
@@ -61,7 +63,9 @@ if ($exchangeInstalled)
             InternalUrl = "https://$($Global:ServerFqdn)/owa"     
             LogonPagePublicPrivateSelectionEnabled = $true
             LogonPageLightSelectionEnabled = $true   
-            WindowsAuthentication = $false    
+            WindowsAuthentication = $false
+            LogonFormat = 'PrincipalName'
+            DefaultDomain = 'contoso.local' 
         }
 
         Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
@@ -82,7 +86,9 @@ if ($exchangeInstalled)
             InternalUrl = ''   
             LogonPagePublicPrivateSelectionEnabled = $false
             LogonPageLightSelectionEnabled = $false   
-            WindowsAuthentication = $true        
+            WindowsAuthentication = $true 
+            LogonFormat = 'FullDomain'
+            DefaultDomain = ''      
         }
 
         $expectedGetResults = @{
@@ -99,7 +105,9 @@ if ($exchangeInstalled)
             InternalUrl = $null  
             LogonPagePublicPrivateSelectionEnabled = $false
             LogonPageLightSelectionEnabled = $false   
-            WindowsAuthentication = $true       
+            WindowsAuthentication = $true
+            LogonFormat = 'FullDomain'
+            DefaultDomain = ''    
         }
 
         Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Try with the opposite of each property value" -ExpectedGetResults $expectedGetResults

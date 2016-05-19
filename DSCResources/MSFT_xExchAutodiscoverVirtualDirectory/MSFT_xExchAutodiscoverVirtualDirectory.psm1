@@ -1,15 +1,17 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -31,7 +33,6 @@ function Get-TargetResource
         $WSSecurityAuthentication
     )
 
-
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
@@ -40,16 +41,16 @@ function Get-TargetResource
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-AutodiscoverVirtualDirectory' -VerbosePreference $VerbosePreference
 
-    $AutoDVdir = GetAutodiscoverVirtualDirectory @PSBoundParameters
+    $autoDVdir = Get-AutodiscoverVirtualDirectoryWithCorrectParams @PSBoundParameters
 
-    if ($AutoDVdir -ne $null)
+    if ($null -ne $autoDVdir)
     {
         $returnValue = @{
             Identity = $Identity
-            BasicAuthentication = $AutoDVdir.BasicAuthentication
-            DigestAuthentication = $AutoDVdir.DigestAuthentication
-            WindowsAuthentication = $AutoDVdir.WindowsAuthentication
-            WSSecurityAuthentication = $AutoDVdir.WSSecurityAuthentication
+            BasicAuthentication = $autoDVdir.BasicAuthentication
+            DigestAuthentication = $autoDVdir.DigestAuthentication
+            WindowsAuthentication = $autoDVdir.WindowsAuthentication
+            WSSecurityAuthentication = $autoDVdir.WSSecurityAuthentication
         }
     }
 
@@ -59,15 +60,17 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -105,7 +108,7 @@ function Set-TargetResource
 
     Set-AutodiscoverVirtualDirectory @PSBoundParameters
 
-    if($AllowServiceRestart -eq $true)
+    if ($AllowServiceRestart)
     {
         Write-Verbose "Recycling MSExchangeAutodiscoverAppPool"
         RestartAppPoolIfExists -Name MSExchangeAutodiscoverAppPool
@@ -119,16 +122,18 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -161,30 +166,30 @@ function Test-TargetResource
     #Ensure an empty string is $null and not a string
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    $AutoDVdir = GetAutodiscoverVirtualDirectory @PSBoundParameters
+    $autoDVdir = Get-AutodiscoverVirtualDirectoryWithCorrectParams @PSBoundParameters
 
-    if ($AutoDVdir -eq $null)
+    if ($null -eq $autoDVdir)
     {
         return $false
     }
     else
     {
-        if (!(VerifySetting -Name "BasicAuthentication" -Type "Boolean" -ExpectedValue $BasicAuthentication -ActualValue $AutoDVdir.BasicAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "BasicAuthentication" -Type "Boolean" -ExpectedValue $BasicAuthentication -ActualValue $autoDVdir.BasicAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "DigestAuthentication" -Type "Boolean" -ExpectedValue $DigestAuthentication -ActualValue $AutoDVdir.DigestAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "DigestAuthentication" -Type "Boolean" -ExpectedValue $DigestAuthentication -ActualValue $autoDVdir.DigestAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "WindowsAuthentication" -Type "Boolean" -ExpectedValue $WindowsAuthentication -ActualValue $AutoDVdir.WindowsAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "WindowsAuthentication" -Type "Boolean" -ExpectedValue $WindowsAuthentication -ActualValue $autoDVdir.WindowsAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "WSSecurityAuthentication" -Type "Boolean" -ExpectedValue $WSSecurityAuthentication -ActualValue $AutoDVdir.WSSecurityAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "WSSecurityAuthentication" -Type "Boolean" -ExpectedValue $WSSecurityAuthentication -ActualValue $autoDVdir.WSSecurityAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -194,17 +199,19 @@ function Test-TargetResource
     return $true
 }
 
-function GetAutodiscoverVirtualDirectory
+function Get-AutodiscoverVirtualDirectoryWithCorrectParams
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseSingularNouns", "")]
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -232,6 +239,3 @@ function GetAutodiscoverVirtualDirectory
 }
 
 Export-ModuleMember -Function *-TargetResource
-
-
-

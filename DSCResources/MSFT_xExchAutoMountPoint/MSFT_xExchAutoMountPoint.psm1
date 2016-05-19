@@ -841,10 +841,8 @@ function SendVolumeMountPointToEndOfList
 function PrepareVolume
 {
     [CmdletBinding()]
-    param([int]$DiskNumber, [string]$Folder, [string]$FileSystem, [string]$UnitSize, [string]$PartitioningScheme, [string]$Label)
-
-    $formatString = "Format FS=$($FileSystem) UNIT=$($UnitSize) Label=$($Label) QUICK"
-
+    param([int]$DiskNumber, [string]$Folder, [ValidateSet("NTFS","REFS")][string]$FileSystem = "NTFS", [string]$UnitSize, [string]$PartitioningScheme, [string]$Label)
+    
     #Initialize the disk and put in MBR format
     StartDiskpart -Commands "select disk $($DiskNumber)","clean" -VerbosePreference $VerbosePreference | Out-Null
     StartDiskpart -Commands "select disk $($DiskNumber)","online disk" -VerbosePreference $VerbosePreference | Out-Null
@@ -867,7 +865,32 @@ function PrepareVolume
     }    
 
     #Create the partition and format the drive
-    StartDiskpart -Commands "select disk $($DiskNumber)","create partition primary","$($formatString)","assign mount=`"$($Folder)`"" -VerbosePreference $VerbosePreference | Out-Null
+    if ($FileSystem -eq "NTFS")
+    {
+        $formatString = "Format FS=$($FileSystem) UNIT=$($UnitSize) Label=$($Label) QUICK"
+
+        StartDiskpart -Commands "select disk $($DiskNumber)","create partition primary","$($formatString)","assign mount=`"$($Folder)`"" -VerbosePreference $VerbosePreference | Out-Null
+    }
+    else #if ($FileSystem -eq "REFS")
+    {
+        StartDiskpart -Commands "select disk $($DiskNumber)","create partition primary" -VerbosePreference $VerbosePreference | Out-Null
+        
+        if ($UnitSize.ToLower().EndsWith("k"))
+        {
+            $UnitSizeBytes = [UInt64]::Parse($UnitSize.Substring(0, $UnitSize.Length - 1)) * 1024
+        }
+        else
+        {
+            $UnitSizeBytes = $UnitSize
+        }
+
+        Write-Verbose "Sleeping for 15 seconds after partition creation."
+
+        Start-Sleep -Seconds 15
+
+        Get-Partition -DiskNumber $DiskNumber -PartitionNumber 2| Format-Volume –AllocationUnitSize $UnitSizeBytes –FileSystem REFS –NewFileSystemLabel $Label –SetIntegrityStreams:$false -Confirm:$false
+        Add-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber 2 -AccessPath $Folder -PassThru | Set-Partition -NoDefaultDriveLetter $true
+    }
 }
 
 #Adds a mount point to an existing volume

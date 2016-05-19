@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -10,6 +11,7 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -22,12 +24,12 @@ function Get-TargetResource
         $AutoCertBasedAuthThumbprint,
 
         [System.String[]]
-        $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443","127.0.0.1:443"),
+        $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443", "127.0.0.1:443"),
 
         [System.Boolean]
         $BasicAuthEnabled,
 
-        [ValidateSet("Ignore","Allowed","Required")]
+        [ValidateSet("Ignore", "Allowed", "Required")]
         [System.String]
         $ClientCertAuth,
 
@@ -61,27 +63,27 @@ function Get-TargetResource
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ActiveSyncVirtualDirectory' -VerbosePreference $VerbosePreference
 
-    $EasVdir = GetActiveSyncVirtualDirectory @PSBoundParameters
+    $easVdir = Get-ActiveSyncVirtualDirectoryWithCorrectParams @PSBoundParameters
     
-    if ($EasVdir -ne $null)
+    if ($null -ne $easVdir)
     {
         $returnValue = @{
             Identity = $Identity
-            InternalUrl = $EasVdir.InternalUrl.AbsoluteUri
-            ExternalUrl = $EasVdir.ExternalUrl.AbsoluteUri
-            BasicAuthEnabled = $EasVdir.BasicAuthEnabled
-            WindowsAuthEnabled = $EasVdir.WindowsAuthEnabled
-            CompressionEnabled = $EasVdir.CompressionEnabled
-            ClientCertAuth = $EasVdir.ClientCertAuth
+            InternalUrl = $easVdir.InternalUrl.AbsoluteUri
+            ExternalUrl = $easVdir.ExternalUrl.AbsoluteUri
+            BasicAuthEnabled = $easVdir.BasicAuthEnabled
+            WindowsAuthEnabled = $easVdir.WindowsAuthEnabled
+            CompressionEnabled = $easVdir.CompressionEnabled
+            ClientCertAuth = $easVdir.ClientCertAuth
         }
     }
 
-    $returnValue    
-    
+    $returnValue
 }
 
 function Set-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
     [CmdletBinding()]
     param
     (
@@ -91,6 +93,7 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -103,12 +106,12 @@ function Set-TargetResource
         $AutoCertBasedAuthThumbprint,
 
         [System.String[]]
-        $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443","127.0.0.1:443"),
+        $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443", "127.0.0.1:443"),
 
         [System.Boolean]
         $BasicAuthEnabled,
 
-        [ValidateSet("Ignore","Allowed","Required")]
+        [ValidateSet("Ignore", "Allowed", "Required")]
         [System.String]
         $ClientCertAuth,
 
@@ -151,24 +154,24 @@ function Set-TargetResource
     #Configure everything but CBA
     Set-ActiveSyncVirtualDirectory @PSBoundParameters
     
-    if ($AutoCertBasedAuth -eq $true) #Need to configure CBA
+    if ($AutoCertBasedAuth) #Need to configure CBA
     {
-        CheckForCertBasedAuthPreReqs
+        Test-PreReqsForCertBasedAuth
 
-        if (([string]::IsNullOrEmpty($AutoCertBasedAuthThumbprint) -eq $false))
+        if (-not ([string]::IsNullOrEmpty($AutoCertBasedAuthThumbprint)))
         {
-            ConfigureCertBasedAuth -AutoCertBasedAuthThumbprint $AutoCertBasedAuthThumbprint -AutoCertBasedAuthHttpsBindings $AutoCertBasedAuthHttpsBindings
+            Enable-CertBasedAuth -AutoCertBasedAuthThumbprint $AutoCertBasedAuthThumbprint -AutoCertBasedAuthHttpsBindings $AutoCertBasedAuthHttpsBindings
         }
         else
         {
             throw "AutoCertBasedAuthThumbprint must be specified when AutoCertBasedAuth is set to `$true"
         }
 
-        if($AllowServiceRestart -eq $true) #Need to restart all of IIS for auth settings to stick
+        if($AllowServiceRestart) #Need to restart all of IIS for auth settings to stick
         {
             Write-Verbose "Restarting IIS"
 
-            Invoke-Expression -Command "iisreset /noforce /timeout:300"
+            iisreset /noforce /timeout:300
         }
         else
         {
@@ -177,9 +180,9 @@ function Set-TargetResource
     }
 
     #Only bounce the app pool if we didn't already restart IIS for CBA
-    if ($AutoCertBasedAuth -eq $false)
+    if (-not $AutoCertBasedAuth)
     {
-        if($AllowServiceRestart -eq $true) 
+        if($AllowServiceRestart) 
         {
             Write-Verbose "Recycling MSExchangeSyncAppPool"
 
@@ -192,10 +195,9 @@ function Set-TargetResource
     }
 }
 
-
-
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -206,6 +208,7 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -218,12 +221,12 @@ function Test-TargetResource
         $AutoCertBasedAuthThumbprint,
 
         [System.String[]]
-        $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443","127.0.0.1:443"),
+        $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443", "127.0.0.1:443"),
 
         [System.Boolean]
         $BasicAuthEnabled,
 
-        [ValidateSet("Ignore","Allowed","Required")]
+        [ValidateSet("Ignore", "Allowed", "Required")]
         [System.String]
         $ClientCertAuth,
 
@@ -260,69 +263,69 @@ function Test-TargetResource
     #Ensure an empty string is $null and not a string
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    $EasVdir = GetActiveSyncVirtualDirectory @PSBoundParameters
+    $easVdir = Get-ActiveSyncVirtualDirectoryWithCorrectParams @PSBoundParameters
 
-    if ($EasVdir -eq $null)
+    if ($null -eq $easVdir)
     {
         return $false
     }
     else
     {
-        if (!(VerifySetting -Name "InternalUrl" -Type "String" -ExpectedValue $InternalUrl -ActualValue $EasVdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name "InternalUrl" -Type "String" -ExpectedValue $InternalUrl -ActualValue $easVdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "ExternalUrl" -Type "String" -ExpectedValue $ExternalUrl -ActualValue $EasVdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name "ExternalUrl" -Type "String" -ExpectedValue $ExternalUrl -ActualValue $easVdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "BasicAuthEnabled" -Type "Boolean" -ExpectedValue $BasicAuthEnabled -ActualValue $EasVdir.BasicAuthEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name "BasicAuthEnabled" -Type "Boolean" -ExpectedValue $BasicAuthEnabled -ActualValue $easVdir.BasicAuthEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "WindowsAuthEnabled" -Type "Boolean" -ExpectedValue $WindowsAuthEnabled -ActualValue $EasVdir.WindowsAuthEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name "WindowsAuthEnabled" -Type "Boolean" -ExpectedValue $WindowsAuthEnabled -ActualValue $easVdir.WindowsAuthEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "CompressionEnabled" -Type "Boolean" -ExpectedValue $CompressionEnabled -ActualValue $EasVdir.CompressionEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name "CompressionEnabled" -Type "Boolean" -ExpectedValue $CompressionEnabled -ActualValue $easVdir.CompressionEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "ClientCertAuth" -Type "String" -ExpectedValue $ClientCertAuth -ActualValue $EasVdir.ClientCertAuth -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name "ClientCertAuth" -Type "String" -ExpectedValue $ClientCertAuth -ActualValue $easVdir.ClientCertAuth -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "ExternalAuthenticationMethods" -Type "Array" -ExpectedValue $ExternalAuthenticationMethods -ActualValue $EasVdir.ExternalAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name "ExternalAuthenticationMethods" -Type "Array" -ExpectedValue $ExternalAuthenticationMethods -ActualValue $easVdir.ExternalAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "InternalAuthenticationMethods" -Type "Array" -ExpectedValue $InternalAuthenticationMethods -ActualValue $EasVdir.InternalAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name "InternalAuthenticationMethods" -Type "Array" -ExpectedValue $InternalAuthenticationMethods -ActualValue $easVdir.InternalAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        If($AutoCertBasedAuth -eq $true)
+        if ($AutoCertBasedAuth)
         {
-            CheckForCertBasedAuthPreReqs
+            Test-PreReqsForCertBasedAuth
 
             if ([string]::IsNullOrEmpty($AutoCertBasedAuthThumbprint))
             {
                 ReportBadSetting -SettingName "AutoCertBasedAuthThumbprint" -ExpectedValue "Not null or empty" -ActualValue "" -VerbosePreference $VerbosePreference
                 return $false
             }
-            elseif ($AutoCertBasedAuthHttpsBindings -eq $null -or $AutoCertBasedAuthHttpsBindings.Count -eq 0)
+            elseif ($null -eq $AutoCertBasedAuthHttpsBindings -or $AutoCertBasedAuthHttpsBindings.Count -eq 0)
             {
                 ReportBadSetting -SettingName "AutoCertBasedAuthHttpsBindings" -ExpectedValue "Not null or empty" -ActualValue "" -VerbosePreference $VerbosePreference
                 return $false
             }
-            elseif ((TestCertBasedAuth -AutoCertBasedAuthThumbprint $AutoCertBasedAuthThumbprint -AutoCertBasedAuthHttpsBindings $AutoCertBasedAuthHttpsBindings) -eq $false)
+            elseif ((Test-CertBasedAuth -AutoCertBasedAuthThumbprint $AutoCertBasedAuthThumbprint -AutoCertBasedAuthHttpsBindings $AutoCertBasedAuthHttpsBindings) -eq $false)
             {
                 ReportBadSetting -SettingName "TestCertBasedAuth" -ExpectedValue $true -ActualValue $false -VerbosePreference $VerbosePreference
                 return $false
@@ -330,11 +333,11 @@ function Test-TargetResource
         }
     }
 
-    #If the code got to this point of the script all conditions are true   
-    $True
+    #If the code got to this point, all conditions are true   
+    return $true
 }
 
-function GetActiveSyncVirtualDirectory
+function Get-ActiveSyncVirtualDirectoryWithCorrectParams
 {
     [CmdletBinding()]
     param
@@ -343,8 +346,9 @@ function GetActiveSyncVirtualDirectory
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -357,12 +361,12 @@ function GetActiveSyncVirtualDirectory
         $AutoCertBasedAuthThumbprint,
 
         [System.String[]]
-        $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443","127.0.0.1:443"),
+        $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443", "127.0.0.1:443"),
 
         [System.Boolean]
         $BasicAuthEnabled,
 
-        [ValidateSet("Ignore","Allowed","Required")]
+        [ValidateSet("Ignore", "Allowed", "Required")]
         [System.String]
         $ClientCertAuth,
 
@@ -393,7 +397,7 @@ function GetActiveSyncVirtualDirectory
     return (Get-ActiveSyncVirtualDirectory @PSBoundParameters)
 }
 
-function ConfigureCertBasedAuth
+function Enable-CertBasedAuth
 {
     param
     (
@@ -401,32 +405,34 @@ function ConfigureCertBasedAuth
         $AutoCertBasedAuthThumbprint,
 
         [System.String[]]
-        $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443","127.0.0.1:443")
+        $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443", "127.0.0.1:443")
     )
     
+    $appCmdExe = "$($env:SystemRoot)\System32\inetsrv\appcmd.exe"
+
     #Enable cert auth in IIS, and require SSL on the AS vdir
-    $output = Invoke-Expression -Command "$($env:SystemRoot)\System32\inetsrv\appcmd.exe set config -section:system.webServer/security/authentication/clientCertificateMappingAuthentication /enabled:`"True`" /commit:apphost"
-    Write-Verbose "$($output)"
+    $output = &$appCmdExe set config -section:system.webServer/security/authentication/clientCertificateMappingAuthentication /enabled:"True" /commit:apphost
+    Write-Verbose "$output"
     
-    $output = Invoke-Expression -Command "$($env:SystemRoot)\System32\inetsrv\appcmd.exe set config `"Default Web Site`" -section:system.webServer/security/authentication/clientCertificateMappingAuthentication /enabled:`"True`" /commit:apphost"
-    Write-Verbose "$($output)"
+    $output = &$appCmdExe set config "Default Web Site" -section:system.webServer/security/authentication/clientCertificateMappingAuthentication /enabled:"True" /commit:apphost
+    Write-Verbose "$output"
     
-    $output = Invoke-Expression -Command "$($env:SystemRoot)\System32\inetsrv\appcmd.exe set config `"Default Web Site/Microsoft-Server-ActiveSync`" /section:access /sslFlags:`"Ssl, SslNegotiateCert, SslRequireCert, Ssl128`" /commit:apphost"    
-    Write-Verbose "$($output)"
+    $output = &$appCmdExe set config "Default Web Site/Microsoft-Server-ActiveSync" /section:access /sslFlags:"Ssl, SslNegotiateCert, SslRequireCert, Ssl128" /commit:apphost
+    Write-Verbose "$output"
     
-    $output = Invoke-Expression -Command "$($env:SystemRoot)\System32\inetsrv\appcmd.exe set config `"Default Web Site/Microsoft-Server-ActiveSync`" -section:system.webServer/security/authentication/clientCertificateMappingAuthentication /enabled:`"True`" /commit:apphost"
-    Write-Verbose "$($output)"
+    $output = &$appCmdExe set config "Default Web Site/Microsoft-Server-ActiveSync" -section:system.webServer/security/authentication/clientCertificateMappingAuthentication /enabled:"True" /commit:apphost
+    Write-Verbose "$output"
 
     #Set DSMapperUsage to enabled on all the required SSL bindings
     $appId = "{4dc3e181-e14b-4a21-b022-59fc669b0914}" #The appId of all IIS applications
 
     foreach ($binding in $AutoCertBasedAuthHttpsBindings)
     {
-        EnableDSMapperUsage -ipPortCombo $binding -certThumbprint $AutoCertBasedAuthThumbprint -appId $appId
+        Enable-DSMapperUsage -IpPortCombo $binding -CertThumbprint $AutoCertBasedAuthThumbprint -AppId $appId
     }
 }
 
-function TestCertBasedAuth
+function Test-CertBasedAuth
 {
     param
     (
@@ -434,53 +440,54 @@ function TestCertBasedAuth
         $AutoCertBasedAuthThumbprint,
 
         [System.String[]]
-        $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443","127.0.0.1:443")
+        $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443", "127.0.0.1:443")
     )
 
-    $serverWideClientCertMappingAuth = Invoke-Expression -Command "$($env:SystemRoot)\System32\inetsrv\appcmd.exe list config -section:system.webServer/security/authentication/clientCertificateMappingAuthentication"
+    $appCmdExe = "$($env:SystemRoot)\System32\inetsrv\appcmd.exe"
 
-    if ((AppCmdOutputContainsString -appCmdOutput $serverWideClientCertMappingAuth -searchString "clientCertificateMappingAuthentication enabled=`"true`"") -eq $false)
+    $serverWideClientCertMappingAuth = &$appCmdExe list config -section:system.webServer/security/authentication/clientCertificateMappingAuthentication
+
+    if (-not (Test-AppCmdOutputContainsString -AppCmdOutput $serverWideClientCertMappingAuth -SearchString "clientCertificateMappingAuthentication enabled=`"true`""))
     {
         return $false
     }
 
-    $clientCertMappingAuth = Invoke-Expression -Command "$($env:SystemRoot)\System32\inetsrv\appcmd.exe list config `"Default Web Site`" -section:system.webServer/security/authentication/clientCertificateMappingAuthentication"
+    $clientCertMappingAuth = &$appCmdExe list config "Default Web Site" -section:system.webServer/security/authentication/clientCertificateMappingAuthentication
 
-    if ((AppCmdOutputContainsString -appCmdOutput $clientCertMappingAuth -searchString "clientCertificateMappingAuthentication enabled=`"true`"") -eq $false)
+    if (-not (Test-AppCmdOutputContainsString -AppCmdOutput $clientCertMappingAuth -SearchString "clientCertificateMappingAuthentication enabled=`"true`""))
     {
         return $false
     }
 
-    $asClientCertMappingAuth = Invoke-Expression -Command "$($env:SystemRoot)\System32\inetsrv\appcmd.exe list config `"Default Web Site/Microsoft-Server-ActiveSync`" -section:system.webServer/security/authentication/clientCertificateMappingAuthentication"
+    $asClientCertMappingAuth = &$appCmdExe list config "Default Web Site/Microsoft-Server-ActiveSync" -section:system.webServer/security/authentication/clientCertificateMappingAuthentication
 
-    if ((AppCmdOutputContainsString -appCmdOutput $asClientCertMappingAuth -searchString "clientCertificateMappingAuthentication enabled=`"true`"") -eq $false)
+    if (-not (Test-AppCmdOutputContainsString -appCmdOutput $asClientCertMappingAuth -searchString "clientCertificateMappingAuthentication enabled=`"true`""))
     {
         return $false
     }
 
-    $sslFlags = Invoke-Expression -Command "$($env:SystemRoot)\System32\inetsrv\appcmd.exe list config `"Default Web Site/Microsoft-Server-ActiveSync`" /section:access"  
+    $sslFlags = &$appCmdExe list config "Default Web Site/Microsoft-Server-ActiveSync" /section:access
 
-    if ((AppCmdOutputContainsString -appCmdOutput $sslFlags -searchString "access sslFlags=`"Ssl, SslNegotiateCert, SslRequireCert, Ssl128`"") -eq $false)
+    if (-not (Test-AppCmdOutputContainsString -appCmdOutput $sslFlags -searchString "access sslFlags=`"Ssl, SslNegotiateCert, SslRequireCert, Ssl128`""))
     {
         return $false
     }
 
-
-    $netshOutput = Invoke-Expression -Command "netsh http show sslcert"
+    $netshOutput = netsh http show sslcert
 
     foreach ($binding in $AutoCertBasedAuthHttpsBindings)
     {
-        if ((ValidateNetshSslcertSetting -ipPort $binding -netshSslCertOutput $netshOutput -settingName "DS Mapper Usage" -settingValue "Enabled") -eq $false)
+        if (-not (Test-NetshSslCertSetting -IpPort $binding -NetshSslCertOutput $netshOutput -SettingName "DS Mapper Usage" -SettingValue "Enabled"))
         {
             return $false
         }
         
-        if ((ValidateNetshSslcertSetting -ipPort $binding -netshSslCertOutput $netshOutput -settingName "Certificate Hash" -settingValue $AutoCertBasedAuthThumbprint) -eq $false)
+        if (-not (Test-NetshSslCertSetting -IpPort $binding -NetshSslCertOutput $netshOutput -SettingName "Certificate Hash" -SettingValue $AutoCertBasedAuthThumbprint))
         {
             return $false
         }
 
-        if ((ValidateNetshSslcertSetting -ipPort $binding -netshSslCertOutput $netshOutput -settingName "Certificate Store Name" -settingValue "MY") -eq $false)
+        if (-not (Test-NetshSslCertSetting -IpPort $binding -NetshSslCertOutput $netshOutput -SettingName "Certificate Store Name" -SettingValue "MY"))
         {
             return $false
         }
@@ -489,85 +496,122 @@ function TestCertBasedAuth
     return $true
 }
 
-function IsSslBinding($netshOutput)
+function Test-IsSslBinding
 {
-    $isBinding = $false
-    
-    if ($netshOutput -ne $null -and $netshOutput.GetType().Name -eq "Object[]")
+    param
+    (
+        $NetshOutput
+    )
+
+    if ($null -ne $NetshOutput -and $NetshOutput.GetType().Name -eq "Object[]")
     {
-        for ($i = 0; $i -lt $netshOutput.Count; $i++)
+        for ($i = 0; $i -lt $NetshOutput.Count; $i++)
         {
-            if ($netshOutput[$i].Contains("IP:port"))
+            if ($NetshOutput[$i].Contains("IP:port"))
             {
-                $isBinding = $true
-                break
+                return $true
             }
         }
     }
     
-    return $isBinding
+    return $false
 }
 
-function EnableDSMapperUsage($ipPortCombo, $certThumbprint, $appId)
+function Enable-DSMapperUsage
 {
-    #See if a binding already exists, and if so, delete it
-    $bindingOutput = netsh http show sslcert ipport=$($ipPortCombo)
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $IpPortCombo,
 
-    if (IsSslBinding $bindingOutput)
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $CertThumbprint,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $AppId
+    )
+    #See if a binding already exists, and if so, delete it
+    $bindingOutput = netsh http show sslcert ipport=$($IpPortCombo)
+
+    if (Test-IsSslBinding $bindingOutput)
     {
-        $output = netsh http delete sslcert ipport=$($ipPortCombo)
-        Write-Verbose "$($output)"
+        $output = netsh http delete sslcert ipport=$($IpPortCombo)
+        Write-Verbose "$output"
     }
     
     #Add the binding back with new settings
-    $output = netsh http add sslcert ipport=$($ipPortCombo) certhash=$($certThumbprint) appid=$($appId) dsmapperusage=enable certstorename=MY
-    Write-Verbose "$($output)"
+    $output = netsh http add sslcert ipport=$($IpPortCombo) certhash=$($CertThumbprint) appid=$($AppId) dsmapperusage=enable certstorename=MY
+    Write-Verbose "$output"
 }
 
-function AppCmdOutputContainsString($appCmdOutput, $searchString)
+function Test-AppCmdOutputContainsString
 {
-    $containsString = $false
-    
-    if ($appCmdOutput -ne $null -and $appCmdOutput.GetType().Name -eq "Object[]")
+    param
+    (
+        $AppCmdOutput,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $SearchString
+    )
+
+    if ($null -ne $AppCmdOutput -and $AppCmdOutput.GetType().Name -eq "Object[]")
     {
-        foreach ($line in $appCmdOutput)
+        foreach ($line in $AppCmdOutput)
         {
-            if ($line.ToLower().Contains($searchString.ToLower()))
+            if ($line.ToLower().Contains($SearchString.ToLower()))
             {
-                $containsString = $true
-                break
+                return $true
             }
         }
     }
     
-    return $containsString
+    return $false
 }
 
-function ValidateNetshSslcertSetting($ipPort, $netshSslCertOutput, $settingName, $settingValue)
+function Test-NetshSslCertSetting
 {
-    $isValid = $false
-    $foundSetting = $false
+    param
+    (
+        $NetshSslCertOutput, 
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $IpPort, 
+        
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $SettingName, 
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $SettingValue
+    )
+
+    $SettingName = $SettingName.ToLower()
+    $SettingValue = $SettingValue.ToLower()
     
-    $settingName = $settingName.ToLower()
-    $settingValue = $settingValue.ToLower()
-    
-    if ($netshSslCertOutput -ne $null -and $netshSslCertOutput.GetType().Name -eq "Object[]")
+    if ($null -ne $NetshSslCertOutput -and $NetshSslCertOutput.GetType().Name -eq "Object[]")
     {
-        for ($i = 0; $i -lt $netshSslCertOutput.Count -and $foundSetting -eq $false; $i++)
+        $foundSetting = $false
+        for ($i = 0; $i -lt $NetshSslCertOutput.Count -and -not $foundSetting; $i++)
         {
-            if ($netshSslCertOutput[$i].ToLower().Contains("ip:port") -and $netshSslCertOutput[$i].Contains($ipPort))
+            if ($NetshSslCertOutput[$i].ToLower().Contains("ip:port") -and $NetshSslCertOutput[$i].Contains($IpPort))
             {
                 $i++
                 
-                while ($netshSslCertOutput[$i].ToLower().Contains("ip:port") -eq $false -and $foundSetting -eq $false)
+                while (-not $NetshSslCertOutput[$i].ToLower().Contains("ip:port") -and -not $foundSetting)
                 {                    
-                    if ($netshSslCertOutput[$i].ToLower().Contains($settingName))
+                    if ($NetshSslCertOutput[$i].ToLower().Contains($SettingName))
                     {
                         $foundSetting = $true
                         
-                        if ($netshSslCertOutput[$i].ToLower().Contains($settingValue))
+                        if ($NetshSslCertOutput[$i].ToLower().Contains($SettingValue))
                         {
-                            $isValid = $true
+                            return $true
                         }
                     }
                     
@@ -577,11 +621,11 @@ function ValidateNetshSslcertSetting($ipPort, $netshSslCertOutput, $settingName,
         }
     }
     
-    return $isValid
+    return $false
 }
 
 #Ensures that required uto Certification Based Authentication prereqs are installed 
-function CheckForCertBasedAuthPreReqs
+function Test-PreReqsForCertBasedAuth
 {
     $hasAllPreReqs = $true
 
@@ -607,7 +651,6 @@ function CheckForCertBasedAuthPreReqs
         throw "Required Windows features need to be installed before the Auto Certification Based Authentication feature can be used"
     }
 }
-
 
 Export-ModuleMember -Function *-TargetResource
 
