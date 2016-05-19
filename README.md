@@ -1,4 +1,4 @@
-ï»¿[![Build status](https://ci.appveyor.com/api/projects/status/k9oq77p9xn6bo2j6/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xexchange/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/k9oq77p9xn6bo2j6/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xexchange/branch/master)
 
 # xExchange
 
@@ -56,7 +56,7 @@ Defaults to $false.
 * **AutoCertBasedAuth**: Automates the IIS configuration portion of certificate based authentication. 
 Only works against the Default Web Site. 
 Does not configure ClientCertAuth parameter, which must be specified separately. 
-Does not install â€˜Client Certificate Mapping Authenticationâ€™ or â€˜IIS Client Certificate Mapping Authenticationâ€™ roles of IIS, which also must be configured separately.
+Does not install ‘Client Certificate Mapping Authentication’ or ‘IIS Client Certificate Mapping Authentication’ roles of IIS, which also must be configured separately.
 * **AutoCertBasedAuthThumbprint**: The thumbprint of the in use Exchange certificate for IIS.
 * **AutoCertBasedAuthHttpsBindings**: The (IP:PORT)'s of the HTTPS bindings on the Default Web Site. 
 Defaults to "0.0.0.0:443","127.0.0.1:443"
@@ -68,7 +68,7 @@ Defaults to "0.0.0.0:443","127.0.0.1:443"
 * **ExternalUrl**
 * **InternalAuthenticationMethods**
 * **InternalUrl**
-* **WindowsAuthEnabled**: Auto Certificate Based Authentication Requirements: For AutoCertBasedAuth to work, the â€˜Client Certificate Mapping Authenticationâ€™ and â€˜IIS Client Certificate Mapping Authenticationâ€™ roles of IIS need to be installed.
+* **WindowsAuthEnabled**: Auto Certificate Based Authentication Requirements: For AutoCertBasedAuth to work, the ‘Client Certificate Mapping Authentication’ and ‘IIS Client Certificate Mapping Authentication’ roles of IIS need to be installed.
 
 ### xExchAntiMalwareScanning
 
@@ -731,6 +731,7 @@ xExchUMService configures a UM server using Set-UMService.
 * **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
 * **UMStartupMode**: UMStartupMode for the UM server.
 * **DomainController**: Optional Domain Controller to connect to.
+* **DialPlans**: Specifies all dial plans that the Unified Messaging service handles incoming calls for.
 
 ### xExchWaitForADPrep
 
@@ -798,7 +799,13 @@ Defaults to $false.
 
 ## Versions
 
-### Unreleased  
+### Unreleased
+
+### 1.6.0.0  
+
+* Added DialPlans parameter to xExchUMService
+
+### 1.5.0.0
 
 * Added support for Exchange 2016!
 * Added Pester tests for the following resources: xExchActiveSyncVirtualDirectory, xExchAutodiscoverVirtualDirectory, xExchClientAccessServer, xExchDatabaseAvailabilityGroup, xExchDatabaseAvailabilityGroupMember, xExchEcpVirtualDirectory, xExchExchangeServer, xExchImapSettings, xExchMailboxDatabase, xExchMailboxDatabaseCopy, xExchMapiVirtualDirectory, xExchOabVirtualDirectory, xExchOutlookAnywhere, xExchOwaVirtualDirectory, xExchPopSettings, xExchPowershellVirtualDirectory, xExchUMCallRouterSettings, xExchUMService, xExchWebServicesVirtualDirectory  
