@@ -158,19 +158,11 @@ function GetExchangeProduct
 #Checks whether a supported version of Exchange is at least partially installed by looking for Exchange's product GUID
 function IsExchangePresent
 {   
-    $product = GetExchangeProduct
+    $version = GetExchangeVersion
 
-    if ($product -ne $null)
+    if ($version -eq "2013" -or $version -eq "2016")
     {
-        if ($product.IdentifyingNumber -eq '{4934D1EA-BE46-48B1-8847-F1AF20E892C1}' -or ` #Exchange 2013
-            $product.IdentifyingNumber -eq '{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}')      #Exchange 2016
-        {
-            return $true
-        }
-        else
-        {
-            return $false
-        }      
+        return $true
     }
     else
     {
@@ -178,17 +170,32 @@ function IsExchangePresent
     }
 }
 
-function IsExchange2013Present
+#Gets the installed Exchange Version, and returns the number as a string.
+#Returns N/A if the version cannot be found, and will optionally throw an exception
+#if ThrowIfUnknownVersion was set to $true.
+function GetExchangeVersion
 {
-    $product = GetExchangeProduct
+    param ([bool]$ThrowIfUnknownVersion = $false)
+    
+    $version = "N/A"
 
-    if ($product -ne $null -and $product.IdentifyingNumber -eq '{4934D1EA-BE46-48B1-8847-F1AF20E892C1}')
+    $product = GetExchangeProduct
+    
+    if ($product -ne $null)
     {
-        return $true
+        if ($product.IdentifyingNumber -eq '{4934D1EA-BE46-48B1-8847-F1AF20E892C1}') #Exchange 2013
+        {
+            return "2013"
+        }
+        elseif($product.IdentifyingNumber -eq '{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}') #Exchange 2016
+        {
+            return "2016"
+        }     
     }
-    else
+
+    if ($version -eq "N/A" -and $ThrowIfUnknownVersion)
     {
-        return $false
+        throw "Failed to discover a known Exchange Version"
     }
 }
 
@@ -504,6 +511,22 @@ function RemoveParameters
         foreach ($param in $ParamsToRemove)
         {
             $PSBoundParametersIn.Remove($param) | Out-Null
+        }
+    }
+}
+
+function RemoveVersionSpecificParameters
+{
+    param($PSBoundParametersIn, [string]$ParamName, [string]$ResourceName, [ValidateSet("2013","2016")][string]$ParamExistsInVersion)
+
+    if ($PSBoundParameters.ContainsKey($ParamName))
+    {
+        $serverVersion = GetExchangeVersion
+
+        if ($serverVersion -ne $ParamExistsInVersion)
+        {
+            Write-Warning "$($ParamName) is not a valid parameter for $($ResourceName) in Exchange $($serverVersion). Skipping usage."
+            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove $ParamName
         }
     }
 }
