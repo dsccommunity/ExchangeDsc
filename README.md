@@ -56,7 +56,7 @@ Defaults to $false.
 * **AutoCertBasedAuth**: Automates the IIS configuration portion of certificate based authentication. 
 Only works against the Default Web Site. 
 Does not configure ClientCertAuth parameter, which must be specified separately. 
-Does not install ‘Client Certificate Mapping Authentication’ or ‘IIS Client Certificate Mapping Authentication’ roles of IIS, which also must be configured separately.
+Does not install ?Client Certificate Mapping Authentication? or ?IIS Client Certificate Mapping Authentication? roles of IIS, which also must be configured separately.
 * **AutoCertBasedAuthThumbprint**: The thumbprint of the in use Exchange certificate for IIS.
 * **AutoCertBasedAuthHttpsBindings**: The (IP:PORT)'s of the HTTPS bindings on the Default Web Site. 
 Defaults to "0.0.0.0:443","127.0.0.1:443"
@@ -68,7 +68,7 @@ Defaults to "0.0.0.0:443","127.0.0.1:443"
 * **ExternalUrl**
 * **InternalAuthenticationMethods**
 * **InternalUrl**
-* **WindowsAuthEnabled**: Auto Certificate Based Authentication Requirements: For AutoCertBasedAuth to work, the ‘Client Certificate Mapping Authentication’ and ‘IIS Client Certificate Mapping Authentication’ roles of IIS need to be installed.
+* **WindowsAuthEnabled**: Auto Certificate Based Authentication Requirements: For AutoCertBasedAuth to work, the ?Client Certificate Mapping Authentication? and ?IIS Client Certificate Mapping Authentication? roles of IIS need to be installed.
 
 ### xExchAntiMalwareScanning
 
@@ -117,7 +117,7 @@ Should be in a format like "1024MB" or "1TB".
 * **PartitioningScheme**: The partitioning scheme for the volume. 
 Defaults to GPT.
 * **UnitSize**: The unit size to use when formatting the disk. 
-Defaults to 64k.
+Defaults to 64k. Specified value should end in a number, indicating bytes, or with a k, indicating the value is kilobytes.
 * **VolumePrefix**: The prefix to give to Exchange Volume folders. 
 Defaults to EXVOL
 
@@ -161,6 +161,7 @@ DatacenterActivationMode will not be set until that occurs.
 * **DatabaseAvailabilityGroupIpAddresses**
 * **DatacenterActivationMode**
 * **DomainController**
+* **FileSystem**
 * **ManualDagNetworkConfiguration**
 * **NetworkCompression**
 * **NetworkEncryption**
@@ -476,6 +477,7 @@ Defaults to $false.
 * **RequireSSL**
 * **WindowsAuthentication**
 
+
 ### xExchOutlookAnywhere
 
 Where no description is listed, properties correspond directly to [Set-OutlookAnywhere](http://technet.microsoft.com/en-us/library/bb123545(v=exchg.150).aspx) parameters.
@@ -521,6 +523,8 @@ Defaults to $false.
 * **LogonPageLightSelectionEnabled**
 * **WindowsAuthentication**
 * **WSSecurityAuthentication**
+* **LogonFormat**
+* **DefaultDomain**
 
 ### xExchPopSettings
 
@@ -800,6 +804,15 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased
+
+### 1.7.0.0
+
+* xExchOwaVirtualDirectory
+    - Added `LogonFormat` parameter.
+    - Added `DefaultDomain` parameter.
+* Added FileSystem parameter to xExchDatabaseAvailabilityGroup
+* Fixed PSSA issues in MSFT_xExchAutodiscoverVirtualDirectory and MSFT_xExchActiveSyncVirtualDirectory
+* Updated xExchAutoMountPoint to disable Integrity Checking when formatting volumes as ReFS. This aligns with the latest version of DiskPart.ps1 from the Exchange Server Role Requirements Calculator.
 
 ### 1.6.0.0  
 
