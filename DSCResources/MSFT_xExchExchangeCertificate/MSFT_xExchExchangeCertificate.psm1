@@ -305,12 +305,14 @@ function GetExchangeCertificate
     return (Get-ExchangeCertificate @PSBoundParameters -ErrorAction SilentlyContinue -Server $env:COMPUTERNAME)
 }
 
-#Compares whether services from a certificate object match the services that were requested.
-#If AllowsExtraServices is true, it is OK for more services to be on the cert than were requested,
-#as long as the requested services are present.
 function CompareCertServices
 {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSProvideCommentHelp", "")]
+<#
+.Synopsis
+Compares whether services from a certificate object match the services that were requested.
+If AllowsExtraServices is true, it is OK for more services to be on the cert than were requested,
+as long as the requested services are present.
+#>
     param([string]$ServicesActual, [string[]]$ServicesDesired, [boolean]$AllowExtraServices)
     
     $actual = StringToArray -StringIn $ServicesActual -Separator ','
