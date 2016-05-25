@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -10,6 +11,7 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String]
@@ -32,9 +34,9 @@ function Get-TargetResource
 
     $cas = GetClientAccessServer @PSBoundParameters
 
-    if ($cas -ne $null)
+    if ($null -ne $cas)
     {
-        if ($cas.AutoDiscoverSiteScope -ne $null)
+        if ($null -ne $cas.AutoDiscoverSiteScope)
         {
             $sites = $cas.AutoDiscoverSiteScope.ToArray()
         }
@@ -52,6 +54,7 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     param
     (
@@ -61,6 +64,7 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String]
@@ -100,6 +104,7 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -110,6 +115,7 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String]
@@ -132,7 +138,7 @@ function Test-TargetResource
 
     $cas = GetClientAccessServer @PSBoundParameters
 
-    if ($cas -eq $null)
+    if ($null -eq $cas)
     {
         return $false
     }
@@ -164,6 +170,7 @@ function GetClientAccessServer
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String]
