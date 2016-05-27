@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -10,6 +11,7 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String]
@@ -35,12 +37,12 @@ function Get-TargetResource
 
     if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
-        Set-ADServerSettings –PreferredServer "$($AdServerSettingsPreferredServer)"
+        Set-ADServerSettings -PreferredServer "$($AdServerSettingsPreferredServer)"
     }
 
     $db = GetMailboxDatabase @PSBoundParameters
 
-    if ($db -ne $null)
+    if ($null -ne $db)
     {
         $returnValue = @{
             Identity = $Identity
@@ -53,6 +55,7 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     param
     (
@@ -62,6 +65,7 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String]
@@ -87,14 +91,14 @@ function Set-TargetResource
 
     if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
-        Set-ADServerSettings –PreferredServer "$($AdServerSettingsPreferredServer)"
+        Set-ADServerSettings -PreferredServer "$($AdServerSettingsPreferredServer)"
     }
 
     $db = GetMailboxDatabase @PSBoundParameters
 
     for ($i = 0; $i -lt $RetryCount; $i++)
     {
-        if ($db -eq $null)
+        if ($null -eq $db)
         {
             Write-Warning "Database '$($Identity)' does not yet exist. Sleeping for $($RetryIntervalSec) seconds."
             Start-Sleep -Seconds $RetryIntervalSec
@@ -107,7 +111,7 @@ function Set-TargetResource
         }
     }
     
-    if ($db -eq $null)
+    if ($null -eq $db)
     {
         throw "Database '$($Identity)' does not yet exist. This will prevent resources that are dependant on this resource from executing. If you are running the DSC configuration in push mode, you will need to re-run the configuration once the database has been created."
     }
@@ -116,6 +120,7 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -126,6 +131,7 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String]
@@ -151,12 +157,12 @@ function Test-TargetResource
 
     if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
-        Set-ADServerSettings –PreferredServer "$($AdServerSettingsPreferredServer)"
+        Set-ADServerSettings -PreferredServer "$($AdServerSettingsPreferredServer)"
     }
 
     $db = GetMailboxDatabase @PSBoundParameters
 
-    return ($db -ne $null)
+    return ($null -ne $db)
 }
 
 function GetMailboxDatabase
@@ -170,6 +176,7 @@ function GetMailboxDatabase
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String]
