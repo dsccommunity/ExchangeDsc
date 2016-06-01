@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -10,6 +11,7 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
@@ -22,6 +24,7 @@ function Get-TargetResource
         $AllowExtraServices = $false,
 
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $CertCreds,
 
         [System.String]
@@ -44,7 +47,7 @@ function Get-TargetResource
 
     $cert = GetExchangeCertificate @PSBoundParameters
 
-    if ($cert -ne $null)
+    if ($null -ne $cert)
     {
         $returnValue = @{
             Thumbprint = $Thumbprint
@@ -58,6 +61,7 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
     [CmdletBinding()]
     param
     (
@@ -67,6 +71,7 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
@@ -79,6 +84,7 @@ function Set-TargetResource
         $AllowExtraServices = $false,
 
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $CertCreds,
 
         [System.String]
@@ -105,14 +111,14 @@ function Set-TargetResource
     $needUMServiceReset = $false
     $needUMCallRouterServiceReset = $false
 
-    if ($cert -ne $null)
+    if ($null -ne $cert)
     {
         $currentServices = StringToArray -StringIn $cert.Services -Separator ','
     }
 
     if ((Array2ContainsArray1Contents -Array2 $Services -Array1 "UM" -IgnoreCase $true) -eq $true)
     {
-        if ($cert -eq $null -or (Array2ContainsArray1Contents -Array2 $currentServices -Array1 "UM" -IgnoreCase $true) -eq $false)
+        if ($null -eq $cert -or (Array2ContainsArray1Contents -Array2 $currentServices -Array1 "UM" -IgnoreCase $true) -eq $false)
         {
             $needUMServiceReset = $true
         }
@@ -120,7 +126,7 @@ function Set-TargetResource
 
     if ((Array2ContainsArray1Contents -Array2 $Services -Array1 "UMCallRouter" -IgnoreCase $true) -eq $true)
     {
-        if ($cert -eq $null -or (Array2ContainsArray1Contents -Array2 $currentServices -Array1 "UMCallRouter" -IgnoreCase $true) -eq $false)
+        if ($null -eq $cert -or (Array2ContainsArray1Contents -Array2 $currentServices -Array1 "UMCallRouter" -IgnoreCase $true) -eq $false)
         {
             $needUMCallRouterServiceReset = $true
         }
@@ -140,7 +146,7 @@ function Set-TargetResource
     }
 
     #The desired cert is not present. Deal with that scenario.
-    if ($cert -eq $null)
+    if ($null -eq $cert)
     {
         #If the cert is null and it's supposed to be present, then we need to import one
         if ($Ensure -eq "Present")
@@ -160,7 +166,7 @@ function Set-TargetResource
     #Cert is present. Set props on it
     if ($Ensure -eq "Present")
     {
-        if ($cert -ne $null)
+        if ($null -ne $cert)
         {
             NotePreviousError
 
@@ -191,6 +197,7 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -201,6 +208,7 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
@@ -213,6 +221,7 @@ function Test-TargetResource
         $AllowExtraServices = $false,
 
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $CertCreds,
 
         [System.String]
@@ -237,7 +246,7 @@ function Test-TargetResource
 
     $result = $false
 
-    if ($cert -ne $null)
+    if ($null -ne $cert)
     {
         if ($Ensure -eq "Present")
         {
@@ -264,6 +273,7 @@ function GetExchangeCertificate
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
@@ -276,6 +286,7 @@ function GetExchangeCertificate
         $AllowExtraServices = $false,
 
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $CertCreds,
 
         [System.String]
@@ -294,9 +305,13 @@ function GetExchangeCertificate
     return (Get-ExchangeCertificate @PSBoundParameters -ErrorAction SilentlyContinue -Server $env:COMPUTERNAME)
 }
 
-#Compares whether services from a certificate object match the services that were requested.
-#If AllowsExtraServices is true, it is OK for more services to be on the cert than were requested,
-#as long as the requested services are present.
+<#
+.Synopsis
+Compares whether services from a certificate object match the services that were requested.
+If AllowsExtraServices is true, it is OK for more services to be on the cert than were requested,
+as long as the requested services are present.
+#>
+
 function CompareCertServices
 {
     param([string]$ServicesActual, [string[]]$ServicesDesired, [boolean]$AllowExtraServices)

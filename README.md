@@ -805,7 +805,12 @@ Defaults to $false.
 
 ### Unreleased
 
-* Fixed PSSA issues in MSFT_xExchClientAccessServer
+* Fixed PSSA issues in:
+    * MSFT_xExchClientAccessServer
+    * MSFT_xExchAntiMalwareScanning
+    * MSFT_xExchWaitForMailboxDatabase
+    * MSFT_xExchWebServicesVirtualDirectory
+    * MSFT_xExchExchangeCertificate
 
 ### 1.7.0.0
 
