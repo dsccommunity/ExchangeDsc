@@ -805,6 +805,8 @@ Defaults to $false.
 
 ### Unreleased
 
+* Fixed PSSA issues in MSFT_xExchAntiMalwareScanning
+
 ### 1.7.0.0
 
 * xExchOwaVirtualDirectory
