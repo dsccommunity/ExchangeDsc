@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -10,6 +11,7 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
@@ -37,12 +39,12 @@ function Get-TargetResource
 
     $dag = Get-DatabaseAvailabilityGroup @PSBoundParameters -Status -ErrorAction SilentlyContinue
 
-    if ($dag -ne $null -and $dag.Servers -ne $null)
+    if ($null -ne $dag -and $null -ne $dag.Servers)
     {
         #See if this server is already in the DAG
-        $server = $dag.Servers | where {$_.Name -eq "$($MailboxServer)"}
+        $server = $dag.Servers | Where-Object {$_.Name -eq "$($MailboxServer)"}
 
-        if ($server -ne $null)
+        if ($null -ne $server)
         {
             $returnValue = @{
                 MailboxServer = $MailboxServer
@@ -57,6 +59,7 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     param
     (
@@ -66,6 +69,7 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
@@ -97,6 +101,7 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -107,6 +112,7 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
@@ -134,11 +140,11 @@ function Test-TargetResource
 
     $dag = Get-DatabaseAvailabilityGroup @PSBoundParameters -Status -ErrorAction SilentlyContinue
 
-    if ($dag -ne $null -and $dag.Name -like "$($DAGName)")
+    if ($null -ne $dag -and $dag.Name -like "$($DAGName)")
     {
-        $server = $dag.Servers | where {$_.Name -eq "$($MailboxServer)"}
+        $server = $dag.Servers | Where-Object {$_.Name -eq "$($MailboxServer)"}
 
-        return ($server -ne $null)
+        return ($null -ne $server)
     }
 
     return $false
