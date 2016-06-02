@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -10,6 +11,7 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -53,7 +55,7 @@ function Get-TargetResource
 
     $EcpVdir = GetEcpVirtualDirectory @PSBoundParameters
 
-    if ($EcpVdir -ne $null)
+    if ($null -ne $EcpVdir)
     {
         $returnValue = @{
             DigestAuthentication = $EcpVdir.DigestAuthentication
@@ -84,6 +86,7 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -147,6 +150,7 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -157,6 +161,7 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -203,7 +208,7 @@ function Test-TargetResource
     
     $EcpVdir = GetEcpVirtualDirectory @PSBoundParameters
 
-    if ($EcpVdir -eq $null)
+    if ($null -eq $EcpVdir)
     {
         return $false
     }
@@ -265,6 +270,7 @@ function GetEcpVirtualDirectory
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
