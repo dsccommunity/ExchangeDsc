@@ -812,6 +812,9 @@ Defaults to $false.
     * MSFT_xExchWebServicesVirtualDirectory
     * MSFT_xExchExchangeCertificate
     * MSFT_xExchEcpVirtualDirectory
+    * MSFT_xExchDatabaseAvailabilityGroupNetwork
+    * MSFT_xExchDatabaseAvailabilityGroupMember
+    * MSFT_xExchDatabaseAvailabilityGroup
 
 ### 1.7.0.0
 
