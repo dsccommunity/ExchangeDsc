@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -10,6 +11,7 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -50,7 +52,7 @@ function Get-TargetResource
 
     $server = GetExchangeServer @PSBoundParameters
 
-    if ($server -ne $null)
+    if ($null -ne $server)
     {
         #There's no way to read the product key that was sent in, so just mark it is "Licensed" if it is
         if ($server.IsExchangeTrialEdition -eq $false)
@@ -86,6 +88,7 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -129,7 +132,7 @@ function Set-TargetResource
 
     $needRestart = $false
 
-    if ($PSBoundParameters.ContainsKey("ProductKey") -and !([string]::IsNullOrEmpty($ProductKey)) -and $server -ne $null -and $server.IsExchangeTrialEdition -eq $true)
+    if ($PSBoundParameters.ContainsKey("ProductKey") -and !([string]::IsNullOrEmpty($ProductKey)) -and $null -ne $server -and $server.IsExchangeTrialEdition -eq $true)
     {
         $needRestart = $true
     }
@@ -160,6 +163,7 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -170,6 +174,7 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -210,7 +215,7 @@ function Test-TargetResource
 
     $server = GetExchangeServer @PSBoundParameters
 
-    if ($server -eq $null) #Couldn't find the server, which is bad
+    if ($null -eq $server) #Couldn't find the server, which is bad
     {
         return $false
     }
@@ -224,7 +229,7 @@ function Test-TargetResource
         if ($PSBoundParameters.ContainsKey("InternetWebProxy") -and !(CompareStrings -String1 $InternetWebProxy -String2 $server.InternetWebProxy.AbsoluteUri -IgnoreCase))
         {
             #The AbsolueUri that comes back from the server can have a trailing slash. Check if the AbsoluteUri at least contains the requested Uri
-            if (($server.InternetWebProxy -ne $null -and $server.InternetWebProxy.AbsoluteUri -ne $null -and $server.InternetWebProxy.AbsoluteUri.Contains($InternetWebProxy)) -eq $false)
+            if (($null -ne $server.InternetWebProxy -and $null -ne $server.InternetWebProxy.AbsoluteUri -and $server.InternetWebProxy.AbsoluteUri.Contains($InternetWebProxy)) -eq $false)
             {
                 ReportBadSetting -SettingName "InternetWebProxy" -ExpectedValue $InternetWebProxy -ActualValue $server.InternetWebProxy -VerbosePreference $VerbosePreference
                 return $false
@@ -281,6 +286,7 @@ function GetExchangeServer
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
