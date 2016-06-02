@@ -811,6 +811,7 @@ Defaults to $false.
     * MSFT_xExchWaitForMailboxDatabase
     * MSFT_xExchWebServicesVirtualDirectory
     * MSFT_xExchExchangeCertificate
+    * MSFT_xExchDatabaseAvailabilityGroupNetwork
     * MSFT_xExchDatabaseAvailabilityGroupMember
     * MSFT_xExchDatabaseAvailabilityGroup
 
