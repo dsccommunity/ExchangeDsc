@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -10,6 +11,7 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
@@ -189,7 +191,7 @@ function Get-TargetResource
 
     $connector = GetReceiveConnector @PSBoundParameters
 
-    if ($connector -ne $null)
+    if ($null -ne $connector)
     {
         $returnValue = @{
             Identity = $Identity
@@ -211,8 +213,8 @@ function Get-TargetResource
             Enabled = $connector.Enabled
             EnhancedStatusCodesEnabled = $connector.EnhancedStatusCodesEnabled
             ExtendedProtectionPolicy = $connector.ExtendedProtectionPolicy
-            ExtendedRightAllowEntries = $ExtendedRightAllowEntries | %{"$($_.key)=$($_.Value)"}
-            ExtendedRightDenyEntries = $ExtendedRightDenyEntries | %{"$($_.key)=$($_.Value)"}
+            ExtendedRightAllowEntries = $ExtendedRightAllowEntries | ForEach-Object {"$($_.key)=$($_.Value)"}
+            ExtendedRightDenyEntries = $ExtendedRightDenyEntries | ForEach-Object {"$($_.key)=$($_.Value)"}
             Fqdn = $connector.Fqdn
             LongAddressesEnabled = $connector.LongAddressesEnabled
             MaxAcknowledgementDelay = $connector.MaxAcknowledgementDelay
@@ -250,6 +252,7 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     param
     (
@@ -259,6 +262,7 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
@@ -440,7 +444,7 @@ function Set-TargetResource
 
     if ($Ensure -eq "Absent")
     {
-        if ($connector -ne $null)
+        if ($null -ne $connector)
         {
             RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
 
@@ -455,7 +459,7 @@ function Set-TargetResource
         SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
         #We need to create the new connector
-        if ($connector -eq $null)
+        if ($null -eq $connector)
         {
             #Create a copy of the original parameters
             $originalPSBoundParameters = @{} + $PSBoundParameters
@@ -474,7 +478,7 @@ function Set-TargetResource
             $connector = New-ReceiveConnector @PSBoundParameters
 
             #Ensure the connector exists, and if so, set us up so we can run Set-ReceiveConnector next
-            if ($connector -ne $null)
+            if ($null -ne $connector)
             {
                 #Remove the two props we added
                 RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Server","Name"
@@ -489,7 +493,7 @@ function Set-TargetResource
         }
 
         #The connector already exists, so use Set-ReceiveConnector
-        if ($connector -ne $null)
+        if ($null -ne $connector)
         {
             #Usage is not a valid command for Set-ReceiveConnector
             RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Usage","ExtendedRightAllowEntries","ExtendedRightDenyEntries"
@@ -521,6 +525,7 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -531,6 +536,7 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
@@ -713,10 +719,10 @@ function Test-TargetResource
     #get AD permissions if necessary
     if (($ExtendedRightAllowEntries) -or ($ExtendedRightDenyEntries))
     {
-        $ADPermissions = $connector | Get-ADPermission | ?{$_.IsInherited -eq $false}
+        $ADPermissions = $connector | Get-ADPermission | Where-Object {$_.IsInherited -eq $false}
     }
     
-    if ($connector -eq $null)
+    if ($null -eq $connector)
     {
         if ($Ensure -eq "Present")
         {
@@ -1008,6 +1014,7 @@ function GetReceiveConnector
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
@@ -1191,7 +1198,8 @@ function ValidateIdentity
 #check a connector for specific extended rights
 function ExtendedRightExists
 {
-[cmdletbinding()]
+    [cmdletbinding()]
+    [OutputType([System.Boolean])]
     param(
     $ADPermissions,
     [Microsoft.Management.Infrastructure.CimInstance[]]$ExtendedRights,
@@ -1203,7 +1211,7 @@ function ExtendedRightExists
     {
         foreach ($Value in $($Right.Value.Split(",")))
         {
-            if (($ADPermissions | ?{($_.User.RawIdentity -eq $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value)}) -ne $null)
+            if ($null -ne ($ADPermissions | Where-Object {($_.User.RawIdentity -eq $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value)}))
             {
                 $returnvalue = $true
                 if (!($ShouldbeTrue))
