@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -10,6 +11,7 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -82,7 +84,7 @@ function Get-TargetResource
 
     $OwaVdir = GetOwaVirtualDirectory @PSBoundParameters
 
-    if ($OwaVdir -ne $null)
+    if ($null -ne $OwaVdir)
     {
         $returnValue = @{
             Identity = $Identity
@@ -120,6 +122,7 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -212,6 +215,7 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -222,6 +226,7 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -297,7 +302,7 @@ function Test-TargetResource
   
     $OwaVdir = GetOwaVirtualDirectory @PSBoundParameters
 
-    if ($OwaVdir -eq $null)
+    if ($null -eq $OwaVdir)
     {
         return $false
     }
@@ -404,6 +409,7 @@ function GetOwaVirtualDirectory
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]

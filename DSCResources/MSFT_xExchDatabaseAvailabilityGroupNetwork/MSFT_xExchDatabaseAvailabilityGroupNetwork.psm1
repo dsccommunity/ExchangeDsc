@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -10,6 +11,7 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
@@ -44,7 +46,7 @@ function Get-TargetResource
 
     $dagNet = GetDatabaseAvailabilityGroupNetwork @PSBoundParameters
 
-    if ($dagNet -ne $null)
+    if ($null -ne $dagNet)
     {
         $returnValue = @{
             Name = $Name
@@ -61,6 +63,7 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     param
     (
@@ -70,6 +73,7 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
@@ -109,9 +113,9 @@ function Set-TargetResource
     if ($Ensure -eq "Absent")
     {
         #Only try to remove the network if it has 0 associated subnets
-        if ($dagNet -ne $null)
+        if ($null -ne $dagNet)
         {
-            if ($dagNet.Subnets -eq $null -or $dagNet.Subnets.Count -eq 0)
+            if ($null -eq $dagNet.Subnets -or $dagNet.Subnets.Count -eq 0)
             {
                 Remove-DatabaseAvailabilityGroupNetwork -Identity "$($dagId)" -Confirm:$false
             }
@@ -128,7 +132,7 @@ function Set-TargetResource
 
         SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-        if ($dagNet -eq $null) #Need to create a new network
+        if ($null -eq $dagNet) #Need to create a new network
         {
             $dagNet = New-DatabaseAvailabilityGroupNetwork @PSBoundParameters
             Set-DatabaseAvailabilityGroup -Identity $DatabaseAvailabilityGroup -DiscoverNetworks
@@ -146,6 +150,7 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -156,6 +161,7 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
@@ -190,7 +196,7 @@ function Test-TargetResource
 
     $dagNet = GetDatabaseAvailabilityGroupNetwork @PSBoundParameters
 
-    if ($dagNet -eq $null)
+    if ($null -eq $dagNet)
     {
         if ($Ensure -eq "Present")
         {
@@ -244,6 +250,7 @@ function GetDatabaseAvailabilityGroupNetwork
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
@@ -280,7 +287,7 @@ function SubnetsToArray
 {
     param ($Subnets)
 
-    if ($Subnets -ne $null -and $Subnets.Count -gt 0)
+    if ($null -ne $Subnets -and $Subnets.Count -gt 0)
     {
         [string[]]$SubnetsOut = $Subnets[0].SubnetId
 
