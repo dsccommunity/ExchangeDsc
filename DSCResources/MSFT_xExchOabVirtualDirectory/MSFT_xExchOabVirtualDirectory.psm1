@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -10,6 +11,7 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String[]]
@@ -62,16 +64,16 @@ function Get-TargetResource
 
     $vdir = Get-OabVirtualDirectory @PSBoundParameters
 
-    if ($vdir -ne $null)
+    if ($null -ne $vdir)
     {        
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "DomainController"
 
         #Get all OAB's which this VDir distributes for, and add their names to an array
-        $oabs = Get-OfflineAddressBook @PSBoundParameters | where {$_.VirtualDirectories -like "*$($Identity)*"}
+        $oabs = Get-OfflineAddressBook @PSBoundParameters | Where-Object {$_.VirtualDirectories -like "*$($Identity)*"}
 
         [string[]]$oabNames = @()
 
-        if ($oabs -ne $null)
+        if ($null -ne $oabs)
         {
             foreach ($oab in $oabs)
             {
@@ -109,6 +111,7 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String[]]
@@ -195,6 +198,7 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -205,6 +209,7 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String[]]
@@ -252,7 +257,7 @@ function Test-TargetResource
 
     $vdir = Get-TargetResource @PSBoundParameters
 
-    if ($vdir -eq $null)
+    if ($null -eq $vdir)
     {
         return $false
     }
@@ -324,6 +329,7 @@ function AddOabDistributionPoint
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String[]]
@@ -375,7 +381,7 @@ function AddOabDistributionPoint
     AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = $TargetOabName}
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
 
-    $oab = Get-OfflineAddressBook @PSBoundParameters    if ($oab -ne $null)    {        #Assemble the list of existing Virtual Directories        [string[]]$allVdirs = @()              foreach ($vdir in $oab.VirtualDirectories)        {            $oabServer = ServerFromOABVdirDN -OabVdirDN $vdir.DistinguishedName                        [string]$entry = $oabServer + "\" + $vdir.Name                        $allVdirs += $entry        }        #Add desired vdir to existing list        $allVdirs += $vdirIdentity
+    $oab = Get-OfflineAddressBook @PSBoundParameters    if ($null -ne $oab)    {        #Assemble the list of existing Virtual Directories        [string[]]$allVdirs = @()              foreach ($vdir in $oab.VirtualDirectories)        {            $oabServer = ServerFromOABVdirDN -OabVdirDN $vdir.DistinguishedName                        [string]$entry = $oabServer + "\" + $vdir.Name                        $allVdirs += $entry        }        #Add desired vdir to existing list        $allVdirs += $vdirIdentity
 
         #Set back to the OAB
         Set-OfflineAddressBook @PSBoundParameters -VirtualDirectories $allVdirs

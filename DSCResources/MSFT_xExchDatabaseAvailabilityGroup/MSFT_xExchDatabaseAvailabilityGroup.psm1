@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -10,6 +11,7 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
@@ -94,7 +96,7 @@ function Get-TargetResource
 
     $dag = GetDatabaseAvailabilityGroup @PSBoundParameters
 
-    if ($dag -ne $null)
+    if ($null -ne $dag)
     {
         $returnValue = @{
             Name = $Name
@@ -132,6 +134,7 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     param
     (
@@ -141,6 +144,7 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
@@ -231,7 +235,7 @@ function Set-TargetResource
     $dag = GetDatabaseAvailabilityGroup @PSBoundParameters
 
     #We need to create the DAG
-    if ($dag -eq $null)
+    if ($null -eq $dag)
     {
         #Create a copy of the original parameters
         $originalPSBoundParameters = @{} + $PSBoundParameters
@@ -242,7 +246,7 @@ function Set-TargetResource
         #Create the DAG
         $dag = New-DatabaseAvailabilityGroup @PSBoundParameters
 
-        if ($dag -ne $null)
+        if ($null -ne $dag)
         {
             #Add original props back
             AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
@@ -254,7 +258,7 @@ function Set-TargetResource
     }
 
     #Modify existing DAG
-    if ($dag -ne $null)
+    if ($null -ne $dag)
     {
         #convert Name to Identity, and Remove Credential
         AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = $PSBoundParameters["Name"]}
@@ -276,6 +280,7 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -286,6 +291,7 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
@@ -373,7 +379,7 @@ function Test-TargetResource
 
     $dag = GetDatabaseAvailabilityGroup @PSBoundParameters
 
-    if ($dag -eq $null)
+    if ($null -eq $dag)
     {
         return $false
     }
@@ -503,6 +509,7 @@ function GetDatabaseAvailabilityGroup
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [parameter(Mandatory = $true)]
