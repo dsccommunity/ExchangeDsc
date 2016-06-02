@@ -811,6 +811,7 @@ Defaults to $false.
     * MSFT_xExchWaitForMailboxDatabase
     * MSFT_xExchWebServicesVirtualDirectory
     * MSFT_xExchExchangeCertificate
+    * MSFT_xExchReceiveConnector
     * MSFT_xExchPowershellVirtualDirectory
     * MSFT_xExchPopSettings
     * MSFT_xExchOwaVirtualDirectory
