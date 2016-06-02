@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -10,6 +11,7 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -39,7 +41,7 @@ function Get-TargetResource
 
     $imap = GetImapSettings @PSBoundParameters
 
-    if ($imap -ne $null)
+    if ($null -ne $imap)
     {
         $returnValue = @{
             Server = $Identity
@@ -64,6 +66,7 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -110,6 +113,7 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -120,6 +124,7 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -151,7 +156,7 @@ function Test-TargetResource
 
     $imap = GetImapSettings @PSBoundParameters
 
-    if ($imap -eq $null)
+    if ($null -eq $imap)
     {
         return $false
     }
@@ -187,6 +192,7 @@ function GetImapSettings
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
