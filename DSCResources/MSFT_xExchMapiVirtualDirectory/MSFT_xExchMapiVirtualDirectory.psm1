@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -10,6 +11,7 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -39,7 +41,7 @@ function Get-TargetResource
 
     $vdir = GetMapiVirtualDirectory @PSBoundParameters
 
-    if ($vdir -ne $null)
+    if ($null -ne $vdir)
     {
         $returnValue = @{
             Identity = $Identity
@@ -64,6 +66,7 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -113,6 +116,7 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -123,6 +127,7 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
@@ -152,7 +157,7 @@ function Test-TargetResource
 
     $vdir = GetMapiVirtualDirectory @PSBoundParameters
 
-    if ($vdir -eq $null)
+    if ($null -eq $vdir)
     {
         return $false
     }
@@ -189,6 +194,7 @@ function GetMapiVirtualDirectory
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Boolean]
