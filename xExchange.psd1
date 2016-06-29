@@ -12,7 +12,7 @@
 # RootModule = ''
 
 # Version number of this module.
-ModuleVersion = '1.7.0.0'
+ModuleVersion = '1.8.0.0'
 
 # ID used to uniquely identify this module
 GUID = '9a908ca3-8a67-485c-a014-66ba37fcc2a4'
@@ -101,13 +101,30 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* xExchOwaVirtualDirectory
-    - Added `LogonFormat` parameter.
-    - Added `DefaultDomain` parameter.
-* Added FileSystem parameter to xExchDatabaseAvailabilityGroup
-* Fixed PSSA issues in MSFT_xExchAutodiscoverVirtualDirectory and MSFT_xExchActiveSyncVirtualDirectory
-* Updated xExchAutoMountPoint to disable Integrity Checking when formatting volumes as ReFS. This aligns with the latest version of DiskPart.ps1 from the Exchange Server Role Requirements Calculator.
-
+        ReleaseNotes = '* Fixed PSSA issues in:
+    * MSFT_xExchClientAccessServer
+    * MSFT_xExchAntiMalwareScanning
+    * MSFT_xExchWaitForMailboxDatabase
+    * MSFT_xExchWebServicesVirtualDirectory
+    * MSFT_xExchExchangeCertificate
+    * MSFT_xExchWaitForDAG
+    * MSFT_xExchUMService
+    * MSFT_xExchUMCallRouterSettings
+    * MSFT_xExchReceiveConnector
+    * MSFT_xExchPowershellVirtualDirectory
+    * MSFT_xExchPopSettings
+    * MSFT_xExchOwaVirtualDirectory
+    * MSFT_xExchOutlookAnywhere
+    * MSFT_xExchOabVirtualDirectory
+    * MSFT_xExchMapiVirtualDirectory
+    * MSFT_xExchMailboxServer
+    * MSFT_xExchImapSettings
+    * MSFT_xExchExchangeServer
+    * MSFT_xExchEventLogLevel
+    * MSFT_xExchEcpVirtualDirectory
+    * MSFT_xExchDatabaseAvailabilityGroupNetwork
+    * MSFT_xExchDatabaseAvailabilityGroupMember
+    * MSFT_xExchDatabaseAvailabilityGroup
 '
 
     } # End of PSData hashtable

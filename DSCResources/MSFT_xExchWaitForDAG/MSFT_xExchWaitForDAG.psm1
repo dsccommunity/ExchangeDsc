@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -10,6 +11,7 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String]
@@ -32,7 +34,7 @@ function Get-TargetResource
 
     $dag = GetDatabaseAvailabilityGroup @PSBoundParameters
 
-    if ($dag -ne $null)
+    if ($null -ne $dag)
     {
         $returnValue = @{
             Identity = $Identity
@@ -46,6 +48,7 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     param
     (
@@ -55,6 +58,7 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String]
@@ -79,7 +83,7 @@ function Set-TargetResource
 
     for ($i = 0; $i -lt $RetryCount; $i++)
     {
-        if ($dag -eq $null)
+        if ($null -eq $dag)
         {
             Write-Warning "DAG '$($Identity)' does not yet exist. Sleeping for $($RetryIntervalSec) seconds."
             Start-Sleep -Seconds $RetryIntervalSec
@@ -92,7 +96,7 @@ function Set-TargetResource
         }
     }
     
-    if ($dag -eq $null)
+    if ($null -eq $dag)
     {
         throw "DAG '$($Identity)' does not yet exist. This will prevent resources that are dependant on this resource from executing. If you are running the DSC configuration in push mode, you will need to re-run the configuration once the database has been created."
     }
@@ -101,6 +105,7 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -111,6 +116,7 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String]
@@ -133,7 +139,7 @@ function Test-TargetResource
 
     $dag = GetDatabaseAvailabilityGroup @PSBoundParameters
 
-    return ($dag -ne $null)
+    return ($null -ne $dag)
 }
 
 function GetDatabaseAvailabilityGroup
@@ -147,6 +153,7 @@ function GetDatabaseAvailabilityGroup
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String]

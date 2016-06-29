@@ -4,6 +4,9 @@
 
 The **xExchange** module contains many DSC resources for configuring and managing Exchange 2013 and 2016 servers including individual server properties, databases, mount points, and Database Availability Groups.
 
+This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+
 ## Contributing
 Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
 
@@ -804,6 +807,33 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased
+
+### 1.8.0.0
+
+* Fixed PSSA issues in:
+    * MSFT_xExchClientAccessServer
+    * MSFT_xExchAntiMalwareScanning
+    * MSFT_xExchWaitForMailboxDatabase
+    * MSFT_xExchWebServicesVirtualDirectory
+    * MSFT_xExchExchangeCertificate
+    * MSFT_xExchWaitForDAG
+    * MSFT_xExchUMService
+    * MSFT_xExchUMCallRouterSettings
+    * MSFT_xExchReceiveConnector
+    * MSFT_xExchPowershellVirtualDirectory
+    * MSFT_xExchPopSettings
+    * MSFT_xExchOwaVirtualDirectory
+    * MSFT_xExchOutlookAnywhere
+    * MSFT_xExchOabVirtualDirectory
+    * MSFT_xExchMapiVirtualDirectory
+    * MSFT_xExchMailboxServer
+    * MSFT_xExchImapSettings
+    * MSFT_xExchExchangeServer
+    * MSFT_xExchEventLogLevel
+    * MSFT_xExchEcpVirtualDirectory
+    * MSFT_xExchDatabaseAvailabilityGroupNetwork
+    * MSFT_xExchDatabaseAvailabilityGroupMember
+    * MSFT_xExchDatabaseAvailabilityGroup
 
 ### 1.7.0.0
 
