@@ -808,6 +808,8 @@ Defaults to $false.
 
 ### Unreleased
 
+### 1.8.0.0
+
 * Fixed PSSA issues in:
     * MSFT_xExchClientAccessServer
     * MSFT_xExchAntiMalwareScanning
