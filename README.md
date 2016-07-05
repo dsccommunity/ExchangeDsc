@@ -807,6 +807,7 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased
+* Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
 
 ### 1.8.0.0
 
