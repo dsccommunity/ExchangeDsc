@@ -9,5 +9,6 @@ class MSFT_xExchMailboxServer : OMI_BaseResource
     [Write, Description("The DatabaseCopyAutoActivationPolicy parameter specifies the type of automatic activation available for mailbox database copies on the specified Mailbox server. Valid values are Blocked, IntrasiteOnly, and Unrestricted."), ValueMap{"Blocked","IntrasiteOnly","Unrestricted"}, Values{"Blocked","IntrasiteOnly","Unrestricted"}] String DatabaseCopyAutoActivationPolicy;
     [Write, Description("The MaximumActiveDatabases parameter specifies the number of databases that can be mounted on this Mailbox server. This parameter accepts numeric values.")] String MaximumActiveDatabases;
     [Write, Description("The MaximumPreferredActiveDatabases parameter specifies a preferred maximum number of databases that a server should have. This value is different from the actual maximum, which is configured using the MaximumActiveDatabases parameter. The value of MaximumPreferredActiveDatabases is only honored during best copy and server selection, database and server switchovers, and when rebalancing the DAG.")] String MaximumPreferredActiveDatabases;
+    [Write, Description("The WacDiscoveryEndpoint parameter specifies the Office Online Server endpoint to use. Exchange 2016 only.")] String WacDiscoveryEndpoint;
 };
 
