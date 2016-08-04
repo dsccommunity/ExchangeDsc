@@ -398,6 +398,7 @@ Properties correspond to [Set-MailboxServer](https://technet.microsoft.com/en-us
 * **DatabaseCopyAutoActivationPolicy**: The DatabaseCopyAutoActivationPolicy parameter specifies the type of automatic activation available for mailbox database copies on the specified Mailbox server. Valid values are Blocked, IntrasiteOnly, and Unrestricted.
 * **MaximumActiveDatabases**: The MaximumActiveDatabases parameter specifies the number of databases that can be mounted on this Mailbox server. This parameter accepts numeric values.
 * **MaximumPreferredActiveDatabases**: The MaximumPreferredActiveDatabases parameter specifies a preferred maximum number of databases that a server should have. This value is different from the actual maximum, which is configured using the MaximumActiveDatabases parameter. The value of MaximumPreferredActiveDatabases is only honored during best copy and server selection, database and server switchovers, and when rebalancing the DAG.
+* **WacDiscoveryEndpoint**: The WacDiscoveryEndpoint parameter specifies the Office Online Server endpoint to use. Exchange 2016 only.
 
 ### xExchMailboxTransportService
 
@@ -843,6 +844,7 @@ Defaults to $false.
 ### Unreleased
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
 * Added xExchMailboxTransportService resource
+* xExchMailboxServer: Added WacDiscoveryEndpoint parameter
 
 ### 1.8.0.0
 
