@@ -399,11 +399,11 @@ Properties correspond to [Set-MailboxServer](https://technet.microsoft.com/en-us
 * **MaximumActiveDatabases**: The MaximumActiveDatabases parameter specifies the number of databases that can be mounted on this Mailbox server. This parameter accepts numeric values.
 * **MaximumPreferredActiveDatabases**: The MaximumPreferredActiveDatabases parameter specifies a preferred maximum number of databases that a server should have. This value is different from the actual maximum, which is configured using the MaximumActiveDatabases parameter. The value of MaximumPreferredActiveDatabases is only honored during best copy and server selection, database and server switchovers, and when rebalancing the DAG.
 
-### xExchTransportService
+### xExchMailboxTransportService
 
-xExchTransportService configures the Transport service settings on Mailbox servers or Edge Transport servers using Set-TransportService.
+xExchMailboxTransportService configures the Mailbox Transport service settings on Mailbox servers using Set-MailboxTransportService.
 
-Where no description is listed, properties correspond directly to [Set-TransportService](https://technet.microsoft.com/library/jj215682(v=exchg.150).aspx) parameters.
+Where no description is listed, properties correspond directly to [Set-MailboxTransportService](https://technet.microsoft.com/en-us/library/jj215711(v=exchg.160).aspx) parameters.
 
 * **Identity**: Hostname of the server to configure.
 * **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
