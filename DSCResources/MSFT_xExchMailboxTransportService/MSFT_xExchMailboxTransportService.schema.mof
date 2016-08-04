@@ -1,0 +1,29 @@
+[ClassVersion("1.0.0.0"), FriendlyName("xExchMailboxTransportService")]
+class MSFT_xExchMailboxTransportService : OMI_BaseResource
+{
+    [Key] String Identity; //Exchange server
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+    [Write] Boolean AllowServiceRestart; //Whether it is OK to restart service MSExchangeTransport;
+    [Write] Boolean ConnectivityLogEnabled;
+    [Write] String ConnectivityLogMaxAge;
+    [Write] String ConnectivityLogMaxDirectorySize;
+    [Write] String ConnectivityLogMaxFileSize;
+    [Write] String ConnectivityLogPath;
+    [Write] Boolean ContentConversionTracingEnabled;
+    [Write] SInt32 MaxConcurrentMailboxDeliveries;
+    [Write] SInt32 MaxConcurrentMailboxSubmissions;
+    [Write] Boolean PipelineTracingEnabled;
+    [Write] String PipelineTracingPath;
+    [Write] String PipelineTracingSenderAddress;
+    [Write] String ReceiveProtocolLogMaxAge;
+    [Write] String ReceiveProtocolLogMaxDirectorySize;
+    [Write] String ReceiveProtocolLogMaxFileSize;
+    [Write] String ReceiveProtocolLogPath;
+    [Write] String RoutingTableLogMaxAge;
+    [Write] String RoutingTableLogMaxDirectorySize;
+    [Write] String RoutingTableLogPath;
+    [Write] String SendProtocolLogMaxAge;
+    [Write] String SendProtocolLogMaxDirectorySize;
+    [Write] String SendProtocolLogMaxFileSize;
+    [Write] String SendProtocolLogPath;
+};
