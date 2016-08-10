@@ -842,6 +842,8 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased
+
+### 1.9.0.0
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
 * Added xExchMailboxTransportService resource
 * xExchMailboxServer: Added WacDiscoveryEndpoint parameter
