@@ -31,6 +31,7 @@ Please check out common DSC Resources [contributing guidelines](https://github.c
 * **xExchJetstressCleanup** cleans up the database and log directories created by Jetstress.
 * **xExchMailboxDatabase**
 * **xExchMailboxDatabaseCopy**
+* **xExchMailboxTransportService**
 * **xExchMailboxServer**
 * **xExchMaintenanceMode**
 * **xExchMapiVirtualDirectory**
@@ -397,6 +398,40 @@ Properties correspond to [Set-MailboxServer](https://technet.microsoft.com/en-us
 * **DatabaseCopyAutoActivationPolicy**: The DatabaseCopyAutoActivationPolicy parameter specifies the type of automatic activation available for mailbox database copies on the specified Mailbox server. Valid values are Blocked, IntrasiteOnly, and Unrestricted.
 * **MaximumActiveDatabases**: The MaximumActiveDatabases parameter specifies the number of databases that can be mounted on this Mailbox server. This parameter accepts numeric values.
 * **MaximumPreferredActiveDatabases**: The MaximumPreferredActiveDatabases parameter specifies a preferred maximum number of databases that a server should have. This value is different from the actual maximum, which is configured using the MaximumActiveDatabases parameter. The value of MaximumPreferredActiveDatabases is only honored during best copy and server selection, database and server switchovers, and when rebalancing the DAG.
+* **WacDiscoveryEndpoint**: The WacDiscoveryEndpoint parameter specifies the Office Online Server endpoint to use. Exchange 2016 only.
+
+### xExchMailboxTransportService
+
+xExchMailboxTransportService configures the Mailbox Transport service settings on Mailbox servers using Set-MailboxTransportService.
+
+Where no description is listed, properties correspond directly to [Set-MailboxTransportService](https://technet.microsoft.com/en-us/library/jj215711(v=exchg.160).aspx) parameters.
+
+* **Identity**: Hostname of the server to configure.
+* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
+* **AllowServiceRestart**: Whether it is OK to restart service to make changes active
+* **ConnectivityLogEnabled**
+* **ConnectivityLogMaxAge**
+* **ConnectivityLogMaxDirectorySize**
+* **ConnectivityLogMaxFileSize**
+* **ConnectivityLogPath**
+* **ContentConversionTracingEnabled**
+* **MaxConcurrentMailboxDeliveries**
+* **MaxConcurrentMailboxSubmissions**
+* **PipelineTracingEnabled**
+* **PipelineTracingPath**
+* **PipelineTracingSenderAddress**
+* **ReceiveProtocolLogMaxAge**
+* **ReceiveProtocolLogMaxDirectorySize**
+* **ReceiveProtocolLogMaxFileSize**
+* **ReceiveProtocolLogPath**
+* **SendProtocolLogMaxAge**
+* **SendProtocolLogMaxDirectorySize**
+* **SendProtocolLogMaxFileSize**
+* **SendProtocolLogPath**
+
+#### Common Issues
+To set some settings to NULL you need to set the value to '' instead of using $null. The following settings are affected:
+PipelineTracingSenderAddress
 
 ### xExchMaintenanceMode
 
@@ -807,6 +842,11 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased
+
+### 1.9.0.0
+* Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
+* Added xExchMailboxTransportService resource
+* xExchMailboxServer: Added WacDiscoveryEndpoint parameter
 
 ### 1.8.0.0
 

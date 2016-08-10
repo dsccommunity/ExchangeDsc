@@ -28,7 +28,10 @@ function Get-TargetResource
         $MaximumActiveDatabases,
 
         [System.String]
-        $MaximumPreferredActiveDatabases
+        $MaximumPreferredActiveDatabases,
+
+        [System.String]
+        $WacDiscoveryEndpoint
     )
 
     #Load helper module
@@ -49,6 +52,13 @@ function Get-TargetResource
             DatabaseCopyAutoActivationPolicy = $server.DatabaseCopyAutoActivationPolicy
             MaximumActiveDatabases = $server.MaximumActiveDatabases
             MaximumPreferredActiveDatabases = $server.MaximumPreferredActiveDatabases
+        }
+
+        $serverVersion = GetExchangeVersion
+
+        if ($serverVersion -eq "2016")
+        {
+            $returnValue.Add("WacDiscoveryEndpoint", $server.WacDiscoveryEndpoint)
         }
     }
 
@@ -84,7 +94,10 @@ function Set-TargetResource
         $MaximumActiveDatabases,
 
         [System.String]
-        $MaximumPreferredActiveDatabases
+        $MaximumPreferredActiveDatabases,
+
+        [System.String]
+        $WacDiscoveryEndpoint
     )
     
     #Load helper module
@@ -97,6 +110,9 @@ function Set-TargetResource
 
     #Setup params for next command
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential"
+
+    #Check for non-existent parameters in Exchange 2013
+    RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "WacDiscoveryEndpoint" -ResourceName "xExchMailboxServer" -ParamExistsInVersion "2016"
 
     #Ensure an empty string is $null and not a string
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
@@ -136,7 +152,10 @@ function Test-TargetResource
         $MaximumActiveDatabases,
 
         [System.String]
-        $MaximumPreferredActiveDatabases
+        $MaximumPreferredActiveDatabases,
+
+        [System.String]
+        $WacDiscoveryEndpoint
     )
 
     #Load helper module
@@ -146,6 +165,9 @@ function Test-TargetResource
 
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MailboxServer","Set-MailboxServer" -VerbosePreference $VerbosePreference
+
+    #Check for non-existent parameters in Exchange 2013
+    RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "WacDiscoveryEndpoint" -ResourceName "xExchMailboxServer" -ParamExistsInVersion "2016"
 
     $server = GetMailboxServer @PSBoundParameters
 
@@ -171,6 +193,11 @@ function Test-TargetResource
         }
 
         if (!(VerifySetting -Name "MaximumPreferredActiveDatabases" -Type "String" -ExpectedValue $MaximumPreferredActiveDatabases -ActualValue $server.MaximumPreferredActiveDatabases -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (!(VerifySetting -Name "WacDiscoveryEndpoint" -Type "String" -ExpectedValue $WacDiscoveryEndpoint -ActualValue $server.WacDiscoveryEndpoint -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -208,7 +235,10 @@ function GetMailboxServer
         $MaximumActiveDatabases,
 
         [System.String]
-        $MaximumPreferredActiveDatabases
+        $MaximumPreferredActiveDatabases,
+
+        [System.String]
+        $WacDiscoveryEndpoint
     )
 
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
