@@ -456,7 +456,7 @@ function CreateMissingExDatabases
             continue
         }
 
-        if ($targetVolume -ne $null)
+        if ($null -ne $targetVolume)
         {
             if ($targetVolume -ne -1)
             {
@@ -722,7 +722,7 @@ function FindFirstAvailableVolumeNumber
         $existing = $null
         $existing = $currentFolders | where {$_.Name -eq "$($VolumePrefix)$($i)"}
 
-        if ($existing -eq $null)
+        if ($null -eq $existing)
         {
             return $i
         }
@@ -798,7 +798,7 @@ function VolumeMountPointNotLastInList
     {
         $values = $global:VolumeToMountPointMap[$key]
 
-        if ($values -ne $null)
+        if ($null -ne $values)
         {
             for ($i = 0; $i -lt $values.Count; $i++)
             {

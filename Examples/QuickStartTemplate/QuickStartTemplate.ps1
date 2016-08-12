@@ -19,7 +19,7 @@ Configuration QuickStartTemplate
 }
 
 #Get credentials if they haven't already been passed
-if ($ShellCreds -eq $null)
+if ($null -eq $ShellCreds)
 {
     $ShellCreds = Get-Credential -Message 'Enter credentials for establishing Remote Powershell sessions to Exchange'
 }

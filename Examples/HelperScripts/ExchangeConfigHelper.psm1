@@ -99,11 +99,11 @@ function DBListFromMailboxDatabasesCsv
 
                 $currentDb | Add-Member NoteProperty Name (StringReplaceFromHashtable -StringIn $dbIn.Name -Replacements $DbNameReplacements)
 
-                if ($dbIn.DBFilePath -ne $null)
+                if ($null -ne $dbIn.DBFilePath)
                 {
                     $currentDb | Add-Member NoteProperty DBFilePath (StringReplaceFromHashtable -StringIn $dbIn.DBFilePath -Replacements $DbNameReplacements)
                 }
-                elseif ($dbIn.EDBFilePath -ne $null)
+                elseif ($null -ne $dbIn.EDBFilePath)
                 {
                     $currentDb | Add-Member NoteProperty DBFilePath (StringReplaceFromHashtable -StringIn $dbIn.EDBFilePath -Replacements $DbNameReplacements)
                 }
@@ -184,7 +184,7 @@ function DBListFromMailboxDatabaseCopiesCsv
     }
 
     #Sort copies by order of ActivationPreference, so lowest numbered copies get added first.
-    if ($dbList -ne $null -and $dbList.Count -gt 0)
+    if ($null -ne $dbList -and $dbList.Count -gt 0)
     {
         $dbList = $dbList | Sort-object -Property ActivationPreference
     }

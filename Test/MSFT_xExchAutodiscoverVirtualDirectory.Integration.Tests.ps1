@@ -10,12 +10,12 @@ Import-Module $PSScriptRoot\xExchange.Tests.Common.psm1 -Verbose:0
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($Global:ShellCredentials -eq $null)
+    if ($null -eq $Global:ShellCredentials)
     {
         [PSCredential]$Global:ShellCredentials = Get-Credential -Message "Enter credentials for connecting a Remote PowerShell session to Exchange"
     }
 
-    if ($Global:ServerFqdn -eq $null)
+    if ($null -eq $Global:ServerFqdn)
     {
         $Global:ServerFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }

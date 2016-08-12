@@ -12,7 +12,7 @@ Configuration ConfigureLCMForContinuousChecking
     }
 }
 
-if ($RemoteServerCreds -eq $null)
+if ($null -eq $RemoteServerCreds)
 {
     $RemoteServerCreds = Get-Credential -Message "Enter credentials for connecting to remote Exchange Server"
 }

@@ -13,10 +13,10 @@ function Test-MailboxDatabasesCsv
         $dbList = DBListFromMailboxDatabasesCsv -MailboxDatabasesCsvPath $MailboxDatabasesCsvPath -ServerNameInCsv $ServerNameInCsv -DbNameReplacements $DbNameReplacements
 
         It "DB List Should Not Be Null" {
-            ($dbList -ne $null) | Should Be $true
+            ($null -ne $dbList) | Should Be $true
         }
 
-        if ($dbList -ne $null)
+        if ($null -ne $dbList)
         {
             It "DB List Should Contain Ten Members" {
                 ($dbList.Count -eq 10) | Should Be $true
