@@ -842,6 +842,7 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased
+* Suppress PSDSCUseVerboseMessageInDSCResource Warnings from PowerShell Script Analyzer
 
 ### 1.9.0.0
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
