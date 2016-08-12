@@ -31,7 +31,7 @@ function Test-ServerIsOutOfMaintenanceMode
         $status = Get-MailboxDatabaseCopyStatus -Server $env:COMPUTERNAME | where {$_.Status -eq "Mounted"}
 
         It 'Databases were failed back' {
-            ($status -ne $null) | Should Be $true
+            ($null -ne $status) | Should Be $true
         }
     }
 }
@@ -83,13 +83,13 @@ function WaitBetweenTests
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($Global:ShellCredentials -eq $null)
+    if ($null -eq $Global:ShellCredentials)
     {
         [PSCredential]$Global:ShellCredentials = Get-Credential -Message "Enter credentials for connecting a Remote PowerShell session to Exchange"
     }
    
     #Make sure server is a DAG member
-    if ($Global:IsDagMember -eq $null)
+    if ($null -eq $Global:IsDagMember)
     {
         GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad "Get-MailboxServer","Get-MailboxDatabaseCopyStatus","Get-MailboxDatabase"
 
@@ -105,11 +105,11 @@ if ($exchangeInstalled)
     }
 
     #Make sure server only has replicated DB's
-    if ($Global:HasNonReplicationDBs -eq $null)
+    if ($null -eq $Global:HasNonReplicationDBs)
     {
         $nonReplicatedDBs = Get-MailboxDatabase -Server $env:COMPUTERNAME -ErrorAction SilentlyContinue | where {$_.ReplicationType -like "None"}
 
-        if ($nonReplicatedDBs -ne $null)
+        if ($null -ne $nonReplicatedDBs)
         {
             $Global:HasNonReplicationDBs = $true
         }
@@ -122,7 +122,7 @@ if ($exchangeInstalled)
     }
 
     #Get Domain Controller
-    if ($Global:DomainController -eq $null)
+    if ($null -eq $Global:DomainController)
     {
         [string]$Global:DomainController = Read-Host -Prompt "Enter Domain Controller to use for DC tests"
     }

@@ -295,7 +295,7 @@ function Get-TargetResource
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential","AllowServiceRestart"
 
     $TransportService = Get-TransportService $Identity -ErrorAction SilentlyContinue
-    if ($TransportService -ne $null)
+    if ($null -ne $TransportService)
     {
         $returnValue = @{
             Identity                                        = $Identity
@@ -1052,7 +1052,7 @@ function Test-TargetResource
 
     $TransportService = Get-TransportService $Identity -ErrorAction SilentlyContinue
 
-    if ($TransportService -ne $null)
+    if ($null -ne $TransportService)
     {
 
         if (!(VerifySetting -Name "ActiveUserStatisticsLogMaxAge" -Type "Timespan" -ExpectedValue $ActiveUserStatisticsLogMaxAge -ActualValue $TransportService.ActiveUserStatisticsLogMaxAge -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
@@ -1498,11 +1498,11 @@ function CompareIPAddressewithString
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param([System.Net.IPAddress]$IPAddress, [String]$String)
-    if (($IPAddress -eq $null -and !([string]::IsNullOrEmpty($String))) -or ($IPAddress -ne $null -and [string]::IsNullOrEmpty($String)))
+    if (($null -eq $IPAddress -and !([string]::IsNullOrEmpty($String))) -or ($null -ne $IPAddress -and [string]::IsNullOrEmpty($String)))
     {
         $returnValue = $false
     }
-    elseif ($IPAddress -eq $null -and [string]::IsNullOrEmpty($String))
+    elseif ($null -eq $IPAddress -and [string]::IsNullOrEmpty($String))
     {
         $returnValue = $true
     }
@@ -1523,12 +1523,12 @@ function CompareSmtpAdresswithString
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param($SmtpAddress,[String]$String)
-    if (($SmtpAddress -eq $null) -and ([string]::IsNullOrEmpty($String)))
+    if (($null -eq $SmtpAddress) -and ([string]::IsNullOrEmpty($String)))
     {
         Write-Verbose "Expected and actual value is empty, therefore equal!"
         return $true
     }
-    elseif (($SmtpAddress -eq $null) -and -not ([string]::IsNullOrEmpty($String)))
+    elseif (($null -eq $SmtpAddress) -and -not ([string]::IsNullOrEmpty($String)))
     {
         return $false
     }

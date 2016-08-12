@@ -10,18 +10,18 @@ Import-Module $PSScriptRoot\xExchange.Tests.Common.psm1 -Verbose:0
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($Global:ShellCredentials -eq $null)
+    if ($null -eq $Global:ShellCredentials)
     {
         [PSCredential]$Global:ShellCredentials = Get-Credential -Message "Enter credentials for connecting a Remote PowerShell session to Exchange"
     }
 
     #Get the Server FQDN for using in URL's
-    if ($Global:ServerFqdn -eq $null)
+    if ($null -eq $Global:ServerFqdn)
     {
         $Global:ServerFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
-    if ($Global:WebCertAuthInstalled -eq $null)
+    if ($null -eq $Global:WebCertAuthInstalled)
     {
         $webCertAuth = Get-WindowsFeature -Name Web-Cert-Auth
 
@@ -40,7 +40,7 @@ if ($exchangeInstalled)
     if ($Global:WebCertAuthInstalled -eq $true)
     {
         #Get the thumbprint to use for ActiveSync Cert Based Auth
-        if ($Global:CBACertThumbprint -eq $null)
+        if ($null -eq $Global:CBACertThumbprint)
         {
             $Global:CBACertThumbprint = Read-Host -Prompt "Enter the thumbprint of an Exchange certificate to use when enabling Certificate Based Authentication"
         }

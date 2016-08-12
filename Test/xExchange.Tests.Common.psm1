@@ -13,7 +13,7 @@ function Test-AllTargetResourceFunctions
         [bool]$testResult = Test-TargetResource @Params -Verbose
 
         #The ExpectedGetResults are $null, so let's check that what we got back is $null
-        if ($ExpectedGetResults -eq $null)
+        if ($null -eq $ExpectedGetResults)
         {
             It "Get-TargetResource: Should Be Null" {
                 $getResult | Should BeNullOrEmpty

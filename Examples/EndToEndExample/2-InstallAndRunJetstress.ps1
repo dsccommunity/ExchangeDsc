@@ -74,7 +74,7 @@ Configuration InstallAndRunJetstress
     }
 }
 
-if ($FileCopyCreds -eq $null)
+if ($null -eq $FileCopyCreds)
 {
     $FileCopyCreds = Get-Credential -Message "Enter the credentials to copy Jetstress files from the file server"
 }

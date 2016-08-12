@@ -61,12 +61,12 @@ Configuration InstallExchange
     }
 }
 
-if ($InstallCreds -eq $null)
+if ($null -eq $InstallCreds)
 {
     $InstallCreds = Get-Credential -Message "Enter credentials for Installing Exchange"
 }
 
-if ($FileCopyCreds -eq $null)
+if ($null -eq $FileCopyCreds)
 {
     $FileCopyCreds = Get-Credential -Message "Enter credentials for copying Exchange setup files from the file server"
 }

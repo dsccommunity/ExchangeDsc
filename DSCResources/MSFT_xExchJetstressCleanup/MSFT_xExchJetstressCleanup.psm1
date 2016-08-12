@@ -116,7 +116,7 @@ function Set-TargetResource
 
         foreach ($parent in $ParentFoldersToRemove.Keys)
         {
-            if ((Get-ChildItem -LiteralPath "$($parent)" -ErrorAction SilentlyContinue) -eq $null)
+            if ($null -eq (Get-ChildItem -LiteralPath "$($parent)" -ErrorAction SilentlyContinue))
             {
                 $volNum = MountPointExists -Path "$($parent)"
 
@@ -269,7 +269,7 @@ function Test-TargetResource
             {
                 $items = Get-ChildItem -LiteralPath "$($JetstressPath)" | where {$_.FullName -notlike "$($ConfigFilePath)"}
 
-                if ($items -ne $null -or $items.Count -gt 0)
+                if ($null -ne $items -or $items.Count -gt 0)
                 {
                     Write-Verbose "Folder '$($JetstressPath)' still exists and contains items that are not the config file."
                     return $false
@@ -331,12 +331,12 @@ function VerifyParameters
     }
     else
     {
-        if ($DatabasePaths -eq $null -or $DatabasePaths.Count -eq 0)
+        if ($null -eq $DatabasePaths -or $DatabasePaths.Count -eq 0)
         {
             throw "No paths were specified in the DatabasePaths parameter"
         }
 
-        if ($LogPaths -eq $null -or $LogPaths.Count -eq 0)
+        if ($null -eq $LogPaths -or $LogPaths.Count -eq 0)
         {
             throw "No paths were specified in the LogPaths parameter"
         }
@@ -399,16 +399,16 @@ function LoadConfigXml
 
     [xml]$configFile = Get-Content -LiteralPath "$($ConfigFilePath)"
 
-    if ($configFile -ne $null)
+    if ($null -ne $configFile)
     {
         [string[]]$DatabasePaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path
         [string[]]$LogPaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
 
-        if ($DatabasePaths -eq $null -or $DatabasePaths.Count -eq 0)
+        if ($null -eq $DatabasePaths -or $DatabasePaths.Count -eq 0)
         {
             throw "Failed to read any database paths out of config file '$($ConfigFilePath)'"
         }
-        elseif ($LogPaths -eq $null -or $LogPaths.Count -eq 0)
+        elseif ($null -eq $LogPaths -or $LogPaths.Count -eq 0)
         {
             throw "Failed to read any log paths out of config file '$($ConfigFilePath)'"
         }
@@ -424,7 +424,7 @@ function LoadConfigXml
 #Checks whether Jetstress is installed by looking for Jetstress 2013's Product GUID
 function IsJetstressInstalled
 {
-    return ((Get-WmiObject -Class Win32_Product -Filter "IdentifyingNumber = '{75189587-0D84-4404-8F02-79C39728FA64}'") -ne $null)
+    return ($null -ne (Get-WmiObject -Class Win32_Product -Filter "IdentifyingNumber = '{75189587-0D84-4404-8F02-79C39728FA64}'"))
 }
 
 

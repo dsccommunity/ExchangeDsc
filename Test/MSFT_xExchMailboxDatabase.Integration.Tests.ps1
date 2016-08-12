@@ -22,7 +22,7 @@ function PrepTestDB
 
     Get-ChildItem -LiteralPath "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)" -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
 
-    if ((Get-MailboxDatabase | where {$_.Name -like "$($TestDBName)"}) -ne $null)
+    if ($null -ne (Get-MailboxDatabase | where {$_.Name -like "$($TestDBName)"}))
     {
         throw "Failed to cleanup test database"
     }
@@ -36,7 +36,7 @@ function PrepTestDB
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($Global:ShellCredentials -eq $null)
+    if ($null -eq $Global:ShellCredentials)
     {
         [PSCredential]$Global:ShellCredentials = Get-Credential -Message "Enter credentials for connecting a Remote PowerShell session to Exchange"
     }

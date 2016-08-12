@@ -24,7 +24,7 @@ function RemoveExistingPSSessions
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($Global:ShellCredentials -eq $null)
+    if ($null -eq $Global:ShellCredentials)
     {
         [PSCredential]$Global:ShellCredentials = Get-Credential -Message "Enter credentials for connecting a Remote PowerShell session to Exchange"
     }
@@ -42,7 +42,7 @@ if ($exchangeInstalled)
             $Session = GetExistingExchangeSession
 
             It "Session Should Not Be Null" {
-                ($Session -ne $null) | Should Be $true
+                ($null -ne $Session) | Should Be $true
             }
         }
         
@@ -74,7 +74,7 @@ if ($exchangeInstalled)
             $Session = GetExistingExchangeSession
 
             It "Session Should Be Null" {
-                ($Session -eq $null) | Should Be $true
+                ($null -eq $Session) | Should Be $true
             }
         }
     }

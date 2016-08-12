@@ -42,14 +42,14 @@ function Get-TargetResource
     $maintenanceModeStatus = GetMaintenanceModeStatus -EnteringMaintenanceMode $Enabled -DomainController $DomainController
     $atDesiredVersion = IsExchangeAtDesiredVersion -DomainController $DomainController -UpgradedServerVersion $UpgradedServerVersion
 
-    if ($maintenanceModeStatus -ne $null)
+    if ($null -ne $maintenanceModeStatus)
     {
         #Determine which components are Active
         $activeComponents = $MaintenanceModeStatus.ServerComponentState | where {$_.State -eq "Active"}
 
         [string[]]$activeComponentsList = @()
 
-        if ($activeComponents -ne $null)
+        if ($null -ne $activeComponents)
         {
             foreach ($activeComponent in $activeComponents)
             {
@@ -152,7 +152,7 @@ function Set-TargetResource
     #Continue on with setting the maintenance mode state
     $maintenanceModeStatus = GetMaintenanceModeStatus -EnteringMaintenanceMode $Enabled -DomainController $DomainController
 
-    if ($maintenanceModeStatus -ne $null)
+    if ($null -ne $maintenanceModeStatus)
     {
         #Set vars relevant to both 'Enabled' code paths
         $htStatus = $MaintenanceModeStatus.ServerComponentState | where {$_.Component -eq "HubTransport"}
@@ -255,7 +255,7 @@ function Set-TargetResource
             $changedState = ChangeComponentState -Component "RecoveryActionsEnabled" -Requester "Functional" -ServerComponentState $maintenanceModeStatus.ServerComponentState -State "Active" -SetInactiveComponentsFromAnyRequesterToActive $SetInactiveComponentsFromAnyRequesterToActive -DomainController $DomainController       
 
             #Bring online any specifically requested components
-            if ($AdditionalComponentsToActivate -ne $null)
+            if ($null -ne $AdditionalComponentsToActivate)
             {
                 foreach ($component in $AdditionalComponentsToActivate)
                 {
@@ -334,7 +334,7 @@ function Test-TargetResource
 
     $maintenanceModeStatus = GetMaintenanceModeStatus -EnteringMaintenanceMode $Enabled -DomainController $DomainController
 
-    if ($maintenanceModeStatus -ne $null)
+    if ($null -ne $maintenanceModeStatus)
     {
         #Make sure server is fully in maintenance mode
         if ($Enabled -eq $true)
@@ -354,7 +354,7 @@ function Test-TargetResource
                     return $false
                 }
 
-                if (($MaintenanceModeStatus.ServerComponentState | where {$_.State -ne "Inactive" -and $_.Component -ne "Monitoring" -and $_.Component -ne "RecoveryActionsEnabled"}) -ne $null)
+                if ($null -ne ($MaintenanceModeStatus.ServerComponentState | where {$_.State -ne "Inactive" -and $_.Component -ne "Monitoring" -and $_.Component -ne "RecoveryActionsEnabled"}))
                 {
                     Write-Verbose "One or more components have a status other than Inactive"
                     return $false
@@ -405,25 +405,25 @@ function Test-TargetResource
         {
             $activeComponents = $MaintenanceModeStatus.ServerComponentState | where {$_.State -eq "Active"}
 
-            if ($activeComponents -eq $null)
+            if ($null -eq $activeComponents)
             {
                 Write-Verbose "No Components found with a status of Active"
                 return $false
             }
 
-            if (($activeComponents | where {$_.Component -eq "ServerWideOffline"}) -eq $null)
+            if ($null -eq ($activeComponents | where {$_.Component -eq "ServerWideOffline"}))
             {
                 Write-Verbose "Component ServerWideOffline is not Active"
                 return $false
             }
 
-            if (($activeComponents | where {$_.Component -eq "UMCallRouter"}) -eq $null)
+            if ($null -eq ($activeComponents | where {$_.Component -eq "UMCallRouter"}))
             {
                 Write-Verbose "Component UMCallRouter is not Active"
                 return $false
             }
 
-            if (($activeComponents | where {$_.Component -eq "HubTransport"}) -eq $null)
+            if ($null -eq ($activeComponents | where {$_.Component -eq "HubTransport"}))
             {
                 Write-Verbose "Component HubTransport is not Active"
                 return $false
@@ -441,19 +441,19 @@ function Test-TargetResource
                 return $false
             }
 
-            if (($activeComponents | where {$_.Component -eq "Monitoring"}) -eq $null)
+            if ($null -eq ($activeComponents | where {$_.Component -eq "Monitoring"}))
             {
                 Write-Verbose "Component Monitoring is not Active"
                 return $false
             }
 
-            if (($activeComponents | where {$_.Component -eq "RecoveryActionsEnabled"}) -eq $null)
+            if ($null -eq ($activeComponents | where {$_.Component -eq "RecoveryActionsEnabled"}))
             {
                 Write-Verbose "Component RecoveryActionsEnabled is not Active"
                 return $false
             }
 
-            if ($AdditionalComponentsToActivate -ne $null)
+            if ($null -ne $AdditionalComponentsToActivate)
             {
                 foreach ($component in $AdditionalComponentsToActivate)
                 {
@@ -462,7 +462,7 @@ function Test-TargetResource
                         $status = $null
                         $status = $MaintenanceModeStatus.ServerComponentState | where {$_.Component -like "$($component)"}
 
-                        if ($status -ne $null -and $Status.State -ne "Active")
+                        if ($null -ne $status -and $Status.State -ne "Active")
                         {
                             Write-Verbose "Component $($component) is not set to Active"
                             return $false
@@ -504,13 +504,13 @@ function GetMaintenanceModeStatus
     $queues = Get-Queue -Server $env:COMPUTERNAME -ErrorAction SilentlyContinue
 
     #If we're checking queues too soon after restarting Transport, Get-Queue may fail. Wait for bootloader to be active and try again.
-    if ($queues -eq $null -and $EnteringMaintenanceMode -eq $true)
+    if ($null -eq $queues -and $EnteringMaintenanceMode -eq $true)
     {
         $endTime = [DateTime]::Now.AddMinutes(5)
 
         Write-Verbose "Waiting up to 5 minutes for the Transport Bootloader to be ready before running Get-Queue. Wait started at $([DateTime]::Now)."
 
-        while ($queues -eq $null -and [DateTime]::Now -lt $endTime)
+        while ($null -eq $queues -and [DateTime]::Now -lt $endTime)
         {            
             Wait-BootLoaderReady -Server $env:COMPUTERNAME -TimeOut (New-TimeSpan -Seconds 15) -PollingFrequency (New-TimeSpan -Seconds 1) | Out-Null
             $queues = Get-Queue -Server $env:COMPUTERNAME -ErrorAction SilentlyContinue
@@ -543,7 +543,7 @@ function GetQueueMessageCount
 
     [Uint32]$messageCount = 0
 
-    if ($MaintenanceModeStatus.Queues -ne $null)
+    if ($null -ne $MaintenanceModeStatus.Queues)
     {
         foreach ($queue in $MaintenanceModeStatus.Queues | where {$_.Identity -notlike "*\Shadow\*"})
         {
@@ -613,9 +613,9 @@ function GetUMCallCount
 
     $umCalls = GetUMActiveCalls -Server $env:COMPUTERNAME -DomainController $DomainController
 
-    if ($umCalls -ne $null)
+    if ($null -ne $umCalls)
     {
-        if ($umCalls.Count -eq $null)
+        if ($null -eq $umCalls.Count)
         {
             $umCallCount = 1
         }
@@ -643,11 +643,11 @@ function GetMessageRedirectionExclusions
 
     $mbxServer = GetMailboxServer -Identity $env:COMPUTERNAME -DomainController $DomainController
 
-    if ($mbxServer -ne $null)
+    if ($null -ne $mbxServer)
     {
         $dag = GetDatabaseAvailabilityGroup -Identity $($mbxServer.DatabaseAvailabilityGroup) -DomainController $DomainController
 
-        if ($dag -ne $null)
+        if ($null -ne $dag)
         {
             foreach ($server in $dag.Servers)
             {
@@ -659,7 +659,7 @@ function GetMessageRedirectionExclusions
                     $htState = $null
                     $htState = GetServerComponentState -Identity $server.Name -Component "HubTransport" -DomainController $DomainController
 
-                    if ($htState -ne $null -and $htState.State -notlike "Active")
+                    if ($null -ne $htState -and $htState.State -notlike "Active")
                     {
                         if (($exclusions.Contains($serverName) -eq $false))
                         {
@@ -672,7 +672,7 @@ function GetMessageRedirectionExclusions
                     $currentMbxServer = $null
                     $currentMbxServer = GetMailboxServer -Identity $server.Name -DomainController $DomainController
 
-                    if ($currentMbxServer -ne $null -and $currentMbxServer.DatabaseCopyAutoActivationPolicy -like "Blocked")
+                    if ($null -ne $currentMbxServer -and $currentMbxServer.DatabaseCopyAutoActivationPolicy -like "Blocked")
                     {
                         if (($exclusions.Contains($serverName) -eq $false))
                         {
@@ -710,11 +710,11 @@ function IsExchangeAtDesiredVersion
 
         $server = GetExchangeServer -Identity $env:COMPUTERNAME -DomainController $DomainController
 
-        if ($server -ne $null)
+        if ($null -ne $server)
         {
             [string[]]$versionParts = $UpgradedServerVersion.Split('.')
 
-            if ($versionParts -ne $null -and $versionParts.Length -eq 4)
+            if ($null -ne $versionParts -and $versionParts.Length -eq 4)
             {
                 if (([int]::Parse($server.AdminDisplayVersion.Major) -ge [int]::Parse($versionParts[0])) -and
                     ([int]::Parse($server.AdminDisplayVersion.Minor) -ge [int]::Parse($versionParts[1])) -and
@@ -774,11 +774,11 @@ function GetDAGMemberCount
 
     $server = GetMailboxServer -Identity $env:COMPUTERNAME -DomainController $DomainController
 
-    if ($server -ne $null -and ![string]::IsNullOrEmpty($server.DatabaseAvailabilityGroup))
+    if ($null -ne $server -and ![string]::IsNullOrEmpty($server.DatabaseAvailabilityGroup))
     {
         $dag = GetDatabaseAvailabilityGroup -Identity "$($server.DatabaseAvailabilityGroup)" -DomainController $DomainController
 
-        if ($dag -ne $null)
+        if ($null -ne $dag)
         {
             $count = $dag.Servers.Count
         }
@@ -800,11 +800,11 @@ function IsServerPAM
 
     $server = GetMailboxServer -Identity $env:COMPUTERNAME -DomainController $DomainController
 
-    if ($server -ne $null -and ![string]::IsNullOrEmpty($server.DatabaseAvailabilityGroup))
+    if ($null -ne $server -and ![string]::IsNullOrEmpty($server.DatabaseAvailabilityGroup))
     {
         $dag = GetDatabaseAvailabilityGroup -Identity "$($server.DatabaseAvailabilityGroup)" -DomainController $DomainController
 
-        if ($dag -ne $null -and $dag.PrimaryActiveManager -like $env:COMPUTERNAME)
+        if ($null -ne $dag -and $dag.PrimaryActiveManager -like $env:COMPUTERNAME)
         {
             $isPAM = $true
         }
@@ -844,7 +844,7 @@ function WaitForUMToDrain
 
         GetUMActiveCalls -Server $env:COMPUTERNAME -DomainController $DomainController
 
-        if ($umCalls -eq $null -or $umCalls.Count -eq 0)
+        if ($null -eq $umCalls -or $umCalls.Count -eq 0)
         {
             $umDrained = $true
         }
@@ -892,7 +892,7 @@ function ChangeComponentState
 
     $componentState = $MaintenanceModeStatus.ServerComponentState | where {$_.Component -like "$($Component)"}
 
-    if ($componentState -ne $null)
+    if ($null -ne $componentState)
     {
         #If we're already Inactive don't bother setting to Draining.
         if ($State -like "Draining" -and $componentState.State -like "Inactive")
@@ -912,7 +912,7 @@ function ChangeComponentState
                 $additionalRequesters = $null
                 $additionalRequesters = $componentState.LocalStates | where {$_.Requester -notlike "$($Requester)" -and $_.State -notlike "Active"}
 
-                if ($additionalRequesters -ne $null)
+                if ($null -ne $additionalRequesters)
                 {
                     foreach ($additionalRequester in $additionalRequesters)
                     {
@@ -942,11 +942,11 @@ function MovePrimaryDatabasesBack
 
     [string[]]$databasesWithActivationPrefOneNotOnThisServer = @()
 
-    if ($databases -ne $null)
+    if ($null -ne $databases)
     {
         foreach ($database in $databases)
         {
-            if ($database.ActivationPreference -ne $null)
+            if ($null -ne $database.ActivationPreference)
             {
                 foreach ($ap in $database.ActivationPreference)
                 {
@@ -955,7 +955,7 @@ function MovePrimaryDatabasesBack
                         $copyStatus = $null
                         $copyStatus = GetMailboxDatabaseCopyStatus -Identity "$($database.Name)\$($env:COMPUTERNAME)" -DomainController $DomainController
 
-                        if ($copyStatus -ne $null -and $copyStatus.Status -eq "Healthy")
+                        if ($null -ne $copyStatus -and $copyStatus.Status -eq "Healthy")
                         {
                             $databasesWithActivationPrefOneNotOnThisServer += $database.Name
                         }
