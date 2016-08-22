@@ -848,6 +848,7 @@ xExchAutoMountPoint: Fix malformed dash/hyphen characters
 * Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
 * Added xExchMailboxTransportService resource
 * xExchMailboxServer: Added WacDiscoveryEndpoint parameter
+* xExchAutoMountPoint: Fix malformed dash/hyphen characters
 
 ### 1.8.0.0
 
