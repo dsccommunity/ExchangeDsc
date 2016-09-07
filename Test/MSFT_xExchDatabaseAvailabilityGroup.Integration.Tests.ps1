@@ -36,7 +36,7 @@ function PrepTestDAG
     $existingDB = Get-MailboxDatabase -Identity "$($TestDBName)" -Status -ErrorAction SilentlyContinue
 
     #First remove the test database copies
-    if ($existingDB -ne $null)
+    if ($null -ne $existingDB)
     {
         $mountedOnServer = $TestServerName1
 
@@ -58,7 +58,7 @@ function PrepTestDAG
     #Last remove the test DAG
     $dag = Get-DatabaseAvailabilityGroup -Identity "$($TestDAGName)" -ErrorAction SilentlyContinue
 
-    if ($dag -ne $null)
+    if ($null -ne $dag)
     {
         Set-DatabaseAvailabilityGroup -Identity "$($TestDAGName)" -DatacenterActivationMode Off
 
@@ -70,7 +70,7 @@ function PrepTestDAG
         Remove-DatabaseAvailabilityGroup -Identity "$($TestDAGName)" -Confirm:$false
     }
 
-    if ((Get-DatabaseAvailabilityGroup -Identity "$($TestDAGName)" -ErrorAction SilentlyContinue) -ne $null)
+    if ($null -ne (Get-DatabaseAvailabilityGroup -Identity "$($TestDAGName)" -ErrorAction SilentlyContinue))
     {
         throw "Failed to remove test DAG"
     }
@@ -78,7 +78,7 @@ function PrepTestDAG
     #Disable the DAG computer account
     $compAccount = Get-ADComputer -Identity $TestDAGName -ErrorAction SilentlyContinue
 
-    if ($compAccount -ne $null -and $compAccount.Enabled -eq $true)
+    if ($null -ne $compAccount -and $compAccount.Enabled -eq $true)
     {
         $compAccount | Disable-ADAccount
     }
@@ -88,16 +88,16 @@ function PrepTestDAG
 
 $adModule = Get-Module -ListAvailable ActiveDirectory -ErrorAction SilentlyContinue
 
-if ($adModule -ne $null)
+if ($null -ne $adModule)
 {
-    if ($Global:DAGName -eq $null)
+    if ($null -eq $Global:DAGName)
     {
         $Global:DAGName = Read-Host -Prompt "Enter the name of the DAG to use for testing"
     }
 
     $compAccount = Get-ADComputer -Identity $Global:DAGName -ErrorAction SilentlyContinue
 
-    if ($compAccount -ne $null)
+    if ($null -ne $compAccount)
     {
         #Check if Exchange is installed on this machine. If not, we can't run tests
         [bool]$exchangeInstalled = IsSetupComplete
@@ -107,28 +107,28 @@ if ($adModule -ne $null)
         if ($exchangeInstalled)
         {
             #Get required credentials to use for the test
-            if ($Global:ShellCredentials -eq $null)
+            if ($null -eq $Global:ShellCredentials)
             {
                 [PSCredential]$Global:ShellCredentials = Get-Credential -Message "Enter credentials for connecting a Remote PowerShell session to Exchange"
             }
 
             #Get the Server FQDN for using in URL's
-            if ($Global:ServerFqdn -eq $null)
+            if ($null -eq $Global:ServerFqdn)
             {
                 $Global:ServerFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
             }
 
-            if ($Global:SecondDAGMember -eq $null)
+            if ($null -eq $Global:SecondDAGMember)
             {
                 $Global:SecondDAGMember = Read-Host -Prompt "Enter the host name of the second DAG member to use for testing"
             }
 
-            if ($Global:Witness1 -eq $null)
+            if ($null -eq $Global:Witness1)
             {
                 $Global:Witness1 = Read-Host -Prompt "Enter the FQDN of the first File Share Witness for testing"
             }
 
-            if ($Global:Witness2 -eq $null)
+            if ($null -eq $Global:Witness2)
             {
                 $Global:Witness2 = Read-Host -Prompt "Enter the FQDN of the second File Share Witness for testing"
             }

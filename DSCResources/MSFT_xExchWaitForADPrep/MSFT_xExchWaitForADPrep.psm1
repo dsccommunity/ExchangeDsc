@@ -42,7 +42,7 @@ function Get-TargetResource
         #Check for existence of schema object
         $schemaObj = GetADObject -Credential $credential -DistinguishedName "CN=ms-Exch-Schema-Version-Pt,$($dse.schemaNamingContext)" -Properties "rangeUpper"
 
-        if ($schemaObj -ne $null)
+        if ($null -ne $schemaObj)
         {
             $currentSchemaVersion = $schemaObj.rangeUpper
         }
@@ -56,11 +56,11 @@ function Get-TargetResource
     {
         $exchangeContainer = GetADObject -Credential $credential -DistinguishedName "CN=Microsoft Exchange,CN=Services,$($dse.configurationNamingContext)" -Properties "rangeUpper"
 
-        if ($exchangeContainer -ne $null)
+        if ($null -ne $exchangeContainer)
         {
             $orgContainer = GetADObject -Credential $Credential -Searching $true -DistinguishedName "CN=Microsoft Exchange,CN=Services,$($dse.configurationNamingContext)" -Properties "objectVersion" -Filter "objectClass -like 'msExchOrganizationContainer'" -SearchScope "OneLevel"
 
-            if ($orgContainer -ne $null)
+            if ($null -ne $orgContainer)
             {
                 $currentOrganizationVersion = $orgContainer.objectVersion
             }
@@ -84,7 +84,7 @@ function Get-TargetResource
         [string[]]$targetDomains = @()
         $targetDomains += $machineDomain
 
-        if ($ExchangeDomains -ne $null)
+        if ($null -ne $ExchangeDomains)
         {
             foreach ($domain in $ExchangeDomains)
             {
@@ -108,7 +108,7 @@ function Get-TargetResource
 
             $mesoVersion = $null
 
-            if ($mesoContainer -ne $null)
+            if ($null -ne $mesoContainer)
             {
                 $mesoVersion = $mesoContainer.objectVersion
             }
@@ -117,7 +117,7 @@ function Get-TargetResource
                 Write-Warning "Unable to find object with DN 'CN=Microsoft Exchange System Objects,$($domainDn)'. This is either because Exchange /PrepareDomain has not been run for this domain, or because the configured account does not have permissions to access this object."
             }
 
-            if ($currentDomainVersions -eq $null)
+            if ($null -eq $currentDomainVersions)
             {
                 $currentDomainVersions = @{$domain = $mesoVersion}
             }
@@ -239,7 +239,7 @@ function Test-TargetResource
 
     $returnValue = $true
 
-    if ($adStatus -eq $null)
+    if ($null -eq $adStatus)
     {
         $returnValue = $false
     }
@@ -264,7 +264,7 @@ function Test-TargetResource
             [string[]]$targetDomains = @()
             $targetDomains += $machineDomain
 
-            if ($ExchangeDomains -ne $null)
+            if ($null -ne $ExchangeDomains)
             {
                 foreach ($domain in $ExchangeDomains)
                 {
@@ -295,7 +295,7 @@ function GetADRootDSE
 {
     param ([PSCredential]$Credential)
 
-    if ($Credential -eq $null)
+    if ($null -eq $Credential)
     {
         $dse = Get-ADRootDSE -ErrorAction SilentlyContinue -ErrorVariable errVar
     }
@@ -330,7 +330,7 @@ function GetADObject
         }
     }
 
-    if ($Credential -ne $null)
+    if ($null -ne $Credential)
     {
         $getAdObjParams.Add("Credential", $Credential)
     }

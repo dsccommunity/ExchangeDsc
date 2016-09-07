@@ -98,7 +98,20 @@ function DBListFromMailboxDatabasesCsv
                 $currentDb = New-Object PSObject
 
                 $currentDb | Add-Member NoteProperty Name (StringReplaceFromHashtable -StringIn $dbIn.Name -Replacements $DbNameReplacements)
-                $currentDb | Add-Member NoteProperty DBFilePath (StringReplaceFromHashtable -StringIn $dbIn.DBFilePath -Replacements $DbNameReplacements)
+
+                if ($null -ne $dbIn.DBFilePath)
+                {
+                    $currentDb | Add-Member NoteProperty DBFilePath (StringReplaceFromHashtable -StringIn $dbIn.DBFilePath -Replacements $DbNameReplacements)
+                }
+                elseif ($null -ne $dbIn.EDBFilePath)
+                {
+                    $currentDb | Add-Member NoteProperty DBFilePath (StringReplaceFromHashtable -StringIn $dbIn.EDBFilePath -Replacements $DbNameReplacements)
+                }
+                else
+                {
+                    throw "Unable to locate column containing database file path"
+                }
+
                 $currentDb | Add-Member NoteProperty LogFolderPath (StringReplaceFromHashtable -StringIn $dbIn.LogFolderPath -Replacements $DbNameReplacements)
                 $currentDb | Add-Member NoteProperty DeletedItemRetention $dbIn.DeletedItemRetention
                 $currentDb | Add-Member NoteProperty GC $dbIn.GC
@@ -171,7 +184,7 @@ function DBListFromMailboxDatabaseCopiesCsv
     }
 
     #Sort copies by order of ActivationPreference, so lowest numbered copies get added first.
-    if ($dbList -ne $null -and $dbList.Count -gt 0)
+    if ($null -ne $dbList -and $dbList.Count -gt 0)
     {
         $dbList = $dbList | Sort-object -Property ActivationPreference
     }

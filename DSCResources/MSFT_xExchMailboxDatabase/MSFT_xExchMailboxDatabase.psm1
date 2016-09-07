@@ -120,7 +120,7 @@ function Get-TargetResource
 
     $db = GetMailboxDatabase @PSBoundParameters
 
-    if ($db -ne $null)
+    if ($null -ne $db)
     {
         $returnValue = @{
             Name = $Name
@@ -286,7 +286,7 @@ function Set-TargetResource
 
     $db = GetMailboxDatabase @PSBoundParameters
 
-    if ($db -eq $null) #Need to create a new DB
+    if ($null -eq $db) #Need to create a new DB
     {
         #Create a copy of the original parameters
         $originalPSBoundParameters = @{} + $PSBoundParameters
@@ -296,7 +296,7 @@ function Set-TargetResource
         #Create the database
         $db = New-MailboxDatabase @PSBoundParameters
 
-        if ($db -ne $null)
+        if ($null -ne $db)
         {
             #Add original props back
             AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
@@ -330,7 +330,7 @@ function Set-TargetResource
         }
     }
 
-    if ($db -ne $null) #Set props on existing DB
+    if ($null -ne $db) #Set props on existing DB
     {
         #First check if a DB or log move is required
         if (($PSBoundParameters.ContainsKey("EdbFilePath") -and (CompareStrings -String1 $db.EdbFilePath.PathName -String2 $EdbFilePath -IgnoreCase) -eq $false) -or
@@ -488,7 +488,7 @@ function Test-TargetResource
 
     $db = GetMailboxDatabase @PSBoundParameters
 
-    if ($db -eq $null)
+    if ($null -eq $db)
     {
         return $false
     }
