@@ -842,6 +842,8 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased
+
+### 1.10.0.0
 * xExchAutoMountPoint: Fix malformed dash/hyphen characters
 * Fix PSPossibleIncorrectComparisonWithNull issues from PowerShell Script Analyzer
 * Suppress PSDSCUseVerboseMessageInDSCResource Warnings from PowerShell Script Analyzer
