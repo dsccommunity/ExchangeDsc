@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -72,7 +73,7 @@ function Set-TargetResource
     $jetstressRunning = IsJetstressRunning
     $jetstressSuccessful = JetstressTestSuccessful @PSBoundParameters
 
-    if ($jetstressSuccessful -eq $false -and (Get-ChildItem -LiteralPath "$($JetstressPath)" | where {$_.Name -like "$($Type)*.html"}) -ne $null)
+    if ($jetstressSuccessful -eq $false -and (Get-ChildItem -LiteralPath "$($JetstressPath)" | where {$null -ne $_.Name -like "$($Type)*.html"}))
     {
         throw "Jetstress was previously executed and resulted in a failed run. Clean up any $($Type)*.html files in the Jetstress install directory before trying to run this resource again."
     }
@@ -198,6 +199,7 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -246,7 +248,7 @@ function IsJetstressRunning
 {
     $process = Get-Process -Name JetstressCmd -ErrorAction SilentlyContinue
 
-    return ($process -ne $null)
+    return ($null -ne $process)
 }
 
 #Used to create a scheduled task which will initiate the Jetstress run
@@ -314,7 +316,7 @@ function JetstressTestSuccessful
 
     $outputFiles = Get-ChildItem -LiteralPath "$($JetstressPath)" | where {$_.Name -like "$($Type)*.html"}
 
-    if ($outputFiles -ne $null -and $outputFiles.Count -ge 1)
+    if ($null -ne $outputFiles -and $outputFiles.Count -ge 1)
     {
         $outputFiles = $outputFiles | Sort-Object -Property LastWriteTime -Descending
 

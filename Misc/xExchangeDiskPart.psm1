@@ -61,7 +61,7 @@ function GetDiskInfo
                 $endIndex = "  --------  -------------  -------  ".Length
                 $diskSize = $line.Substring($startIndex, $endIndex - $startIndex).Trim()
 
-                if ($diskSize.Length -gt 0 -and $diskNum -ne $null)
+                if ($diskSize.Length -gt 0 -and $null -ne $diskNum)
                 {
                     $DiskSizeMap.Add($diskNum, $diskSize)
                 }
@@ -114,7 +114,7 @@ function GetDiskInfo
                         {
                             $line = $diskDetails[++$i]
 
-                            if ($line -eq $null -or $line.StartsWith("  Volume ") -or $line.Trim().Length -eq 0) #We've hit the next volume, or the end of all info
+                            if ($null -eq $line -or $line.StartsWith("  Volume ") -or $line.Trim().Length -eq 0) #We've hit the next volume, or the end of all info
                             {
                                 $i-- #Move $i back one as we may have overrun the start of the next volume info
                                 break
@@ -152,7 +152,7 @@ function StringArrayToCommaSeparatedString
 
     $string = ""
 
-    if ($Array -ne $null -and $Array.Count -gt 0)
+    if ($null -ne $Array -and $Array.Count -gt 0)
     {
         $string = $Array[0]
 

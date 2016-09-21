@@ -12,7 +12,7 @@
 # RootModule = ''
 
 # Version number of this module.
-ModuleVersion = '1.9.0.0'
+ModuleVersion = '1.10.0.0'
 
 # ID used to uniquely identify this module
 GUID = '9a908ca3-8a67-485c-a014-66ba37fcc2a4'
@@ -101,9 +101,9 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Converted appveyor.yml to install Pester from PSGallery instead of from Chocolatey.
-* Added xExchMailboxTransportService resource
-* xExchMailboxServer: Added WacDiscoveryEndpoint parameter
+        ReleaseNotes = '* xExchAutoMountPoint: Fix malformed dash/hyphen characters
+* Fix PSPossibleIncorrectComparisonWithNull issues from PowerShell Script Analyzer
+* Suppress PSDSCUseVerboseMessageInDSCResource Warnings from PowerShell Script Analyzer
 
 '
 
@@ -118,6 +118,7 @@ PrivateData = @{
 # DefaultCommandPrefix = ''
 
 }
+
 
 
 

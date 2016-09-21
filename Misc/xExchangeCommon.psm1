@@ -20,7 +20,7 @@ function GetRemoteExchangeSession
     $Session = GetExistingExchangeSession
 
     #Attempt to reuse the session if we found one
-    if ($Session -ne $null)
+    if ($null -ne $Session)
     {
         if ($Session.State -eq "Opened")
         {
@@ -34,7 +34,7 @@ function GetRemoteExchangeSession
     }
 
     #Either the session didn't exist, or it was broken and we nulled it out. Create a new one
-    if ($Session -eq $null)
+    if ($null -eq $Session)
     {
         #First make sure we are on a valid server version, and that Exchange is fully installed
         VerifyServerVersion -VerbosePreference $VerbosePreference
@@ -60,14 +60,14 @@ function GetRemoteExchangeSession
         Remove-Item Alias:Get-ExBanner
         Remove-Item Alias:Get-Tip
 
-        if ($Session -ne $null)
+        if ($null -ne $Session)
         {
             $Session.Name = "DSCExchangeSession"
         }
     }
     
     #If the session is still null here, things went wrong. Throw exception
-    if ($Session -eq $null)
+    if ($null -eq $Session)
     {
         throw "Failed to establish remote Powershell session to FQDN: $($serverFQDN)"
     }
@@ -77,7 +77,7 @@ function GetRemoteExchangeSession
         $oldVerbose = $VerbosePreference
         $VerbosePreference = "SilentlyContinue"
 
-        if ($CommandsToLoad -ne $null -and $CommandsToLoad.Count -gt 0)
+        if ($null -ne $CommandsToLoad -and $CommandsToLoad.Count -gt 0)
         {
             $moduleInfo = Import-PSSession $Session -WarningAction SilentlyContinue -DisableNameChecking -AllowClobber -CommandName $CommandsToLoad -Verbose:0
         }
@@ -101,7 +101,7 @@ function RemoveExistingRemoteSession
 
     $sessions = GetExistingExchangeSession
 
-    if ($sessions -ne $null)
+    if ($null -ne $sessions)
     {
         Write-Verbose "Removing existing remote Powershell sessions"
 
@@ -145,7 +145,7 @@ function VerifyServerVersion
 #Gets the WMI object corresponding to the Exchange Product
 function GetExchangeProduct
 {
-    if ($Global:CheckedExchangeProduct -eq $null -or $Global:CheckedExchangeProduct -eq $false)
+    if ($null -eq $Global:CheckedExchangeProduct -or $Global:CheckedExchangeProduct -eq $false)
     {
         $Global:ExchangeProduct = Get-WmiObject -Class Win32_Product -Filter {Name = "Microsoft Exchange Server"}
 
@@ -181,7 +181,7 @@ function GetExchangeVersion
 
     $product = GetExchangeProduct
     
-    if ($product -ne $null)
+    if ($null -ne $product)
     {
         if ($product.IdentifyingNumber -eq '{4934D1EA-BE46-48B1-8847-F1AF20E892C1}') #Exchange 2013
         {
@@ -230,12 +230,12 @@ function IsSetupPartiallyCompleted
         $values = $null
         $values = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\$($key)" -ErrorAction SilentlyContinue
 
-        if ($values -ne $null)
+        if ($null -ne $values)
         {
-            if ($values.UnpackedVersion -ne $null)
+            if ($null -ne $values.UnpackedVersion)
             {
                 #If ConfiguredVersion is missing, or Action or Watermark or present, setup needs to be resumed
-                if ($values.ConfiguredVersion -eq $null -or $values.Action -ne $null -or $values.Watermark -ne $null)
+                if ($null -eq $values.ConfiguredVersion -or $null -ne $values.Action -or $null -ne $values.Watermark)
                 {
                     $isPartiallyCompleted = $true
                     break
@@ -252,7 +252,7 @@ function IsSetupRunning
 {
     param([string]$SetupProcessName = "ExSetup*")
 
-    return ((Get-Process -Name $SetupProcessName -ErrorAction SilentlyContinue) -ne $null)
+    return ($null -ne (Get-Process -Name $SetupProcessName -ErrorAction SilentlyContinue))
 }
 
 #Checks if two strings are equal, or are both either null or empty
@@ -282,7 +282,7 @@ function CompareBools($Bool1, $Bool2)
 {
     if($Bool1 -ne $Bool2)
     {
-        if (!(($Bool1 -eq $null -and $Bool2 -eq $false) -or ($Bool2 -eq $null -and $Bool1 -eq $false)))
+        if (!(($null -eq $Bool1 -and $Bool2 -eq $false) -or ($null -eq $Bool2 -and $Bool1 -eq $false)))
         {
             return $false
         }
@@ -352,7 +352,7 @@ function CompareADObjectIdWithEmailAddressString
 {
     param([Microsoft.Exchange.Data.Directory.ADObjectId]$ADObjectId, [string]$String)
 
-    if ((Get-Command Get-Mailbox -ErrorAction SilentlyContinue) -ne $null)
+    if ($null -ne (Get-Command Get-Mailbox -ErrorAction SilentlyContinue))
     {
         $mailbox = $ADObjectId | Get-Mailbox -ErrorAction SilentlyContinue
 
@@ -386,7 +386,7 @@ function StringArrayToLower
 {
     param([string[]]$Array)
     
-    if ($Array -ne $null)
+    if ($null -ne $Array)
     {
         for ($i = 0; $i -lt $Array.Count; $i++)
         {
@@ -407,11 +407,11 @@ function CompareArrayContents
 
     $hasSameContents = $true
 
-    if (($Array1 -eq $null -and $Array2 -ne $null) -or ($Array1 -ne $null -and $Array2 -eq $null) -or ($Array1.Length -ne $Array2.Length))
+    if (($null -eq $Array1 -and $null -ne $Array2) -or ($null -ne $Array1 -and $null -eq $Array2) -or ($Array1.Length -ne $Array2.Length))
     {
         $hasSameContents = $false
     }
-    elseif ($Array1 -ne $null -and $Array2 -ne $null)
+    elseif ($null -ne $Array1 -and $null -ne $Array2)
     {
         if ($IgnoreCase -eq $true)
         {
@@ -439,9 +439,9 @@ function Array2ContainsArray1Contents
 
     $hasContents = $true
 
-    if ($Array1 -eq $null -or $Array1.Length -eq 0) #Do nothing, as Array2 at a minimum contains nothing    
+    if ($null -eq $Array1 -or $Array1.Length -eq 0) #Do nothing, as Array2 at a minimum contains nothing    
     {} 
-    elseif ($Array2 -eq $null -or $Array2.Length -eq 0) #Array2 is empty and Array1 is not. Return false
+    elseif ($null -eq $Array2 -or $Array2.Length -eq 0) #Array2 is empty and Array1 is not. Return false
     {
         $hasContents = $false
     }
@@ -491,7 +491,7 @@ function RemoveParameters
 {
     param($PSBoundParametersIn, [string[]]$ParamsToKeep, [string[]]$ParamsToRemove)
 
-    if ($ParamsToKeep -ne $null -and $ParamsToKeep.Count -gt 0)
+    if ($null -ne $ParamsToKeep -and $ParamsToKeep.Count -gt 0)
     {
         [string[]]$ParamsToRemove = @()
 
@@ -506,7 +506,7 @@ function RemoveParameters
         }
     }
 
-    if ($ParamsToRemove -ne $null -and $ParamsToRemove.Count -gt 0)
+    if ($null -ne $ParamsToRemove -and $ParamsToRemove.Count -gt 0)
     {
         foreach ($param in $ParamsToRemove)
         {
@@ -540,7 +540,7 @@ function SetEmptyStringParamsToNull
     #First find all parameters that are a string, and are an empty string ("")
     foreach ($key in $PSBoundParametersIn.Keys)
     {
-        if ($PSBoundParametersIn[$key] -ne $null -and $PSBoundParametersIn[$key].GetType().Name -eq "String" -and $PSBoundParametersIn[$key] -eq "")
+        if ($null -ne $PSBoundParametersIn[$key] -and $PSBoundParametersIn[$key].GetType().Name -eq "String" -and $PSBoundParametersIn[$key] -eq "")
         {
             $emptyStringKeys += $key
         }
@@ -667,7 +667,7 @@ function LogFunctionEntry
 
     $callingFunction = (Get-PSCallStack)[1].FunctionName
 
-    if ($Parameters -ne $null -and $Parameters.Count -gt 0)
+    if ($null -ne $Parameters -and $Parameters.Count -gt 0)
     {
         $parametersString = ""
 
@@ -749,11 +749,11 @@ function StartScheduledTask
 
     $task = Register-ScheduledTask @credParams -TaskName "$($tName)" -Action $action -RunLevel Highest -ErrorVariable errRegister -ErrorAction SilentlyContinue
 
-    if ($errRegister -ne $null)
+    if ($null -ne $errRegister)
     {
         throw $errRegister[0]
     }
-    elseif ($task -ne $null -and $task.State -eq "Ready")
+    elseif ($null -ne $task -and $task.State -eq "Ready")
     {
         #Set a time limit on the task
         $taskSettings = $task.Settings
@@ -781,7 +781,7 @@ function CheckForCmdletParameter
 
     $command = Get-Command -Name "$($CmdletName)" -ErrorAction SilentlyContinue
 
-    if ($command -ne $null -and $command.Parameters -ne $null)
+    if ($null -ne $command -and $null -ne $command.Parameters)
     {
         if ($command.Parameters.ContainsKey($ParameterName))
         {
@@ -796,7 +796,7 @@ function NotePreviousError
 {
     $Global:previousError = $null
 
-    if ($Global:error -ne $null -and $Global:error.Count -gt 0)
+    if ($null -ne $Global:error -and $Global:error.Count -gt 0)
     {
         $Global:previousError = $Global:error[0]
     }    
@@ -808,7 +808,7 @@ function ThrowIfNewErrorsEncountered
     param([string]$CmdletBeingRun, $VerbosePreference)
 
     #Throw an exception if errors were encountered
-    if ($Global:error -ne $null -and $Global:error.Count -gt 0 -and $Global:previousError -ne $Global:error[0])
+    if ($null -ne $Global:error -and $Global:error.Count -gt 0 -and $Global:previousError -ne $Global:error[0])
     {
         [string]$errorMsg = "Failed to run $($CmdletBeingRun) with: " + $Global:error[0]
         Write-Error $errorMsg
@@ -823,7 +823,7 @@ function RestartAppPoolIfExists
 
     $state = Get-WebAppPoolState -Name $Name -ErrorAction SilentlyContinue
 
-    if ($state -ne $null)
+    if ($null -ne $state)
     {
         Restart-WebAppPool -Name $Name
     }
@@ -852,11 +852,11 @@ function CompareIPAddresseWithString
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param([System.Net.IPAddress]$IPAddress, [String]$String)
-    if (($IPAddress -eq $null -and !([string]::IsNullOrEmpty($String))) -or ($IPAddress -ne $null -and [string]::IsNullOrEmpty($String)))
+    if (($null -eq $IPAddress -and !([string]::IsNullOrEmpty($String))) -or ($null -ne $IPAddress -and [string]::IsNullOrEmpty($String)))
     {
         $returnValue = $false
     }
-    elseif ($IPAddress -eq $null -and [string]::IsNullOrEmpty($String))
+    elseif ($null -eq $IPAddress -and [string]::IsNullOrEmpty($String))
     {
         $returnValue = $true
     }
@@ -878,12 +878,12 @@ function CompareSmtpAdressWithString
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param($SmtpAddress,[String]$String)
-    if (($SmtpAddress -eq $null) -and ([string]::IsNullOrEmpty($String)))
+    if (($null -eq $SmtpAddress) -and ([string]::IsNullOrEmpty($String)))
     {
         Write-Verbose "Expected and actual value is empty, therefore equal!"
         return $true
     }
-    elseif (($SmtpAddress -eq $null) -and -not ([string]::IsNullOrEmpty($String)))
+    elseif (($null -eq $SmtpAddress) -and -not ([string]::IsNullOrEmpty($String)))
     {
         return $false
     }

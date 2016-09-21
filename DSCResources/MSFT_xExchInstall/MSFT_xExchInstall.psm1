@@ -1,5 +1,6 @@
 function Get-TargetResource 
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -74,7 +75,7 @@ function Set-TargetResource
 
         for ($i = 0; $i -lt 60; $i++)
         {
-            if ((Get-Process -Name ExSetup -ErrorAction SilentlyContinue) -eq $null)
+            if ($null -eq (Get-Process -Name ExSetup -ErrorAction SilentlyContinue))
             {
                 Start-Sleep -Seconds 1
             }
@@ -92,7 +93,7 @@ function Set-TargetResource
         }
 
         #Now wait for setup to finish
-        while ((Get-Process -Name ExSetup -ErrorAction SilentlyContinue) -ne $null)
+        while ($null -ne (Get-Process -Name ExSetup -ErrorAction SilentlyContinue))
         {
             Write-Verbose "Setup is still running at $([DateTime]::Now). Sleeping for 1 minute."
             Start-Sleep -Seconds 60
@@ -214,9 +215,9 @@ function CheckWSManConfig
 
     $wsmanKey = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN" -ErrorAction SilentlyContinue
 
-    if ($wsmanKey -ne $null)
+    if ($null -ne $wsmanKey)
     {
-        if ($wsmanKey.UpdatedConfig -eq $null)
+        if ($null -eq $wsmanKey.UpdatedConfig)
         {
             $needReboot = $true
 
