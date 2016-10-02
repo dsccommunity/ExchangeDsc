@@ -114,7 +114,7 @@ function Stop-TransportMaintenance
 
 function AddExchangeSnapinIfRequired
 {
-    if ((Get-PSSnapin Microsoft.Exchange.Management.PowerShell.E2010 -ErrorAction SilentlyContinue) -eq $null)
+    if ($null -eq (Get-PSSnapin Microsoft.Exchange.Management.PowerShell.E2010 -ErrorAction SilentlyContinue))
     {
         Add-PSSnapin Microsoft.Exchange.Management.PowerShell.E2010 -ErrorAction SilentlyContinue
     }
@@ -360,7 +360,7 @@ function Set-TransportActive
     $transportService = Get-WmiObject win32_service -filter "name = 'MSExchangeTransport'"
 
     if($currentServerComponentState.State -eq "Active" `
-         -and $transportService -ne $null `
+         -and $null -ne $transportService `
          -and $transportService.StartMode -eq "Auto" `
          -and $transportService.State -eq "Running")
     {
@@ -405,7 +405,7 @@ function Set-TransportInactive
     $transportService = Get-WmiObject win32_service -filter "name = 'MSExchangeTransport'"
 
     if($currentServerComponentState.State -eq "Inactive" `
-        -and $transportService -ne $null `
+        -and $null -ne $transportService `
         -and $transportService.StartMode -eq "Auto" `
         -and $transportService.State -eq "Running")
     {
@@ -451,7 +451,7 @@ function Get-ServersInDag
 
     Write-Verbose "$server - Retrieving the DAG for the target server"
     $exchangeServer = (Get-ExchangeServer $server)
-    if ($exchangeServer -eq $null)
+    if ($null -eq $exchangeServer)
     {
         Write-Warning "Could not get the exchange server. Skipping redirect."
         return $null
@@ -464,7 +464,7 @@ function Get-ServersInDag
     }
 
     $dag = (Get-MailboxServer $server).DatabaseAvailabilityGroup
-    if ($dag -eq $null)
+    if ($null -eq $dag)
     {
         Write-Warning "Could not find the DAG for the target server. Skipping redirect."
         return $null
@@ -474,7 +474,7 @@ function Get-ServersInDag
 
     $dagServers = @((Get-DatabaseAvailabilityGroup $dag).Servers | %{if($_.Name){$_.Name}else{$_}} | ?{$_ -ne $server})
 
-    if($dagServers -ne $null)
+    if($null -ne $dagServers)
     {
         #Filter out servers who are in the local site, if $ExcludeLocalSite
         if ($ExcludeLocalSite)
@@ -484,7 +484,7 @@ function Get-ServersInDag
                 $dagServerProps = $null
                 $dagServerProps = Get-ExchangeServer $dagServers[$i]
 
-                if ($dagServerProps -ne $null -and $dagServerProps.Site -eq $exchangeServer.Site)
+                if ($null -ne $dagServerProps -and $dagServerProps.Site -eq $exchangeServer.Site)
                 {
                     $dagServers = $dagServers | where {$_ -ne $dagServers[$i]}
                 }
@@ -492,7 +492,7 @@ function Get-ServersInDag
         }
 
         #Filter out additional exclusions
-        if ($AdditionalExclusions -ne $null)
+        if ($null -ne $AdditionalExclusions)
         {
             foreach ($exclusion in $AdditionalExclusions)
             {
@@ -560,7 +560,7 @@ function Get-ExchangeVersion
 
     $serverVersion = (Get-ExchangeServer $server).AdminDisplayVersion
 
-    if ($serverVersion -eq $null)
+    if ($null -eq $serverVersion)
     {
         Write-Warning "Could not find exchange version."
         return $null
@@ -1598,7 +1598,7 @@ function Wait-EmptyQueues
 
         $filter = "{MessageCount -gt 0 -and DeliveryType -ne 'ShadowRedundancy' -and NextHopDomain -ne 'Poison Message'}"
         $queues = get-queue -server $Server -ErrorAction SilentlyContinue -filter $filter | `
-            ?{ $QueueTypes -eq $null -or $QueueTypes -contains $_.DeliveryType }
+            ?{ $null -eq $QueueTypes -or $QueueTypes -contains $_.DeliveryType }
 
         $entries = $queues | %{
             if($ActiveMsgOnly)
@@ -2626,7 +2626,7 @@ function Stop-ServiceForcefully
     $processName = (Split-Path $processFullPath -Leaf).Replace('.exe','')
 
     $process = Get-Process -Name $processName -ErrorAction SilentlyContinue
-    if ($process -ne $null)
+    if ($null -ne $process)
     {
         Stop-Process $process -Force
         # we wait so that the next statement that sets the startup type back to automatic does not

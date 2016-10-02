@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -158,12 +159,12 @@ function Set-TargetResource
     $copyCount = 0
     $existingDb = GetMailboxDatabase @PSBoundParameters -ErrorAction SilentlyContinue
     
-    if ($existingDb -ne $null)
+    if ($null -ne $existingDb)
     {
         $copyCount = $existingDb.DatabaseCopies.Count
     }
 
-    if ($copy -eq $null) #We need to add a new copy
+    if ($null -eq $copy) #We need to add a new copy
     {
         Write-Verbose "A copy of database '$($Identity)' does not exist on server '$($MailboxServer)'. Adding."
 
@@ -212,7 +213,7 @@ function Set-TargetResource
         #See if we can find the new copy
         $copy = Get-TargetResource @PSBoundParameters
 
-        if ($copy -ne $null)
+        if ($null -ne $copy)
         {
             #Again, add original props back
             AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
@@ -233,7 +234,7 @@ function Set-TargetResource
             throw "Failed to find database copy after running Add-MailboxDatabaseCopy"
         }
     }
-    else #($copy -ne $null) #Need to set props on copy
+    else #($null -ne $copy) #Need to set props on copy
     {
         AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = "$($Identity)\$($MailboxServer)"}
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential","AllowServiceRestart","MailboxServer","AdServerSettingsPreferredServer","SeedingPostponed"
@@ -251,6 +252,7 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -297,7 +299,7 @@ function Test-TargetResource
     #Don't need to establish remote session, as Get-TargetResource will do it
     $copy = Get-TargetResource @PSBoundParameters
 
-    if ($copy -eq $null)
+    if ($null -eq $copy)
     {
         return $false
     }

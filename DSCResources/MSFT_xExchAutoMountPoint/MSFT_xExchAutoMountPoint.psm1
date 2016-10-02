@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -76,6 +77,7 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     param
     (
@@ -456,7 +458,7 @@ function CreateMissingExDatabases
             continue
         }
 
-        if ($targetVolume -ne $null)
+        if ($null -ne $targetVolume)
         {
             if ($targetVolume -ne -1)
             {
@@ -722,7 +724,7 @@ function FindFirstAvailableVolumeNumber
         $existing = $null
         $existing = $currentFolders | where {$_.Name -eq "$($VolumePrefix)$($i)"}
 
-        if ($existing -eq $null)
+        if ($null -eq $existing)
         {
             return $i
         }
@@ -798,7 +800,7 @@ function VolumeMountPointNotLastInList
     {
         $values = $global:VolumeToMountPointMap[$key]
 
-        if ($values -ne $null)
+        if ($null -ne $values)
         {
             for ($i = 0; $i -lt $values.Count; $i++)
             {
@@ -888,7 +890,7 @@ function PrepareVolume
 
         Start-Sleep -Seconds 15
 
-        Get-Partition -DiskNumber $DiskNumber -PartitionNumber 2| Format-Volume –AllocationUnitSize $UnitSizeBytes –FileSystem REFS –NewFileSystemLabel $Label –SetIntegrityStreams:$false -Confirm:$false
+        Get-Partition -DiskNumber $DiskNumber -PartitionNumber 2| Format-Volume -AllocationUnitSize $UnitSizeBytes -FileSystem REFS -NewFileSystemLabel $Label -SetIntegrityStreams:$false -Confirm:$false
         Add-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber 2 -AccessPath $Folder -PassThru | Set-Partition -NoDefaultDriveLetter $true
     }
 }

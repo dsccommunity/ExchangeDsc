@@ -52,7 +52,7 @@ function VerifyServerPrepped
 
 $adModule = Get-Module -ListAvailable ActiveDirectory -ErrorAction SilentlyContinue
 
-if ($adModule -ne $null)
+if ($null -ne $adModule)
 {
     #Check if Exchange is installed on this machine. If not, we can't run tests
     [bool]$exchangeInstalled = IsSetupComplete
@@ -60,30 +60,30 @@ if ($adModule -ne $null)
     if ($exchangeInstalled)
     {
         #Get required credentials to use for the test
-        if ($Global:ShellCredentials -eq $null)
+        if ($null -eq $Global:ShellCredentials)
         {
             [PSCredential]$Global:ShellCredentials = Get-Credential -Message "Enter credentials for connecting a Remote PowerShell session to Exchange"
         }
 
-        if ($Global:ExchangeServerDN -eq $null)
+        if ($null -eq $Global:ExchangeServerDN)
         {
             GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad "Get-ExchangeServer"
 
             $server = Get-ExchangeServer -Identity $env:COMPUTERNAME
 
-            if ($server -ne $null)
+            if ($null -ne $server)
             {
                 $Global:ExchangeServerDN = $server.DistinguishedName
             }
 
-            if ($Global:ExchangeServerDN -eq $null)
+            if ($null -eq $Global:ExchangeServerDN)
             {
                 throw "Failed to determine distinguishedName of Exchange Server object"
             }
         }
 
         #Get the product key to use for testing
-        if ($Global:ProductKey -eq $null)
+        if ($null -eq $Global:ProductKey)
         {
             $Global:ProductKey = Read-Host -Prompt "Enter the product key to license Exchange with"
         }

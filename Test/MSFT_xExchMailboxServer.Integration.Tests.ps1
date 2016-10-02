@@ -10,12 +10,14 @@ Import-Module $PSScriptRoot\xExchange.Tests.Common.psm1 -Verbose:0
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($Global:ShellCredentials -eq $null)
+    if ($null -eq $Global:ShellCredentials)
     {
         [PSCredential]$Global:ShellCredentials = Get-Credential -Message "Enter credentials for connecting a Remote PowerShell session to Exchange"
     }
 
     Describe "Test Setting Properties with xExchMailboxServer" {
+        $serverVersion = GetExchangeVersion
+
         #Make sure DB activation is not blocked
         $testParams = @{
             Identity = $env:COMPUTERNAME
@@ -34,7 +36,13 @@ if ($exchangeInstalled)
             MaximumPreferredActiveDatabases = "24"
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Clear DB Activation Blockers 1 and set MaxDBValues" -ExpectedGetResults $expectedGetResults
+        if ($serverVersion -eq "2016")
+        {
+            $testParams.Add("WacDiscoveryEndpoint", "")
+            $expectedGetResults.Add("WacDiscoveryEndpoint", "")
+        }
+
+        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Clear DB Activation Blockers and WacDiscoveryEndpoint 1 and set MaxDBValues" -ExpectedGetResults $expectedGetResults
         
 
         #Block DB activation
@@ -48,7 +56,13 @@ if ($exchangeInstalled)
         $expectedGetResults.MaximumActiveDatabases = "24"
         $expectedGetResults.MaximumPreferredActiveDatabases = "12"
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Block DB Activation and modify MaxDBValues" -ExpectedGetResults $expectedGetResults
+        if ($serverVersion -eq "2016")
+        {
+            $testParams["WacDiscoveryEndpoint"] = "https://localhost/hosting/discovery"
+            $expectedGetResults["WacDiscoveryEndpoint"] = "https://localhost/hosting/discovery"
+        }
+
+        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Block DB Activation, Set WacDiscoveryEndpoint, and modify MaxDBValues" -ExpectedGetResults $expectedGetResults
 
 
         #Make sure DB activation is not blocked
@@ -69,7 +83,13 @@ if ($exchangeInstalled)
             MaximumPreferredActiveDatabases = $null
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Clear DB Activation Blockers 2 and clear MaxDBValues" -ExpectedGetResults $expectedGetResults
+        if ($serverVersion -eq "2016")
+        {
+            $testParams["WacDiscoveryEndpoint"] = ""
+            $expectedGetResults["WacDiscoveryEndpoint"] = ""
+        }
+
+        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Clear DB Activation Blockers and WacDiscoveryEndpoint 2 and clear MaxDBValues" -ExpectedGetResults $expectedGetResults
     }
 }
 else

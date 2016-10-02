@@ -1,5 +1,6 @@
 function Get-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
@@ -10,6 +11,7 @@ function Get-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String]
@@ -26,7 +28,10 @@ function Get-TargetResource
         $MaximumActiveDatabases,
 
         [System.String]
-        $MaximumPreferredActiveDatabases
+        $MaximumPreferredActiveDatabases,
+
+        [System.String]
+        $WacDiscoveryEndpoint
     )
 
     #Load helper module
@@ -39,7 +44,7 @@ function Get-TargetResource
 
     $server = GetMailboxServer @PSBoundParameters
 
-    if ($server -ne $null)
+    if ($null -ne $server)
     {
         $returnValue = @{
             Identity = $Identity
@@ -48,6 +53,13 @@ function Get-TargetResource
             MaximumActiveDatabases = $server.MaximumActiveDatabases
             MaximumPreferredActiveDatabases = $server.MaximumPreferredActiveDatabases
         }
+
+        $serverVersion = GetExchangeVersion
+
+        if ($serverVersion -eq "2016")
+        {
+            $returnValue.Add("WacDiscoveryEndpoint", $server.WacDiscoveryEndpoint)
+        }
     }
 
     $returnValue
@@ -55,6 +67,7 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     param
     (
@@ -64,6 +77,7 @@ function Set-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String]
@@ -80,7 +94,10 @@ function Set-TargetResource
         $MaximumActiveDatabases,
 
         [System.String]
-        $MaximumPreferredActiveDatabases
+        $MaximumPreferredActiveDatabases,
+
+        [System.String]
+        $WacDiscoveryEndpoint
     )
     
     #Load helper module
@@ -94,6 +111,9 @@ function Set-TargetResource
     #Setup params for next command
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential"
 
+    #Check for non-existent parameters in Exchange 2013
+    RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "WacDiscoveryEndpoint" -ResourceName "xExchMailboxServer" -ParamExistsInVersion "2016"
+
     #Ensure an empty string is $null and not a string
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
@@ -104,6 +124,7 @@ function Set-TargetResource
 
 function Test-TargetResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -114,6 +135,7 @@ function Test-TargetResource
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String]
@@ -130,7 +152,10 @@ function Test-TargetResource
         $MaximumActiveDatabases,
 
         [System.String]
-        $MaximumPreferredActiveDatabases
+        $MaximumPreferredActiveDatabases,
+
+        [System.String]
+        $WacDiscoveryEndpoint
     )
 
     #Load helper module
@@ -141,9 +166,12 @@ function Test-TargetResource
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MailboxServer","Set-MailboxServer" -VerbosePreference $VerbosePreference
 
+    #Check for non-existent parameters in Exchange 2013
+    RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "WacDiscoveryEndpoint" -ResourceName "xExchMailboxServer" -ParamExistsInVersion "2016"
+
     $server = GetMailboxServer @PSBoundParameters
 
-    if ($server -eq $null) #Couldn't find the server, which is bad
+    if ($null -eq $server) #Couldn't find the server, which is bad
     {
         return $false
     }
@@ -168,6 +196,11 @@ function Test-TargetResource
         {
             return $false
         }
+
+        if (!(VerifySetting -Name "WacDiscoveryEndpoint" -Type "String" -ExpectedValue $WacDiscoveryEndpoint -ActualValue $server.WacDiscoveryEndpoint -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
     }
 
     return $true
@@ -185,6 +218,7 @@ function GetMailboxServer
 
         [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String]
@@ -201,7 +235,10 @@ function GetMailboxServer
         $MaximumActiveDatabases,
 
         [System.String]
-        $MaximumPreferredActiveDatabases
+        $MaximumPreferredActiveDatabases,
+
+        [System.String]
+        $WacDiscoveryEndpoint
     )
 
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"

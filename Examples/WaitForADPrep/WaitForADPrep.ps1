@@ -25,7 +25,7 @@ Configuration WaitForADPrep
     }
 }
 
-if ($Creds -eq $null)
+if ($null -eq $Creds)
 {
     $Creds = Get-Credential -Message "Enter credentials for establishing Remote Powershell sessions to Exchange"
 }
