@@ -29,7 +29,7 @@ function Get-TargetResource
         [System.Boolean]
         $BasicAuthEnabled,
 
-        [ValidateSet("Ignore", "Allowed", "Required")]
+        [ValidateSet("Ignore", "Accepted", "Required")]
         [System.String]
         $ClientCertAuth,
 
@@ -111,7 +111,7 @@ function Set-TargetResource
         [System.Boolean]
         $BasicAuthEnabled,
 
-        [ValidateSet("Ignore", "Allowed", "Required")]
+        [ValidateSet("Ignore", "Accepted", "Required")]
         [System.String]
         $ClientCertAuth,
 
@@ -226,7 +226,7 @@ function Test-TargetResource
         [System.Boolean]
         $BasicAuthEnabled,
 
-        [ValidateSet("Ignore", "Allowed", "Required")]
+        [ValidateSet("Ignore", "Accepted", "Required")]
         [System.String]
         $ClientCertAuth,
 
@@ -366,7 +366,7 @@ function Get-ActiveSyncVirtualDirectoryWithCorrectParams
         [System.Boolean]
         $BasicAuthEnabled,
 
-        [ValidateSet("Ignore", "Allowed", "Required")]
+        [ValidateSet("Ignore", "Accepted", "Required")]
         [System.String]
         $ClientCertAuth,
 
