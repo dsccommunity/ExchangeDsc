@@ -12,7 +12,7 @@ class MSFT_xExchActiveSyncVirtualdirectory : OMI_BaseResource
     //Remaining properties correspond directly to Set-ActiveSyncVirtualDirectory parameters
     //http://technet.microsoft.com/en-us/library/bb123679(v=exchg.150).aspx
     [Write] Boolean BasicAuthEnabled;
-    [Write, ValueMap{"Ignore","Allowed","Required"}, Values{"Ignore","Allowed","Required"}] String ClientCertAuth;
+    [Write, ValueMap{"Ignore","Accepted","Required"}, Values{"Ignore","Accepted","Required"}] String ClientCertAuth;
     [Write] Boolean CompressionEnabled;
     [Write] String DomainController;
     [Write] String ExternalAuthenticationMethods[];

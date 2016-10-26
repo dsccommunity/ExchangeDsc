@@ -842,6 +842,7 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased
+* xExchActiveSyncVirtualDirectory: Fix issue where ClientCertAuth parameter set to "Allowed" instead of "Accepted"
 
 ### 1.10.0.0
 * xExchAutoMountPoint: Fix malformed dash/hyphen characters
