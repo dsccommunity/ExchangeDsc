@@ -12,7 +12,7 @@
 # RootModule = ''
 
 # Version number of this module.
-ModuleVersion = '1.10.0.0'
+ModuleVersion = '1.11.0.0'
 
 # ID used to uniquely identify this module
 GUID = '9a908ca3-8a67-485c-a014-66ba37fcc2a4'
@@ -101,9 +101,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* xExchAutoMountPoint: Fix malformed dash/hyphen characters
-* Fix PSPossibleIncorrectComparisonWithNull issues from PowerShell Script Analyzer
-* Suppress PSDSCUseVerboseMessageInDSCResource Warnings from PowerShell Script Analyzer
+        ReleaseNotes = '* xExchActiveSyncVirtualDirectory: Fix issue where ClientCertAuth parameter set to "Allowed" instead of "Accepted"
 
 '
 
@@ -118,6 +116,7 @@ PrivateData = @{
 # DefaultCommandPrefix = ''
 
 }
+
 
 
 

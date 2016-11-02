@@ -843,6 +843,9 @@ Defaults to $false.
 
 ### Unreleased
 
+### 1.11.0.0
+* xExchActiveSyncVirtualDirectory: Fix issue where ClientCertAuth parameter set to "Allowed" instead of "Accepted"
+
 ### 1.10.0.0
 * xExchAutoMountPoint: Fix malformed dash/hyphen characters
 * Fix PSPossibleIncorrectComparisonWithNull issues from PowerShell Script Analyzer
