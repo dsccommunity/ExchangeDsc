@@ -842,6 +842,8 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased
+
+### 1.11.0.0
 * xExchActiveSyncVirtualDirectory: Fix issue where ClientCertAuth parameter set to "Allowed" instead of "Accepted"
 
 ### 1.10.0.0
