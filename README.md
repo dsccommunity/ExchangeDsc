@@ -842,9 +842,10 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased
-* xExchActiveSyncVirtualDirectory: Fix issue where ClientCertAuth parameter set to "Allowed" instead of "Accepted"
 * xExchangeCommon : In StartScheduledTask corrected throw error check to throw last error when errorRegister has more than 0 errors instead of throwing error if errorRegister was not null, which would otherwise always be true.
 
+### 1.11.0.0
+* xExchActiveSyncVirtualDirectory: Fix issue where ClientCertAuth parameter set to "Allowed" instead of "Accepted"
 
 ### 1.10.0.0
 * xExchAutoMountPoint: Fix malformed dash/hyphen characters
