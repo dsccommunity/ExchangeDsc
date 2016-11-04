@@ -749,7 +749,7 @@ function StartScheduledTask
 
     $task = Register-ScheduledTask @credParams -TaskName "$($tName)" -Action $action -RunLevel Highest -ErrorVariable errRegister -ErrorAction SilentlyContinue
 
-    if ($null -ne $errRegister)
+    if (0 -lt $errRegister.Count)
     {
         throw $errRegister[0]
     }
