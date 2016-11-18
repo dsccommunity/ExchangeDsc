@@ -42,7 +42,7 @@ if ($exchangeInstalled)
             $expectedGetResults.Add("WacDiscoveryEndpoint", "")
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Clear DB Activation Blockers and WacDiscoveryEndpoint 1 and set MaxDBValues" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Clear DB Activation Blockers and WacDiscoveryEndpoint 1 and set MaxDBValues" -ExpectedGetResults $expectedGetResults
         
 
         #Block DB activation
@@ -62,7 +62,7 @@ if ($exchangeInstalled)
             $expectedGetResults["WacDiscoveryEndpoint"] = "https://localhost/hosting/discovery"
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Block DB Activation, Set WacDiscoveryEndpoint, and modify MaxDBValues" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Block DB Activation, Set WacDiscoveryEndpoint, and modify MaxDBValues" -ExpectedGetResults $expectedGetResults
 
 
         #Make sure DB activation is not blocked
@@ -89,7 +89,7 @@ if ($exchangeInstalled)
             $expectedGetResults["WacDiscoveryEndpoint"] = ""
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Clear DB Activation Blockers and WacDiscoveryEndpoint 2 and clear MaxDBValues" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Clear DB Activation Blockers and WacDiscoveryEndpoint 2 and clear MaxDBValues" -ExpectedGetResults $expectedGetResults
     }
 }
 else

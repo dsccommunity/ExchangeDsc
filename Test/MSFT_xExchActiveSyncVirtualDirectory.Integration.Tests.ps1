@@ -70,7 +70,7 @@ if ($exchangeInstalled)
             WindowsAuthEnabled = $false 
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
 
 
         $testParams.ExternalUrl = ''
@@ -78,7 +78,7 @@ if ($exchangeInstalled)
         $expectedGetResults.ExternalUrl = $null
         $expectedGetResults.InternalUrl = $null
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Try with empty URL's" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Try with empty URL's" -ExpectedGetResults $expectedGetResults
 
 
         if ($Global:WebCertAuthInstalled -eq $true)
@@ -88,7 +88,7 @@ if ($exchangeInstalled)
             $testParams.ClientCertAuth = 'Required'
             $expectedGetResults.ClientCertAuth = 'Required'
 
-            Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Try enabling certificate based authentication" -ExpectedGetResults $expectedGetResults
+            Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Try enabling certificate based authentication" -ExpectedGetResults $expectedGetResults
         }
 
 
@@ -108,7 +108,7 @@ if ($exchangeInstalled)
             WindowsAuthEnabled = $true
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Reset authentication to default" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Reset authentication to default" -ExpectedGetResults $expectedGetResults
     }
 }
 else
