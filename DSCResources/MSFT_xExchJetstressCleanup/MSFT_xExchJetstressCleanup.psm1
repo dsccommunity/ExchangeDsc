@@ -151,7 +151,7 @@ function Set-TargetResource
             }
 
             $outputFiles = Get-ChildItem -LiteralPath "$($JetstressPath)" | `
-                where {$_.Name -like "Performance*" -or $_.Name -like "Stress*" -or $_.Name -like "DBChecksum*" -or $_.Name -like "XmlConfig*" -or $_.Name -like "*.evt" -or $_.Name -like "*.log"}
+                Where-Object {$_.Name -like "Performance*" -or $_.Name -like "Stress*" -or $_.Name -like "DBChecksum*" -or $_.Name -like "XmlConfig*" -or $_.Name -like "*.evt" -or $_.Name -like "*.log"}
 
             $outputFiles | Move-Item -Destination "$($OutputSaveLocation)" -Confirm:$false -Force
         }
@@ -161,7 +161,7 @@ function Set-TargetResource
         #If the config file is in the Jetstress directory, remove everything but the config file, or else running Test-TargetResource after removing the directory will fail
         if ((GetFolderNoTrailingSlash -Folder "$($JetstressPath)") -like (GetParentFolderFromString -Folder "$($ConfigFilePath)"))
         {
-            Get-ChildItem -LiteralPath "$($JetstressPath)" | where {$_.FullName -notlike "$($ConfigFilePath)"} | Remove-Item -Recurse -Confirm:$false -Force
+            Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object {$_.FullName -notlike "$($ConfigFilePath)"} | Remove-Item -Recurse -Confirm:$false -Force
         }
         else #No config file in this directory. Remove the whole thing
         {
@@ -268,7 +268,7 @@ function Test-TargetResource
         {
             if ((GetFolderNoTrailingSlash -Folder "$($JetstressPath)") -like (GetParentFolderFromString -Folder "$($ConfigFilePath)"))
             {
-                $items = Get-ChildItem -LiteralPath "$($JetstressPath)" | where {$_.FullName -notlike "$($ConfigFilePath)"}
+                $items = Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object {$_.FullName -notlike "$($ConfigFilePath)"}
 
                 if ($null -ne $items -or $items.Count -gt 0)
                 {

@@ -346,7 +346,7 @@ function Enable-SubmissionQueue
         }
         else
         {
-            Sleep -Seconds $PollingFrequency.Seconds
+            Start-Sleep -Seconds $PollingFrequency.Seconds
         }
     }
 }
@@ -472,7 +472,7 @@ function Get-ServersInDag
     
     Write-Verbose "$server - Retrieving other hub transport servers in the DAG - $dag"
 
-    $dagServers = @((Get-DatabaseAvailabilityGroup $dag).Servers | %{if($_.Name){$_.Name}else{$_}} | ?{$_ -ne $server})
+    $dagServers = @((Get-DatabaseAvailabilityGroup $dag).Servers | ForEach-Object {if($_.Name){$_.Name}else{$_}} | Where-Object {$_ -ne $server})
 
     if($null -ne $dagServers)
     {
@@ -486,7 +486,7 @@ function Get-ServersInDag
 
                 if ($null -ne $dagServerProps -and $dagServerProps.Site -eq $exchangeServer.Site)
                 {
-                    $dagServers = $dagServers | where {$_ -ne $dagServers[$i]}
+                    $dagServers = $dagServers | Where-Object {$_ -ne $dagServers[$i]}
                 }
             }
         }
@@ -496,7 +496,7 @@ function Get-ServersInDag
         {
             foreach ($exclusion in $AdditionalExclusions)
             {
-                $dagServers = $dagServers | where {$_ -notlike $exclusion}
+                $dagServers = $dagServers | Where-Object {$_ -notlike $exclusion}
             }
         }
     }
@@ -527,8 +527,8 @@ function Get-ActiveServers
         )
 
     $activeServers = $Servers | `
-        ?{(Get-ServerComponentState -Identity $_ -Component HubTransport).State -eq 'Active' } | `
-        %{ `
+        Where-Object{(Get-ServerComponentState -Identity $_ -Component HubTransport).State -eq 'Active' } | `
+        ForEach-Object { `
             $xml = [xml](Get-ExchangeDiagnosticInfo -Process "EdgeTransport" -server $_ -erroraction SilentlyContinue)
             if($xml -and $xml.Diagnostics.ProcessInfo)
             {
@@ -637,8 +637,8 @@ function Configure-TransportMaintenanceLog
     else
     {
         $newestLog = Get-TransportMaintenanceLogFiles -TransportService $TransportService -LogPath $LogPath | `
-                        sort LastWriteTime -Descending | `
-                        Select -First 1
+                        Sort-Object LastWriteTime -Descending | `
+                        Select-Object -First 1
     }
 
     if(-not $newestLog -or $newestLog.Length -ge $maxFileSize)
@@ -690,8 +690,8 @@ function Enforce-TransportMaintenanceLogMaxAge
     [DateTime]$rolloutTime = (Get-Date) - $maxLogAge
 
     Get-TransportMaintenanceLogFiles -TransportService $TransportService -LogPath $LogPath | `
-        ? {$_.LastWriteTime -lt $rolloutTime} | `
-        % {Remove-Item -Path $_.FullName}
+        Where-Object {$_.LastWriteTime -lt $rolloutTime} | `
+        ForEach-Object {Remove-Item -Path $_.FullName}
 }
 
 # .DESCRIPTION
@@ -717,8 +717,8 @@ function Enforce-TransportMaintenanceLogMaxDirectorySize
     $maxDirectorySize = $TransportService.TransportMaintenanceLogMaxDirectorySize.Value.ToBytes()
     $maxFileSize = $TransportService.TransportMaintenanceLogMaxFileSize.Value.ToBytes()
 
-    $files = Get-TransportMaintenanceLogFiles -TransportService $TransportService -LogPath $LogPath | Sort LastWriteTime
-    $directorySize = $files | Measure-Object Length -Sum | %{ $_.Sum }
+    $files = Get-TransportMaintenanceLogFiles -TransportService $TransportService -LogPath $LogPath | Sort-Object LastWriteTime
+    $directorySize = $files | Measure-Object Length -Sum | ForEach-Object { $_.Sum }
 
     $i = 0
     $desiredSize = $maxDirectorySize - $maxFileSize
@@ -1087,7 +1087,7 @@ function Log-EventOfEntry
     if($Reason)
     {
         $Reason.GetEnumerator() |  `
-            sort Key | % {
+            Sort-Object Key | ForEach-Object {
                 if($ReasonStr)
                 {
                     $ReasonStr += '; '
@@ -1134,7 +1134,7 @@ function Log-EventOfEntry
         {
             # we may have other MM workflow accessing the log file
             # delay 1 sec and try again
-            sleep 1
+            Start-Sleep -Seconds 1
             $maxTries--
         }
     }
@@ -1252,9 +1252,9 @@ function Remove-CompletedEntries
 
     $progressMade = $false
 
-    $activeIds = $ActiveEntries | %{$_.Id}
-    $completedKeys = $tracker.Keys | ? {$activeIds -notcontains $_}
-    $completedKeys | %{
+    $activeIds = $ActiveEntries | ForEach-Object {$_.Id}
+    $completedKeys = $tracker.Keys | Where-Object {$activeIds -notcontains $_}
+    $completedKeys | ForEach-Object {
         # update entry
         $entry = $Tracker[$_]
         $entry.LogEntry.Count = 0
@@ -1315,7 +1315,7 @@ function Update-EntriesTracker
     $progressMade = $false
 
     # Update the tracker hash table; Create new entries as needed
-    $ActiveEntries | %{
+    $ActiveEntries | ForEach-Object {
         if(-not $tracker.ContainsKey($_.Id))
         {
             $logEntry = Create-LogEntry -Source $Source -Stage $Stage -Id $_.Id -Count $_.Count
@@ -1426,7 +1426,7 @@ function Wait-EmptyEntries
     while($true)
     {
         $progressMade = $false
-        $activeEntries = Invoke-Command -ScriptBlock $GetEntries -ArgumentList $GetEntriesArgs | ? {$_.Count -gt 0}
+        $activeEntries = Invoke-Command -ScriptBlock $GetEntries -ArgumentList $GetEntriesArgs | Where-Object {$_.Count -gt 0}
 
         if($firstTime)
         {
@@ -1437,7 +1437,7 @@ function Wait-EmptyEntries
             else
             {
                 $startCount = 0
-                $startCount += $activeEntries | Measure-Object -Sum -Property Count | % {$_.Sum}
+                $startCount += $activeEntries | Measure-Object -Sum -Property Count | ForEach-Object {$_.Sum}
 
                 $summaryLog = Create-LogEntry -Source $Source -Stage $Stage -Count $startCount
                 Log-EventOfEntry -Event Start -Entry $summaryLog
@@ -1471,13 +1471,13 @@ function Wait-EmptyEntries
         }
         elseif($foundCompleted -or $foundUpdate)
         {
-            $remaningCount = $activeEntries | Measure-Object -Sum -Property Count | % {$_.Sum}
+            $remaningCount = $activeEntries | Measure-Object -Sum -Property Count | ForEach-Object {$_.Sum}
             Write-Verbose "$Source - $Stage Progress made. $remaningCount items remain."
         }
         else
         {
             # checking if it's been too long since progress was made
-            $recentEntries = $tracker.Values | ? {((Get-Date) - $_.LastUpdated) -lt $NoProgressTimeout}
+            $recentEntries = $tracker.Values | Where-Object {((Get-Date) - $_.LastUpdated) -lt $NoProgressTimeout}
             if(-not $recentEntries)
             {
                 Write-Verbose "$Source - $Stage NoProgressTimeout occurred. Wait aborted!"
@@ -1486,15 +1486,15 @@ function Wait-EmptyEntries
             }
         }
 
-        Sleep -Seconds $PollingFrequency.Seconds
+        Start-Sleep -Seconds $PollingFrequency.Seconds
     }
 
     $remainingCount = 0
-    $remainingCount += $activeEntries | Measure-Object -Sum -Property Count | % {$_.Sum}
+    $remainingCount += $activeEntries | Measure-Object -Sum -Property Count | ForEach-Object {$_.Sum}
 
     if($DetailLogging)
     {
-        $tracker.Values | %{ Log-EventOfEntry -Event Completed -Entry $_.LogEntry -Reason @{Reason = $reason} }
+        $tracker.Values | ForEach-Object { Log-EventOfEntry -Event Completed -Entry $_.LogEntry -Reason @{Reason = $reason} }
     }
     else
     {
@@ -1598,12 +1598,12 @@ function Wait-EmptyQueues
 
         $filter = "{MessageCount -gt 0 -and DeliveryType -ne 'ShadowRedundancy' -and NextHopDomain -ne 'Poison Message'}"
         $queues = get-queue -server $Server -ErrorAction SilentlyContinue -filter $filter | `
-            ?{ $null -eq $QueueTypes -or $QueueTypes -contains $_.DeliveryType }
+            Where-Object{ $null -eq $QueueTypes -or $QueueTypes -contains $_.DeliveryType }
 
-        $entries = $queues | %{
+        $entries = $queues | ForEach-Object {
             if($ActiveMsgOnly)
             {
-                $count = $_.MessageCountsPerPriority | Measure-Object -Sum | %{$_.Sum}
+                $count = $_.MessageCountsPerPriority | Measure-Object -Sum | ForEach-Object {$_.Sum}
             }
             else
             {
@@ -1673,8 +1673,8 @@ function Get-DiscardInfo
     $shadowInfo = [xml](Get-ExchangeDiagnosticInfo -Server $Server -Process edgetransport -Component ShadowRedundancy -argument $argument)
 
     $discardInfo = $shadowInfo.Diagnostics.Components.ShadowRedundancy.ShadowServerCollection.ShadowServer | `
-        ? {$_.ShadowServerInfo.discardEventsCount -gt 0 } |
-        % {
+        Where-Object {$_.ShadowServerInfo.discardEventsCount -gt 0 } |
+        ForEach-Object {
             $infoProps = `
             @{
                 Id = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($_.Context))
@@ -1746,7 +1746,7 @@ function Wait-EmptyDiscards
 
     # log the undrainable entries
     $discardInfo = Get-DiscardInfo -server $Server
-    $notDrainable = $discardInfo | ? {$ActiveServers -notcontains $_.Id.Split('.')[0]} | %{
+    $notDrainable = $discardInfo | Where-Object {$ActiveServers -notcontains $_.Id.Split('.')[0]} | ForEach-Object {
         Log-SkippedEvent -Source $Server -Stage ShadowDiscardDrain -Id $_.Id `
             -Count $_.Count -Reason @{Reason = $Script:ServerInMM}
     }
@@ -1763,7 +1763,7 @@ function Wait-EmptyDiscards
         )
 
         $discardInfo = Get-DiscardInfo -server $Server
-        $discardInfo | ? {$ActiveServers -contains $_.Id.Split('.')[0]}
+        $discardInfo | Where-Object {$ActiveServers -contains $_.Id.Split('.')[0]}
     }
 
     $remaining = Wait-EmptyEntries `
@@ -2030,7 +2030,7 @@ function Wait-BootLoaderReady
             if($retry -gt 0)
             {
                 Write-Verbose "$Server - Can not read the process lifetime. Sleep 20 to retry..."
-                Sleep 20
+                Start-Sleep 20
                 $retry--
             }
             else
@@ -2165,7 +2165,7 @@ function Redirect-Messages
     )
 
     # get domain name of the server
-    $fqdn = Get-ExchangeServer $Server | %{$_.Fqdn}
+    $fqdn = Get-ExchangeServer $Server | ForEach-Object {$_.Fqdn}
     $domainIndex = $fqdn.Indexof(".")
     $domain = $fqdn.SubString($domainIndex)
 
@@ -2177,7 +2177,7 @@ function Redirect-Messages
     }
 
     $serversInDag = Get-ActiveServers $serversInDag
-    $hubFqdns = $serversInDag | ? { $_ -ne $Server } | % { $_ + $domain }
+    $hubFqdns = $serversInDag | Where-Object { $_ -ne $Server } | ForEach-Object { $_ + $domain }
 
     $verboseMessage = "$Server - Redirecting messages to " + [string]::Join(", ", $hubFqdns)
     Write-Verbose $verboseMessage
@@ -2228,7 +2228,7 @@ function Drain-DiscardEvents
     )
 
     $filter = "{DeliveryType -eq 'ShadowRedundancy' -and NextHopDomain -like '$Primary*'}"
-    $ShadowServers | % {
+    $ShadowServers | ForEach-Object {
         Write-Verbose "$Primary - Forcing heart-beat on server $_"
         Retry-Queue -server $_ -Filter $filter -ErrorAction SilentlyContinue
     }
