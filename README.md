@@ -849,6 +849,7 @@ Defaults to $false.
 * Fix PSUseApprovedVerbs issues from PSScriptAnalyzer
 * Fix PSAvoidUsingEmptyCatchBlock issues from PSScriptAnalyzer
 * Fix PSUsePSCredentialType issues from PSScriptAnalyzer
+* Fix erroneous PSDSCDscTestsPresent issues from PSScriptAnalyzer for modules that do actually have tests in the root Tests folder
 
 ### 1.11.0.0
 * xExchActiveSyncVirtualDirectory: Fix issue where ClientCertAuth parameter set to "Allowed" instead of "Accepted"
