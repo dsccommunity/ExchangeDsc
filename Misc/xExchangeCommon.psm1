@@ -42,7 +42,7 @@ function GetRemoteExchangeSession
         Write-Verbose "Creating new Remote Powershell session to Exchange"
 
         #Get local server FQDN
-        $machineDomain = (Get-WmiObject -Class Win32_ComputerSystem).Domain.ToLower()
+        $machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
         $serverName = $env:computername.ToLower()
         $serverFQDN = $serverName + "." + $machineDomain
 
@@ -147,7 +147,7 @@ function GetExchangeProduct
 {
     if ($null -eq $Global:CheckedExchangeProduct -or $Global:CheckedExchangeProduct -eq $false)
     {
-        $Global:ExchangeProduct = Get-WmiObject -Class Win32_Product -Filter {Name = "Microsoft Exchange Server"}
+        $Global:ExchangeProduct = Get-CimInstance -ClassName Win32_Product -Filter 'Name like "Microsoft Exchange Server"'
 
         $Global:CheckedExchangeProduct = $true
     }
