@@ -46,7 +46,7 @@ function Get-TargetResource
     if ($null -ne $maintenanceModeStatus)
     {
         #Determine which components are Active
-        $activeComponents = $MaintenanceModeStatus.ServerComponentState | where {$_.State -eq "Active"}
+        $activeComponents = $MaintenanceModeStatus.ServerComponentState | Where-Object {$_.State -eq "Active"}
 
         [string[]]$activeComponentsList = @()
 
@@ -156,8 +156,8 @@ function Set-TargetResource
     if ($null -ne $maintenanceModeStatus)
     {
         #Set vars relevant to both 'Enabled' code paths
-        $htStatus = $MaintenanceModeStatus.ServerComponentState | where {$_.Component -eq "HubTransport"}
-        $haStatus = $MaintenanceModeStatus.ServerComponentState | where {$_.Component -eq "HubTransport"}
+        $htStatus = $MaintenanceModeStatus.ServerComponentState | Where-Object {$_.Component -eq "HubTransport"}
+        $haStatus = $MaintenanceModeStatus.ServerComponentState | Where-Object {$_.Component -eq "HubTransport"}
         
         #Put the server into maintenance mode
         if ($Enabled -eq $true)
@@ -263,7 +263,7 @@ function Set-TargetResource
                     if ((IsComponentCheckedByDefault -ComponentName $component) -eq $false)
                     {
                         $status = $null
-                        $status = $MaintenanceModeStatus.ServerComponentState | where {$_.Component -like "$($component)"}
+                        $status = $MaintenanceModeStatus.ServerComponentState | Where-Object {$_.Component -like "$($component)"}
 
                         $changedState = ChangeComponentState -Component $component -Requester "Functional" -ServerComponentState $maintenanceModeStatus.ServerComponentState -State "Active" -SetInactiveComponentsFromAnyRequesterToActive $SetInactiveComponentsFromAnyRequesterToActive -DomainController $DomainController
                     }
@@ -355,7 +355,7 @@ function Test-TargetResource
                     return $false
                 }
 
-                if ($null -ne ($MaintenanceModeStatus.ServerComponentState | where {$_.State -ne "Inactive" -and $_.Component -ne "Monitoring" -and $_.Component -ne "RecoveryActionsEnabled"}))
+                if ($null -ne ($MaintenanceModeStatus.ServerComponentState | Where-Object {$_.State -ne "Inactive" -and $_.Component -ne "Monitoring" -and $_.Component -ne "RecoveryActionsEnabled"}))
                 {
                     Write-Verbose "One or more components have a status other than Inactive"
                     return $false
@@ -404,7 +404,7 @@ function Test-TargetResource
         #Make sure the server is fully out of maintenance mode
         else
         {
-            $activeComponents = $MaintenanceModeStatus.ServerComponentState | where {$_.State -eq "Active"}
+            $activeComponents = $MaintenanceModeStatus.ServerComponentState | Where-Object {$_.State -eq "Active"}
 
             if ($null -eq $activeComponents)
             {
@@ -412,19 +412,19 @@ function Test-TargetResource
                 return $false
             }
 
-            if ($null -eq ($activeComponents | where {$_.Component -eq "ServerWideOffline"}))
+            if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "ServerWideOffline"}))
             {
                 Write-Verbose "Component ServerWideOffline is not Active"
                 return $false
             }
 
-            if ($null -eq ($activeComponents | where {$_.Component -eq "UMCallRouter"}))
+            if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "UMCallRouter"}))
             {
                 Write-Verbose "Component UMCallRouter is not Active"
                 return $false
             }
 
-            if ($null -eq ($activeComponents | where {$_.Component -eq "HubTransport"}))
+            if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "HubTransport"}))
             {
                 Write-Verbose "Component HubTransport is not Active"
                 return $false
@@ -442,13 +442,13 @@ function Test-TargetResource
                 return $false
             }
 
-            if ($null -eq ($activeComponents | where {$_.Component -eq "Monitoring"}))
+            if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "Monitoring"}))
             {
                 Write-Verbose "Component Monitoring is not Active"
                 return $false
             }
 
-            if ($null -eq ($activeComponents | where {$_.Component -eq "RecoveryActionsEnabled"}))
+            if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "RecoveryActionsEnabled"}))
             {
                 Write-Verbose "Component RecoveryActionsEnabled is not Active"
                 return $false
@@ -461,7 +461,7 @@ function Test-TargetResource
                     if ((IsComponentCheckedByDefault -ComponentName $component) -eq $false)
                     {
                         $status = $null
-                        $status = $MaintenanceModeStatus.ServerComponentState | where {$_.Component -like "$($component)"}
+                        $status = $MaintenanceModeStatus.ServerComponentState | Where-Object {$_.Component -like "$($component)"}
 
                         if ($null -ne $status -and $Status.State -ne "Active")
                         {
@@ -546,7 +546,7 @@ function GetQueueMessageCount
 
     if ($null -ne $MaintenanceModeStatus.Queues)
     {
-        foreach ($queue in $MaintenanceModeStatus.Queues | where {$_.Identity -notlike "*\Shadow\*"})
+        foreach ($queue in $MaintenanceModeStatus.Queues | Where-Object {$_.Identity -notlike "*\Shadow\*"})
         {
             Write-Verbose "Found queue '$($queue.Identity)' with a message count of '$($queue.MessageCount)'."
             $messageCount += $queue.MessageCount
@@ -578,7 +578,7 @@ function GetActiveDBCount
     [Uint32]$activeDBCount = 0
 
     #Get DB's with a status of Mounted, Mounting, Dismounted, or Dismounting
-    $localDBs = $MaintenanceModeStatus.DBCopyStatus | where {$_.Status -like "Mount*" -or $_.Status -like "Dismount*"}    
+    $localDBs = $MaintenanceModeStatus.DBCopyStatus | Where-Object {$_.Status -like "Mount*" -or $_.Status -like "Dismount*"}    
 
     #Ensure that any DB's we found actually have copies
     foreach ($db in $localDBs)
@@ -891,7 +891,7 @@ function ChangeComponentState
 
     [boolean]$madeChange = $false
 
-    $componentState = $MaintenanceModeStatus.ServerComponentState | where {$_.Component -like "$($Component)"}
+    $componentState = $MaintenanceModeStatus.ServerComponentState | Where-Object {$_.Component -like "$($Component)"}
 
     if ($null -ne $componentState)
     {
@@ -911,7 +911,7 @@ function ChangeComponentState
             if ($State -eq "Active" -and $SetInactiveComponentsFromAnyRequesterToActive -eq $true)
             {
                 $additionalRequesters = $null
-                $additionalRequesters = $componentState.LocalStates | where {$_.Requester -notlike "$($Requester)" -and $_.State -notlike "Active"}
+                $additionalRequesters = $componentState.LocalStates | Where-Object {$_.Requester -notlike "$($Requester)" -and $_.State -notlike "Active"}
 
                 if ($null -ne $additionalRequesters)
                 {

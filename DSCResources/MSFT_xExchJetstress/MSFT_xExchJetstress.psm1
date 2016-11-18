@@ -73,7 +73,7 @@ function Set-TargetResource
     $jetstressRunning = IsJetstressRunning
     $jetstressSuccessful = JetstressTestSuccessful @PSBoundParameters
 
-    if ($jetstressSuccessful -eq $false -and (Get-ChildItem -LiteralPath "$($JetstressPath)" | where {$null -ne $_.Name -like "$($Type)*.html"}))
+    if ($jetstressSuccessful -eq $false -and (Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object {$null -ne $_.Name -like "$($Type)*.html"}))
     {
         throw "Jetstress was previously executed and resulted in a failed run. Clean up any $($Type)*.html files in the Jetstress install directory before trying to run this resource again."
     }
@@ -314,7 +314,7 @@ function JetstressTestSuccessful
     $overallTestSuccessful = $false
     $achievedIOPSTarget = $false
 
-    $outputFiles = Get-ChildItem -LiteralPath "$($JetstressPath)" | where {$_.Name -like "$($Type)*.html"}
+    $outputFiles = Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object {$_.Name -like "$($Type)*.html"}
 
     if ($null -ne $outputFiles -and $outputFiles.Count -ge 1)
     {

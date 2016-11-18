@@ -18,11 +18,11 @@ function PrepTestDB
 
     GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad "*-MailboxDatabase"
 
-    Get-MailboxDatabase | where {$_.Name -like "$($TestDBName)"} | Remove-MailboxDatabase -Confirm:$false
+    Get-MailboxDatabase | Where-Object {$_.Name -like "$($TestDBName)"} | Remove-MailboxDatabase -Confirm:$false
 
     Get-ChildItem -LiteralPath "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)" -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
 
-    if ($null -ne (Get-MailboxDatabase | where {$_.Name -like "$($TestDBName)"}))
+    if ($null -ne (Get-MailboxDatabase | Where-Object {$_.Name -like "$($TestDBName)"}))
     {
         throw "Failed to cleanup test database"
     }
