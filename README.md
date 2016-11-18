@@ -846,6 +846,7 @@ Defaults to $false.
 * Fix PSAvoidUsingWMICmdlet issues from PSScriptAnalyzer
 * Fix PSUseSingularNouns issues from PSScriptAnalyzer
 * Fix PSAvoidUsingCmdletAliases issues from PSScriptAnalyzer
+* Fix PSUseApprovedVerbs issues from PSScriptAnalyzer
 
 ### 1.11.0.0
 * xExchActiveSyncVirtualDirectory: Fix issue where ClientCertAuth parameter set to "Allowed" instead of "Accepted"

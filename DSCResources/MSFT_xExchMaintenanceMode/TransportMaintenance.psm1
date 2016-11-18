@@ -65,16 +65,16 @@ function Start-TransportMaintenance
     try
     {
         Write-Verbose "Starting non-fatal Transport maintenance tasks for '$Target' on $($env:ComputerName)" 
-        if(-not (Init-TransportMaintenance -Target $Target))
+        if(-not (Initialize-TransportMaintenance -Target $Target))
         {
             return
         }
 
         # Log the BeginTM/start event
-        $beginTMLog = Create-LogEntry -Source $Target -Stage BeginTM
-        Log-EventOfEntry -Event Start -Entry $beginTMLog -Reason $Script:LogInfo
+        $beginTMLog = New-LogEntry -Source $Target -Stage BeginTM
+        Write-EventOfEntry -Event Start -Entry $beginTMLog -Reason $Script:LogInfo
 
-        Perform-RemoteMaintenance -Target $Target -MessageRedirectExclusions $MessageRedirectExclusions -ExcludeLocalSiteFromMessageRedirect:$ExcludeLocalSiteFromMessageRedirect
+        Invoke-RemoteMaintenance -Target $Target -MessageRedirectExclusions $MessageRedirectExclusions -ExcludeLocalSiteFromMessageRedirect:$ExcludeLocalSiteFromMessageRedirect
 
     }
     catch
@@ -85,7 +85,7 @@ function Start-TransportMaintenance
     {
         if($beginTMLog)
         {
-            Log-EventOfEntry -Event Completed -Entry $beginTMLog -Reason $Script:LogInfo
+            Write-EventOfEntry -Event Completed -Entry $beginTMLog -Reason $Script:LogInfo
         }
     }
 }
@@ -109,7 +109,7 @@ function Stop-TransportMaintenance
 
     $ServiceState = "Online"
 
-    Main-HUBEndMaintenance
+    Start-HUBEndMaintenance
 }
 
 function AddExchangeSnapinIfRequired
@@ -131,7 +131,7 @@ function AddExchangeSnapinIfRequired
 # .RETURN
 #   True if the initialization is successful and caller should continue the MM process. 
 #   Else, returns false and caller should NOT continue with the MM.
-function Init-TransportMaintenance
+function Initialize-TransportMaintenance
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -149,7 +149,7 @@ function Init-TransportMaintenance
         Write-Verbose "$Target is not an exchange server"
     
         $Script:LogInfo.Add('ExchangeServer', 'False')
-        Log-SkippedEvent -Source $Target -Stage BeginTM -Reason $Script:LogInfo
+        Write-SkippedEvent -Source $Target -Stage BeginTM -Reason $Script:LogInfo
         
         return $false
     }
@@ -164,7 +164,7 @@ function Init-TransportMaintenance
         Write-Verbose "MSExchangeTransport service is not found on $Target"
         
         $Script:LogInfo.Add($TransportServiceName, 'NotFound')
-        Log-SkippedEvent -Source $Target -Stage BeginTM -Reason $Script:LogInfo
+        Write-SkippedEvent -Source $Target -Stage BeginTM -Reason $Script:LogInfo
         
         return $false
     }
@@ -175,7 +175,7 @@ function Init-TransportMaintenance
         Write-Verbose "Unable to find HubTransport's ServerComponentState from $($env:ComputerName) for $Target."
         
         $Script:LogInfo.Add('HubTransport', 'NotFound')
-        Log-SkippedEvent -Source $Target -Stage BeginTM -Reason $Script:LogInfo
+        Write-SkippedEvent -Source $Target -Stage BeginTM -Reason $Script:LogInfo
         
         return $false
     }
@@ -192,7 +192,7 @@ function Init-TransportMaintenance
 #
 # .RETURN
 #   None
-function Perform-FullyDrainTransport
+function Invoke-FullyDrainTransport
 {
     param(
         [Parameter(Mandatory = $false)]
@@ -203,15 +203,15 @@ function Perform-FullyDrainTransport
         [string[]]$MessageRedirectExclusions)
 
     #drain active messages
-    Drain-ActiveMessage -Server $Target -TransportService $script:TransportService
+    Clear-ActiveMessage -Server $Target -TransportService $script:TransportService
     
     # redirect the remaining messages
-    $activeServers = Redirect-Message -Server $Target -MessageRedirectExclusions $MessageRedirectExclusions -ExcludeLocalSite:$ExcludeLocalSiteFromMessageRedirect
+    $activeServers = Send-MessagesToNewServer -Server $Target -MessageRedirectExclusions $MessageRedirectExclusions -ExcludeLocalSite:$ExcludeLocalSiteFromMessageRedirect
 
     # Drain the discard events
     if($activeServers)
     {
-        Drain-DiscardEvent -Primary $Target -ShadowServers $activeServers | out-null
+        Clear-DiscardEvent -Primary $Target -ShadowServers $activeServers | out-null
     }
     else
     {
@@ -229,7 +229,7 @@ function Perform-FullyDrainTransport
 # .PARAMETER Target
 #   Target server for the operation.
 #
-function Perform-RemoteMaintenance
+function Invoke-RemoteMaintenance
 {
     param(
         [Parameter(Mandatory = $false)]
@@ -249,7 +249,7 @@ function Perform-RemoteMaintenance
     }
     else
     {
-        Perform-FullyDrainTransport -Target $Target -MessageRedirectExclusions $MessageRedirectExclusions -ExcludeLocalSiteFromMessageRedirect:$ExcludeLocalSiteFromMessageRedirect
+        Invoke-FullyDrainTransport -Target $Target -MessageRedirectExclusions $MessageRedirectExclusions -ExcludeLocalSiteFromMessageRedirect:$ExcludeLocalSiteFromMessageRedirect
     }
 }
 
@@ -258,7 +258,7 @@ function Perform-RemoteMaintenance
 
 #region From TransportEndMaintenance.ps1
 # Main entry point for the script.
-function Main-HUBEndMaintenance
+function Start-HUBEndMaintenance
 {
     $reasons = @{
         ServiceState = $ServiceState
@@ -273,13 +273,13 @@ function Main-HUBEndMaintenance
             Write-Verbose 'MSExchangeTransport service is not found'
             
             $reasons.Add('MsExchangeTransport', 'NotFound')
-            Log-SkippedEvent -Source $Target -Stage EndTM -Reason $reasons
+            Write-SkippedEvent -Source $Target -Stage EndTM -Reason $reasons
             return;
         }   
 
-        $endMMLog = Create-LogEntry -Source $Target -Stage EndTM
+        $endMMLog = New-LogEntry -Source $Target -Stage EndTM
 
-        Log-EventOfEntry -Event Start -Entry $endMMLog -Reason $reasons
+        Write-EventOfEntry -Event Start -Entry $endMMLog -Reason $reasons
             
         if($ServiceState -eq "Online")
         {        
@@ -294,7 +294,7 @@ function Main-HUBEndMaintenance
     {
         if($endMMLog)
         {
-            Log-EventOfEntry -Event Completed -Entry $endMMLog -Reason $reasons
+            Write-EventOfEntry -Event Completed -Entry $endMMLog -Reason $reasons
         }
     }
 }
@@ -335,7 +335,7 @@ function Enable-SubmissionQueue
                 }
             }
             
-            Log-SkippedEvent -source $env:COMPUTERNAME -stage SubmissionQueueCheck -Reason @{EnableSubmissionQueue = $submissionQ.Status}
+            Write-SkippedEvent -source $env:COMPUTERNAME -stage SubmissionQueueCheck -Reason @{EnableSubmissionQueue = $submissionQ.Status}
             return $true
         }
         
@@ -364,7 +364,7 @@ function Set-TransportActive
          -and $transportService.StartMode -eq "Auto" `
          -and $transportService.State -eq "Running")
     {
-        Log-SkippedEvent -Source $env:COMPUTERNAME -Stage StartTransport -Reason @{ComponentState = 'Active'}
+        Write-SkippedEvent -Source $env:COMPUTERNAME -Stage StartTransport -Reason @{ComponentState = 'Active'}
     }
     else
     {
@@ -409,7 +409,7 @@ function Set-TransportInactive
         -and $transportService.StartMode -eq "Auto" `
         -and $transportService.State -eq "Running")
     {
-        Log-SkippedEvent -Source $env:COMPUTERNAME -Stage StartTransport -Reason @{ComponentState = 'Inactive'}
+        Write-SkippedEvent -Source $env:COMPUTERNAME -Stage StartTransport -Reason @{ComponentState = 'Inactive'}
     }
     else
     {  
@@ -610,7 +610,7 @@ function Get-TransportMaintenanceLogFileList()
 # .PARAMETER $TransportService
 #   Transport Service object retrieved from Get-TransportService of the current server
 #   This object holds configuration and size limits of the Maintenance Log folder
-function Configure-TransportMaintenanceLog
+function Register-TransportMaintenanceLog
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -676,7 +676,7 @@ function Configure-TransportMaintenanceLog
 # .PARAMETER $TransportService
 #   Transport Service object retrieved from Get-TransportService of the current server
 #   This object holds configuration and size limits of the Maintenance Log folder
-function Enforce-TransportMaintenanceLogMaxAge
+function Remove-TransportMaintenanceLogsOverMaxAge
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -704,7 +704,7 @@ function Enforce-TransportMaintenanceLogMaxAge
 # .PARAMETER $TransportService
 #   Transport Service object retrieved from Get-TransportService of the current server
 #   This object holds configuration and size limits of the Maintenance Log folder
-function Enforce-TransportMaintenanceLogMaxDirectorySize
+function Remove-TransportMaintenanceLogsOverMaxDirectorySize
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -823,8 +823,8 @@ function Initialize-TransportMaintenanceLog()
 
         if(Test-Path $logPath)
         {
-            Enforce-TransportMaintenanceLogMaxAge -TransportService $transportService -LogPath $logPath
-            Enforce-TransportMaintenanceLogMaxDirectorySize -TransportService $transportService -LogPath $logPath
+            Remove-TransportMaintenanceLogsOverMaxAge -TransportService $transportService -LogPath $logPath
+            Remove-TransportMaintenanceLogsOverMaxDirectorySize -TransportService $transportService -LogPath $logPath
         }
         else
         {
@@ -841,7 +841,7 @@ function Initialize-TransportMaintenanceLog()
         }
 
         $Script:ExchangeVersion = Get-ExchangeVersion $Server
-        Configure-TransportMaintenanceLog -TransportService $transportService -LogPath $logPath
+        Register-TransportMaintenanceLog -TransportService $transportService -LogPath $logPath
     }
 }
 
@@ -904,7 +904,7 @@ function Set-ServiceState
     {
         if($LoggingStage)
         {
-            Log-SkippedEvent -Source $Server -Stage $LoggingStage -Reason @{$ServiceName = 'NotFound'}
+            Write-SkippedEvent -Source $Server -Stage $LoggingStage -Reason @{$ServiceName = 'NotFound'}
         }
         
         if($ThrowOnFailure)
@@ -938,8 +938,8 @@ function Set-ServiceState
     
     if($LoggingStage)
     {
-        $logEntry = Create-LogEntry -Source $Server -Stage $LoggingStage
-        Log-EventOfEntry -Event Start -Entry $logEntry
+        $logEntry = New-LogEntry -Source $Server -Stage $LoggingStage
+        Write-EventOfEntry -Event Start -Entry $logEntry
     }
     
     switch($State)
@@ -1006,7 +1006,7 @@ function Set-ServiceState
     
     if($LoggingStage)
     {
-        Log-EventOfEntry -Event Completed -Entry $logEntry -reason @{'MaxWaitMinutes' = $WaitTime.TotalMinutes}
+        Write-EventOfEntry -Event Completed -Entry $logEntry -reason @{'MaxWaitMinutes' = $WaitTime.TotalMinutes}
     }
 }
 
@@ -1026,8 +1026,8 @@ function Set-ServiceState
 #   Value for the count column, meaning of this count varies with id and stage
 #
 # .RETURN
-#   Log Entry object which can be use Log-EventOfEntry & Log-SkippedEvent
-function Create-LogEntry
+#   Log Entry object which can be use Write-EventOfEntry & Write-SkippedEvent
+function New-LogEntry
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -1062,11 +1062,11 @@ function Create-LogEntry
 #   computed from the time LogEntry was created
 #
 # .PARAMETER Entry
-#   Log Entry, created by Create-LogEntry
+#   Log Entry, created by New-LogEntry
 #
 # .PARAMETER Reason
 #   Reason of this event
-function Log-EventOfEntry
+function Write-EventOfEntry
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -1158,7 +1158,7 @@ function Log-EventOfEntry
 # .PARAMETER Reason
 #   Reason of this event
 
-function Log-SkippedEvent
+function Write-SkippedEvent
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -1177,8 +1177,8 @@ function Log-SkippedEvent
         [hashtable] $Reason
     )
 
-    $entry = Create-LogEntry -Source $Source -Stage $Stage -Id $Id -Count $Count
-    Log-EventOfEntry -Event Skipped -Entry $entry -Reason $Reason
+    $entry = New-LogEntry -Source $Source -Stage $Stage -Id $Id -Count $Count
+    Write-EventOfEntry -Event Skipped -Entry $entry -Reason $Reason
 }
 
 # .DESCRIPTION
@@ -1218,8 +1218,8 @@ function Log-InfoEvent
         [hashtable] $Reason
     )
 
-    $entry = Create-LogEntry -Source $Source -Stage $Stage -Id $Id -Count $Count
-    Log-EventOfEntry -Event Info -Entry $entry -Reason $Reason
+    $entry = New-LogEntry -Source $Source -Stage $Stage -Id $Id -Count $Count
+    Write-EventOfEntry -Event Info -Entry $entry -Reason $Reason
 }
 
 # .DESCRIPTION
@@ -1261,7 +1261,7 @@ function Remove-CompletedEntriesFromHashtable
 
         if($DetailLogging)
         {
-            Log-EventOfEntry -Event Completed -Entry $entry.LogEntry
+            Write-EventOfEntry -Event Completed -Entry $entry.LogEntry
         }
 
         # remove completed entry from tracking
@@ -1318,7 +1318,7 @@ function Update-EntriesTracker
     $ActiveEntries | ForEach-Object {
         if(-not $tracker.ContainsKey($_.Id))
         {
-            $logEntry = Create-LogEntry -Source $Source -Stage $Stage -Id $_.Id -Count $_.Count
+            $logEntry = New-LogEntry -Source $Source -Stage $Stage -Id $_.Id -Count $_.Count
 
             $trackEnty = New-Object PsObject -Property @{
                 LogEntry = $logEntry
@@ -1329,7 +1329,7 @@ function Update-EntriesTracker
 
             if($DetailLogging)
             {
-                Log-EventOfEntry -Event Start -Entry $logEntry
+                Write-EventOfEntry -Event Start -Entry $logEntry
             }
 
             $progressMade = $true
@@ -1432,15 +1432,15 @@ function Wait-EmptyEntriesCompletion
         {
             if($DetailLogging -and -not $ActiveEntries)
             {
-                Log-SkippedEvent -Source $Source -Stage $Stage -Reason @{Reason = 'Not needed'}
+                Write-SkippedEvent -Source $Source -Stage $Stage -Reason @{Reason = 'Not needed'}
             }
             else
             {
                 $startCount = 0
                 $startCount += $activeEntries | Measure-Object -Sum -Property Count | ForEach-Object {$_.Sum}
 
-                $summaryLog = Create-LogEntry -Source $Source -Stage $Stage -Count $startCount
-                Log-EventOfEntry -Event Start -Entry $summaryLog
+                $summaryLog = New-LogEntry -Source $Source -Stage $Stage -Count $startCount
+                Write-EventOfEntry -Event Start -Entry $summaryLog
             }
 
             $firstTime = $false
@@ -1494,7 +1494,7 @@ function Wait-EmptyEntriesCompletion
 
     if($DetailLogging)
     {
-        $tracker.Values | ForEach-Object { Log-EventOfEntry -Event Completed -Entry $_.LogEntry -Reason @{Reason = $reason} }
+        $tracker.Values | ForEach-Object { Write-EventOfEntry -Event Completed -Entry $_.LogEntry -Reason @{Reason = $reason} }
     }
     else
     {
@@ -1502,11 +1502,11 @@ function Wait-EmptyEntriesCompletion
 
         if($reason)
         {
-            Log-EventOfEntry -Event Completed -Entry $summaryLog -Reason @{Reason = $reason}
+            Write-EventOfEntry -Event Completed -Entry $summaryLog -Reason @{Reason = $reason}
         }
         else
         {
-            Log-EventOfEntry -Event Completed -Entry $summaryLog
+            Write-EventOfEntry -Event Completed -Entry $summaryLog
         }
     }
 
@@ -1747,7 +1747,7 @@ function Wait-EmptyDiscardsCompletion
     # log the undrainable entries
     $discardInfo = Get-DiscardInfo -server $Server
     $notDrainable = $discardInfo | Where-Object {$ActiveServers -notcontains $_.Id.Split('.')[0]} | ForEach-Object {
-        Log-SkippedEvent -Source $Server -Stage ShadowDiscardDrain -Id $_.Id `
+        Write-SkippedEvent -Source $Server -Stage ShadowDiscardDrain -Id $_.Id `
             -Count $_.Count -Reason @{Reason = $Script:ServerInMM}
     }
 
@@ -2044,8 +2044,8 @@ function Wait-BootLoaderReady
     if(-not $processLifeTime -or -not $processStartTime)
     {
         # EdgeTransport isn't running or Server isn't a HubTransport, nothing to wait here
-        Log-SkippedEvent -Source $Server -Stage BootLoaderCountCheck -Reason @{Reason = 'EdgeTransportUnreachable'}
-        Log-SkippedEvent -Source $Server -Stage BootLoaderSubmitCheck -Reason @{Reason = 'EdgeTransportUnreachable'}
+        Write-SkippedEvent -Source $Server -Stage BootLoaderCountCheck -Reason @{Reason = 'EdgeTransportUnreachable'}
+        Write-SkippedEvent -Source $Server -Stage BootLoaderSubmitCheck -Reason @{Reason = 'EdgeTransportUnreachable'}
 
         Write-Warning "$Server - EdgeTransport is not running or server $server is unreachable. Skipping waiting for BootLoader."
         return 0
@@ -2053,8 +2053,8 @@ function Wait-BootLoaderReady
 
     if($processLifeTime -gt $MaxBootLoaderProcessTimeout)
     {
-        Log-SkippedEvent -Source $Server -Stage BootLoaderCountCheck -Reason @{ProcessLifeTime = $processLifeTime}
-        Log-SkippedEvent -Source $Server -Stage BootLoaderSubmitCheck -Reason @{ProcessLifeTime = $processLifeTime}
+        Write-SkippedEvent -Source $Server -Stage BootLoaderCountCheck -Reason @{ProcessLifeTime = $processLifeTime}
+        Write-SkippedEvent -Source $Server -Stage BootLoaderSubmitCheck -Reason @{ProcessLifeTime = $processLifeTime}
 
         Write-Verbose "$Server - EdgeTransport has been running for $processLifeTime. BootLoader is ready"
         return 0
@@ -2104,7 +2104,7 @@ function Wait-BootLoaderReady
 #
 # .PARAMETER TransportService
 #   Optional MsExchangeTransport service object.
-function Drain-ActiveMessage
+function Clear-ActiveMessage
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -2148,7 +2148,7 @@ function Drain-ActiveMessage
 # .RETURN
 #  Returns active servers in the dag
 #
-function Redirect-Message
+function Send-MessagesToNewServer
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -2212,7 +2212,7 @@ function Redirect-Message
 # .RETURN
 #  none
 #
-function Drain-DiscardEvent
+function Clear-DiscardEvent
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -2428,7 +2428,7 @@ function Set-ServiceState
     {
         if($LoggingStage)
         {
-            Log-SkippedEvent -Source $Server -Stage $LoggingStage -Reason @{$ServiceName = 'NotFound'}
+            Write-SkippedEvent -Source $Server -Stage $LoggingStage -Reason @{$ServiceName = 'NotFound'}
         }
         
         if($ThrowOnFailure)
@@ -2462,8 +2462,8 @@ function Set-ServiceState
     
     if($LoggingStage)
     {
-        $logEntry = Create-LogEntry -Source $Server -Stage $LoggingStage
-        Log-EventOfEntry -Event Start -Entry $logEntry
+        $logEntry = New-LogEntry -Source $Server -Stage $LoggingStage
+        Write-EventOfEntry -Event Start -Entry $logEntry
     }
     
     switch($State)
@@ -2530,7 +2530,7 @@ function Set-ServiceState
     
     if($LoggingStage)
     {
-        Log-EventOfEntry -Event Completed -Entry $logEntry -reason @{'MaxWaitMinutes' = $WaitTime.TotalMinutes}
+        Write-EventOfEntry -Event Completed -Entry $logEntry -reason @{'MaxWaitMinutes' = $WaitTime.TotalMinutes}
     }
 }
 
