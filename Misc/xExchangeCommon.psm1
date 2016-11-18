@@ -8,7 +8,19 @@ function GetExistingExchangeSession
 function GetRemoteExchangeSession
 {
     [CmdletBinding()]
-    param([PSCredential]$Credential, [string[]]$CommandsToLoad, $VerbosePreference, $SetupProcessName = "ExSetup*")
+    param
+    (
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
+        
+        [string[]]
+        $CommandsToLoad,
+        
+        $VerbosePreference,
+        
+        $SetupProcessName = "ExSetup*"
+    )
 
     #Check if Exchange Setup is running. If so, we need to throw an exception, as a running Exchange DSC resource will block Exchange Setup from working properly.
     if (IsSetupRunning -SetupProcessName $SetupProcessName)
@@ -704,6 +716,7 @@ function StartScheduledTask
         $Arguments,
 
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String]
