@@ -27,13 +27,13 @@ if ($exchangeInstalled)
             UMStartupMode = "TLS"  
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
 
 
         $testParams.UMStartupMode = "Dual"
         $expectedGetResults.UMStartupMode = "Dual"
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Change some parameters" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Change some parameters" -ExpectedGetResults $expectedGetResults
     }
 }
 else

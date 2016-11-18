@@ -35,8 +35,8 @@ if ($exchangeInstalled)
             X509CertificateName = "$($Global:ServerFqdn)"    
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
-        Test-ArrayContents -TestParams $testParams -DesiredArrayContents $testParams.ExternalConnectionSettings -GetResultParameterName "ExternalConnectionSettings" -ContextLabel "Verify ExternalConnectionSettings" -ItLabel "ExternalConnectionSettings should contain a value"
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
+        Test-ContentsOfArray -TestParams $testParams -DesiredArrayContents $testParams.ExternalConnectionSettings -GetResultParameterName "ExternalConnectionSettings" -ContextLabel "Verify ExternalConnectionSettings" -ItLabel "ExternalConnectionSettings should contain a value"
 
         $testParams.LoginType = "SecureLogin"
         $testParams.ExternalConnectionSettings = @()
@@ -44,8 +44,8 @@ if ($exchangeInstalled)
         $expectedGetResults.LoginType = "SecureLogin"
         $expectedGetResults.X509CertificateName = ""
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Change some parameters" -ExpectedGetResults $expectedGetResults
-        Test-ArrayContents -TestParams $testParams -DesiredArrayContents $testParams.ExternalConnectionSettings -GetResultParameterName "ExternalConnectionSettings" -ContextLabel "Verify ExternalConnectionSettings" -ItLabel "ExternalConnectionSettings should be empty"
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Change some parameters" -ExpectedGetResults $expectedGetResults
+        Test-ContentsOfArray -TestParams $testParams -DesiredArrayContents $testParams.ExternalConnectionSettings -GetResultParameterName "ExternalConnectionSettings" -ContextLabel "Verify ExternalConnectionSettings" -ItLabel "ExternalConnectionSettings should be empty"
     }
 }
 else
