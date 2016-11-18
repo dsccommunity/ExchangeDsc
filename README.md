@@ -847,7 +847,7 @@ Defaults to $false.
 * Fix PSUseSingularNouns issues from PSScriptAnalyzer
 * Fix PSAvoidUsingCmdletAliases issues from PSScriptAnalyzer
 * Fix PSUseApprovedVerbs issues from PSScriptAnalyzer
-* Fix FixPSAvoidUsingEmptyCatchBlock issues from PSScriptAnalyzer
+* Fix PSAvoidUsingEmptyCatchBlock issues from PSScriptAnalyzer
 
 ### 1.11.0.0
 * xExchActiveSyncVirtualDirectory: Fix issue where ClientCertAuth parameter set to "Allowed" instead of "Accepted"
