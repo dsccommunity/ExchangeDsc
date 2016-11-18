@@ -1,7 +1,7 @@
 #Function to be used within pester for end to end testing of Get/Set/Test-TargetResource
 #Function first calls Set-TargetResource with provided parameters, then runs Get and Test-TargetResource,
 #and ensures they match $ExpectedGetResults and $ExpectedTestResult
-function Test-AllTargetResourceFunctions
+function Test-TargetResourceFunctionality
 {
     [CmdletBinding()]
     param([Hashtable]$Params, [string]$ContextLabel, [Hashtable]$ExpectedGetResults, [bool]$ExpectedTestResult = $true)
@@ -44,7 +44,7 @@ function Test-AllTargetResourceFunctions
     }
 }
 
-function Test-ArrayContents
+function Test-ContentsOfArray
 {
     [CmdletBinding()]
     param([Hashtable]$TestParams, [string[]]$DesiredArrayContents, [string]$GetResultParameterName, [string]$ContextLabel, [string]$ItLabel)
