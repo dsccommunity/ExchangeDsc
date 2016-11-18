@@ -357,7 +357,7 @@ function Set-TransportActive
     Write-Output "Enter [Set-TransportActive]"
     
     $currentServerComponentState = Get-ServerComponentState -Identity $env:COMPUTERNAME -Component $Component
-    $transportService = Get-WmiObject win32_service -filter "name = 'MSExchangeTransport'"
+    $transportService = Get-CimInstance -ClassName win32_service -filter "name = 'MSExchangeTransport'"
 
     if($currentServerComponentState.State -eq "Active" `
          -and $null -ne $transportService `
@@ -402,7 +402,7 @@ function Set-TransportInactive
     Write-Output "Enter [Set-TransportInactive]"
 
     $currentServerComponentState = Get-ServerComponentState -Identity $env:COMPUTERNAME -Component $Component
-    $transportService = Get-WmiObject win32_service -filter "name = 'MSExchangeTransport'"
+    $transportService = Get-CimInstance -ClassName win32_service -filter "name = 'MSExchangeTransport'"
 
     if($currentServerComponentState.State -eq "Inactive" `
         -and $null -ne $transportService `
@@ -777,7 +777,7 @@ function Get-MaintenanceLogPath
     }
 
     $drive = [IO.Path]::GetPathRoot($logPath)
-    $share = Get-WmiObject -Class Win32_Share -ComputerName $server -Filter "Path = '$drive\'" -ErrorAction SilentlyContinue
+    $share = Get-CimInstance -ClassName Win32_Share -ComputerName $server -Filter "Path = '$drive\'" -ErrorAction SilentlyContinue
     if($share)
     {
         $remotePath = "\\{0}\{1}\{2}" -f `
@@ -898,7 +898,7 @@ function Set-ServiceState
         [Switch] $ThrowOnFailure
     )
     
-    $service = Get-WmiObject win32_service -filter "name = '$ServiceName'" -ComputerName $Server
+    $service = Get-CimInstance -ClassName win32_service -filter "name = '$ServiceName'" -ComputerName $Server
     
     if(-not $service)
     {
@@ -2422,7 +2422,7 @@ function Set-ServiceState
         [Switch] $ThrowOnFailure
     )
     
-    $service = Get-WmiObject win32_service -filter "name = '$ServiceName'" -ComputerName $Server
+    $service = Get-CimInstance -ClassName win32_service -filter "name = '$ServiceName'" -ComputerName $Server
     
     if(-not $service)
     {
@@ -2622,7 +2622,7 @@ function Stop-ServiceForcefully
     # Wait in case it needs time to take effect
     Wait-Event -Timeout 5
 
-    $processFullPath = (Get-WmiObject -query "SELECT PathName FROM Win32_Service WHERE Name = '$ServiceName'").PathName.Replace('"','')
+    $processFullPath = (Get-CimInstance -query "SELECT PathName FROM Win32_Service WHERE Name = '$ServiceName'").PathName.Replace('"','')
     $processName = (Split-Path $processFullPath -Leaf).Replace('.exe','')
 
     $process = Get-Process -Name $processName -ErrorAction SilentlyContinue

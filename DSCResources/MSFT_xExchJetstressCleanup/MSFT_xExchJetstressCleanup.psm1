@@ -425,7 +425,7 @@ function LoadConfigXml
 #Checks whether Jetstress is installed by looking for Jetstress 2013's Product GUID
 function IsJetstressInstalled
 {
-    return ($null -ne (Get-WmiObject -Class Win32_Product -Filter "IdentifyingNumber = '{75189587-0D84-4404-8F02-79C39728FA64}'"))
+    return ($null -ne (Get-CimInstance -ClassName Win32_Product -Filter "IdentifyingNumber = '{75189587-0D84-4404-8F02-79C39728FA64}'"))
 }
 
 

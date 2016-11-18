@@ -79,7 +79,7 @@ function Get-TargetResource
     if ($PSBoundParameters.ContainsKey("DomainVersion"))
     {
         #Get this server's domain
-        [string]$machineDomain = (Get-WmiObject -Class Win32_ComputerSystem).Domain.ToLower()
+        [string]$machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
 
         #Figure out all domains we need to inspect
         [string[]]$targetDomains = @()
@@ -260,7 +260,7 @@ function Test-TargetResource
         if ($PSBoundParameters.ContainsKey("DomainVersion"))
         {
             #Get this server's domain
-            [string]$machineDomain = (Get-WmiObject -Class Win32_ComputerSystem).Domain.ToLower()
+            [string]$machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
 
             #Figure out all domains we need to inspect
             [string[]]$targetDomains = @()
