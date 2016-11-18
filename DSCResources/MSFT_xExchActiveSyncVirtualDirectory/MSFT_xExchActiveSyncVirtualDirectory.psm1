@@ -63,7 +63,7 @@ function Get-TargetResource
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ActiveSyncVirtualDirectory' -VerbosePreference $VerbosePreference
 
-    $easVdir = Get-ActiveSyncVirtualDirectoryWithCorrectParams @PSBoundParameters
+    $easVdir = Get-ActiveSyncVirtualDirectoryInternal @PSBoundParameters
     
     if ($null -ne $easVdir)
     {
@@ -263,7 +263,7 @@ function Test-TargetResource
     #Ensure an empty string is $null and not a string
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    $easVdir = Get-ActiveSyncVirtualDirectoryWithCorrectParams @PSBoundParameters
+    $easVdir = Get-ActiveSyncVirtualDirectoryInternal @PSBoundParameters
 
     if ($null -eq $easVdir)
     {
@@ -337,7 +337,7 @@ function Test-TargetResource
     return $true
 }
 
-function Get-ActiveSyncVirtualDirectoryWithCorrectParams
+function Get-ActiveSyncVirtualDirectoryInternal
 {
     [CmdletBinding()]
     param
