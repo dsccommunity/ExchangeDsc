@@ -45,11 +45,11 @@ function PrepTestDAG
             $mountedOnServer = $TestServerName2
         }
 
-        Get-MailboxDatabaseCopyStatus -Identity "$($TestDBName)" | where {$_.MailboxServer -ne "$($mountedOnServer)"} | Remove-MailboxDatabaseCopy -Confirm:$false
+        Get-MailboxDatabaseCopyStatus -Identity "$($TestDBName)" | Where-Object {$_.MailboxServer -ne "$($mountedOnServer)"} | Remove-MailboxDatabaseCopy -Confirm:$false
     }
 
     #Now remove the actual DB's
-    Get-MailboxDatabase | where {$_.Name -like "$($TestDBName)"} | Remove-MailboxDatabase -Confirm:$false
+    Get-MailboxDatabase | Where-Object {$_.Name -like "$($TestDBName)"} | Remove-MailboxDatabase -Confirm:$false
 
     #Remove the files
     Get-ChildItem -LiteralPath "\\$($TestServerName1)\c`$\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)" -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue

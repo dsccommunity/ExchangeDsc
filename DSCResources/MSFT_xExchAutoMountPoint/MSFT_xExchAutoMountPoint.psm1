@@ -717,12 +717,12 @@ function FindFirstAvailableVolumeNumber
         return 1
     }
 
-    $currentFolders = Get-ChildItem -LiteralPath "$($AutoDagVolumesRootFolderPath)" | where {$_.GetType().Name -eq "DirectoryInfo"} | Sort-Object
+    $currentFolders = Get-ChildItem -LiteralPath "$($AutoDagVolumesRootFolderPath)" | Where-Object {$_.GetType().Name -eq "DirectoryInfo"} | Sort-Object
 
     for ($i = 1; $i -lt 999; $i++)
     {
         $existing = $null
-        $existing = $currentFolders | where {$_.Name -eq "$($VolumePrefix)$($i)"}
+        $existing = $currentFolders | Where-Object {$_.Name -eq "$($VolumePrefix)$($i)"}
 
         if ($null -eq $existing)
         {

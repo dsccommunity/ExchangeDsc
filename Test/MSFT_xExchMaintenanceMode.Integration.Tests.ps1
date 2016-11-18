@@ -28,7 +28,7 @@ function Test-ServerIsOutOfMaintenanceMode
         }
 
         $status = $null
-        $status = Get-MailboxDatabaseCopyStatus -Server $env:COMPUTERNAME | where {$_.Status -eq "Mounted"}
+        $status = Get-MailboxDatabaseCopyStatus -Server $env:COMPUTERNAME | Where-Object {$_.Status -eq "Mounted"}
 
         It 'Databases were failed back' {
             ($null -ne $status) | Should Be $true
@@ -107,7 +107,7 @@ if ($exchangeInstalled)
     #Make sure server only has replicated DB's
     if ($null -eq $Global:HasNonReplicationDBs)
     {
-        $nonReplicatedDBs = Get-MailboxDatabase -Server $env:COMPUTERNAME -ErrorAction SilentlyContinue | where {$_.ReplicationType -like "None"}
+        $nonReplicatedDBs = Get-MailboxDatabase -Server $env:COMPUTERNAME -ErrorAction SilentlyContinue | Where-Object {$_.ReplicationType -like "None"}
 
         if ($null -ne $nonReplicatedDBs)
         {
