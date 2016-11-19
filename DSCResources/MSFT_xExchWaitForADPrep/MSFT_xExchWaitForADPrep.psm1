@@ -347,7 +347,10 @@ function GetADObject
     {
         $object = Get-ADObject @getAdObjParams
     }
-    catch{} #Don't do anything here. The caller can decide how to handle this
+    catch
+    {
+        Write-Warning "Failed to find object at '$DistinguishedName' using Get-ADObject."
+    }
 
     return $object
 }
