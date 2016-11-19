@@ -192,7 +192,7 @@ if ($null -ne $adModule)
                 }
 
                 Test-TargetResourceFunctionality -Params $dagTestParams -ContextLabel "Create the test DAG" -ExpectedGetResults $dagExpectedGetResults
-                Test-ContentsOfArray -TestParams $dagTestParams -DesiredArrayContents $dagTestParams.DatabaseAvailabilityGroupIpAddresses -GetResultParameterName "DatabaseAvailabilityGroupIpAddresses" -ContextLabel "Verify DatabaseAvailabilityGroupIpAddresses" -ItLabel "DatabaseAvailabilityGroupIpAddresses should contain two values"
+                Test-ArrayContentsEqual -TestParams $dagTestParams -DesiredArrayContents $dagTestParams.DatabaseAvailabilityGroupIpAddresses -GetResultParameterName "DatabaseAvailabilityGroupIpAddresses" -ContextLabel "Verify DatabaseAvailabilityGroupIpAddresses" -ItLabel "DatabaseAvailabilityGroupIpAddresses should contain two values"
 
 
                 #Add this server as a DAG member
@@ -237,7 +237,7 @@ if ($null -ne $adModule)
                 $dagExpectedGetResults.DatacenterActivationMode = "DagOnly"
 
                 Test-TargetResourceFunctionality -Params $dagTestParams -ContextLabel "Set remaining props on the test DAG" -ExpectedGetResults $dagExpectedGetResults
-                Test-ContentsOfArray -TestParams $dagTestParams -DesiredArrayContents $dagTestParams.DatabaseAvailabilityGroupIpAddresses -GetResultParameterName "DatabaseAvailabilityGroupIpAddresses" -ContextLabel "Verify DatabaseAvailabilityGroupIpAddresses" -ItLabel "DatabaseAvailabilityGroupIpAddresses should contain two values"
+                Test-ArrayContentsEqual -TestParams $dagTestParams -DesiredArrayContents $dagTestParams.DatabaseAvailabilityGroupIpAddresses -GetResultParameterName "DatabaseAvailabilityGroupIpAddresses" -ContextLabel "Verify DatabaseAvailabilityGroupIpAddresses" -ItLabel "DatabaseAvailabilityGroupIpAddresses should contain two values"
 
 
                 #Create a new DAG database

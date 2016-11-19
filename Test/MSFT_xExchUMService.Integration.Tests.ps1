@@ -34,7 +34,7 @@ if ($exchangeInstalled)
         }
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
-        Test-ContentsOfArray -TestParams $testParams -DesiredArrayContents $testParams.DialPlans -GetResultParameterName "DialPlans" -ContextLabel "Verify DialPlans" -ItLabel "DialPlans should be empty"
+        Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.DialPlans -GetResultParameterName "DialPlans" -ContextLabel "Verify DialPlans" -ItLabel "DialPlans should be empty"
 
         $testParams.UMStartupMode = "Dual"
         $testParams.DialPlans = @($Global:UMDialPlan)
@@ -42,7 +42,7 @@ if ($exchangeInstalled)
         $expectedGetResults.DialPlans = @($Global:UMDialPlan)
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Change some parameters" -ExpectedGetResults $expectedGetResults
-        Test-ContentsOfArray -TestParams $testParams -DesiredArrayContents $testParams.DialPlans -GetResultParameterName "DialPlans" -ContextLabel "Verify DialPlans" -ItLabel "DialPlans should contain a value"
+        Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.DialPlans -GetResultParameterName "DialPlans" -ContextLabel "Verify DialPlans" -ItLabel "DialPlans should contain a value"
     }
 }
 else

@@ -51,7 +51,7 @@ if ($exchangeInstalled)
         $expectedGetResults = @{}
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set site scope to multi value" -ExpectedGetResults $expectedGetResults
-        Test-ContentsOfArray -TestParams $testParams -DesiredArrayContents $testParams.AutoDiscoverSiteScope -GetResultParameterName "AutoDiscoverSiteScope" -ContextLabel "Verify AutoDiscoverSiteScope" -ItLabel "AutoDiscoverSiteScope should contain two values"
+        Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.AutoDiscoverSiteScope -GetResultParameterName "AutoDiscoverSiteScope" -ContextLabel "Verify AutoDiscoverSiteScope" -ItLabel "AutoDiscoverSiteScope should contain two values"
 
 
         #Now set the site scope to $null
@@ -59,7 +59,7 @@ if ($exchangeInstalled)
         $expectedGetResults = @{}
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set site scope to null" -ExpectedGetResults $expectedGetResults
-        Test-ContentsOfArray -TestParams $testParams -DesiredArrayContents $testParams.AutoDiscoverSiteScope -GetResultParameterName "AutoDiscoverSiteScope" -ContextLabel "Verify AutoDiscoverSiteScope" -ItLabel "AutoDiscoverSiteScope should be empty"
+        Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.AutoDiscoverSiteScope -GetResultParameterName "AutoDiscoverSiteScope" -ContextLabel "Verify AutoDiscoverSiteScope" -ItLabel "AutoDiscoverSiteScope should be empty"
     }
 }
 else
