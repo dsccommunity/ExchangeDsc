@@ -25,7 +25,7 @@ function ClearServerADProp
     [CmdletBinding()]
     param($prop)
 
-    Get-ADObject -SearchBase "$($Global:ExchangeServerDN)" -Filter {ObjectClass -eq "msExchExchangeServer"} | where {$_.ObjectClass -eq "msExchExchangeServer"} | Set-ADObject -Clear "$($prop)"
+    Get-ADObject -SearchBase "$($Global:ExchangeServerDN)" -Filter {ObjectClass -eq "msExchExchangeServer"} | Where-Object {$_.ObjectClass -eq "msExchExchangeServer"} | Set-ADObject -Clear "$($prop)"
 }
 
 function VerifyServerPrepped
