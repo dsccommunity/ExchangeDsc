@@ -148,7 +148,7 @@ if ($exchangeInstalled)
             QueuedMessageCount = 0
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Put server in maintenance mode" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Put server in maintenance mode" -ExpectedGetResults $expectedGetResults
         WaitBetweenTests -Verbose
 
 
@@ -160,7 +160,7 @@ if ($exchangeInstalled)
             ClusterState = "Up"
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Take server out of maintenance mode" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Take server out of maintenance mode" -ExpectedGetResults $expectedGetResults
         Test-ServerIsOutOfMaintenanceMode
         WaitBetweenTests -Verbose
 
@@ -178,7 +178,7 @@ if ($exchangeInstalled)
             ClusterState = "Up"
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Try to put server in maintenance mode using UpgradedServerVersion of an older server." -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Try to put server in maintenance mode using UpgradedServerVersion of an older server." -ExpectedGetResults $expectedGetResults
         WaitBetweenTests -Verbose
 
 
@@ -199,7 +199,7 @@ if ($exchangeInstalled)
             QueuedMessageCount = 0
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Put server in maintenance mode using Domain Controller switch" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Put server in maintenance mode using Domain Controller switch" -ExpectedGetResults $expectedGetResults
         WaitBetweenTests -Verbose
 
 
@@ -211,7 +211,7 @@ if ($exchangeInstalled)
             ClusterState = "Up"
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Take server out of maintenance mode using Domain Controller switch" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Take server out of maintenance mode using Domain Controller switch" -ExpectedGetResults $expectedGetResults
         Test-ServerIsOutOfMaintenanceMode
         WaitBetweenTests -Verbose
 

@@ -198,7 +198,7 @@ if ($exchangeInstalled)
          UseDowngradedExchangeServerAuth         = $false
     }
 
-     Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set default Transport Service configuration" -ExpectedGetResults $expectedGetResults
+     Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set default Transport Service configuration" -ExpectedGetResults $expectedGetResults
      
      #modify configuration
      $testParams.InternalDNSServers = '192.168.1.10'
@@ -209,7 +209,7 @@ if ($exchangeInstalled)
      $expectedGetResults.ExternalDNSServers = '10.1.1.10'
      $expectedGetResults.PipelineTracingSenderAddress = 'john.doe@contoso.com'
 
-     Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Modify Transport Service configuration" -ExpectedGetResults $expectedGetResults
+     Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Modify Transport Service configuration" -ExpectedGetResults $expectedGetResults
      
      #modify configuration
      $testParams.InternalDNSServers = ''
@@ -220,7 +220,7 @@ if ($exchangeInstalled)
      $expectedGetResults.ExternalDNSServers = $null
      $expectedGetResults.PipelineTracingSenderAddress = $null
      
-     Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Revert Transport Service configuration" -ExpectedGetResults $expectedGetResults
+     Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Revert Transport Service configuration" -ExpectedGetResults $expectedGetResults
      }
 }
 else

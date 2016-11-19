@@ -126,20 +126,20 @@ if ($exchangeInstalled)
          TransportRole                           = 'FrontendTransport'
     }
 
-     Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Create Receive Connector" -ExpectedGetResults $expectedGetResults
+     Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Create Receive Connector" -ExpectedGetResults $expectedGetResults
      
      #modify configuration
      $testParams.ExtendedRightDenyEntries = $(New-CimInstance -ClassName MSFT_KeyValuePair -Namespace root/microsoft/Windows/DesiredStateConfiguration `
                                             -Property @{Key = 'Domain Users'; Value = 'ms-Exch-Bypass-Anti-Spam'} -ClientOnly)
      $expectedGetResults.ExtendedRightDenyEntries = "Domain Users=ms-Exch-Bypass-Anti-Spam"
 
-     Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Modify Receive Connector" -ExpectedGetResults $expectedGetResults
+     Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Modify Receive Connector" -ExpectedGetResults $expectedGetResults
      
      #modify configuration
      $testParams.Ensure = 'Absent'
      $expectedGetResults = $null
 
-     Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Remove Receive Connector" -ExpectedGetResults $expectedGetResults
+     Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Remove Receive Connector" -ExpectedGetResults $expectedGetResults
      }
 }
 else

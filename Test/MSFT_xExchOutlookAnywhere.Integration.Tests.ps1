@@ -50,10 +50,10 @@ if ($exchangeInstalled)
             SSLOffloading = $false    
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
-        Test-ArrayContents -TestParams $testParams -DesiredArrayContents $testParams.ExtendedProtectionFlags -GetResultParameterName "ExtendedProtectionFlags" -ContextLabel "Verify ExtendedProtectionFlags" -ItLabel "ExtendedProtectionFlags should contain two values"
-        Test-ArrayContents -TestParams $testParams -DesiredArrayContents $testParams.ExtendedProtectionSPNList -GetResultParameterName "ExtendedProtectionSPNList" -ContextLabel "Verify ExtendedProtectionSPNList" -ItLabel "ExtendedProtectionSPNList should be empty"
-        Test-ArrayContents -TestParams $testParams -DesiredArrayContents $testParams.IISAuthenticationMethods -GetResultParameterName "IISAuthenticationMethods" -ContextLabel "Verify IISAuthenticationMethods" -ItLabel "IISAuthenticationMethods should contain three values"
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
+        Test-ContentsOfArray -TestParams $testParams -DesiredArrayContents $testParams.ExtendedProtectionFlags -GetResultParameterName "ExtendedProtectionFlags" -ContextLabel "Verify ExtendedProtectionFlags" -ItLabel "ExtendedProtectionFlags should contain two values"
+        Test-ContentsOfArray -TestParams $testParams -DesiredArrayContents $testParams.ExtendedProtectionSPNList -GetResultParameterName "ExtendedProtectionSPNList" -ContextLabel "Verify ExtendedProtectionSPNList" -ItLabel "ExtendedProtectionSPNList should be empty"
+        Test-ContentsOfArray -TestParams $testParams -DesiredArrayContents $testParams.IISAuthenticationMethods -GetResultParameterName "IISAuthenticationMethods" -ContextLabel "Verify IISAuthenticationMethods" -ItLabel "IISAuthenticationMethods should contain three values"
     }
 }
 else

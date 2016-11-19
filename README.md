@@ -844,6 +844,7 @@ Defaults to $false.
 ### Unreleased
 * xExchangeCommon : In StartScheduledTask corrected throw error check to throw last error when errorRegister has more than 0 errors instead of throwing error if errorRegister was not null, which would otherwise always be true.
 * Fix PSAvoidUsingWMICmdlet issues from PSScriptAnalyzer
+* Fix PSUseSingularNouns issues from PSScriptAnalyzer
 
 ### 1.11.0.0
 * xExchActiveSyncVirtualDirectory: Fix issue where ClientCertAuth parameter set to "Allowed" instead of "Accepted"

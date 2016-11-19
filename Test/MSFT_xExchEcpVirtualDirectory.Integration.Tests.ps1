@@ -44,7 +44,7 @@ if ($exchangeInstalled)
             WindowsAuthentication = $false  
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
 
 
         $testParams = @{
@@ -68,7 +68,7 @@ if ($exchangeInstalled)
             WindowsAuthentication = $true 
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Try with the opposite of each property value" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Try with the opposite of each property value" -ExpectedGetResults $expectedGetResults
 
 
         #Set Authentication values back to default
@@ -89,7 +89,7 @@ if ($exchangeInstalled)
             WindowsAuthentication = $false   
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Reset authentication to default" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Reset authentication to default" -ExpectedGetResults $expectedGetResults
     }
 }
 else

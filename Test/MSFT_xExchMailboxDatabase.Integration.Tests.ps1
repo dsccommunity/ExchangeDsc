@@ -100,7 +100,7 @@ if ($exchangeInstalled)
             RecoverableItemsWarningQuota = "1,000,448"
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Create Test Database" -ExpectedGetResults $expectedGetResults        
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Create Test Database" -ExpectedGetResults $expectedGetResults        
 
         $testParams = @{
             Name = $TestDBName
@@ -164,7 +164,7 @@ if ($exchangeInstalled)
             $expectedGetResults.Add("IsExcludedFromProvisioningReason", "Testing Excluding the Database")
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Change many DB properties" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Change many DB properties" -ExpectedGetResults $expectedGetResults
     }
 }
 else

@@ -114,7 +114,7 @@ if ($null -ne $adModule)
                 ProductKey = "Licensed"
             }
 
-            Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Standard xExchExchangeServer tests" -ExpectedGetResults $expectedGetResults
+            Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Standard xExchExchangeServer tests" -ExpectedGetResults $expectedGetResults
         }
     }
     else
