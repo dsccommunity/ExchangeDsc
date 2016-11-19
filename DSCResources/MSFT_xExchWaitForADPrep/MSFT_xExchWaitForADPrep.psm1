@@ -10,6 +10,7 @@ function Get-TargetResource
         $Identity,
 
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Int32]
@@ -149,6 +150,7 @@ function Set-TargetResource
         $Identity,
 
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Int32]
@@ -211,6 +213,7 @@ function Test-TargetResource
         $Identity,
 
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Int32]
@@ -295,7 +298,12 @@ function Test-TargetResource
 
 function GetADRootDSE
 {
-    param ([PSCredential]$Credential)
+    param
+    (
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential
+    )
 
     if ($null -eq $Credential)
     {
@@ -311,7 +319,27 @@ function GetADRootDSE
 
 function GetADObject
 {
-    param([PSCredential]$Credential, [boolean]$Searching = $false, [string]$DistinguishedName, [string[]]$Properties, [string]$Filter, [string]$SearchScope)
+    param
+    (
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
+
+        [boolean]
+        $Searching = $false,
+
+        [string]
+        $DistinguishedName,
+
+        [string[]]
+        $Properties,
+
+        [string]
+        $Filter,
+
+        [string]
+        $SearchScope
+    )
 
     if ($Searching -eq $false)
     {

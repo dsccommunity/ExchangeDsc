@@ -15,6 +15,7 @@ function Get-TargetResource
         
         [Parameter(Mandatory=$true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential
     )
     
@@ -46,6 +47,7 @@ function Set-TargetResource
         
         [Parameter(Mandatory=$true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential
     )
 
@@ -128,6 +130,7 @@ function Test-TargetResource
         
         [Parameter(Mandatory=$true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential
     )
 
