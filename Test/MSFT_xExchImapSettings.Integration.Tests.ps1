@@ -36,7 +36,7 @@ if ($exchangeInstalled)
         }
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
-        Test-ContentsOfArray -TestParams $testParams -DesiredArrayContents $testParams.ExternalConnectionSettings -GetResultParameterName "ExternalConnectionSettings" -ContextLabel "Verify ExternalConnectionSettings" -ItLabel "ExternalConnectionSettings should contain a value"
+        Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.ExternalConnectionSettings -GetResultParameterName "ExternalConnectionSettings" -ContextLabel "Verify ExternalConnectionSettings" -ItLabel "ExternalConnectionSettings should contain a value"
 
         $testParams.LoginType = "SecureLogin"
         $testParams.ExternalConnectionSettings = @()
@@ -45,7 +45,7 @@ if ($exchangeInstalled)
         $expectedGetResults.X509CertificateName = ""
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Change some parameters" -ExpectedGetResults $expectedGetResults
-        Test-ContentsOfArray -TestParams $testParams -DesiredArrayContents $testParams.ExternalConnectionSettings -GetResultParameterName "ExternalConnectionSettings" -ContextLabel "Verify ExternalConnectionSettings" -ItLabel "ExternalConnectionSettings should be empty"
+        Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.ExternalConnectionSettings -GetResultParameterName "ExternalConnectionSettings" -ContextLabel "Verify ExternalConnectionSettings" -ItLabel "ExternalConnectionSettings should be empty"
     }
 }
 else

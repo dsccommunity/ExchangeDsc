@@ -37,7 +37,7 @@ if ($exchangeInstalled)
         }
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
-        Test-ContentsOfArray -TestParams $testParams -DesiredArrayContents $testParams.IISAuthenticationMethods -GetResultParameterName "IISAuthenticationMethods" -ContextLabel "Verify IISAuthenticationMethods" -ItLabel "IISAuthenticationMethods should contain three values"
+        Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.IISAuthenticationMethods -GetResultParameterName "IISAuthenticationMethods" -ContextLabel "Verify IISAuthenticationMethods" -ItLabel "IISAuthenticationMethods should contain three values"
 
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\mapi (Default Web Site)"
@@ -54,7 +54,7 @@ if ($exchangeInstalled)
         }
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Try with different values" -ExpectedGetResults $expectedGetResults
-        Test-ContentsOfArray -TestParams $testParams -DesiredArrayContents $testParams.IISAuthenticationMethods -GetResultParameterName "IISAuthenticationMethods" -ContextLabel "Verify IISAuthenticationMethods" -ItLabel "IISAuthenticationMethods should contain three values"
+        Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.IISAuthenticationMethods -GetResultParameterName "IISAuthenticationMethods" -ContextLabel "Verify IISAuthenticationMethods" -ItLabel "IISAuthenticationMethods should contain three values"
     }
 }
 else

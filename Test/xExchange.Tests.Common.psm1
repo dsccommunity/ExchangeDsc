@@ -44,7 +44,7 @@ function Test-TargetResourceFunctionality
     }
 }
 
-function Test-ContentsOfArray
+function Test-ArrayContentsEqual
 {
     [CmdletBinding()]
     param([Hashtable]$TestParams, [string[]]$DesiredArrayContents, [string]$GetResultParameterName, [string]$ContextLabel, [string]$ItLabel)
@@ -57,5 +57,21 @@ function Test-ContentsOfArray
         }
     }
 }
+
+function Test-Array2ContainsArray1
+{
+    [CmdletBinding()]
+    param([Hashtable]$TestParams, [string[]]$DesiredArrayContents, [string]$GetResultParameterName, [string]$ContextLabel, [string]$ItLabel)
+
+    Context $ContextLabel {
+        [Hashtable]$getResult = Get-TargetResource @TestParams
+
+        It $ItLabel {
+            Array2ContainsArray1Contents -Array1 $DesiredArrayContents -Array2 $getResult."$($GetResultParameterName)" -IgnoreCase | Should Be $true
+        }
+    }
+}
+
+Array2ContainsArray1Contents
 
 Export-ModuleMember -Function *

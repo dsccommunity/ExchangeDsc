@@ -89,7 +89,7 @@ function GetRemoteExchangeSession
         $oldVerbose = $VerbosePreference
         $VerbosePreference = "SilentlyContinue"
 
-        if ($null -ne $CommandsToLoad -and $CommandsToLoad.Count -gt 0)
+        if ($CommandsToLoad.Count -gt 0)
         {
             $moduleInfo = Import-PSSession $Session -WarningAction SilentlyContinue -DisableNameChecking -AllowClobber -CommandName $CommandsToLoad -Verbose:0
         }
@@ -398,14 +398,11 @@ function StringArrayToLower
 {
     param([string[]]$Array)
     
-    if ($null -ne $Array)
+    for ($i = 0; $i -lt $Array.Count; $i++)
     {
-        for ($i = 0; $i -lt $Array.Count; $i++)
+        if (!([string]::IsNullOrEmpty($Array[$i])))
         {
-            if (!([string]::IsNullOrEmpty($Array[$i])))
-            {
-                $Array[$i] = $Array[$i].ToLower()
-            }
+            $Array[$i] = $Array[$i].ToLower()
         }
     }
 
@@ -419,11 +416,11 @@ function CompareArrayContents
 
     $hasSameContents = $true
 
-    if (($null -eq $Array1 -and $null -ne $Array2) -or ($null -ne $Array1 -and $null -eq $Array2) -or ($Array1.Length -ne $Array2.Length))
+    if ($Array1.Length -ne $Array2.Length)
     {
         $hasSameContents = $false
     }
-    elseif ($null -ne $Array1 -and $null -ne $Array2)
+    elseif ($Array1.Count -gt 0 -and $Array2.Count -gt 0)
     {
         if ($IgnoreCase -eq $true)
         {
@@ -451,9 +448,9 @@ function Array2ContainsArray1Contents
 
     $hasContents = $true
 
-    if ($null -eq $Array1 -or $Array1.Length -eq 0) #Do nothing, as Array2 at a minimum contains nothing    
+    if ($Array1.Length -eq 0) #Do nothing, as Array2 at a minimum contains nothing    
     {} 
-    elseif ($null -eq $Array2 -or $Array2.Length -eq 0) #Array2 is empty and Array1 is not. Return false
+    elseif ($Array2.Length -eq 0) #Array2 is empty and Array1 is not. Return false
     {
         $hasContents = $false
     }
@@ -503,7 +500,7 @@ function RemoveParameters
 {
     param($PSBoundParametersIn, [string[]]$ParamsToKeep, [string[]]$ParamsToRemove)
 
-    if ($null -ne $ParamsToKeep -and $ParamsToKeep.Count -gt 0)
+    if ($ParamsToKeep.Count -gt 0)
     {
         [string[]]$ParamsToRemove = @()
 
@@ -518,7 +515,7 @@ function RemoveParameters
         }
     }
 
-    if ($null -ne $ParamsToRemove -and $ParamsToRemove.Count -gt 0)
+    if ($ParamsToRemove.Count -gt 0)
     {
         foreach ($param in $ParamsToRemove)
         {
@@ -679,7 +676,7 @@ function LogFunctionEntry
 
     $callingFunction = (Get-PSCallStack)[1].FunctionName
 
-    if ($null -ne $Parameters -and $Parameters.Count -gt 0)
+    if ($Parameters.Count -gt 0)
     {
         $parametersString = ""
 
@@ -809,7 +806,7 @@ function NotePreviousError
 {
     $Global:previousError = $null
 
-    if ($null -ne $Global:error -and $Global:error.Count -gt 0)
+    if ($Global:error.Count -gt 0)
     {
         $Global:previousError = $Global:error[0]
     }    
@@ -821,7 +818,7 @@ function ThrowIfNewErrorsEncountered
     param([string]$CmdletBeingRun, $VerbosePreference)
 
     #Throw an exception if errors were encountered
-    if ($null -ne $Global:error -and $Global:error.Count -gt 0 -and $Global:previousError -ne $Global:error[0])
+    if ($Global:error.Count -gt 0 -and $Global:previousError -ne $Global:error[0])
     {
         [string]$errorMsg = "Failed to run $($CmdletBeingRun) with: " + $Global:error[0]
         Write-Error $errorMsg
