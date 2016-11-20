@@ -231,8 +231,6 @@ function Set-TargetResource
             $changedState = ChangeComponentState -Component "UMCallRouter" -Requester "Maintenance" -ServerComponentState $maintenanceModeStatus.ServerComponentState -State "Active" -SetInactiveComponentsFromAnyRequesterToActive $SetInactiveComponentsFromAnyRequesterToActive -DomainController $DomainController
 
             #Run StopDagServerMaintenance.ps1 if required
-            $updatedActivationPolicy = $false
-
             if ($maintenanceModeStatus.ClusterNode.State -ne "Up" -or `
                 $maintenanceModeStatus.MailboxServer.DatabaseCopyAutoActivationPolicy -ne "Unrestricted" -or`
                 $haStatus.State -ne "Active")
@@ -1280,7 +1278,7 @@ function MoveActiveMailboxDatabase
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server'
     }
 
-    $moveResult = Move-ActiveMailboxDatabase @PSBoundParameters -Confirm:$false -ErrorAction Stop
+    Move-ActiveMailboxDatabase @PSBoundParameters -Confirm:$false -ErrorAction Stop
 }
 #endregion
 

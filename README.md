@@ -852,6 +852,7 @@ Defaults to $false.
 * Fix erroneous PSDSCDscTestsPresent issues from PSScriptAnalyzer for modules that do actually have tests in the root Tests folder
 * Fix array comparison issues by removing check for if array is null
 * Suppress PSDSCDscExamplesPresent PSScriptAnalyzer issues for resources that do have examples
+* Fix PSUseDeclaredVarsMoreThanAssignments issues from PSScriptAnalyzer
 
 ### 1.11.0.0
 * xExchActiveSyncVirtualDirectory: Fix issue where ClientCertAuth parameter set to "Allowed" instead of "Accepted"

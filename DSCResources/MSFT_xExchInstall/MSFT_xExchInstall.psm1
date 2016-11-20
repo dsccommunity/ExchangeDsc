@@ -218,6 +218,11 @@ function GetInstallStatus
 #If any required keys are missing, configure WinRM, then force a reboot
 function CheckWSManConfig
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
+    [CmdletBinding()]
+    param
+    ()
+
     $needReboot = $false
 
     $wsmanKey = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN" -ErrorAction SilentlyContinue
