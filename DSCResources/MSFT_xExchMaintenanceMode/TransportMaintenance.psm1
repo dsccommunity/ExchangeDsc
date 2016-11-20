@@ -97,6 +97,7 @@ Performs End Maintenance of HubTransport
 #>
 function Stop-TransportMaintenance
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
     [CmdletBinding()]
     param(
         [boolean]$LoadLocalShell = $false
@@ -1239,6 +1240,7 @@ function Log-InfoEvent
 #  returns True if at least an entry removed. Otherwise returns False.
 function Remove-CompletedEntriesFromHashtable
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
     param (
         [Parameter(Mandatory = $true)]
         [HashTable] $Tracker,
@@ -1425,7 +1427,6 @@ function Wait-EmptyEntriesCompletion
 
     while($true)
     {
-        $progressMade = $false
         $activeEntries = Invoke-Command -ScriptBlock $GetEntries -ArgumentList $GetEntriesArgs | Where-Object {$_.Count -gt 0}
 
         if($firstTime)
@@ -1746,7 +1747,7 @@ function Wait-EmptyDiscardsCompletion
 
     # log the undrainable entries
     $discardInfo = Get-DiscardInfo -server $Server
-    $notDrainable = $discardInfo | Where-Object {$ActiveServers -notcontains $_.Id.Split('.')[0]} | ForEach-Object {
+    $discardInfo | Where-Object {$ActiveServers -notcontains $_.Id.Split('.')[0]} | ForEach-Object {
         Write-SkippedEvent -Source $Server -Stage ShadowDiscardDrain -Id $_.Id `
             -Count $_.Count -Reason @{Reason = $Script:ServerInMM}
     }
@@ -1862,7 +1863,7 @@ function Wait-BootLoaderCountCheck
     if($xml)
     {
         $processStartTime = [DateTime]($xml.Diagnostics.ProcessInfo.StartTime)
-        $remaining = Wait-EmptyEntriesCompletion `
+        Wait-EmptyEntriesCompletion `
                         -GetEntries $waitBootScanningEvent `
                         -GetEntriesArgs $ServerFqdn,$processStartTime `
                         -Source $server `
