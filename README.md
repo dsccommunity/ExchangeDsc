@@ -842,6 +842,20 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased
+* xExchangeCommon : In StartScheduledTask corrected throw error check to throw last error when errorRegister has more than 0 errors instead of throwing error if errorRegister was not null, which would otherwise always be true.
+* Fix PSAvoidUsingWMICmdlet issues from PSScriptAnalyzer
+* Fix PSUseSingularNouns issues from PSScriptAnalyzer
+* Fix PSAvoidUsingCmdletAliases issues from PSScriptAnalyzer
+* Fix PSUseApprovedVerbs issues from PSScriptAnalyzer
+* Fix PSAvoidUsingEmptyCatchBlock issues from PSScriptAnalyzer
+* Fix PSUsePSCredentialType issues from PSScriptAnalyzer
+* Fix erroneous PSDSCDscTestsPresent issues from PSScriptAnalyzer for modules that do actually have tests in the root Tests folder
+* Fix array comparison issues by removing check for if array is null
+* Suppress PSDSCDscExamplesPresent PSScriptAnalyzer issues for resources that do have examples
+* Fix PSUseDeclaredVarsMoreThanAssignments issues from PSScriptAnalyzer
+
+### 1.11.0.0
+* xExchActiveSyncVirtualDirectory: Fix issue where ClientCertAuth parameter set to "Allowed" instead of "Accepted"
 
 ### 1.10.0.0
 * xExchAutoMountPoint: Fix malformed dash/hyphen characters

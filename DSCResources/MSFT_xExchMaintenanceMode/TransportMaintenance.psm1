@@ -65,16 +65,16 @@ function Start-TransportMaintenance
     try
     {
         Write-Verbose "Starting non-fatal Transport maintenance tasks for '$Target' on $($env:ComputerName)" 
-        if(-not (Init-TransportMaintenance -Target $Target))
+        if(-not (Initialize-TransportMaintenance -Target $Target))
         {
             return
         }
 
         # Log the BeginTM/start event
-        $beginTMLog = Create-LogEntry -Source $Target -Stage BeginTM
-        Log-EventOfEntry -Event Start -Entry $beginTMLog -Reason $Script:LogInfo
+        $beginTMLog = New-LogEntry -Source $Target -Stage BeginTM
+        Write-EventOfEntry -Event Start -Entry $beginTMLog -Reason $Script:LogInfo
 
-        Perform-RemoteMaintenance -Target $Target -MessageRedirectExclusions $MessageRedirectExclusions -ExcludeLocalSiteFromMessageRedirect:$ExcludeLocalSiteFromMessageRedirect
+        Invoke-RemoteMaintenance -Target $Target -MessageRedirectExclusions $MessageRedirectExclusions -ExcludeLocalSiteFromMessageRedirect:$ExcludeLocalSiteFromMessageRedirect
 
     }
     catch
@@ -85,7 +85,7 @@ function Start-TransportMaintenance
     {
         if($beginTMLog)
         {
-            Log-EventOfEntry -Event Completed -Entry $beginTMLog -Reason $Script:LogInfo
+            Write-EventOfEntry -Event Completed -Entry $beginTMLog -Reason $Script:LogInfo
         }
     }
 }
@@ -97,6 +97,7 @@ Performs End Maintenance of HubTransport
 #>
 function Stop-TransportMaintenance
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
     [CmdletBinding()]
     param(
         [boolean]$LoadLocalShell = $false
@@ -109,7 +110,7 @@ function Stop-TransportMaintenance
 
     $ServiceState = "Online"
 
-    Main-HUBEndMaintenance
+    Start-HUBEndMaintenance
 }
 
 function AddExchangeSnapinIfRequired
@@ -131,7 +132,7 @@ function AddExchangeSnapinIfRequired
 # .RETURN
 #   True if the initialization is successful and caller should continue the MM process. 
 #   Else, returns false and caller should NOT continue with the MM.
-function Init-TransportMaintenance
+function Initialize-TransportMaintenance
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -149,7 +150,7 @@ function Init-TransportMaintenance
         Write-Verbose "$Target is not an exchange server"
     
         $Script:LogInfo.Add('ExchangeServer', 'False')
-        Log-SkippedEvent -Source $Target -Stage BeginTM -Reason $Script:LogInfo
+        Write-SkippedEvent -Source $Target -Stage BeginTM -Reason $Script:LogInfo
         
         return $false
     }
@@ -164,7 +165,7 @@ function Init-TransportMaintenance
         Write-Verbose "MSExchangeTransport service is not found on $Target"
         
         $Script:LogInfo.Add($TransportServiceName, 'NotFound')
-        Log-SkippedEvent -Source $Target -Stage BeginTM -Reason $Script:LogInfo
+        Write-SkippedEvent -Source $Target -Stage BeginTM -Reason $Script:LogInfo
         
         return $false
     }
@@ -175,7 +176,7 @@ function Init-TransportMaintenance
         Write-Verbose "Unable to find HubTransport's ServerComponentState from $($env:ComputerName) for $Target."
         
         $Script:LogInfo.Add('HubTransport', 'NotFound')
-        Log-SkippedEvent -Source $Target -Stage BeginTM -Reason $Script:LogInfo
+        Write-SkippedEvent -Source $Target -Stage BeginTM -Reason $Script:LogInfo
         
         return $false
     }
@@ -192,7 +193,7 @@ function Init-TransportMaintenance
 #
 # .RETURN
 #   None
-function Perform-FullyDrainTransport
+function Invoke-FullyDrainTransport
 {
     param(
         [Parameter(Mandatory = $false)]
@@ -203,15 +204,15 @@ function Perform-FullyDrainTransport
         [string[]]$MessageRedirectExclusions)
 
     #drain active messages
-    Drain-ActiveMessages -Server $Target -TransportService $script:TransportService
+    Clear-ActiveMessage -Server $Target -TransportService $script:TransportService
     
     # redirect the remaining messages
-    $activeServers = Redirect-Messages -Server $Target -MessageRedirectExclusions $MessageRedirectExclusions -ExcludeLocalSite:$ExcludeLocalSiteFromMessageRedirect
+    $activeServers = Send-MessagesToNewServer -Server $Target -MessageRedirectExclusions $MessageRedirectExclusions -ExcludeLocalSite:$ExcludeLocalSiteFromMessageRedirect
 
     # Drain the discard events
     if($activeServers)
     {
-        Drain-DiscardEvents -Primary $Target -ShadowServers $activeServers | out-null
+        Clear-DiscardEvent -Primary $Target -ShadowServers $activeServers | out-null
     }
     else
     {
@@ -229,7 +230,7 @@ function Perform-FullyDrainTransport
 # .PARAMETER Target
 #   Target server for the operation.
 #
-function Perform-RemoteMaintenance
+function Invoke-RemoteMaintenance
 {
     param(
         [Parameter(Mandatory = $false)]
@@ -249,7 +250,7 @@ function Perform-RemoteMaintenance
     }
     else
     {
-        Perform-FullyDrainTransport -Target $Target -MessageRedirectExclusions $MessageRedirectExclusions -ExcludeLocalSiteFromMessageRedirect:$ExcludeLocalSiteFromMessageRedirect
+        Invoke-FullyDrainTransport -Target $Target -MessageRedirectExclusions $MessageRedirectExclusions -ExcludeLocalSiteFromMessageRedirect:$ExcludeLocalSiteFromMessageRedirect
     }
 }
 
@@ -258,7 +259,7 @@ function Perform-RemoteMaintenance
 
 #region From TransportEndMaintenance.ps1
 # Main entry point for the script.
-function Main-HUBEndMaintenance
+function Start-HUBEndMaintenance
 {
     $reasons = @{
         ServiceState = $ServiceState
@@ -273,13 +274,13 @@ function Main-HUBEndMaintenance
             Write-Verbose 'MSExchangeTransport service is not found'
             
             $reasons.Add('MsExchangeTransport', 'NotFound')
-            Log-SkippedEvent -Source $Target -Stage EndTM -Reason $reasons
+            Write-SkippedEvent -Source $Target -Stage EndTM -Reason $reasons
             return;
         }   
 
-        $endMMLog = Create-LogEntry -Source $Target -Stage EndTM
+        $endMMLog = New-LogEntry -Source $Target -Stage EndTM
 
-        Log-EventOfEntry -Event Start -Entry $endMMLog -Reason $reasons
+        Write-EventOfEntry -Event Start -Entry $endMMLog -Reason $reasons
             
         if($ServiceState -eq "Online")
         {        
@@ -294,7 +295,7 @@ function Main-HUBEndMaintenance
     {
         if($endMMLog)
         {
-            Log-EventOfEntry -Event Completed -Entry $endMMLog -Reason $reasons
+            Write-EventOfEntry -Event Completed -Entry $endMMLog -Reason $reasons
         }
     }
 }
@@ -335,7 +336,7 @@ function Enable-SubmissionQueue
                 }
             }
             
-            Log-SkippedEvent -source $env:COMPUTERNAME -stage SubmissionQueueCheck -Reason @{EnableSubmissionQueue = $submissionQ.Status}
+            Write-SkippedEvent -source $env:COMPUTERNAME -stage SubmissionQueueCheck -Reason @{EnableSubmissionQueue = $submissionQ.Status}
             return $true
         }
         
@@ -346,7 +347,7 @@ function Enable-SubmissionQueue
         }
         else
         {
-            Sleep -Seconds $PollingFrequency.Seconds
+            Start-Sleep -Seconds $PollingFrequency.Seconds
         }
     }
 }
@@ -357,14 +358,14 @@ function Set-TransportActive
     Write-Output "Enter [Set-TransportActive]"
     
     $currentServerComponentState = Get-ServerComponentState -Identity $env:COMPUTERNAME -Component $Component
-    $transportService = Get-WmiObject win32_service -filter "name = 'MSExchangeTransport'"
+    $transportService = Get-CimInstance -ClassName win32_service -filter "name = 'MSExchangeTransport'"
 
     if($currentServerComponentState.State -eq "Active" `
          -and $null -ne $transportService `
          -and $transportService.StartMode -eq "Auto" `
          -and $transportService.State -eq "Running")
     {
-        Log-SkippedEvent -Source $env:COMPUTERNAME -Stage StartTransport -Reason @{ComponentState = 'Active'}
+        Write-SkippedEvent -Source $env:COMPUTERNAME -Stage StartTransport -Reason @{ComponentState = 'Active'}
     }
     else
     {
@@ -402,14 +403,14 @@ function Set-TransportInactive
     Write-Output "Enter [Set-TransportInactive]"
 
     $currentServerComponentState = Get-ServerComponentState -Identity $env:COMPUTERNAME -Component $Component
-    $transportService = Get-WmiObject win32_service -filter "name = 'MSExchangeTransport'"
+    $transportService = Get-CimInstance -ClassName win32_service -filter "name = 'MSExchangeTransport'"
 
     if($currentServerComponentState.State -eq "Inactive" `
         -and $null -ne $transportService `
         -and $transportService.StartMode -eq "Auto" `
         -and $transportService.State -eq "Running")
     {
-        Log-SkippedEvent -Source $env:COMPUTERNAME -Stage StartTransport -Reason @{ComponentState = 'Inactive'}
+        Write-SkippedEvent -Source $env:COMPUTERNAME -Stage StartTransport -Reason @{ComponentState = 'Inactive'}
     }
     else
     {  
@@ -472,7 +473,7 @@ function Get-ServersInDag
     
     Write-Verbose "$server - Retrieving other hub transport servers in the DAG - $dag"
 
-    $dagServers = @((Get-DatabaseAvailabilityGroup $dag).Servers | %{if($_.Name){$_.Name}else{$_}} | ?{$_ -ne $server})
+    $dagServers = @((Get-DatabaseAvailabilityGroup $dag).Servers | ForEach-Object {if($_.Name){$_.Name}else{$_}} | Where-Object {$_ -ne $server})
 
     if($null -ne $dagServers)
     {
@@ -486,7 +487,7 @@ function Get-ServersInDag
 
                 if ($null -ne $dagServerProps -and $dagServerProps.Site -eq $exchangeServer.Site)
                 {
-                    $dagServers = $dagServers | where {$_ -ne $dagServers[$i]}
+                    $dagServers = $dagServers | Where-Object {$_ -ne $dagServers[$i]}
                 }
             }
         }
@@ -496,7 +497,7 @@ function Get-ServersInDag
         {
             foreach ($exclusion in $AdditionalExclusions)
             {
-                $dagServers = $dagServers | where {$_ -notlike $exclusion}
+                $dagServers = $dagServers | Where-Object {$_ -notlike $exclusion}
             }
         }
     }
@@ -518,7 +519,7 @@ function Get-ServersInDag
 #
 # .RETURN
 #   Array of active servers
-function Get-ActiveServers
+function Get-ActiveServer
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -527,8 +528,8 @@ function Get-ActiveServers
         )
 
     $activeServers = $Servers | `
-        ?{(Get-ServerComponentState -Identity $_ -Component HubTransport).State -eq 'Active' } | `
-        %{ `
+        Where-Object{(Get-ServerComponentState -Identity $_ -Component HubTransport).State -eq 'Active' } | `
+        ForEach-Object { `
             $xml = [xml](Get-ExchangeDiagnosticInfo -Process "EdgeTransport" -server $_ -erroraction SilentlyContinue)
             if($xml -and $xml.Diagnostics.ProcessInfo)
             {
@@ -586,7 +587,7 @@ function Get-ExchangeVersion
 #
 # .RETURN
 #  Array of file objects of files that are in the Maintenance Log folder
-function Get-TransportMaintenanceLogFiles()
+function Get-TransportMaintenanceLogFileList()
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -610,7 +611,7 @@ function Get-TransportMaintenanceLogFiles()
 # .PARAMETER $TransportService
 #   Transport Service object retrieved from Get-TransportService of the current server
 #   This object holds configuration and size limits of the Maintenance Log folder
-function Configure-TransportMaintenanceLog
+function Register-TransportMaintenanceLog
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -636,9 +637,9 @@ function Configure-TransportMaintenanceLog
     }
     else
     {
-        $newestLog = Get-TransportMaintenanceLogFiles -TransportService $TransportService -LogPath $LogPath | `
-                        sort LastWriteTime -Descending | `
-                        Select -First 1
+        $newestLog = Get-TransportMaintenanceLogFileList -TransportService $TransportService -LogPath $LogPath | `
+                        Sort-Object LastWriteTime -Descending | `
+                        Select-Object -First 1
     }
 
     if(-not $newestLog -or $newestLog.Length -ge $maxFileSize)
@@ -676,7 +677,7 @@ function Configure-TransportMaintenanceLog
 # .PARAMETER $TransportService
 #   Transport Service object retrieved from Get-TransportService of the current server
 #   This object holds configuration and size limits of the Maintenance Log folder
-function Enforce-TransportMaintenanceLogMaxAge
+function Remove-TransportMaintenanceLogsOverMaxAge
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -689,9 +690,9 @@ function Enforce-TransportMaintenanceLogMaxAge
     $maxLogAge = [TimeSpan]$TransportService.TransportMaintenanceLogMaxAge
     [DateTime]$rolloutTime = (Get-Date) - $maxLogAge
 
-    Get-TransportMaintenanceLogFiles -TransportService $TransportService -LogPath $LogPath | `
-        ? {$_.LastWriteTime -lt $rolloutTime} | `
-        % {Remove-Item -Path $_.FullName}
+    Get-TransportMaintenanceLogFileList -TransportService $TransportService -LogPath $LogPath | `
+        Where-Object {$_.LastWriteTime -lt $rolloutTime} | `
+        ForEach-Object {Remove-Item -Path $_.FullName}
 }
 
 # .DESCRIPTION
@@ -704,7 +705,7 @@ function Enforce-TransportMaintenanceLogMaxAge
 # .PARAMETER $TransportService
 #   Transport Service object retrieved from Get-TransportService of the current server
 #   This object holds configuration and size limits of the Maintenance Log folder
-function Enforce-TransportMaintenanceLogMaxDirectorySize
+function Remove-TransportMaintenanceLogsOverMaxDirectorySize
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -717,8 +718,8 @@ function Enforce-TransportMaintenanceLogMaxDirectorySize
     $maxDirectorySize = $TransportService.TransportMaintenanceLogMaxDirectorySize.Value.ToBytes()
     $maxFileSize = $TransportService.TransportMaintenanceLogMaxFileSize.Value.ToBytes()
 
-    $files = Get-TransportMaintenanceLogFiles -TransportService $TransportService -LogPath $LogPath | Sort LastWriteTime
-    $directorySize = $files | Measure-Object Length -Sum | %{ $_.Sum }
+    $files = Get-TransportMaintenanceLogFileList -TransportService $TransportService -LogPath $LogPath | Sort-Object LastWriteTime
+    $directorySize = $files | Measure-Object Length -Sum | ForEach-Object { $_.Sum }
 
     $i = 0
     $desiredSize = $maxDirectorySize - $maxFileSize
@@ -777,7 +778,7 @@ function Get-MaintenanceLogPath
     }
 
     $drive = [IO.Path]::GetPathRoot($logPath)
-    $share = Get-WmiObject -Class Win32_Share -ComputerName $server -Filter "Path = '$drive\'" -ErrorAction SilentlyContinue
+    $share = Get-CimInstance -ClassName Win32_Share -ComputerName $server -Filter "Path = '$drive\'" -ErrorAction SilentlyContinue
     if($share)
     {
         $remotePath = "\\{0}\{1}\{2}" -f `
@@ -823,8 +824,8 @@ function Initialize-TransportMaintenanceLog()
 
         if(Test-Path $logPath)
         {
-            Enforce-TransportMaintenanceLogMaxAge -TransportService $transportService -LogPath $logPath
-            Enforce-TransportMaintenanceLogMaxDirectorySize -TransportService $transportService -LogPath $logPath
+            Remove-TransportMaintenanceLogsOverMaxAge -TransportService $transportService -LogPath $logPath
+            Remove-TransportMaintenanceLogsOverMaxDirectorySize -TransportService $transportService -LogPath $logPath
         }
         else
         {
@@ -841,7 +842,7 @@ function Initialize-TransportMaintenanceLog()
         }
 
         $Script:ExchangeVersion = Get-ExchangeVersion $Server
-        Configure-TransportMaintenanceLog -TransportService $transportService -LogPath $logPath
+        Register-TransportMaintenanceLog -TransportService $transportService -LogPath $logPath
     }
 }
 
@@ -898,13 +899,13 @@ function Set-ServiceState
         [Switch] $ThrowOnFailure
     )
     
-    $service = Get-WmiObject win32_service -filter "name = '$ServiceName'" -ComputerName $Server
+    $service = Get-CimInstance -ClassName win32_service -filter "name = '$ServiceName'" -ComputerName $Server
     
     if(-not $service)
     {
         if($LoggingStage)
         {
-            Log-SkippedEvent -Source $Server -Stage $LoggingStage -Reason @{$ServiceName = 'NotFound'}
+            Write-SkippedEvent -Source $Server -Stage $LoggingStage -Reason @{$ServiceName = 'NotFound'}
         }
         
         if($ThrowOnFailure)
@@ -938,8 +939,8 @@ function Set-ServiceState
     
     if($LoggingStage)
     {
-        $logEntry = Create-LogEntry -Source $Server -Stage $LoggingStage
-        Log-EventOfEntry -Event Start -Entry $logEntry
+        $logEntry = New-LogEntry -Source $Server -Stage $LoggingStage
+        Write-EventOfEntry -Event Start -Entry $logEntry
     }
     
     switch($State)
@@ -1006,7 +1007,7 @@ function Set-ServiceState
     
     if($LoggingStage)
     {
-        Log-EventOfEntry -Event Completed -Entry $logEntry -reason @{'MaxWaitMinutes' = $WaitTime.TotalMinutes}
+        Write-EventOfEntry -Event Completed -Entry $logEntry -reason @{'MaxWaitMinutes' = $WaitTime.TotalMinutes}
     }
 }
 
@@ -1026,8 +1027,8 @@ function Set-ServiceState
 #   Value for the count column, meaning of this count varies with id and stage
 #
 # .RETURN
-#   Log Entry object which can be use Log-EventOfEntry & Log-SkippedEvent
-function Create-LogEntry
+#   Log Entry object which can be use Write-EventOfEntry & Write-SkippedEvent
+function New-LogEntry
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -1062,11 +1063,11 @@ function Create-LogEntry
 #   computed from the time LogEntry was created
 #
 # .PARAMETER Entry
-#   Log Entry, created by Create-LogEntry
+#   Log Entry, created by New-LogEntry
 #
 # .PARAMETER Reason
 #   Reason of this event
-function Log-EventOfEntry
+function Write-EventOfEntry
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -1087,7 +1088,7 @@ function Log-EventOfEntry
     if($Reason)
     {
         $Reason.GetEnumerator() |  `
-            sort Key | % {
+            Sort-Object Key | ForEach-Object {
                 if($ReasonStr)
                 {
                     $ReasonStr += '; '
@@ -1134,7 +1135,7 @@ function Log-EventOfEntry
         {
             # we may have other MM workflow accessing the log file
             # delay 1 sec and try again
-            sleep 1
+            Start-Sleep -Seconds 1
             $maxTries--
         }
     }
@@ -1158,7 +1159,7 @@ function Log-EventOfEntry
 # .PARAMETER Reason
 #   Reason of this event
 
-function Log-SkippedEvent
+function Write-SkippedEvent
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -1177,8 +1178,8 @@ function Log-SkippedEvent
         [hashtable] $Reason
     )
 
-    $entry = Create-LogEntry -Source $Source -Stage $Stage -Id $Id -Count $Count
-    Log-EventOfEntry -Event Skipped -Entry $entry -Reason $Reason
+    $entry = New-LogEntry -Source $Source -Stage $Stage -Id $Id -Count $Count
+    Write-EventOfEntry -Event Skipped -Entry $entry -Reason $Reason
 }
 
 # .DESCRIPTION
@@ -1218,12 +1219,12 @@ function Log-InfoEvent
         [hashtable] $Reason
     )
 
-    $entry = Create-LogEntry -Source $Source -Stage $Stage -Id $Id -Count $Count
-    Log-EventOfEntry -Event Info -Entry $entry -Reason $Reason
+    $entry = New-LogEntry -Source $Source -Stage $Stage -Id $Id -Count $Count
+    Write-EventOfEntry -Event Info -Entry $entry -Reason $Reason
 }
 
 # .DESCRIPTION
-#   Used by Wait-EmptyEntries.
+#   Used by Wait-EmptyEntriesCompletion.
 #   Takes a hash table by the entry's id. Remove any entry that's not found in ActiveEntries.
 #
 # .PARAMETER ActiveEntries
@@ -1237,8 +1238,9 @@ function Log-InfoEvent
 #
 # .RETURN
 #  returns True if at least an entry removed. Otherwise returns False.
-function Remove-CompletedEntries
+function Remove-CompletedEntriesFromHashtable
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
     param (
         [Parameter(Mandatory = $true)]
         [HashTable] $Tracker,
@@ -1252,16 +1254,16 @@ function Remove-CompletedEntries
 
     $progressMade = $false
 
-    $activeIds = $ActiveEntries | %{$_.Id}
-    $completedKeys = $tracker.Keys | ? {$activeIds -notcontains $_}
-    $completedKeys | %{
+    $activeIds = $ActiveEntries | ForEach-Object {$_.Id}
+    $completedKeys = $tracker.Keys | Where-Object {$activeIds -notcontains $_}
+    $completedKeys | ForEach-Object {
         # update entry
         $entry = $Tracker[$_]
         $entry.LogEntry.Count = 0
 
         if($DetailLogging)
         {
-            Log-EventOfEntry -Event Completed -Entry $entry.LogEntry
+            Write-EventOfEntry -Event Completed -Entry $entry.LogEntry
         }
 
         # remove completed entry from tracking
@@ -1273,7 +1275,7 @@ function Remove-CompletedEntries
 }
 
 # .DESCRIPTION
-#   Used by Wait-EmptyEntries.
+#   Used by Wait-EmptyEntriesCompletion.
 #   Takes a hash table by the entry's id. Adds/Updates any entry that's found in ActiveEntries.
 #
 # .PARAMETER Tracker
@@ -1315,10 +1317,10 @@ function Update-EntriesTracker
     $progressMade = $false
 
     # Update the tracker hash table; Create new entries as needed
-    $ActiveEntries | %{
+    $ActiveEntries | ForEach-Object {
         if(-not $tracker.ContainsKey($_.Id))
         {
-            $logEntry = Create-LogEntry -Source $Source -Stage $Stage -Id $_.Id -Count $_.Count
+            $logEntry = New-LogEntry -Source $Source -Stage $Stage -Id $_.Id -Count $_.Count
 
             $trackEnty = New-Object PsObject -Property @{
                 LogEntry = $logEntry
@@ -1329,7 +1331,7 @@ function Update-EntriesTracker
 
             if($DetailLogging)
             {
-                Log-EventOfEntry -Event Start -Entry $logEntry
+                Write-EventOfEntry -Event Start -Entry $logEntry
             }
 
             $progressMade = $true
@@ -1387,7 +1389,7 @@ function Update-EntriesTracker
 # .RETURN
 #   Returns the remaining count of messages in the queues.  When the wait ends with overall timeout
 #   or no progress timeout, this function returns a non-zero value.
-function Wait-EmptyEntries
+function Wait-EmptyEntriesCompletion
 {
     Param (
         [Parameter(Mandatory = $true)]
@@ -1425,28 +1427,27 @@ function Wait-EmptyEntries
 
     while($true)
     {
-        $progressMade = $false
-        $activeEntries = Invoke-Command -ScriptBlock $GetEntries -ArgumentList $GetEntriesArgs | ? {$_.Count -gt 0}
+        $activeEntries = Invoke-Command -ScriptBlock $GetEntries -ArgumentList $GetEntriesArgs | Where-Object {$_.Count -gt 0}
 
         if($firstTime)
         {
             if($DetailLogging -and -not $ActiveEntries)
             {
-                Log-SkippedEvent -Source $Source -Stage $Stage -Reason @{Reason = 'Not needed'}
+                Write-SkippedEvent -Source $Source -Stage $Stage -Reason @{Reason = 'Not needed'}
             }
             else
             {
                 $startCount = 0
-                $startCount += $activeEntries | Measure-Object -Sum -Property Count | % {$_.Sum}
+                $startCount += $activeEntries | Measure-Object -Sum -Property Count | ForEach-Object {$_.Sum}
 
-                $summaryLog = Create-LogEntry -Source $Source -Stage $Stage -Count $startCount
-                Log-EventOfEntry -Event Start -Entry $summaryLog
+                $summaryLog = New-LogEntry -Source $Source -Stage $Stage -Count $startCount
+                Write-EventOfEntry -Event Start -Entry $summaryLog
             }
 
             $firstTime = $false
         }
 
-        $foundCompleted = Remove-CompletedEntries `
+        $foundCompleted = Remove-CompletedEntriesFromHashtable `
             -Tracker $tracker `
             -ActiveEntries $activeEntries `
             -DetailLogging:$DetailLogging
@@ -1471,13 +1472,13 @@ function Wait-EmptyEntries
         }
         elseif($foundCompleted -or $foundUpdate)
         {
-            $remaningCount = $activeEntries | Measure-Object -Sum -Property Count | % {$_.Sum}
+            $remaningCount = $activeEntries | Measure-Object -Sum -Property Count | ForEach-Object {$_.Sum}
             Write-Verbose "$Source - $Stage Progress made. $remaningCount items remain."
         }
         else
         {
             # checking if it's been too long since progress was made
-            $recentEntries = $tracker.Values | ? {((Get-Date) - $_.LastUpdated) -lt $NoProgressTimeout}
+            $recentEntries = $tracker.Values | Where-Object {((Get-Date) - $_.LastUpdated) -lt $NoProgressTimeout}
             if(-not $recentEntries)
             {
                 Write-Verbose "$Source - $Stage NoProgressTimeout occurred. Wait aborted!"
@@ -1486,15 +1487,15 @@ function Wait-EmptyEntries
             }
         }
 
-        Sleep -Seconds $PollingFrequency.Seconds
+        Start-Sleep -Seconds $PollingFrequency.Seconds
     }
 
     $remainingCount = 0
-    $remainingCount += $activeEntries | Measure-Object -Sum -Property Count | % {$_.Sum}
+    $remainingCount += $activeEntries | Measure-Object -Sum -Property Count | ForEach-Object {$_.Sum}
 
     if($DetailLogging)
     {
-        $tracker.Values | %{ Log-EventOfEntry -Event Completed -Entry $_.LogEntry -Reason @{Reason = $reason} }
+        $tracker.Values | ForEach-Object { Write-EventOfEntry -Event Completed -Entry $_.LogEntry -Reason @{Reason = $reason} }
     }
     else
     {
@@ -1502,11 +1503,11 @@ function Wait-EmptyEntries
 
         if($reason)
         {
-            Log-EventOfEntry -Event Completed -Entry $summaryLog -Reason @{Reason = $reason}
+            Write-EventOfEntry -Event Completed -Entry $summaryLog -Reason @{Reason = $reason}
         }
         else
         {
-            Log-EventOfEntry -Event Completed -Entry $summaryLog
+            Write-EventOfEntry -Event Completed -Entry $summaryLog
         }
     }
 
@@ -1555,7 +1556,7 @@ function Wait-EmptyEntries
 # .RETURN
 #   Returns the remaining count of messages in the queues.  When the wait ends with overall timeout or no progress timeout,
 #   this function returns a non-zero value.
-function Wait-EmptyQueues
+function Wait-EmptyQueuesCompletion
 {
     Param (
         [Parameter(Mandatory = $true)]
@@ -1598,12 +1599,12 @@ function Wait-EmptyQueues
 
         $filter = "{MessageCount -gt 0 -and DeliveryType -ne 'ShadowRedundancy' -and NextHopDomain -ne 'Poison Message'}"
         $queues = get-queue -server $Server -ErrorAction SilentlyContinue -filter $filter | `
-            ?{ $null -eq $QueueTypes -or $QueueTypes -contains $_.DeliveryType }
+            Where-Object{ $null -eq $QueueTypes -or $QueueTypes -contains $_.DeliveryType }
 
-        $entries = $queues | %{
+        $entries = $queues | ForEach-Object {
             if($ActiveMsgOnly)
             {
-                $count = $_.MessageCountsPerPriority | Measure-Object -Sum | %{$_.Sum}
+                $count = $_.MessageCountsPerPriority | Measure-Object -Sum | ForEach-Object {$_.Sum}
             }
             else
             {
@@ -1624,7 +1625,7 @@ function Wait-EmptyQueues
 
     Write-Verbose "$Server - Start waiting for $Stage..."
 
-    $remaining = Wait-EmptyEntries `
+    $remaining = Wait-EmptyEntriesCompletion `
                 -GetEntries $getQueueEntries `
                 -GetEntriesArgs $Server,$queueTypes,$ActiveMsgOnly `
                 -Source $Server `
@@ -1673,8 +1674,8 @@ function Get-DiscardInfo
     $shadowInfo = [xml](Get-ExchangeDiagnosticInfo -Server $Server -Process edgetransport -Component ShadowRedundancy -argument $argument)
 
     $discardInfo = $shadowInfo.Diagnostics.Components.ShadowRedundancy.ShadowServerCollection.ShadowServer | `
-        ? {$_.ShadowServerInfo.discardEventsCount -gt 0 } |
-        % {
+        Where-Object {$_.ShadowServerInfo.discardEventsCount -gt 0 } |
+        ForEach-Object {
             $infoProps = `
             @{
                 Id = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($_.Context))
@@ -1720,7 +1721,7 @@ function Get-DiscardInfo
 # .RETURN
 #   Returns the remaining count of discard events.  When the wait ends with timeout exceeded or no progress
 #   this functions returns a non-zero value.
-function Wait-EmptyDiscards
+function Wait-EmptyDiscardsCompletion
 {
     Param (
         [Parameter(Mandatory = $true)]
@@ -1746,8 +1747,8 @@ function Wait-EmptyDiscards
 
     # log the undrainable entries
     $discardInfo = Get-DiscardInfo -server $Server
-    $notDrainable = $discardInfo | ? {$ActiveServers -notcontains $_.Id.Split('.')[0]} | %{
-        Log-SkippedEvent -Source $Server -Stage ShadowDiscardDrain -Id $_.Id `
+    $discardInfo | Where-Object {$ActiveServers -notcontains $_.Id.Split('.')[0]} | ForEach-Object {
+        Write-SkippedEvent -Source $Server -Stage ShadowDiscardDrain -Id $_.Id `
             -Count $_.Count -Reason @{Reason = $Script:ServerInMM}
     }
 
@@ -1763,10 +1764,10 @@ function Wait-EmptyDiscards
         )
 
         $discardInfo = Get-DiscardInfo -server $Server
-        $discardInfo | ? {$ActiveServers -contains $_.Id.Split('.')[0]}
+        $discardInfo | Where-Object {$ActiveServers -contains $_.Id.Split('.')[0]}
     }
 
-    $remaining = Wait-EmptyEntries `
+    $remaining = Wait-EmptyEntriesCompletion `
                     -GetEntries $getDiscardInfo `
                     -GetEntriesArgs $Server,$ActiveServers `
                     -Source $Server `
@@ -1862,7 +1863,7 @@ function Wait-BootLoaderCountCheck
     if($xml)
     {
         $processStartTime = [DateTime]($xml.Diagnostics.ProcessInfo.StartTime)
-        $remaining = Wait-EmptyEntries `
+        Wait-EmptyEntriesCompletion `
                         -GetEntries $waitBootScanningEvent `
                         -GetEntriesArgs $ServerFqdn,$processStartTime `
                         -Source $server `
@@ -1945,7 +1946,7 @@ function Wait-BootLoaderSubmitCheck
     }
 
     $server = $ServerFqdn.split('.')[0]
-    $remaining = Wait-EmptyEntries `
+    $remaining = Wait-EmptyEntriesCompletion `
                     -GetEntries $getOutstandingItems `
                     -GetEntriesArgs $ServerFqdn `
                     -Source $server `
@@ -2030,7 +2031,7 @@ function Wait-BootLoaderReady
             if($retry -gt 0)
             {
                 Write-Verbose "$Server - Can not read the process lifetime. Sleep 20 to retry..."
-                Sleep 20
+                Start-Sleep 20
                 $retry--
             }
             else
@@ -2044,8 +2045,8 @@ function Wait-BootLoaderReady
     if(-not $processLifeTime -or -not $processStartTime)
     {
         # EdgeTransport isn't running or Server isn't a HubTransport, nothing to wait here
-        Log-SkippedEvent -Source $Server -Stage BootLoaderCountCheck -Reason @{Reason = 'EdgeTransportUnreachable'}
-        Log-SkippedEvent -Source $Server -Stage BootLoaderSubmitCheck -Reason @{Reason = 'EdgeTransportUnreachable'}
+        Write-SkippedEvent -Source $Server -Stage BootLoaderCountCheck -Reason @{Reason = 'EdgeTransportUnreachable'}
+        Write-SkippedEvent -Source $Server -Stage BootLoaderSubmitCheck -Reason @{Reason = 'EdgeTransportUnreachable'}
 
         Write-Warning "$Server - EdgeTransport is not running or server $server is unreachable. Skipping waiting for BootLoader."
         return 0
@@ -2053,8 +2054,8 @@ function Wait-BootLoaderReady
 
     if($processLifeTime -gt $MaxBootLoaderProcessTimeout)
     {
-        Log-SkippedEvent -Source $Server -Stage BootLoaderCountCheck -Reason @{ProcessLifeTime = $processLifeTime}
-        Log-SkippedEvent -Source $Server -Stage BootLoaderSubmitCheck -Reason @{ProcessLifeTime = $processLifeTime}
+        Write-SkippedEvent -Source $Server -Stage BootLoaderCountCheck -Reason @{ProcessLifeTime = $processLifeTime}
+        Write-SkippedEvent -Source $Server -Stage BootLoaderSubmitCheck -Reason @{ProcessLifeTime = $processLifeTime}
 
         Write-Verbose "$Server - EdgeTransport has been running for $processLifeTime. BootLoader is ready"
         return 0
@@ -2104,7 +2105,7 @@ function Wait-BootLoaderReady
 #
 # .PARAMETER TransportService
 #   Optional MsExchangeTransport service object.
-function Drain-ActiveMessages
+function Clear-ActiveMessage
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -2130,7 +2131,7 @@ function Drain-ActiveMessages
     }
 
     $queueTypes = @("SmtpDeliveryToMailbox", "SmtpRelayToRemoteAdSite", "SmtpRelayToDag", "SmtpRelayToServers", "Undefined")
-    Wait-EmptyQueues -Server $server -QueueTypes $queueTypes -ActiveMsgOnly $true -Stage QueueDrain -Timeout 00:01:30
+    Wait-EmptyQueuesCompletion -Server $server -QueueTypes $queueTypes -ActiveMsgOnly $true -Stage QueueDrain -Timeout 00:01:30
 }
 
 # .DESCRIPTION
@@ -2148,7 +2149,7 @@ function Drain-ActiveMessages
 # .RETURN
 #  Returns active servers in the dag
 #
-function Redirect-Messages
+function Send-MessagesToNewServer
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -2165,7 +2166,7 @@ function Redirect-Messages
     )
 
     # get domain name of the server
-    $fqdn = Get-ExchangeServer $Server | %{$_.Fqdn}
+    $fqdn = Get-ExchangeServer $Server | ForEach-Object {$_.Fqdn}
     $domainIndex = $fqdn.Indexof(".")
     $domain = $fqdn.SubString($domainIndex)
 
@@ -2176,8 +2177,8 @@ function Redirect-Messages
         return $null
     }
 
-    $serversInDag = Get-ActiveServers $serversInDag
-    $hubFqdns = $serversInDag | ? { $_ -ne $Server } | % { $_ + $domain }
+    $serversInDag = Get-ActiveServer $serversInDag
+    $hubFqdns = $serversInDag | Where-Object { $_ -ne $Server } | ForEach-Object { $_ + $domain }
 
     $verboseMessage = "$Server - Redirecting messages to " + [string]::Join(", ", $hubFqdns)
     Write-Verbose $verboseMessage
@@ -2185,7 +2186,7 @@ function Redirect-Messages
     Redirect-Message -Target $hubFqdns -Server $Server -Confirm:$false -ErrorAction SilentlyContinue
 
     $timeOut = (New-TimeSpan -Minutes 8)
-    $remaining = Wait-EmptyQueues -Server $Server -Stage Redirect -Timeout $timeOut
+    $remaining = Wait-EmptyQueuesCompletion -Server $Server -Stage Redirect -Timeout $timeOut
     
     if($remaining -and $LogIfRemain)
     {
@@ -2212,7 +2213,7 @@ function Redirect-Messages
 # .RETURN
 #  none
 #
-function Drain-DiscardEvents
+function Clear-DiscardEvent
 {
     param(
         [Parameter(Mandatory = $true)]
@@ -2228,13 +2229,13 @@ function Drain-DiscardEvents
     )
 
     $filter = "{DeliveryType -eq 'ShadowRedundancy' -and NextHopDomain -like '$Primary*'}"
-    $ShadowServers | % {
+    $ShadowServers | ForEach-Object {
         Write-Verbose "$Primary - Forcing heart-beat on server $_"
         Retry-Queue -server $_ -Filter $filter -ErrorAction SilentlyContinue
     }
 
     Write-Verbose "$Primary - Waiting for the heartbeats to complete processing"
-    $remaining = Wait-EmptyDiscards -Server $Primary -ActiveServers $ShadowServers -NoProgressTimeout (New-TimeSpan -Minutes 2)
+    $remaining = Wait-EmptyDiscardsCompletion -Server $Primary -ActiveServers $ShadowServers -NoProgressTimeout (New-TimeSpan -Minutes 2)
 
     if($remaining -and $LogIfRemain)
     {
@@ -2422,13 +2423,13 @@ function Set-ServiceState
         [Switch] $ThrowOnFailure
     )
     
-    $service = Get-WmiObject win32_service -filter "name = '$ServiceName'" -ComputerName $Server
+    $service = Get-CimInstance -ClassName win32_service -filter "name = '$ServiceName'" -ComputerName $Server
     
     if(-not $service)
     {
         if($LoggingStage)
         {
-            Log-SkippedEvent -Source $Server -Stage $LoggingStage -Reason @{$ServiceName = 'NotFound'}
+            Write-SkippedEvent -Source $Server -Stage $LoggingStage -Reason @{$ServiceName = 'NotFound'}
         }
         
         if($ThrowOnFailure)
@@ -2462,8 +2463,8 @@ function Set-ServiceState
     
     if($LoggingStage)
     {
-        $logEntry = Create-LogEntry -Source $Server -Stage $LoggingStage
-        Log-EventOfEntry -Event Start -Entry $logEntry
+        $logEntry = New-LogEntry -Source $Server -Stage $LoggingStage
+        Write-EventOfEntry -Event Start -Entry $logEntry
     }
     
     switch($State)
@@ -2530,7 +2531,7 @@ function Set-ServiceState
     
     if($LoggingStage)
     {
-        Log-EventOfEntry -Event Completed -Entry $logEntry -reason @{'MaxWaitMinutes' = $WaitTime.TotalMinutes}
+        Write-EventOfEntry -Event Completed -Entry $logEntry -reason @{'MaxWaitMinutes' = $WaitTime.TotalMinutes}
     }
 }
 
@@ -2622,7 +2623,7 @@ function Stop-ServiceForcefully
     # Wait in case it needs time to take effect
     Wait-Event -Timeout 5
 
-    $processFullPath = (Get-WmiObject -query "SELECT PathName FROM Win32_Service WHERE Name = '$ServiceName'").PathName.Replace('"','')
+    $processFullPath = (Get-CimInstance -query "SELECT PathName FROM Win32_Service WHERE Name = '$ServiceName'").PathName.Replace('"','')
     $processName = (Split-Path $processFullPath -Leaf).Replace('.exe','')
 
     $process = Get-Process -Name $processName -ErrorAction SilentlyContinue

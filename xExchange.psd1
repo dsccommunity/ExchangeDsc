@@ -12,7 +12,7 @@
 # RootModule = ''
 
 # Version number of this module.
-ModuleVersion = '1.10.0.0'
+ModuleVersion = '1.11.0.0'
 
 # ID used to uniquely identify this module
 GUID = '9a908ca3-8a67-485c-a014-66ba37fcc2a4'
@@ -30,7 +30,7 @@ Copyright = '(c) 2014 Microsoft. All rights reserved.'
 Description = 'This DSC Module allows you to configure many different properties of Exchange 2013 servers, including individual server properties, databases and mount points, and Database Availability Groups.'
 
 # Minimum version of the Windows PowerShell engine required by this module
-# PowerShellVersion = ''
+PowerShellVersion = '4.0'
 
 # Name of the Windows PowerShell host required by this module
 # PowerShellHostName = ''
@@ -101,9 +101,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* xExchAutoMountPoint: Fix malformed dash/hyphen characters
-* Fix PSPossibleIncorrectComparisonWithNull issues from PowerShell Script Analyzer
-* Suppress PSDSCUseVerboseMessageInDSCResource Warnings from PowerShell Script Analyzer
+        ReleaseNotes = '* xExchActiveSyncVirtualDirectory: Fix issue where ClientCertAuth parameter set to "Allowed" instead of "Accepted"
 
 '
 
@@ -118,6 +116,7 @@ PrivateData = @{
 # DefaultCommandPrefix = ''
 
 }
+
 
 
 

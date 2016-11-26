@@ -1,3 +1,8 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscTestsPresent", "")]
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscExamplesPresent", "")]
+[CmdletBinding()]
+param()
+
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -29,7 +34,7 @@ function Get-TargetResource
         [System.Boolean]
         $BasicAuthEnabled,
 
-        [ValidateSet("Ignore", "Allowed", "Required")]
+        [ValidateSet("Ignore", "Accepted", "Required")]
         [System.String]
         $ClientCertAuth,
 
@@ -63,7 +68,7 @@ function Get-TargetResource
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ActiveSyncVirtualDirectory' -VerbosePreference $VerbosePreference
 
-    $easVdir = Get-ActiveSyncVirtualDirectoryWithCorrectParams @PSBoundParameters
+    $easVdir = Get-ActiveSyncVirtualDirectoryInternal @PSBoundParameters
     
     if ($null -ne $easVdir)
     {
@@ -111,7 +116,7 @@ function Set-TargetResource
         [System.Boolean]
         $BasicAuthEnabled,
 
-        [ValidateSet("Ignore", "Allowed", "Required")]
+        [ValidateSet("Ignore", "Accepted", "Required")]
         [System.String]
         $ClientCertAuth,
 
@@ -226,7 +231,7 @@ function Test-TargetResource
         [System.Boolean]
         $BasicAuthEnabled,
 
-        [ValidateSet("Ignore", "Allowed", "Required")]
+        [ValidateSet("Ignore", "Accepted", "Required")]
         [System.String]
         $ClientCertAuth,
 
@@ -263,7 +268,7 @@ function Test-TargetResource
     #Ensure an empty string is $null and not a string
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    $easVdir = Get-ActiveSyncVirtualDirectoryWithCorrectParams @PSBoundParameters
+    $easVdir = Get-ActiveSyncVirtualDirectoryInternal @PSBoundParameters
 
     if ($null -eq $easVdir)
     {
@@ -337,7 +342,7 @@ function Test-TargetResource
     return $true
 }
 
-function Get-ActiveSyncVirtualDirectoryWithCorrectParams
+function Get-ActiveSyncVirtualDirectoryInternal
 {
     [CmdletBinding()]
     param
@@ -366,7 +371,7 @@ function Get-ActiveSyncVirtualDirectoryWithCorrectParams
         [System.Boolean]
         $BasicAuthEnabled,
 
-        [ValidateSet("Ignore", "Allowed", "Required")]
+        [ValidateSet("Ignore", "Accepted", "Required")]
         [System.String]
         $ClientCertAuth,
 

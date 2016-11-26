@@ -64,21 +64,21 @@ if ($exchangeInstalled)
              SendProtocolLogPath                     = 'C:\Program Files\Microsoft\Exchange Server\V15\TransportRoles\Logs\Hub\ProtocolLog\SmtpSend'
         }
 
-         Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set default Mailbox Transport Service configuration" -ExpectedGetResults $expectedGetResults
+         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set default Mailbox Transport Service configuration" -ExpectedGetResults $expectedGetResults
      
          #modify configuration
          $testParams.PipelineTracingSenderAddress = 'john.doe@contoso.com'
      
          $expectedGetResults.PipelineTracingSenderAddress = 'john.doe@contoso.com'
 
-         Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Modify Mailbox Transport Service configuration" -ExpectedGetResults $expectedGetResults
+         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Modify Mailbox Transport Service configuration" -ExpectedGetResults $expectedGetResults
      
          #modify configuration
          $testParams.PipelineTracingSenderAddress = ''
      
          $expectedGetResults.PipelineTracingSenderAddress = $null
      
-         Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Revert Mailbox Transport Service configuration" -ExpectedGetResults $expectedGetResults
+         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Revert Mailbox Transport Service configuration" -ExpectedGetResults $expectedGetResults
      }
 }
 else

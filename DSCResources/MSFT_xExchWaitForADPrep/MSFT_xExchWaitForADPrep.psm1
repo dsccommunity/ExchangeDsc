@@ -10,6 +10,7 @@ function Get-TargetResource
         $Identity,
 
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Int32]
@@ -79,7 +80,7 @@ function Get-TargetResource
     if ($PSBoundParameters.ContainsKey("DomainVersion"))
     {
         #Get this server's domain
-        [string]$machineDomain = (Get-WmiObject -Class Win32_ComputerSystem).Domain.ToLower()
+        [string]$machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
 
         #Figure out all domains we need to inspect
         [string[]]$targetDomains = @()
@@ -149,6 +150,7 @@ function Set-TargetResource
         $Identity,
 
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Int32]
@@ -211,6 +213,7 @@ function Test-TargetResource
         $Identity,
 
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.Int32]
@@ -260,7 +263,7 @@ function Test-TargetResource
         if ($PSBoundParameters.ContainsKey("DomainVersion"))
         {
             #Get this server's domain
-            [string]$machineDomain = (Get-WmiObject -Class Win32_ComputerSystem).Domain.ToLower()
+            [string]$machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
 
             #Figure out all domains we need to inspect
             [string[]]$targetDomains = @()
@@ -295,7 +298,12 @@ function Test-TargetResource
 
 function GetADRootDSE
 {
-    param ([PSCredential]$Credential)
+    param
+    (
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential
+    )
 
     if ($null -eq $Credential)
     {
@@ -311,7 +319,27 @@ function GetADRootDSE
 
 function GetADObject
 {
-    param([PSCredential]$Credential, [boolean]$Searching = $false, [string]$DistinguishedName, [string[]]$Properties, [string]$Filter, [string]$SearchScope)
+    param
+    (
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
+
+        [boolean]
+        $Searching = $false,
+
+        [string]
+        $DistinguishedName,
+
+        [string[]]
+        $Properties,
+
+        [string]
+        $Filter,
+
+        [string]
+        $SearchScope
+    )
 
     if ($Searching -eq $false)
     {
@@ -347,7 +375,10 @@ function GetADObject
     {
         $object = Get-ADObject @getAdObjParams
     }
-    catch{} #Don't do anything here. The caller can decide how to handle this
+    catch
+    {
+        Write-Warning "Failed to find object at '$DistinguishedName' using Get-ADObject."
+    }
 
     return $object
 }

@@ -18,8 +18,6 @@ Configuration ConfigureDatabaseCopies
         $dagSettings = $ConfigurationData[$Node.DAGId] #Look up and retrieve the DAG settings for this node
 
         ###Mailbox Server settings###
-        $dbMap = DBMapFromServersCsv -ServersCsvPath $Node.ServersCsvPath -ServerNameInCsv $Node.ServerNameInCsv -DbNameReplacements $dagSettings.DbNameReplacements
-        $primaryDbList = DBListFromMailboxDatabasesCsv -MailboxDatabasesCsvPath $Node.MailboxDatabasesCsvPath -ServerNameInCsv $Node.ServerNameInCsv -DbNameReplacements $dagSettings.DbNameReplacements
         $copyDbList = DBListFromMailboxDatabaseCopiesCsv -MailboxDatabaseCopiesCsvPath $Node.MailboxDatabaseCopiesCsvPath -ServerNameInCsv $Node.ServerNameInCsv -DbNameReplacements $dagSettings.DbNameReplacements
 
         #Create the copies

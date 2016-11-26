@@ -48,10 +48,10 @@ if ($exchangeInstalled)
             PollInterval = 481   
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
-        Test-ArrayContents -TestParams $testParams -DesiredArrayContents $testParams.ExtendedProtectionFlags -GetResultParameterName "ExtendedProtectionFlags" -ContextLabel "Verify ExtendedProtectionFlags" -ItLabel "ExtendedProtectionFlags should contain two values"
-        Test-ArrayContents -TestParams $testParams -DesiredArrayContents $testParams.ExtendedProtectionSPNList -GetResultParameterName "ExtendedProtectionSPNList" -ContextLabel "Verify ExtendedProtectionSPNList" -ItLabel "ExtendedProtectionSPNList should be empty"
-        Test-ArrayContents -TestParams $testParams -DesiredArrayContents $testParams.OABsToDistribute -GetResultParameterName "OABsToDistribute" -ContextLabel "Verify OABsToDistribute" -ItLabel "OABsToDistribute contains an OAB"
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
+        Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.ExtendedProtectionFlags -GetResultParameterName "ExtendedProtectionFlags" -ContextLabel "Verify ExtendedProtectionFlags" -ItLabel "ExtendedProtectionFlags should contain two values"
+        Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.ExtendedProtectionSPNList -GetResultParameterName "ExtendedProtectionSPNList" -ContextLabel "Verify ExtendedProtectionSPNList" -ItLabel "ExtendedProtectionSPNList should be empty"
+        Test-Array2ContainsArray1 -TestParams $testParams -DesiredArrayContents $testParams.OABsToDistribute -GetResultParameterName "OABsToDistribute" -ContextLabel "Verify OABsToDistribute" -ItLabel "OABsToDistribute contains an OAB"
     }
 }
 else

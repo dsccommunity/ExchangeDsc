@@ -45,11 +45,11 @@ function PrepTestDAG
             $mountedOnServer = $TestServerName2
         }
 
-        Get-MailboxDatabaseCopyStatus -Identity "$($TestDBName)" | where {$_.MailboxServer -ne "$($mountedOnServer)"} | Remove-MailboxDatabaseCopy -Confirm:$false
+        Get-MailboxDatabaseCopyStatus -Identity "$($TestDBName)" | Where-Object {$_.MailboxServer -ne "$($mountedOnServer)"} | Remove-MailboxDatabaseCopy -Confirm:$false
     }
 
     #Now remove the actual DB's
-    Get-MailboxDatabase | where {$_.Name -like "$($TestDBName)"} | Remove-MailboxDatabase -Confirm:$false
+    Get-MailboxDatabase | Where-Object {$_.Name -like "$($TestDBName)"} | Remove-MailboxDatabase -Confirm:$false
 
     #Remove the files
     Get-ChildItem -LiteralPath "\\$($TestServerName1)\c`$\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)" -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
@@ -191,8 +191,8 @@ if ($null -ne $adModule)
                     $dagExpectedGetResults.Add("FileSystem", "ReFS")
                 }
 
-                Test-AllTargetResourceFunctions -Params $dagTestParams -ContextLabel "Create the test DAG" -ExpectedGetResults $dagExpectedGetResults
-                Test-ArrayContents -TestParams $dagTestParams -DesiredArrayContents $dagTestParams.DatabaseAvailabilityGroupIpAddresses -GetResultParameterName "DatabaseAvailabilityGroupIpAddresses" -ContextLabel "Verify DatabaseAvailabilityGroupIpAddresses" -ItLabel "DatabaseAvailabilityGroupIpAddresses should contain two values"
+                Test-TargetResourceFunctionality -Params $dagTestParams -ContextLabel "Create the test DAG" -ExpectedGetResults $dagExpectedGetResults
+                Test-ArrayContentsEqual -TestParams $dagTestParams -DesiredArrayContents $dagTestParams.DatabaseAvailabilityGroupIpAddresses -GetResultParameterName "DatabaseAvailabilityGroupIpAddresses" -ContextLabel "Verify DatabaseAvailabilityGroupIpAddresses" -ItLabel "DatabaseAvailabilityGroupIpAddresses should contain two values"
 
 
                 #Add this server as a DAG member
@@ -211,7 +211,7 @@ if ($null -ne $adModule)
                     DAGName = $Global:DAGName
                 }
 
-                Test-AllTargetResourceFunctions -Params $dagMemberTestParams -ContextLabel "Add first member to the test DAG" -ExpectedGetResults $dagMemberExpectedGetResults
+                Test-TargetResourceFunctionality -Params $dagMemberTestParams -ContextLabel "Add first member to the test DAG" -ExpectedGetResults $dagMemberExpectedGetResults
 
 
                 #Add second DAG member
@@ -227,7 +227,7 @@ if ($null -ne $adModule)
                     DAGName = $Global:DAGName
                 }
 
-                Test-AllTargetResourceFunctions -Params $dagMemberTestParams -ContextLabel "Add second member to the test DAG" -ExpectedGetResults $dagMemberExpectedGetResults
+                Test-TargetResourceFunctionality -Params $dagMemberTestParams -ContextLabel "Add second member to the test DAG" -ExpectedGetResults $dagMemberExpectedGetResults
 
 
                 #Test the DAG again, with props that only take effect once there are members
@@ -236,8 +236,8 @@ if ($null -ne $adModule)
 
                 $dagExpectedGetResults.DatacenterActivationMode = "DagOnly"
 
-                Test-AllTargetResourceFunctions -Params $dagTestParams -ContextLabel "Set remaining props on the test DAG" -ExpectedGetResults $dagExpectedGetResults
-                Test-ArrayContents -TestParams $dagTestParams -DesiredArrayContents $dagTestParams.DatabaseAvailabilityGroupIpAddresses -GetResultParameterName "DatabaseAvailabilityGroupIpAddresses" -ContextLabel "Verify DatabaseAvailabilityGroupIpAddresses" -ItLabel "DatabaseAvailabilityGroupIpAddresses should contain two values"
+                Test-TargetResourceFunctionality -Params $dagTestParams -ContextLabel "Set remaining props on the test DAG" -ExpectedGetResults $dagExpectedGetResults
+                Test-ArrayContentsEqual -TestParams $dagTestParams -DesiredArrayContents $dagTestParams.DatabaseAvailabilityGroupIpAddresses -GetResultParameterName "DatabaseAvailabilityGroupIpAddresses" -ContextLabel "Verify DatabaseAvailabilityGroupIpAddresses" -ItLabel "DatabaseAvailabilityGroupIpAddresses should contain two values"
 
 
                 #Create a new DAG database
@@ -261,7 +261,7 @@ if ($null -ne $adModule)
                     Server = $env:COMPUTERNAME
                 }
 
-                Test-AllTargetResourceFunctions -Params $dagDBTestParams -ContextLabel "Create test database" -ExpectedGetResults $dagDBExpectedGetResults
+                Test-TargetResourceFunctionality -Params $dagDBTestParams -ContextLabel "Create test database" -ExpectedGetResults $dagDBExpectedGetResults
 
 
                 #Add DB Copy
@@ -281,7 +281,7 @@ if ($null -ne $adModule)
                     ActivationPreference = 2
                 }
 
-                Test-AllTargetResourceFunctions -Params $dagDBCopyTestParams -ContextLabel "Add a database copy" -ExpectedGetResults $dagDBCopyExpectedGetResults
+                Test-TargetResourceFunctionality -Params $dagDBCopyTestParams -ContextLabel "Add a database copy" -ExpectedGetResults $dagDBCopyExpectedGetResults
             }
         }
         else

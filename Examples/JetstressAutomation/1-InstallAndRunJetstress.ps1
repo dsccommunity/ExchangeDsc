@@ -1,3 +1,7 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingCmdletAliases", "")]
+[CmdletBinding()]
+param()
+
 Configuration InstallAndRunJetstress
 {
     Import-DscResource -Module xExchange

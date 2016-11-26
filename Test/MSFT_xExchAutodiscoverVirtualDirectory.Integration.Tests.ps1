@@ -38,7 +38,7 @@ if ($exchangeInstalled)
             WSSecurityAuthentication = $true    
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
 
 
         $testParams.BasicAuthentication = $false
@@ -50,7 +50,7 @@ if ($exchangeInstalled)
         $expectedGetResults.WindowsAuthentication = $false
         $expectedGetResults.WSSecurityAuthentication = $true
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Change some parameters" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Change some parameters" -ExpectedGetResults $expectedGetResults
     }
 }
 else

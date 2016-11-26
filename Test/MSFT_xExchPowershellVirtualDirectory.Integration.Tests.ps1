@@ -43,7 +43,7 @@ if ($exchangeInstalled)
             WindowsAuthentication = $false  
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
 
 
         $testParams.ExternalUrl = ''
@@ -51,7 +51,7 @@ if ($exchangeInstalled)
         $expectedGetResults.ExternalUrl = $null
         $expectedGetResults.InternalUrl = $null
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Try with empty URL's" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Try with empty URL's" -ExpectedGetResults $expectedGetResults
     }
 }
 else

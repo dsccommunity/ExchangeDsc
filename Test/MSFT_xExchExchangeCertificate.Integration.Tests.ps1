@@ -7,7 +7,7 @@ Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchExchangeCertificate\MSFT_x
 Import-Module $PSScriptRoot\..\Misc\xExchangeCommon.psm1 -Verbose:0
 Import-Module $PSScriptRoot\xExchange.Tests.Common.psm1 -Verbose:0
 
-function Test-CertificateServices
+function Test-ServicesInCertificate
 {
     [CmdletBinding()]
     param([Hashtable]$TestParams, [string]$ContextLabel)
@@ -57,8 +57,8 @@ if ($exchangeInstalled)
             Thumbprint = $testCertThumbprint1
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Install and Enable Test Certificate 1" -ExpectedGetResults $expectedGetResults
-        Test-CertificateServices -TestParams $testParams -ContextLabel 'Verify Services on Test Certificate 1'
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Install and Enable Test Certificate 1" -ExpectedGetResults $expectedGetResults
+        Test-ServicesInCertificate -TestParams $testParams -ContextLabel 'Verify Services on Test Certificate 1'
 
 
         #Test installing and enabling test cert2
@@ -66,8 +66,8 @@ if ($exchangeInstalled)
         $testParams.CertFilePath = $testCertPath2
         $expectedGetResults.Thumbprint = $testCertThumbprint2
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Install and Enable Test Certificate 2" -ExpectedGetResults $expectedGetResults
-        Test-CertificateServices -TestParams $testParams -ContextLabel 'Verify Services on Test Certificate 2'
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Install and Enable Test Certificate 2" -ExpectedGetResults $expectedGetResults
+        Test-ServicesInCertificate -TestParams $testParams -ContextLabel 'Verify Services on Test Certificate 2'
 
 
         #Test removing test cert 1
@@ -75,7 +75,7 @@ if ($exchangeInstalled)
         $testParams.Ensure = "Absent"
         $expectedGetResults = $null
         
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Remove Test Certificate 1" -ExpectedGetResults $expectedGetResults        
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Remove Test Certificate 1" -ExpectedGetResults $expectedGetResults        
     }
 }
 else
