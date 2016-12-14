@@ -27,14 +27,14 @@ if ($exchangeInstalled)
             Level = "High"
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set MSExchangeTransport\DSN to High" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set MSExchangeTransport\DSN to High" -ExpectedGetResults $expectedGetResults
         
 
         #Set event log level to lowest
         $testParams.Level = "Lowest"
         $expectedGetResults.Level = "Lowest"
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set MSExchangeTransport\DSN to Lowest" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set MSExchangeTransport\DSN to Lowest" -ExpectedGetResults $expectedGetResults
     }
 }
 else

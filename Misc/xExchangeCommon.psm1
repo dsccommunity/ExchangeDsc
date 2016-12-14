@@ -8,7 +8,19 @@ function GetExistingExchangeSession
 function GetRemoteExchangeSession
 {
     [CmdletBinding()]
-    param([PSCredential]$Credential, [string[]]$CommandsToLoad, $VerbosePreference, $SetupProcessName = "ExSetup*")
+    param
+    (
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
+        
+        [string[]]
+        $CommandsToLoad,
+        
+        $VerbosePreference,
+        
+        $SetupProcessName = "ExSetup*"
+    )
 
     #Check if Exchange Setup is running. If so, we need to throw an exception, as a running Exchange DSC resource will block Exchange Setup from working properly.
     if (IsSetupRunning -SetupProcessName $SetupProcessName)
@@ -42,7 +54,7 @@ function GetRemoteExchangeSession
         Write-Verbose "Creating new Remote Powershell session to Exchange"
 
         #Get local server FQDN
-        $machineDomain = (Get-WmiObject -Class Win32_ComputerSystem).Domain.ToLower()
+        $machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
         $serverName = $env:computername.ToLower()
         $serverFQDN = $serverName + "." + $machineDomain
 
@@ -77,7 +89,7 @@ function GetRemoteExchangeSession
         $oldVerbose = $VerbosePreference
         $VerbosePreference = "SilentlyContinue"
 
-        if ($null -ne $CommandsToLoad -and $CommandsToLoad.Count -gt 0)
+        if ($CommandsToLoad.Count -gt 0)
         {
             $moduleInfo = Import-PSSession $Session -WarningAction SilentlyContinue -DisableNameChecking -AllowClobber -CommandName $CommandsToLoad -Verbose:0
         }
@@ -147,7 +159,7 @@ function GetExchangeProduct
 {
     if ($null -eq $Global:CheckedExchangeProduct -or $Global:CheckedExchangeProduct -eq $false)
     {
-        $Global:ExchangeProduct = Get-WmiObject -Class Win32_Product -Filter {Name = "Microsoft Exchange Server"}
+        $Global:ExchangeProduct = Get-CimInstance -ClassName Win32_Product -Filter 'Name like "Microsoft Exchange Server"'
 
         $Global:CheckedExchangeProduct = $true
     }
@@ -386,14 +398,11 @@ function StringArrayToLower
 {
     param([string[]]$Array)
     
-    if ($null -ne $Array)
+    for ($i = 0; $i -lt $Array.Count; $i++)
     {
-        for ($i = 0; $i -lt $Array.Count; $i++)
+        if (!([string]::IsNullOrEmpty($Array[$i])))
         {
-            if (!([string]::IsNullOrEmpty($Array[$i])))
-            {
-                $Array[$i] = $Array[$i].ToLower()
-            }
+            $Array[$i] = $Array[$i].ToLower()
         }
     }
 
@@ -407,11 +416,11 @@ function CompareArrayContents
 
     $hasSameContents = $true
 
-    if (($null -eq $Array1 -and $null -ne $Array2) -or ($null -ne $Array1 -and $null -eq $Array2) -or ($Array1.Length -ne $Array2.Length))
+    if ($Array1.Length -ne $Array2.Length)
     {
         $hasSameContents = $false
     }
-    elseif ($null -ne $Array1 -and $null -ne $Array2)
+    elseif ($Array1.Count -gt 0 -and $Array2.Count -gt 0)
     {
         if ($IgnoreCase -eq $true)
         {
@@ -439,9 +448,9 @@ function Array2ContainsArray1Contents
 
     $hasContents = $true
 
-    if ($null -eq $Array1 -or $Array1.Length -eq 0) #Do nothing, as Array2 at a minimum contains nothing    
+    if ($Array1.Length -eq 0) #Do nothing, as Array2 at a minimum contains nothing    
     {} 
-    elseif ($null -eq $Array2 -or $Array2.Length -eq 0) #Array2 is empty and Array1 is not. Return false
+    elseif ($Array2.Length -eq 0) #Array2 is empty and Array1 is not. Return false
     {
         $hasContents = $false
     }
@@ -491,7 +500,7 @@ function RemoveParameters
 {
     param($PSBoundParametersIn, [string[]]$ParamsToKeep, [string[]]$ParamsToRemove)
 
-    if ($null -ne $ParamsToKeep -and $ParamsToKeep.Count -gt 0)
+    if ($ParamsToKeep.Count -gt 0)
     {
         [string[]]$ParamsToRemove = @()
 
@@ -506,7 +515,7 @@ function RemoveParameters
         }
     }
 
-    if ($null -ne $ParamsToRemove -and $ParamsToRemove.Count -gt 0)
+    if ($ParamsToRemove.Count -gt 0)
     {
         foreach ($param in $ParamsToRemove)
         {
@@ -667,7 +676,7 @@ function LogFunctionEntry
 
     $callingFunction = (Get-PSCallStack)[1].FunctionName
 
-    if ($null -ne $Parameters -and $Parameters.Count -gt 0)
+    if ($Parameters.Count -gt 0)
     {
         $parametersString = ""
 
@@ -704,6 +713,7 @@ function StartScheduledTask
         $Arguments,
 
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential,
 
         [System.String]
@@ -749,7 +759,7 @@ function StartScheduledTask
 
     $task = Register-ScheduledTask @credParams -TaskName "$($tName)" -Action $action -RunLevel Highest -ErrorVariable errRegister -ErrorAction SilentlyContinue
 
-    if ($null -ne $errRegister)
+    if (0 -lt $errRegister.Count)
     {
         throw $errRegister[0]
     }
@@ -796,7 +806,7 @@ function NotePreviousError
 {
     $Global:previousError = $null
 
-    if ($null -ne $Global:error -and $Global:error.Count -gt 0)
+    if ($Global:error.Count -gt 0)
     {
         $Global:previousError = $Global:error[0]
     }    
@@ -808,7 +818,7 @@ function ThrowIfNewErrorsEncountered
     param([string]$CmdletBeingRun, $VerbosePreference)
 
     #Throw an exception if errors were encountered
-    if ($null -ne $Global:error -and $Global:error.Count -gt 0 -and $Global:previousError -ne $Global:error[0])
+    if ($Global:error.Count -gt 0 -and $Global:previousError -ne $Global:error[0])
     {
         [string]$errorMsg = "Failed to run $($CmdletBeingRun) with: " + $Global:error[0]
         Write-Error $errorMsg

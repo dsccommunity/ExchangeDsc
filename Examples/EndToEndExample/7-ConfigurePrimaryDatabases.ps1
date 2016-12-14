@@ -22,7 +22,6 @@ Configuration ConfigurePrimaryDatabases
         ###Mailbox Server settings###
         $dbMap = DBMapFromServersCsv -ServersCsvPath $Node.ServersCsvPath -ServerNameInCsv $Node.ServerNameInCsv -DbNameReplacements $dagSettings.DbNameReplacements
         $primaryDbList = DBListFromMailboxDatabasesCsv -MailboxDatabasesCsvPath $Node.MailboxDatabasesCsvPath -ServerNameInCsv $Node.ServerNameInCsv -DbNameReplacements $dagSettings.DbNameReplacements
-        $copyDbList = DBListFromMailboxDatabaseCopiesCsv -MailboxDatabaseCopiesCsvPath $Node.MailboxDatabaseCopiesCsvPath -ServerNameInCsv $Node.ServerNameInCsv -DbNameReplacements $dagSettings.DbNameReplacements
 
         #Create all mount points on the server
         xExchAutoMountPoint AMP

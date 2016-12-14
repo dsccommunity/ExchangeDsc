@@ -36,8 +36,8 @@ if ($exchangeInstalled)
             InternalUrl = "https://$($Global:ServerFqdn)/mapi"   
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
-        Test-ArrayContents -TestParams $testParams -DesiredArrayContents $testParams.IISAuthenticationMethods -GetResultParameterName "IISAuthenticationMethods" -ContextLabel "Verify IISAuthenticationMethods" -ItLabel "IISAuthenticationMethods should contain three values"
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
+        Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.IISAuthenticationMethods -GetResultParameterName "IISAuthenticationMethods" -ContextLabel "Verify IISAuthenticationMethods" -ItLabel "IISAuthenticationMethods should contain three values"
 
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\mapi (Default Web Site)"
@@ -53,8 +53,8 @@ if ($exchangeInstalled)
             InternalUrl = "https://$($Global:ServerFqdn)/mapi" 
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Try with different values" -ExpectedGetResults $expectedGetResults
-        Test-ArrayContents -TestParams $testParams -DesiredArrayContents $testParams.IISAuthenticationMethods -GetResultParameterName "IISAuthenticationMethods" -ContextLabel "Verify IISAuthenticationMethods" -ItLabel "IISAuthenticationMethods should contain three values"
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Try with different values" -ExpectedGetResults $expectedGetResults
+        Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.IISAuthenticationMethods -GetResultParameterName "IISAuthenticationMethods" -ContextLabel "Verify IISAuthenticationMethods" -ItLabel "IISAuthenticationMethods should contain three values"
     }
 }
 else

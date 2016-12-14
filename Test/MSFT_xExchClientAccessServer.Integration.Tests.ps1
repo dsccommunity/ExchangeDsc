@@ -36,30 +36,30 @@ if ($exchangeInstalled)
             AutoDiscoverSiteScope = 'Site1'  
         }
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set autod url and site scope" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set autod url and site scope" -ExpectedGetResults $expectedGetResults
 
 
         #Now set the URL to empty
         $testParams.AutoDiscoverServiceInternalUri = ''
         $expectedGetResults.AutoDiscoverServiceInternalUri = $null
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set url to empty" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set url to empty" -ExpectedGetResults $expectedGetResults
 
 
         #Now try multiple sites in the site scope
         $testParams.AutoDiscoverSiteScope = 'Site1','Site2'
         $expectedGetResults = @{}
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set site scope to multi value" -ExpectedGetResults $expectedGetResults
-        Test-ArrayContents -TestParams $testParams -DesiredArrayContents $testParams.AutoDiscoverSiteScope -GetResultParameterName "AutoDiscoverSiteScope" -ContextLabel "Verify AutoDiscoverSiteScope" -ItLabel "AutoDiscoverSiteScope should contain two values"
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set site scope to multi value" -ExpectedGetResults $expectedGetResults
+        Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.AutoDiscoverSiteScope -GetResultParameterName "AutoDiscoverSiteScope" -ContextLabel "Verify AutoDiscoverSiteScope" -ItLabel "AutoDiscoverSiteScope should contain two values"
 
 
         #Now set the site scope to $null
         $testParams.AutoDiscoverSiteScope = $null
         $expectedGetResults = @{}
 
-        Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Set site scope to null" -ExpectedGetResults $expectedGetResults
-        Test-ArrayContents -TestParams $testParams -DesiredArrayContents $testParams.AutoDiscoverSiteScope -GetResultParameterName "AutoDiscoverSiteScope" -ContextLabel "Verify AutoDiscoverSiteScope" -ItLabel "AutoDiscoverSiteScope should be empty"
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set site scope to null" -ExpectedGetResults $expectedGetResults
+        Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.AutoDiscoverSiteScope -GetResultParameterName "AutoDiscoverSiteScope" -ContextLabel "Verify AutoDiscoverSiteScope" -ItLabel "AutoDiscoverSiteScope should be empty"
     }
 }
 else

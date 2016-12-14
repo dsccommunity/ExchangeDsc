@@ -1,3 +1,7 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscExamplesPresent", "")]
+[CmdletBinding()]
+param()
+
 function Get-TargetResource 
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -15,6 +19,7 @@ function Get-TargetResource
         
         [Parameter(Mandatory=$true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential
     )
     
@@ -46,6 +51,7 @@ function Set-TargetResource
         
         [Parameter(Mandatory=$true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential
     )
 
@@ -128,6 +134,7 @@ function Test-TargetResource
         
         [Parameter(Mandatory=$true)]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $Credential
     )
 
@@ -211,6 +218,11 @@ function GetInstallStatus
 #If any required keys are missing, configure WinRM, then force a reboot
 function CheckWSManConfig
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
+    [CmdletBinding()]
+    param
+    ()
+
     $needReboot = $false
 
     $wsmanKey = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN" -ErrorAction SilentlyContinue

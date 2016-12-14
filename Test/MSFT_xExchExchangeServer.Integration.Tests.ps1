@@ -25,7 +25,7 @@ function ClearServerADProp
     [CmdletBinding()]
     param($prop)
 
-    Get-ADObject -SearchBase "$($Global:ExchangeServerDN)" -Filter {ObjectClass -eq "msExchExchangeServer"} | where {$_.ObjectClass -eq "msExchExchangeServer"} | Set-ADObject -Clear "$($prop)"
+    Get-ADObject -SearchBase "$($Global:ExchangeServerDN)" -Filter {ObjectClass -eq "msExchExchangeServer"} | Where-Object {$_.ObjectClass -eq "msExchExchangeServer"} | Set-ADObject -Clear "$($prop)"
 }
 
 function VerifyServerPrepped
@@ -114,7 +114,7 @@ if ($null -ne $adModule)
                 ProductKey = "Licensed"
             }
 
-            Test-AllTargetResourceFunctions -Params $testParams -ContextLabel "Standard xExchExchangeServer tests" -ExpectedGetResults $expectedGetResults
+            Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Standard xExchExchangeServer tests" -ExpectedGetResults $expectedGetResults
         }
     }
     else

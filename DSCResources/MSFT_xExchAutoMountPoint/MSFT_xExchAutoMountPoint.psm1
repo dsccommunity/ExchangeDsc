@@ -1,3 +1,7 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscExamplesPresent", "")]
+[CmdletBinding()]
+param()
+
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -501,9 +505,6 @@ function GetDiskToDBMap
     #Get the DB path to a point where we know there will be a trailing \
     $dbpath = Join-Path -Path "$($AutoDagDatabasesRootFolderPath)" -ChildPath ""
 
-    #Keep track of a disk number for putting in the map
-    $i = 0
-
     #Will be the return value for DiskToDBMap
     [string[]]$dbMap = @()
 
@@ -717,12 +718,12 @@ function FindFirstAvailableVolumeNumber
         return 1
     }
 
-    $currentFolders = Get-ChildItem -LiteralPath "$($AutoDagVolumesRootFolderPath)" | where {$_.GetType().Name -eq "DirectoryInfo"} | Sort-Object
+    $currentFolders = Get-ChildItem -LiteralPath "$($AutoDagVolumesRootFolderPath)" | Where-Object {$_.GetType().Name -eq "DirectoryInfo"} | Sort-Object
 
     for ($i = 1; $i -lt 999; $i++)
     {
         $existing = $null
-        $existing = $currentFolders | where {$_.Name -eq "$($VolumePrefix)$($i)"}
+        $existing = $currentFolders | Where-Object {$_.Name -eq "$($VolumePrefix)$($i)"}
 
         if ($null -eq $existing)
         {
