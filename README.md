@@ -842,6 +842,8 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased
+
+### 1.12.0.0
 * xExchangeCommon : In StartScheduledTask corrected throw error check to throw last error when errorRegister has more than 0 errors instead of throwing error if errorRegister was not null, which would otherwise always be true.
 * Fix PSAvoidUsingWMICmdlet issues from PSScriptAnalyzer
 * Fix PSUseSingularNouns issues from PSScriptAnalyzer
@@ -853,6 +855,7 @@ Defaults to $false.
 * Fix array comparison issues by removing check for if array is null
 * Suppress PSDSCDscExamplesPresent PSScriptAnalyzer issues for resources that do have examples
 * Fix PSUseDeclaredVarsMoreThanAssignments issues from PSScriptAnalyzer
+* Remove requirements for second DAG member, or second Witness server, from MSFT_xExchDatabaseAvailabilityGroup.Integration.Tests
 
 ### 1.11.0.0
 * xExchActiveSyncVirtualDirectory: Fix issue where ClientCertAuth parameter set to "Allowed" instead of "Accepted"

@@ -2,8 +2,7 @@
 ###This module has the following additional requirements;
 ### * Requires that the ActiveDirectory module is installed
 ### * Requires that the DAG computer account has been precreated
-### * Requires at least two Exchange servers
-### * Requires two machines that can be used as File Share Witnesses
+### * Requires that the Failover-Clustering feature has been installed, and the machine has since been rebooted
 
 Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
 Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchDatabaseAvailabilityGroup\MSFT_xExchDatabaseAvailabilityGroup.psm1
@@ -31,6 +30,8 @@ function PrepTestDAG
     
     Write-Verbose "Cleaning up test DAG and related resources"
 
+    $secondServerSpecified = (([String]::IsNullOrEmpty($TestServerName2)) -eq $false)
+
     GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad "*-MailboxDatabase","*-DatabaseAvailabilityGroup","Remove-DatabaseAvailabilityGroupServer","Get-MailboxDatabaseCopyStatus","Remove-MailboxDatabaseCopy"
 
     $existingDB = Get-MailboxDatabase -Identity "$($TestDBName)" -Status -ErrorAction SilentlyContinue
@@ -38,14 +39,7 @@ function PrepTestDAG
     #First remove the test database copies
     if ($null -ne $existingDB)
     {
-        $mountedOnServer = $TestServerName1
-
-        if (($existingDB.MountedOnServer.ToLower().StartsWith($TestServerName2.ToLower())) -eq $true)
-        {
-            $mountedOnServer = $TestServerName2
-        }
-
-        Get-MailboxDatabaseCopyStatus -Identity "$($TestDBName)" | Where-Object {$_.MailboxServer -ne "$($mountedOnServer)"} | Remove-MailboxDatabaseCopy -Confirm:$false
+        Get-MailboxDatabaseCopyStatus -Identity "$($TestDBName)" | Where-Object {$existingDB.MountedOnServer.ToLower().Contains($_.MailboxServer.ToLower()) -eq $false} | Remove-MailboxDatabaseCopy -Confirm:$false
     }
 
     #Now remove the actual DB's
@@ -53,7 +47,11 @@ function PrepTestDAG
 
     #Remove the files
     Get-ChildItem -LiteralPath "\\$($TestServerName1)\c`$\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)" -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
-    Get-ChildItem -LiteralPath "\\$($TestServerName2)\c`$\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)" -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
+
+    if ($secondServerSpecified)
+    {
+        Get-ChildItem -LiteralPath "\\$($TestServerName2)\c`$\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)" -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
+    }
 
     #Last remove the test DAG
     $dag = Get-DatabaseAvailabilityGroup -Identity "$($TestDAGName)" -ErrorAction SilentlyContinue
@@ -120,17 +118,30 @@ if ($null -ne $adModule)
 
             if ($null -eq $Global:SecondDAGMember)
             {
-                $Global:SecondDAGMember = Read-Host -Prompt "Enter the host name of the second DAG member to use for testing"
+                $Global:SecondDAGMember = Read-Host -Prompt "Enter the host name of the second DAG member to use for testing, or press ENTER to skip."
+
+                #If they didn't enter anything, set to an empty string so we don't prompt again on a re-run of the test
+                if ($null -eq $Global:SecondDAGMember)
+                {
+                    $Global:SecondDAGMember = ""
+                }
             }
 
-            if ($null -eq $Global:Witness1)
+            while (([String]::IsNullOrEmpty($Global:Witness1)))
             {
                 $Global:Witness1 = Read-Host -Prompt "Enter the FQDN of the first File Share Witness for testing"
             }
 
+            #Allow for the second witness to not be specified
             if ($null -eq $Global:Witness2)
             {
-                $Global:Witness2 = Read-Host -Prompt "Enter the FQDN of the second File Share Witness for testing"
+                $Global:Witness2 = Read-Host -Prompt "Enter the FQDN of the second File Share Witness for testing, or press ENTER to skip."
+
+                #If they didn't enter anything, set to an empty string so we don't prompt again on a re-run of the test
+                if ($null -eq $Global:Witness2)
+                {
+                    $Global:Witness2 = ""
+                }
             }
 
             #Remove the existing DAG
@@ -141,8 +152,6 @@ if ($null -ne $adModule)
                 $dagTestParams = @{            
                     Name = $Global:DAGName
                     Credential = $Global:ShellCredentials
-                    AlternateWitnessServer = $Global:Witness2
-                    AlternateWitnessDirectory = "C:\FSW"
                     AutoDagAutoReseedEnabled = $true
                     AutoDagDatabaseCopiesPerDatabase = 2
                     AutoDagDatabaseCopiesPerVolume = 2
@@ -165,8 +174,6 @@ if ($null -ne $adModule)
                 #Skip checking DatacenterActivationMode until we have DAG members
                 $dagExpectedGetResults = @{
                     Name = $Global:DAGName
-                    AlternateWitnessServer = $Global:Witness2
-                    AlternateWitnessDirectory = "C:\FSW"
                     AutoDagAutoReseedEnabled = $true
                     AutoDagDatabaseCopiesPerDatabase = 2
                     AutoDagDatabaseCopiesPerVolume = 2
@@ -181,6 +188,14 @@ if ($null -ne $adModule)
                     ReplayLagManagerEnabled = $true
                     WitnessDirectory = "C:\FSW"
                     WitnessServer = $Global:Witness1
+                }
+
+                if (!([String]::IsNullOrEmpty($Global:Witness2)))
+                {
+                    $dagTestParams.Add("AlternateWitnessServer", $Global:Witness2)
+                    $dagTestParams.Add("AlternateWitnessDirectory", "C:\FSW")
+                    $dagExpectedGetResults.Add("AlternateWitnessServer", $Global:Witness2)
+                    $dagExpectedGetResults.Add("AlternateWitnessDirectory", "C:\FSW")
                 }
 
                 $serverVersion = GetExchangeVersion
@@ -213,75 +228,78 @@ if ($null -ne $adModule)
 
                 Test-TargetResourceFunctionality -Params $dagMemberTestParams -ContextLabel "Add first member to the test DAG" -ExpectedGetResults $dagMemberExpectedGetResults
 
+                #Do second DAG member tests if a second member was specified
+                if (([String]::IsNullOrEmpty($Global:SecondDAGMember)) -eq $false)
+                {               
+                    #Add second DAG member
+                    $dagMemberTestParams = @{
+                        MailboxServer = $Global:SecondDAGMember
+                        Credential = $Global:ShellCredentials
+                        DAGName = $Global:DAGName
+                        SkipDagValidation = $true
+                    }
 
-                #Add second DAG member
-                $dagMemberTestParams = @{
-                    MailboxServer = $Global:SecondDAGMember
-                    Credential = $Global:ShellCredentials
-                    DAGName = $Global:DAGName
-                    SkipDagValidation = $true
+                    $dagMemberExpectedGetResults = @{
+                        MailboxServer = $Global:SecondDAGMember
+                        DAGName = $Global:DAGName
+                    }
+
+                    Test-TargetResourceFunctionality -Params $dagMemberTestParams -ContextLabel "Add second member to the test DAG" -ExpectedGetResults $dagMemberExpectedGetResults
+
+
+                    #Test the DAG again, with props that only take effect once there are members
+                    Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
+                    Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchDatabaseAvailabilityGroup\MSFT_xExchDatabaseAvailabilityGroup.psm1
+
+                    $dagExpectedGetResults.DatacenterActivationMode = "DagOnly"
+
+                    Test-TargetResourceFunctionality -Params $dagTestParams -ContextLabel "Set remaining props on the test DAG" -ExpectedGetResults $dagExpectedGetResults
+                    Test-ArrayContentsEqual -TestParams $dagTestParams -DesiredArrayContents $dagTestParams.DatabaseAvailabilityGroupIpAddresses -GetResultParameterName "DatabaseAvailabilityGroupIpAddresses" -ContextLabel "Verify DatabaseAvailabilityGroupIpAddresses" -ItLabel "DatabaseAvailabilityGroupIpAddresses should contain two values"
+
+
+                    #Create a new DAG database
+                    Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
+                    Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchMailboxDatabase\MSFT_xExchMailboxDatabase.psm1
+
+                    $dagDBTestParams = @{
+                        Name = $Global:TestDBName
+                        Credential = $Global:ShellCredentials
+                        AllowServiceRestart = $true
+                        DatabaseCopyCount = 2        
+                        EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($Global:TestDBName)\$($Global:TestDBName).edb"
+                        LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($Global:TestDBName)"
+                        Server = $env:COMPUTERNAME
+                    }
+
+                    $dagDBExpectedGetResults = @{
+                        Name = $Global:TestDBName    
+                        EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($Global:TestDBName)\$($Global:TestDBName).edb"
+                        LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($Global:TestDBName)"
+                        Server = $env:COMPUTERNAME
+                    }
+
+                    Test-TargetResourceFunctionality -Params $dagDBTestParams -ContextLabel "Create test database" -ExpectedGetResults $dagDBExpectedGetResults
+
+
+                    #Add DB Copy
+                    Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
+                    Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchMailboxDatabaseCopy\MSFT_xExchMailboxDatabaseCopy.psm1
+
+                    $dagDBCopyTestParams = @{
+                        Identity = $Global:TestDBName
+                        MailboxServer = $Global:SecondDAGMember
+                        Credential = $Global:ShellCredentials
+                        ActivationPreference = 2
+                    }
+
+                    $dagDBCopyExpectedGetResults = @{
+                        Identity = $Global:TestDBName
+                        MailboxServer = $Global:SecondDAGMember
+                        ActivationPreference = 2
+                    }
+
+                    Test-TargetResourceFunctionality -Params $dagDBCopyTestParams -ContextLabel "Add a database copy" -ExpectedGetResults $dagDBCopyExpectedGetResults
                 }
-
-                $dagMemberExpectedGetResults = @{
-                    MailboxServer = $Global:SecondDAGMember
-                    DAGName = $Global:DAGName
-                }
-
-                Test-TargetResourceFunctionality -Params $dagMemberTestParams -ContextLabel "Add second member to the test DAG" -ExpectedGetResults $dagMemberExpectedGetResults
-
-
-                #Test the DAG again, with props that only take effect once there are members
-                Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
-                Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchDatabaseAvailabilityGroup\MSFT_xExchDatabaseAvailabilityGroup.psm1
-
-                $dagExpectedGetResults.DatacenterActivationMode = "DagOnly"
-
-                Test-TargetResourceFunctionality -Params $dagTestParams -ContextLabel "Set remaining props on the test DAG" -ExpectedGetResults $dagExpectedGetResults
-                Test-ArrayContentsEqual -TestParams $dagTestParams -DesiredArrayContents $dagTestParams.DatabaseAvailabilityGroupIpAddresses -GetResultParameterName "DatabaseAvailabilityGroupIpAddresses" -ContextLabel "Verify DatabaseAvailabilityGroupIpAddresses" -ItLabel "DatabaseAvailabilityGroupIpAddresses should contain two values"
-
-
-                #Create a new DAG database
-                Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
-                Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchMailboxDatabase\MSFT_xExchMailboxDatabase.psm1
-
-                $dagDBTestParams = @{
-                    Name = $Global:TestDBName
-                    Credential = $Global:ShellCredentials
-                    AllowServiceRestart = $true
-                    DatabaseCopyCount = 2        
-                    EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($Global:TestDBName)\$($Global:TestDBName).edb"
-                    LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($Global:TestDBName)"
-                    Server = $env:COMPUTERNAME
-                }
-
-                $dagDBExpectedGetResults = @{
-                    Name = $Global:TestDBName    
-                    EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($Global:TestDBName)\$($Global:TestDBName).edb"
-                    LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($Global:TestDBName)"
-                    Server = $env:COMPUTERNAME
-                }
-
-                Test-TargetResourceFunctionality -Params $dagDBTestParams -ContextLabel "Create test database" -ExpectedGetResults $dagDBExpectedGetResults
-
-
-                #Add DB Copy
-                Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
-                Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchMailboxDatabaseCopy\MSFT_xExchMailboxDatabaseCopy.psm1
-
-                $dagDBCopyTestParams = @{
-                    Identity = $Global:TestDBName
-                    MailboxServer = $Global:SecondDAGMember
-                    Credential = $Global:ShellCredentials
-                    ActivationPreference = 2
-                }
-
-                $dagDBCopyExpectedGetResults = @{
-                    Identity = $Global:TestDBName
-                    MailboxServer = $Global:SecondDAGMember
-                    ActivationPreference = 2
-                }
-
-                Test-TargetResourceFunctionality -Params $dagDBCopyTestParams -ContextLabel "Add a database copy" -ExpectedGetResults $dagDBCopyExpectedGetResults
             }
         }
         else
