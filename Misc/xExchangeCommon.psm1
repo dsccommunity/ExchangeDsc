@@ -528,14 +528,14 @@ function RemoveVersionSpecificParameters
 {
     param($PSBoundParametersIn, [string]$ParamName, [string]$ResourceName, [ValidateSet("2013","2016")][string]$ParamExistsInVersion)
 
-    if ($PSBoundParameters.ContainsKey($ParamName))
+    if ($PSBoundParametersIn.ContainsKey($ParamName))
     {
         $serverVersion = GetExchangeVersion
 
         if ($serverVersion -ne $ParamExistsInVersion)
         {
             Write-Warning "$($ParamName) is not a valid parameter for $($ResourceName) in Exchange $($serverVersion). Skipping usage."
-            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove $ParamName
+            RemoveParameters -PSBoundParametersIn $PSBoundParametersIn -ParamsToRemove $ParamName
         }
     }
 }
