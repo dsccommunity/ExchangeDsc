@@ -66,6 +66,7 @@ function Get-TargetResource
             $returnValue.Add("WacDiscoveryEndpoint", $server.WacDiscoveryEndpoint)
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
         elseif ($serverVersion -eq "2013")
         {
             $returnValue.Add("CalendarRepairWorkCycle", $server.CalendarRepairWorkCycle)
@@ -93,6 +94,8 @@ function Get-TargetResource
         {
           Write-Verbose -Message "Could not detect Exchange version"
         }
+=======
+>>>>>>> parent of 6866c82... Added missing parameters to xExchMailboxServer as of #159
 =======
 >>>>>>> parent of 6866c82... Added missing parameters to xExchMailboxServer as of #159
     }
