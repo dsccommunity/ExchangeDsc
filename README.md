@@ -389,16 +389,61 @@ Defaults to $false.
 
 **xExchMailboxServer** is used to configure Mailbox Server properties via Set-MailboxServer.
 
-Properties correspond to [Set-MailboxServer](https://technet.microsoft.com/en-us/library/aa998651(v=exchg.150).aspx) parameters.
+Properties correspond to [Set-MailboxServer](https://technet.microsoft.com/en-us/library/aa998651(v=exchg.160).aspx) parameters.
 
 * **Identity**: The Identity parameter specifies the Mailbox server that you want to modify.
 * **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
+* **AutoDatabaseMountDial**: The AutoDatabaseMountDial parameter specifies the automatic database mount behavior for a continuous replication environment after a database failover.
+* **CalendarRepairIntervalEndWindow**: The CalendarRepairIntervalEndWindow parameter specifies the number of days into the future to repair calendars. For example, if this parameter is set to 90, the Calendar Repair Assistant repairs calendars on this Mailbox server 90 days from now.
+* **CalendarRepairLogDirectorySizeLimit**: The CalendarRepairLogDirectorySizeLimit parameter specifies the size limit for all log files for the Calendar Repair Assistant. After the limit is reached, the oldest files are deleted.
+* **CalendarRepairLogEnabled**: The CalendarRepairLogEnabled parameter specifies whether the Calendar Repair Attendant logs items that it repairs. The repair log doesn't contain failed repair attempts.
+* **CalendarRepairLogFileAgeLimit**: The CalendarRepairLogFileAgeLimit parameter specifies how long to retain calendar repair logs. Log files that exceed the maximum retention period are deleted.
+* **CalendarRepairLogPath**: The CalendarRepairLogPath parameter specifies the location of the calendar repair log files on the Mailbox server.
+* **CalendarRepairLogSubjectLoggingEnabled**: The CalendarRepairLogSubjectLoggingEnabled parameter specifies that the subject of the repaired calendar item is logged in the calendar repair log.
+* **CalendarRepairMissingItemFixDisabled**: The CalendarRepairMissingItemFixDisabled parameter specifies that the Calendar Repair Assistant won't fix missing attendee calendar items for mailboxes homed on this Mailbox server.
+* **CalendarRepairMode**: The CalendarRepairMode parameter specifies the mode that the Calendar Repair Assistant will run in.
+* **CalendarRepairWorkCycle**: The CalendarRepairWorkCycle parameter specifies the time span in which all mailboxes on the specified server will be scanned by the Calendar Repair Assistant. Calendars that have inconsistencies will be flagged and repaired according to the interval specified by the CalendarRepairWorkCycleCheckpoint parameter.
+* **CalendarRepairWorkCycleCheckpoint**: The CalendarRepairWorkCycleCheckpoint parameter specifies the time span at which all mailboxes will be identified as needing work completed on them.
 * **DomainController**: The DomainController parameter specifies the fully qualified domain name (FQDN) of the domain controller that writes this configuration change to Active Directory.
 * **DatabaseCopyActivationDisabledAndMoveNow**: The DatabaseCopyActivationDisabledAndMoveNow parameter specifies whether to prevent databases from being mounted on this Mailbox server if there are other healthy copies of the databases on other Mailbox servers. It will also immediately move any mounted databases on the server to other servers if copies exist and are healthy.
 * **DatabaseCopyAutoActivationPolicy**: The DatabaseCopyAutoActivationPolicy parameter specifies the type of automatic activation available for mailbox database copies on the specified Mailbox server. Valid values are Blocked, IntrasiteOnly, and Unrestricted.
+* **FolderLogForManagedFoldersEnabled**: The FolderLogForManagedFoldersEnabled parameter specifies whether the folder log for managed folders is enabled for messages that were moved to managed folders.
+* **ForceGroupMetricsGeneration**: The ForceGroupMetricsGeneration parameter specifies that group metrics information must be generated on the Mailbox server regardless of whether that server generates an offline address book (OAB). By default, group metrics are generated only on servers that generate OABs. Group metrics information is used by MailTips to inform senders about how many recipients their messages will be sent to. You need to use this parameter if your organization doesn't generate OABs and you want the group metrics data to be available.
+* **IsExcludedFromProvisioning**: The IsExcludedFromProvisioning parameter specifies that the Mailbox server isn't considered by the OAB provisioning load balancer. If the IsExcludedFromProvisioning parameter is set to $true, the server won't be used for provisioning a new OAB or for moving existing OABs.
+* **JournalingLogForManagedFoldersEnabled**: The JournalingLogForManagedFoldersEnabled parameter specifies whether the log for managed folders is enabled for journaling. The two possible values for this parameter are $true or $false. If you specify $true, information about messages that were journaled is logged. The logs are located at the location you specify with the LogPathForManagedFolders parameter.
+* **Locale**: The Locale parameter specifies the locale. A locale is a collection of language-related user preferences such as writing system, calendar, and date format.
+* **LogDirectorySizeLimitForManagedFolders**: The LogDirectorySizeLimitForManagedFolders parameter specifies the size limit for all managed folder log files from a single message database. After the limit is reached for a set of managed folder log files from a message database, the oldest files are deleted to make space for new files.
+* **LogFileAgeLimitForManagedFolders**: The LogFileAgeLimitForManagedFolders parameter specifies how long to retain managed folder logs. Log files that exceed the maximum retention period are deleted.
+* **LogFileSizeLimitForManagedFolders**: The LogFileSizeLimitForManagedFolders parameter specifies the maximum size for each managed folder log file. When the log file size limit is reached, a new log file is created.
+* **LogPathForManagedFolders**: The LogPathForManagedFolders parameter specifies the path to the directory that stores the managed folder log files.
+* **MailboxProcessorWorkCycle**: The MailboxProcessorWorkCycle parameter specifies how often to scan for locked mailboxes.
+* **ManagedFolderAssistantSchedule**: The ManagedFolderAssistantSchedule parameter specifies the intervals each week during which the Managed Folder Assistant applies messaging records management (MRM) settings to managed folders. The format is StartDay.Time-EndDay.
+* **ManagedFolderWorkCycle**: The ManagedFolderWorkCycle parameter specifies the time span in which all mailboxes on the specified server will be processed by the Managed Folder Assistant. The Managed Folder Assistant applies retention policies according to the ManagedFolderWorkCycleCheckpoint interval.
+* **ManagedFolderWorkCycleCheckpoint**: The ManagedFolderWorkCycleCheckpoint parameter specifies the time span at which to refresh the list of mailboxes so that new mailboxes that have been created or moved will be part of the work queue. Also, as mailboxes are prioritized, existing mailboxes that haven't been successfully processed for a long time will be placed higher in the queue and will have a greater chance of being processed again in the same work cycle.
+* **MAPIEncryptionRequired**: The MAPIEncryptionRequired parameter specifies whether Exchange blocks MAPI clients that don't use encrypted remote procedure calls (RPCs).
 * **MaximumActiveDatabases**: The MaximumActiveDatabases parameter specifies the number of databases that can be mounted on this Mailbox server. This parameter accepts numeric values.
 * **MaximumPreferredActiveDatabases**: The MaximumPreferredActiveDatabases parameter specifies a preferred maximum number of databases that a server should have. This value is different from the actual maximum, which is configured using the MaximumActiveDatabases parameter. The value of MaximumPreferredActiveDatabases is only honored during best copy and server selection, database and server switchovers, and when rebalancing the DAG.
+* **OABGeneratorWorkCycle**: The OABGeneratorWorkCycle parameter specifies the time span in which the OAB generation on the specified server will be processed.
+* **OABGeneratorWorkCycleCheckpoint**: The OABGeneratorWorkCycleCheckpoint parameter specifies the time span at which to run OAB generation.
+* **PublicFolderWorkCycle**: The PublicFolderWorkCycle parameter is used by the public folder assistant to determine how often the mailboxes in a database are processed by the assistant.
+* **PublicFolderWorkCycleCheckpoint**: The PublicFolderWorkCycleCheckpoint determines how often the mailbox list for a database is evaluated. The processing speed is also calculated.
+* **RetentionLogForManagedFoldersEnabled**: The RetentionLogForManagedFoldersEnabled parameter specifies whether the Managed Folder Assistant logs information about messages that have reached their retention limits.
+* **SharingPolicySchedule**: The SharingPolicySchedule parameter specifies the intervals each week during which the sharing policy runs. The Sharing Policy Assistant checks permissions on shared calendar items and contact folders in users' mailboxes against the assigned sharing policy. The assistant lowers or removes permissions according to the policy. The format is StartDay.Time-EndDay.Time.
+* **SharingPolicyWorkCycle**: The SharingPolicyWorkCycle parameter specifies the time span in which all mailboxes on the specified server will be scanned by the Sharing Policy Assistant. The Sharing Policy Assistant scans all mailboxes and enables or disables sharing polices according to the interval specified by the SharingPolicyWorkCycle.
+* **SharingPolicyWorkCycleCheckpoint**: The SharingPolicyWorkCycleCheckpoint parameter specifies the time span at which to refresh the list of mailboxes so that new mailboxes that have been created or moved will be part of the work queue. Also, as mailboxes are prioritized, existing mailboxes that haven't been successfully processed for a long time will be placed higher in the queue and will have a greater chance of being processed again in the same work cycle.
+* **SharingSyncWorkCycle**: The SharingSyncWorkCycle parameter specifies the time span in which all mailboxes on the specified server will be synced to the cloud-based service by the Sharing Sync Assistant. Mailboxes that require syncing will be synced according to the interval specified by the SharingSyncWorkCycleCheckpoint parameter.
+* **SharingSyncWorkCycleCheckpoint**: The SharingSyncWorkCycleCheckpoint parameter specifies the time span at which to refresh the list of mailboxes so that new mailboxes that have been created or moved will be part of the work queue. Also, as mailboxes are prioritized, existing mailboxes that haven't been successfully processed for a long time will be placed higher in the queue and will have a greater chance of being processed again in the same work cycle.
+* **SiteMailboxWorkCycle**: The SiteMailboxWorkCycle parameter specifies the time span in which the site mailbox information on the specified server will be processed.
+* **SiteMailboxWorkCycleCheckpoint**: The SiteMailboxWorkCycleCheckpoint parameter specifies the time span at which to refresh the site mailbox workcycle.
+* **SubjectLogForManagedFoldersEnabled**: The SubjectLogForManagedFoldersEnabled parameter specifies whether the subject of messages is displayed in managed folder logs.
+* **TopNWorkCycle**: The TopNWorkCycle parameter specifies the time span in which all mailboxes that have Unified Messaging on the specified server will be scanned by the TopN Words Assistant. The TopN Words Assistant scans voice mail for the most frequently used words to aid in transcription.
+* **TopNWorkCycleCheckpoint**: The TopNWorkCycleCheckpoint parameter specifies the time span at which to refresh the list of mailboxes so that new mailboxes that have been created or moved will be part of the work queue. Also, as mailboxes are prioritized, existing mailboxes that haven't been successfully processed for a long time will be placed higher in the queue and will have a greater chance of being processed again in the same work cycle.
+* **UMReportingWorkCycle**: The UMReportingWorkCycle parameter specifies the time span in which the arbitration mailbox named SystemMailbox{e0dc1c29-89c3-4034-b678-e6c29d823ed9} on the specified server will be scanned by the Unified Messaging Reporting Assistant. The Unified Messaging Reporting Assistant updates the Call Statistics reports by reading Unified Messaging call data records for an organization on a regular basis.
+* **UMReportingWorkCycleCheckpoint**: The UMReportingWorkCycleCheckpoint parameter specifies the time span at which the arbitration mailbox named SystemMailbox{e0dc1c29-89c3-4034-b678-e6c29d823ed9} will be marked by processing.
 * **WacDiscoveryEndpoint**: The WacDiscoveryEndpoint parameter specifies the Office Online Server endpoint to use. Exchange 2016 only.
+
+#### Common Issues
+The parameter Locale doesn't work.
 
 ### xExchMailboxTransportService
 
@@ -842,6 +887,8 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased
+* Fix function RemoveVersionSpecificParameters
+* xExchMailboxServer: Added missing parameters except these, which are marked as 'This parameter is reserved for internal Microsoft use.'
 
 ### 1.12.0.0
 * xExchangeCommon : In StartScheduledTask corrected throw error check to throw last error when errorRegister has more than 0 errors instead of throwing error if errorRegister was not null, which would otherwise always be true.
