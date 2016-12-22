@@ -89,6 +89,7 @@ function Get-TargetResource
             $returnValue.Add("TopNWorkCycle", $server.TopNWorkCycle)
             $returnValue.Add("TopNWorkCycleCheckpoint", $server.TopNWorkCycleCheckpoint)
             $returnValue.Add("UMReportingWorkCycle", $server.UMReportingWorkCycle)
+            $returnValue.Add("SiteMailboxWorkCycle", $server.SiteMailboxWorkCycle)
             $returnValue.Add("UMReportingWorkCycleCheckpoint", $server.UMReportingWorkCycleCheckpoint)
         }
         else
