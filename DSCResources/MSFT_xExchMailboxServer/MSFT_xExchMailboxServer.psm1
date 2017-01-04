@@ -236,7 +236,6 @@ function Get-TargetResource
             $returnValue.Add("TopNWorkCycle", $server.TopNWorkCycle)
             $returnValue.Add("TopNWorkCycleCheckpoint", $server.TopNWorkCycleCheckpoint)
             $returnValue.Add("UMReportingWorkCycle", $server.UMReportingWorkCycle)
-            $returnValue.Add("SiteMailboxWorkCycle", $server.SiteMailboxWorkCycle)
             $returnValue.Add("UMReportingWorkCycleCheckpoint", $server.UMReportingWorkCycleCheckpoint)
         }
         else
@@ -842,7 +841,7 @@ function Test-TargetResource
             return $false
         }
 
-        if (!(VerifySetting -Name "SharingPolicyWorkCycleCheckpoint" -Type "TimeSpan" -ExpectedValue $SharingPolicyWorkCycleCheckpoint -ActualValue $server.SharingSyncWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "SharingPolicyWorkCycleCheckpoint" -Type "TimeSpan" -ExpectedValue $SharingPolicyWorkCycleCheckpoint -ActualValue $server.SharingPolicyWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
