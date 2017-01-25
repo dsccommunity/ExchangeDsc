@@ -887,6 +887,8 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased
+
+### 1.13.0.0
 * Fix function RemoveVersionSpecificParameters
 * xExchMailboxServer: Added missing parameters except these, which are marked as 'This parameter is reserved for internal Microsoft use.'
 
