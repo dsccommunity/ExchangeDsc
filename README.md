@@ -497,29 +497,29 @@ PipelineTracingSenderAddress
 * Set DatabaseCopyAutoActivationPolicy to Blocked
 * Set UMCallrouter to Draining
 * Execute TransportMaintenance.psm1 -> Start-TransportMaintenance
-	* Pause MSExchangeTransport service
-	* Wait for queues to drain
-	* Redirect remaining messages
-	* Set HubTransport component to Inactive
-	* Resume MSExchangeTransport
+    * Pause MSExchangeTransport service
+    * Wait for queues to drain
+    * Redirect remaining messages
+    * Set HubTransport component to Inactive
+    * Resume MSExchangeTransport
 * Wait up to 5 minutes for active UM calls to finish
 * Run StartDagServerMaintenance.psm1
-	* Set HighAvailability component to Inactive
-	* Suspend Cluster Node
-	* Move active databases: Move-ActiveMailboxDatabase -Server SERVER
-	* Move the Primary Active Manager role
+    * Set HighAvailability component to Inactive
+    * Suspend Cluster Node
+    * Move active databases: Move-ActiveMailboxDatabase -Server SERVER
+    * Move the Primary Active Manager role
 * Set ServerWideOffline component to Inactive
 
 #### Exiting Maintenance Mode
 * Set ServerWideOffline component to Active
 * Set UMCallrouter to Active
 * Run StopDagServerMaintenance.ps1
-	* Resume Cluster Node
-	* Set HubTransport component to Active
-	* Set DatabaseCopyAutoActivationPolicy to Unrestricted
+    * Resume Cluster Node
+    * Set HubTransport component to Active
+    * Set DatabaseCopyAutoActivationPolicy to Unrestricted
 * Execute TransportMaintenance.psm1 -> Stop-TransportMaintenance
-	* Set HubTransport component to Active
-	* Restart MSExchangeTransport service
+    * Set HubTransport component to Active
+    * Restart MSExchangeTransport service
 * Set Monitoring component to Active
 * Set RecoveryActionsEnabled component to Active
 * (OPTIONAL) Set each in an admin provided list of components to Active
