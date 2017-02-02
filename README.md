@@ -155,6 +155,7 @@ Where no description is listed, properties correspond directly to [Set-DatabaseA
 DatacenterActivationMode will not be set until that occurs.
 * **AlternateWitnessDirectory**
 * **AlternateWitnessServer**
+* **AutoDagAutoRedistributeEnabled**
 * **AutoDagAutoReseedEnabled**
 * **AutoDagDatabaseCopiesPerDatabase**
 * **AutoDagDatabaseCopiesPerVolume**
@@ -169,6 +170,7 @@ DatacenterActivationMode will not be set until that occurs.
 * **ManualDagNetworkConfiguration**
 * **NetworkCompression**
 * **NetworkEncryption**
+* **PreferenceMoveFrequency**
 * **ReplayLagManagerEnabled**
 * **ReplicationPort**
 * **WitnessDirectory**
@@ -178,6 +180,7 @@ DatacenterActivationMode will not be set until that occurs.
 #### Common Issues
 DAG creation will fail if the computer account of the node managing the DAG does not have permissions to create computers in Active Directory. 
 To avoid this issue, you may need to [make sure that the computer account for the DAG is prestaged](http://technet.microsoft.com/en-us/library/ff367878(v=exchg.150).aspx).
+To disable PreferenceMoveFrequency you have to use the following value:"$(([System.Threading.Timeout]::InfiniteTimeSpan).ToString())"
 
 ### xExchDatabaseAvailabilityGroupMember 
 
@@ -887,7 +890,7 @@ Defaults to $false.
 ## Versions
 
 ### Unreleased
-
+* xExchDatabaseAvailabilityGroup: Added parameter AutoDagAutoRedistributeEnabled,PreferenceMoveFrequency
 ### 1.13.0.0
 * Fix function RemoveVersionSpecificParameters
 * xExchMailboxServer: Added missing parameters except these, which are marked as 'This parameter is reserved for internal Microsoft use.'
