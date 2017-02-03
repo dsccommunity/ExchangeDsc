@@ -203,7 +203,11 @@ if ($null -ne $adModule)
                 if ($serverVersion -eq "2016")
                 {
                     $dagTestParams.Add("FileSystem", "ReFS")
+                    $dagTestParams.Add("AutoDagAutoRedistributeEnabled", $true)
+                    $dagTestParams.Add("PreferenceMoveFrequency", "$(([System.Threading.Timeout]::InfiniteTimeSpan).ToString())")
                     $dagExpectedGetResults.Add("FileSystem", "ReFS")
+                    $dagExpectedGetResults.Add("AutoDagAutoRedistributeEnabled", $true)
+                    $dagExpectedGetResults.Add("PreferenceMoveFrequency", "$(([System.Threading.Timeout]::InfiniteTimeSpan).ToString())")
                 }
 
                 Test-TargetResourceFunctionality -Params $dagTestParams -ContextLabel "Create the test DAG" -ExpectedGetResults $dagExpectedGetResults
