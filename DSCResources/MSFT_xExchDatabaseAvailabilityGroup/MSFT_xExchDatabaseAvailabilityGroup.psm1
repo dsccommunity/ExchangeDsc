@@ -30,6 +30,9 @@ function Get-TargetResource
         $AlternateWitnessServer,
 
         [System.Boolean]
+        $AutoDagAutoRedistributeEnabled,
+
+        [System.Boolean]
         $AutoDagAutoReseedEnabled,
 
         [System.Int32]
@@ -74,6 +77,9 @@ function Get-TargetResource
         [ValidateSet("Disabled","Enabled","InterSubnetOnly","SeedOnly")]
         [System.String]
         $NetworkEncryption,
+
+        [System.String]
+        $PreferenceMoveFrequency,
 
         [System.Boolean]
         $ReplayLagManagerEnabled,
@@ -130,7 +136,9 @@ function Get-TargetResource
 
         if ($serverVersion -eq "2016")
         {
+            $returnValue.Add("AutoDagAutoRedistributeEnabled", $dag.AutoDagAutoRedistributeEnabled)
             $returnValue.Add("FileSystem", $dag.FileSystem)
+            $returnValue.Add("PreferenceMoveFrequency", $dag.PreferenceMoveFrequency)
         }
     }
 
@@ -161,6 +169,9 @@ function Set-TargetResource
 
         [System.String]
         $AlternateWitnessServer,
+
+        [System.Boolean]
+        $AutoDagAutoRedistributeEnabled,
 
         [System.Boolean]
         $AutoDagAutoReseedEnabled,
@@ -208,6 +219,9 @@ function Set-TargetResource
         [System.String]
         $NetworkEncryption,
 
+        [System.String]
+        $PreferenceMoveFrequency,
+
         [System.Boolean]
         $ReplayLagManagerEnabled,
 
@@ -231,9 +245,28 @@ function Set-TargetResource
 
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-DatabaseAvailabilityGroup","Set-DatabaseAvailabilityGroup","New-DatabaseAvailabilityGroup" -VerbosePreference $VerbosePreference
-  
-    #Check for non-existent parameters in Exchange 2013
-    RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "FileSystem" -ResourceName "xExchDatabaseAvailabilityGroup" -ParamExistsInVersion "2016"
+
+    #create array of Exchange 2016 only parameters
+    [array]$Exchange2016Only = 'AutoDagAutoRedistributeEnabled','FileSystem','PreferenceMoveFrequency'
+
+    $serverVersion = GetExchangeVersion
+
+    if ($serverVersion -eq '2013')
+    {
+        foreach ($Exchange2016Parameter in $Exchange2016Only)
+        {
+            #Check for non-existent parameters in Exchange 2013
+            RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "$($Exchange2016Parameter)"  -ResourceName "xExchDatabaseAvailabilityGroup" -ParamExistsInVersion "2016"
+        }
+    }
+    elseif ($serverVersion -eq '2016')
+    {
+        Write-Verbose -Message "No need to remove parameters"
+    }
+    else
+    {
+        Write-Verbose -Message "Could not detect Exchange version"
+    }
 
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
@@ -310,6 +343,9 @@ function Test-TargetResource
         $AlternateWitnessServer,
 
         [System.Boolean]
+        $AutoDagAutoRedistributeEnabled,
+
+        [System.Boolean]
         $AutoDagAutoReseedEnabled,
 
         [System.Int32]
@@ -355,6 +391,9 @@ function Test-TargetResource
         [System.String]
         $NetworkEncryption,
 
+        [System.String]
+        $PreferenceMoveFrequency,
+
         [System.Boolean]
         $ReplayLagManagerEnabled,
 
@@ -379,8 +418,27 @@ function Test-TargetResource
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-DatabaseAvailabilityGroup" -VerbosePreference $VerbosePreference
 
-    #Check for non-existent parameters in Exchange 2013
-    RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "FileSystem" -ResourceName "xExchDatabaseAvailabilityGroup" -ParamExistsInVersion "2016"
+    #create array of Exchange 2016 only parameters
+    [array]$Exchange2016Only = 'AutoDagAutoRedistributeEnabled','FileSystem','PreferenceMoveFrequency'
+
+    $serverVersion = GetExchangeVersion
+
+    if ($serverVersion -eq '2013')
+    {
+        foreach ($Exchange2016Parameter in $Exchange2016Only)
+        {
+            #Check for non-existent parameters in Exchange 2013
+            RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "$($Exchange2016Parameter)"  -ResourceName "xExchDatabaseAvailabilityGroup" -ParamExistsInVersion "2016"
+        }
+    }
+    elseif ($serverVersion -eq '2016')
+    {
+        Write-Verbose -Message "No need to remove parameters"
+    }
+    else
+    {
+        Write-Verbose -Message "Could not detect Exchange version"
+    }
 
     $dag = GetDatabaseAvailabilityGroup @PSBoundParameters
 
@@ -396,6 +454,11 @@ function Test-TargetResource
         }
 
         if (!(VerifySetting -Name "AlternateWitnessServer" -Type "String" -ExpectedValue $AlternateWitnessServer -ActualValue $dag.AlternateWitnessServer -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (!(VerifySetting -Name "AutoDagAutoRedistributeEnabled" -Type "Boolean" -ExpectedValue $AutoDagAutoRedistributeEnabled -ActualValue $dag.AutoDagAutoRedistributeEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -465,7 +528,12 @@ function Test-TargetResource
             return $false
         }
 
-        if (!(VerifySetting -Name "ReplayLagManagerEnabled" -Type "Boolean" -ExpectedValue $ReplayLagManagerEnabled -ActualValue $dag.ReplayLagManagerEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "NetworkEncryption" -Type "String" -ExpectedValue $NetworkEncryption -ActualValue $dag.NetworkEncryption -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (!(VerifySetting -Name "PreferenceMoveFrequency" -Type "Timespan" -ExpectedValue $PreferenceMoveFrequency -ActualValue $dag.PreferenceMoveFrequency -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -528,6 +596,9 @@ function GetDatabaseAvailabilityGroup
         $AlternateWitnessServer,
 
         [System.Boolean]
+        $AutoDagAutoRedistributeEnabled,
+
+        [System.Boolean]
         $AutoDagAutoReseedEnabled,
 
         [System.Int32]
@@ -572,6 +643,9 @@ function GetDatabaseAvailabilityGroup
         [ValidateSet("Disabled","Enabled","InterSubnetOnly","SeedOnly")]
         [System.String]
         $NetworkEncryption,
+
+        [System.String]
+        $PreferenceMoveFrequency,
 
         [System.Boolean]
         $ReplayLagManagerEnabled,
