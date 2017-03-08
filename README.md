@@ -891,6 +891,8 @@ Defaults to $false.
 
 ### Unreleased
 
+### 1.14.0.0
+
 * xExchDatabaseAvailabilityGroup: Added parameter AutoDagAutoRedistributeEnabled,PreferenceMoveFrequency
 
 ### 1.13.0.0
