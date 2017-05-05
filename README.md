@@ -891,6 +891,8 @@ Defaults to $false.
 
 ### Unreleased
 
+* xExchDatabaseAvailabilityGroupMember: Added check to ensure Failover-Clustering role is installed before adding server to DAG.
+
 ### 1.14.0.0
 
 * xExchDatabaseAvailabilityGroup: Added parameter AutoDagAutoRedistributeEnabled,PreferenceMoveFrequency
