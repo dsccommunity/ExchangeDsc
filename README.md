@@ -892,6 +892,7 @@ Defaults to $false.
 ### Unreleased
 
 * xExchDatabaseAvailabilityGroupMember: Added check to ensure Failover-Clustering role is installed before adding server to DAG.
+* xExchInstall: Remove parameter '-AllowImmediateReboot $AllowImmediateReboot' when calling CheckWSManConfig.
 
 ### 1.14.0.0
 
