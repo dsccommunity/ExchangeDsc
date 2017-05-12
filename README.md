@@ -893,6 +893,7 @@ Defaults to $false.
 
 * xExchDatabaseAvailabilityGroupMember: Added check to ensure Failover-Clustering role is installed before adding server to DAG.
 * xExchInstall: Remove parameter '-AllowImmediateReboot $AllowImmediateReboot' when calling CheckWSManConfig.
+* xExchOutlookAnywhere: Add test for ExternalClientAuthenticationMethod.
 
 ### 1.14.0.0
 

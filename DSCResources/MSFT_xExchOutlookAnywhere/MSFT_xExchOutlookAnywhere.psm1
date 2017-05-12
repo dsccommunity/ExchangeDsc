@@ -273,6 +273,11 @@ function Test-TargetResource
             return $false
         }
 
+        if (!(VerifySetting -Name "ExternalClientAuthenticationMethod" -Type "String" -ExpectedValue $ExternalClientAuthenticationMethod -ActualValue $RpcVdir.ExternalClientAuthenticationMethod -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
         if (!(VerifySetting -Name "ExtendedProtectionTokenChecking" -Type "String" -ExpectedValue $ExtendedProtectionTokenChecking -ActualValue $RpcVdir.ExtendedProtectionTokenChecking -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
