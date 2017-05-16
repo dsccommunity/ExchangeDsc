@@ -64,10 +64,11 @@ function Set-TargetResource
     if ($installStatus.ShouldStartInstall -eq $true)
     {
         #Check if WSMan needs to be configured, as it will require an immediate reboot
-        $needReboot = CheckWSManConfig -AllowImmediateReboot $AllowImmediateReboot
+        $needReboot = CheckWSManConfig
 
         if ($needReboot -eq $true)
         {
+            Write-Warning "Server needs a reboot before the installation of Exchange can begin."
             return
         }
 
@@ -220,6 +221,7 @@ function CheckWSManConfig
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
     [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param
     ()
 
