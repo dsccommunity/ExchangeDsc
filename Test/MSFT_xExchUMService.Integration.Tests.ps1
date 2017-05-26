@@ -7,6 +7,8 @@ Import-Module $PSScriptRoot\xExchange.Tests.Common.psm1 -Verbose:0
 #Check if Exchange is installed on this machine. If not, we can't run tests
 [bool]$exchangeInstalled = IsSetupComplete
 
+$testUMDPName = "UMDP (DSC Test)"
+
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
@@ -15,9 +17,19 @@ if ($exchangeInstalled)
         [PSCredential]$Global:ShellCredentials = Get-Credential -Message "Enter credentials for connecting a Remote PowerShell session to Exchange"
     }
 
-    if ($null -eq $Global:UMDialPlan)
+    #Check if the test UM Dial Plan exists, and if not, create it
+    GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad "*-UMDialPlan"
+
+    if ($null -eq (Get-UMDialPlan -Identity $testUMDPName -ErrorAction SilentlyContinue))
     {
-        $Global:UMDialPlan = Read-Host -Prompt "Enter the name of the existing UM Dial Plan to test with"
+        Write-Verbose "Test UM Dial Plan does not exist. Creating UM Dial Plan with name '$testUMDPName'."
+
+        $testUMDP = New-UMDialPlan -Name $testUMDPName -URIType SipName -CountryOrRegionCode 1 -NumberOfDigitsInExtension 10
+
+        if ($null -eq $testUMDP)
+        {
+            throw "Failed to create test UM Dial Plan."
+        }
     }
 
     Describe "Test Setting Properties with xExchUMService" {
@@ -37,9 +49,9 @@ if ($exchangeInstalled)
         Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.DialPlans -GetResultParameterName "DialPlans" -ContextLabel "Verify DialPlans" -ItLabel "DialPlans should be empty"
 
         $testParams.UMStartupMode = "Dual"
-        $testParams.DialPlans = @($Global:UMDialPlan)
+        $testParams.DialPlans = @($testUMDPName)
         $expectedGetResults.UMStartupMode = "Dual"
-        $expectedGetResults.DialPlans = @($Global:UMDialPlan)
+        $expectedGetResults.DialPlans = @($testUMDPName)
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Change some parameters" -ExpectedGetResults $expectedGetResults
         Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.DialPlans -GetResultParameterName "DialPlans" -ContextLabel "Verify DialPlans" -ItLabel "DialPlans should contain a value"
