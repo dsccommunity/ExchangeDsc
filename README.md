@@ -895,6 +895,7 @@ Defaults to $false.
 * xExchInstall: Remove parameter '-AllowImmediateReboot $AllowImmediateReboot' when calling CheckWSManConfig.
 * xExchOutlookAnywhere: Add test for ExternalClientAuthenticationMethod.
 * Test: Update OAB and UMService tests to create test OAB and UMDialPlans, respectively.
+* Test: Update MailboxDatabase tests to use test OAB. Update DAG to skip DAG tests and write error if cluster feature not installed.
 
 ### 1.14.0.0
 
