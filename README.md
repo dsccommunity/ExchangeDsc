@@ -891,6 +891,13 @@ Defaults to $false.
 
 ### Unreleased
 
+### 1.15.0.0
+
+* xExchDatabaseAvailabilityGroupMember: Added check to ensure Failover-Clustering role is installed before adding server to DAG.
+* xExchInstall: Remove parameter '-AllowImmediateReboot $AllowImmediateReboot' when calling CheckWSManConfig.
+* xExchOutlookAnywhere: Add test for ExternalClientAuthenticationMethod.
+* Test: Update OAB and UMService tests to create test OAB and UMDialPlans, respectively.
+
 ### 1.14.0.0
 
 * xExchDatabaseAvailabilityGroup: Added parameter AutoDagAutoRedistributeEnabled,PreferenceMoveFrequency
