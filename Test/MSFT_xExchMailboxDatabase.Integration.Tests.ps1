@@ -45,6 +45,9 @@ if ($exchangeInstalled)
 
     PrepTestDB -TestDBName $TestDBName
 
+    #Get the test OAB
+    $testOabName = Get-TestOfflineAddressBook -ShellCredentials $Global:ShellCredentials
+
     Describe "Test Creating a DB and Setting Properties with xExchMailboxDatabase" {
         $testParams = @{
             Name = $TestDBName
@@ -65,7 +68,7 @@ if ($exchangeInstalled)
             IsSuspendedFromProvisioning = $false
             MailboxRetention = "30.00:00:00"
             MountAtStartup = $true
-            OfflineAddressBook = "Default Offline Address Book (Ex2013)"
+            OfflineAddressBook = $testOabName
             RetainDeletedItemsUntilBackup = $false
             IssueWarningQuota = "27 MB"
             ProhibitSendQuota = "1GB"
@@ -91,7 +94,7 @@ if ($exchangeInstalled)
             IsSuspendedFromProvisioning = $false
             MailboxRetention = "30.00:00:00"
             MountAtStartup = $true
-            OfflineAddressBook = "\Default Offline Address Book (Ex2013)"
+            OfflineAddressBook = "\$testOabName"
             RetainDeletedItemsUntilBackup = $false
             IssueWarningQuota = "27 MB"
             ProhibitSendQuota = "1GB"
@@ -121,7 +124,7 @@ if ($exchangeInstalled)
             IsSuspendedFromProvisioning = $true
             MailboxRetention = "31.00:00:00"
             MountAtStartup = $false
-            OfflineAddressBook = "Default Offline Address Book (Ex2013)"
+            OfflineAddressBook = $testOabName
             RetainDeletedItemsUntilBackup = $true
             IssueWarningQuota = "28 MB"
             ProhibitSendQuota = "2GB"
@@ -147,7 +150,7 @@ if ($exchangeInstalled)
             IsSuspendedFromProvisioning = $true
             MailboxRetention = "31.00:00:00"
             MountAtStartup = $false
-            OfflineAddressBook = "\Default Offline Address Book (Ex2013)"
+            OfflineAddressBook = "\$testOabName"
             RetainDeletedItemsUntilBackup = $true
             IssueWarningQuota = "28 MB"
             ProhibitSendQuota = "2GB"
