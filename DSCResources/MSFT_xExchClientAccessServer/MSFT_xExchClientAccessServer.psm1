@@ -19,14 +19,25 @@ function Get-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        [ValidateNotNullOrEmpty()]
+        $AlternateServiceAccountCredential,
+
         [System.String]
         $AutoDiscoverServiceInternalUri,
 
         [System.String[]]
         $AutoDiscoverSiteScope,
 
+        [System.Boolean]
+        $CleanUpInvalidAlternateServiceAccountCredentials,
+
         [System.String]
-        $DomainController
+        $DomainController,
+
+        [System.Boolean]
+        $RemoveAlternateServiceAccountCredentials
     )
 
     #Load helper module
@@ -45,11 +56,19 @@ function Get-TargetResource
         {
             $sites = $cas.AutoDiscoverSiteScope.ToArray()
         }
-
         $returnValue = @{
             Identity = $Identity
             AutoDiscoverServiceInternalUri = $cas.AutoDiscoverServiceInternalUri
             AutoDiscoverSiteScope = $sites
+            CleanUpInvalidAlternateServiceAccountCredentials = $CleanUpInvalidAlternateServiceAccountCredentials
+            DomainController = $DomainController
+            RemoveAlternateServiceAccountCredentials = $RemoveAlternateServiceAccountCredentials
+        }
+        if ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials.Count -gt 0)
+        {
+            $UserName = ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | sort WhenAddedUTC | select -Last 1).Credential.UserName
+            $PassWord = ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | sort WhenAddedUTC | select -Last 1).Credential.GetNetworkCredential().Password
+            $returnValue.Add("AlternateServiceAccountCredential","UserName:$UserName Password:$PassWord")
         }
     }
 
@@ -72,14 +91,25 @@ function Set-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        [ValidateNotNullOrEmpty()]
+        $AlternateServiceAccountCredential,
+
         [System.String]
         $AutoDiscoverServiceInternalUri,
 
         [System.String[]]
         $AutoDiscoverSiteScope,
 
+        [System.Boolean]
+        $CleanUpInvalidAlternateServiceAccountCredentials,
+
         [System.String]
-        $DomainController
+        $DomainController,
+
+        [System.Boolean]
+        $RemoveAlternateServiceAccountCredentials
     )
 
     #Load helper module
@@ -123,14 +153,25 @@ function Test-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        [ValidateNotNullOrEmpty()]
+        $AlternateServiceAccountCredential,
+
         [System.String]
         $AutoDiscoverServiceInternalUri,
 
         [System.String[]]
         $AutoDiscoverSiteScope,
 
+        [System.Boolean]
+        $CleanUpInvalidAlternateServiceAccountCredentials,
+
         [System.String]
-        $DomainController
+        $DomainController,
+
+        [System.Boolean]
+        $RemoveAlternateServiceAccountCredentials
     )
 
     #Load helper module
@@ -142,6 +183,8 @@ function Test-TargetResource
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ClientAccessServ*" -VerbosePreference $VerbosePreference
 
     $cas = GetClientAccessServer @PSBoundParameters
+
+    $serverVersion = GetExchangeVersion -ThrowIfUnknownVersion $true
 
     if ($null -eq $cas)
     {
@@ -155,6 +198,11 @@ function Test-TargetResource
         }
 
         if (!(VerifySetting -Name "AutoDiscoverSiteScope" -Type "Array" -ExpectedValue $AutoDiscoverSiteScope -ActualValue $cas.AutoDiscoverSiteScope -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (!(VerifySetting -Name "AlternateServiceAccountCredential" -Type "PSCredential" -ExpectedValue $AlternateServiceAccountCredential -ActualValue ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | sort WhenAddedUTC | select -Last 1).Credential $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -178,20 +226,35 @@ function GetClientAccessServer
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        [ValidateNotNullOrEmpty()]
+        $AlternateServiceAccountCredential,
+
         [System.String]
         $AutoDiscoverServiceInternalUri,
 
         [System.String[]]
         $AutoDiscoverSiteScope,
 
+        [System.Boolean]
+        $CleanUpInvalidAlternateServiceAccountCredentials,
+
         [System.String]
-        $DomainController
+        $DomainController,
+
+        [System.Boolean]
+        $RemoveAlternateServiceAccountCredentials
     )
 
     #Remove params we don't want to pass into the next command
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
 
     $serverVersion = GetExchangeVersion -ThrowIfUnknownVersion $true
+    if ($null -ne $AlternateServiceAccountCredential)
+    {
+        $PSBoundParameters.Add('IncludeAlternateServiceAccountCredentialPassword',$true)
+    }
 
     if ($serverVersion -eq "2016")
     {
