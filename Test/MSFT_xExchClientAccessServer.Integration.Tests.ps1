@@ -66,6 +66,7 @@ if ($exchangeInstalled)
         if ($null -eq $Global:ASACredentials)
         {
             $UserASA = "Fabrikam\ASA"
+            $PWordASA = ConvertTo-SecureString -String 'Pa$$w0rd!' -AsPlainText -Force
             $Global:ASACredentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $UserASA, $PWordASA
         }
 
