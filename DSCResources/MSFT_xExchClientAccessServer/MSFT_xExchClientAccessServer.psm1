@@ -112,6 +112,17 @@ function Set-TargetResource
         $RemoveAlternateServiceAccountCredentials
     )
 
+    #check for ambiguous parameter
+    if (($AlternateServiceAccountCredential -and $RemoveAlternateServiceAccountCredentials) -or ($CleanUpInvalidAlternateServiceAccountCredentials -and $RemoveAlternateServiceAccountCredentials))
+    {
+        throw "Ambiguous parameter detected! Don't combine AlternateServiceAccountCredential with RemoveAlternateServiceAccountCredentials or CleanUpInvalidAlternateServiceAccountCredentials with RemoveAlternateServiceAccountCredentials!"
+    }
+    #check if credentials are in correct format DOMAIN\USERNAME
+    $parts = @($AlternateServiceAccountCredential.Username.Split('\'))
+    if ($parts.Count -ne 2 -or $parts[0] -eq '')
+    {
+        throw "The username must be fully qualified!"
+    }
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
@@ -206,6 +217,14 @@ function Test-TargetResource
         {
             return $false
         }
+        if ($CleanUpInvalidAlternateServiceAccountCredentials)
+        {
+            return $false
+        }
+        if ($RemoveAlternateServiceAccountCredentials -and ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials.Count -gt 0))
+        {
+            return $false
+        }
     }
 
     return $true
@@ -251,7 +270,7 @@ function GetClientAccessServer
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
 
     $serverVersion = GetExchangeVersion -ThrowIfUnknownVersion $true
-    if ($null -ne $AlternateServiceAccountCredential)
+    if (($null -ne $AlternateServiceAccountCredential) -or ($RemoveAlternateServiceAccountCredentials))
     {
         $PSBoundParameters.Add('IncludeAlternateServiceAccountCredentialPassword',$true)
     }
