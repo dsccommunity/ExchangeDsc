@@ -10,6 +10,9 @@ class MSFT_xExchClientAccessServer : OMI_BaseResource
     [Write] String AutoDiscoverServiceInternalUri;
     [Write] String AutoDiscoverSiteScope[];
     [Write] String DomainController;
+    [Write, EmbeddedInstance("MSFT_Credential")] String AlternateServiceAccountCredential;
+    [Write] Boolean CleanUpInvalidAlternateServiceAccountCredentials;
+    [Write] Boolean RemoveAlternateServiceAccountCredentials;
 };
 
 

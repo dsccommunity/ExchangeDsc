@@ -60,6 +60,31 @@ if ($exchangeInstalled)
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set site scope to null" -ExpectedGetResults $expectedGetResults
         Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.AutoDiscoverSiteScope -GetResultParameterName "AutoDiscoverSiteScope" -ContextLabel "Verify AutoDiscoverSiteScope" -ItLabel "AutoDiscoverSiteScope should be empty"
+
+
+        #create ASA credentials
+        if ($null -eq $Global:ASACredentials)
+        {
+            $UserASA = "Fabrikam\ASA"
+            $PWordASA = ConvertTo-SecureString -String 'Pa$$w0rd!' -AsPlainText -Force
+            $Global:ASACredentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $UserASA, $PWordASA
+        }
+
+        #Now set ASA account
+        $testParams.Remove('AutoDiscoverSiteScope')
+        $testParams.Remove('AutoDiscoverServiceInternalUri')
+        $testParams.Add('AlternateServiceAccountCredential',$Global:ASACredentials)
+        $expectedGetResults.Add('AlternateServiceAccountCredential','UserName:Fabrikam\ASA Password:Pa$$w0rd!')
+        
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set AlternateServiceAccountCredential" -ExpectedGetResults $expectedGetResults
+
+        
+        #Now clear ASA account credentials
+        $testParams.Remove('AlternateServiceAccountCredential')
+        $testParams.RemoveAlternateServiceAccountCredentials = $true
+        $expectedGetResults.Remove('AlternateServiceAccountCredential')
+
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Clear AlternateServiceAccountCredential" -ExpectedGetResults $expectedGetResults
     }
 }
 else

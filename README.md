@@ -140,6 +140,9 @@ Where no description is listed, properties correspond directly to [Set-ClientAcc
 * **AutoDiscoverServiceInternalUri**
 * **AutoDiscoverSiteScope**
 * **DomainController**
+* **AlternateServiceAccountCredential**
+* **CleanUpInvalidAlternateServiceAccountCredentials**
+* **RemoveAlternateServiceAccountCredentials**
 
 ### xExchDatabaseAvailabilityGroup
 
