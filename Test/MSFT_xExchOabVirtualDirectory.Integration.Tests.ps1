@@ -7,8 +7,6 @@ Import-Module $PSScriptRoot\xExchange.Tests.Common.psm1 -Verbose:0
 #Check if Exchange is installed on this machine. If not, we can't run tests
 [bool]$exchangeInstalled = IsSetupComplete
 
-$testOabName = "Offline Address Book (DSC Test)"
-
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
@@ -23,20 +21,8 @@ if ($exchangeInstalled)
         $Global:ServerFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
-    #Check if the test OAB exists, and if not, create it
-    GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad "*-OfflineAddressBook"
-
-    if ($null -eq (Get-OfflineAddressBook -Identity $testOabName -ErrorAction SilentlyContinue))
-    {
-        Write-Verbose "Test OAB does not exist. Creating OAB with name '$testOabName'."
-
-        $testOab = New-OfflineAddressBook -Name $testOabName -AddressLists \
-
-        if ($null -eq $testOab)
-        {
-            throw "Failed to create test OAB."
-        }
-    }
+    #Get the test OAB
+    $testOabName = Get-TestOfflineAddressBook -ShellCredentials $Global:ShellCredentials
 
     Describe "Test Setting Properties with xExchOabVirtualDirectory" {
         $testParams = @{

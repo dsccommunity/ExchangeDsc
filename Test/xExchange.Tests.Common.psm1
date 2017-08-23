@@ -72,6 +72,30 @@ function Test-Array2ContainsArray1
     }
 }
 
-Array2ContainsArray1Contents
+#Creates a test OAB for DSC, or sees if it exists. If it is created or exists, return the name of the OAB.
+function Get-TestOfflineAddressBook
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param([PSCredential]$ShellCredentials)
+
+    $testOabName = "Offline Address Book (DSC Test)"
+
+    GetRemoteExchangeSession -Credential $ShellCredentials -CommandsToLoad "*-OfflineAddressBook"
+
+    if ($null -eq (Get-OfflineAddressBook -Identity $testOabName -ErrorAction SilentlyContinue))
+    {
+        Write-Verbose "Test OAB does not exist. Creating OAB with name '$testOabName'."
+
+        $testOab = New-OfflineAddressBook -Name $testOabName -AddressLists \
+
+        if ($null -eq $testOab)
+        {
+            throw "Failed to create test OAB."
+        }
+    }
+
+    return $testOabName
+}
 
 Export-ModuleMember -Function *

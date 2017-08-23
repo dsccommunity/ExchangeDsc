@@ -649,6 +649,13 @@ function VerifySetting
                 $returnValue = $false
             }
         }
+        elseif ($Type -like "PSCredential")
+        {
+            if ((Compare-PSCredential -Cred1 $ActualValue -Cred2 $ExpectedValue ) -eq $false)
+            {
+                $returnValue = $false
+            }        
+        }
         else
         {
             throw "Type not found: $($Type)"
@@ -938,6 +945,47 @@ function CompareIPAddressesWithArray
         ReportBadSetting -SettingName $IPAddresses -ExpectedValue $ExpectedValue -ActualValue $IPAddress -VerbosePreference $VerbosePreference
     }
     return $returnValue
+}
+
+#Compares two give PSCredential
+function Compare-PSCredential
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param (
+        #[System.Management.Automation.PSCredential]
+        #[System.Management.Automation.Credential()]
+        $Cred1,
+
+        #[System.Management.Automation.PSCredential]
+        #[System.Management.Automation.Credential()]
+        $Cred2
+    )
+Begin {
+    $returnValue = $false
+    if ($null -ne $Cred1) {
+        $Cred1User = $Cred1.UserName
+        $Cred1Password = $Cred1.GetNetworkCredential().Password
+    }
+    if ($null -ne $Cred2) {
+        $Cred2User = $Cred2.UserName
+        $Cred2Password = $Cred2.GetNetworkCredential().Password
+    }
+}
+Process {
+    if (($Cred1User -ceq $Cred2User) -and ($Cred1Password -ceq $Cred2Password)){
+        Write-Verbose "Credentials match"
+        $returnValue = $true
+    }
+    else{
+        Write-Verbose "Credentials don't match"
+        Write-Verbose "Cred1:$($Cred1User) Cred2:$($Cred2User)"
+        Write-Verbose "Cred1:$($Cred1Password) Cred2:$($Cred2Password)"
+    }
+}
+End {
+    return $returnValue
+}
 }
 
 Export-ModuleMember -Function *
