@@ -894,6 +894,8 @@ Defaults to $false.
 
 ### Unreleased
 
+* Add missing parameters to xExchClientAccessServer
+
 ### 1.15.0.0
 
 * xExchDatabaseAvailabilityGroupMember: Added check to ensure Failover-Clustering role is installed before adding server to DAG.
