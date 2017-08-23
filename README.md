@@ -894,6 +894,8 @@ Defaults to $false.
 
 ### Unreleased
 
+### 1.16.0.0
+
 * Add missing parameters to xExchClientAccessServer
 
 ### 1.15.0.0
