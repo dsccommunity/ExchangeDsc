@@ -344,7 +344,11 @@ function CompareUnlimitedWithString
 {
     param($Unlimited, [string]$String)
 
-    if ($Unlimited.IsUnlimited)
+    if (!$Unlimited.IsUnlimited -and $String -like "Unlimited")
+    {
+        return $false
+    }
+    elseif ($Unlimited.IsUnlimited)
     {
         return (CompareStrings -String1 "Unlimited" -String2 $String -IgnoreCase)
     }
