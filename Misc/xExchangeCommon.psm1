@@ -344,9 +344,16 @@ function CompareUnlimitedWithString
 {
     param($Unlimited, [string]$String)
 
-    if ($Unlimited.IsUnlimited)
+    if ($null -ne ($Unlimited | Get-Member -Name IsUnlimited -ErrorAction SilentlyContinue))
     {
-        return (CompareStrings -String1 "Unlimited" -String2 $String -IgnoreCase)
+        if ($Unlimited.IsUnlimited)
+        {
+            return (CompareStrings -String1 "Unlimited" -String2 $String -IgnoreCase)
+        }
+        else
+        {
+            return !(CompareStrings -String1 "Unlimited" -String2 $String -IgnoreCase)
+        }
     }
     elseif ($Unlimited.Value.GetType() -ne [Microsoft.Exchange.Data.ByteQuantifiedSize])
     {

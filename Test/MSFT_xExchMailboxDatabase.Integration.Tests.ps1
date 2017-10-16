@@ -49,6 +49,7 @@ if ($exchangeInstalled)
     $testOabName = Get-TestOfflineAddressBook -ShellCredentials $Global:ShellCredentials
 
     Describe "Test Creating a DB and Setting Properties with xExchMailboxDatabase" {
+        #First create and set properties on a test database
         $testParams = @{
             Name = $TestDBName
             Credential = $Global:ShellCredentials
@@ -105,59 +106,38 @@ if ($exchangeInstalled)
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Create Test Database" -ExpectedGetResults $expectedGetResults        
 
-        $testParams = @{
-            Name = $TestDBName
-            Credential = $Global:ShellCredentials
-            Server = $env:COMPUTERNAME
-            EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)\$($TestDBName).edb"
-            LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)"         
-            AllowServiceRestart = $true
-            AutoDagExcludeFromMonitoring = $true
-            BackgroundDatabaseMaintenance = $true
-            CalendarLoggingQuota = "30mb"
-            CircularLoggingEnabled = $false
-            DatabaseCopyCount = 1
-            DeletedItemRetention = "15.00:00:00"
-            EventHistoryRetentionPeriod = "04:05:06"
-            IndexEnabled = $false
-            IsExcludedFromProvisioning = $true
-            IsSuspendedFromProvisioning = $true
-            MailboxRetention = "31.00:00:00"
-            MountAtStartup = $false
-            OfflineAddressBook = $testOabName
-            RetainDeletedItemsUntilBackup = $true
-            IssueWarningQuota = "28 MB"
-            ProhibitSendQuota = "2GB"
-            ProhibitSendReceiveQuota = "2.5 GB"
-            RecoverableItemsQuota = "2 GB"
-            RecoverableItemsWarningQuota = "1.5 GB"
-        }
+        #Now change properties on the test database
+        $testParams.CalendarLoggingQuota = "30mb"
+        $testParams.CircularLoggingEnabled = $false
+        $testParams.DeletedItemRetention = "15.00:00:00"
+        $testParams.EventHistoryRetentionPeriod = "04:05:06"
+        $testParams.IndexEnabled = $false
+        $testParams.IsExcludedFromProvisioning = $true
+        $testParams.IsSuspendedFromProvisioning = $true
+        $testParams.MailboxRetention = "31.00:00:00"
+        $testParams.MountAtStartup = $false
+        $testParams.RetainDeletedItemsUntilBackup = $true
+        $testParams.IssueWarningQuota = "28 MB"
+        $testParams.ProhibitSendQuota = "2GB"
+        $testParams.ProhibitSendReceiveQuota = "2.5 GB"
+        $testParams.RecoverableItemsQuota = "2 GB"
+        $testParams.RecoverableItemsWarningQuota = "1.5 GB"
 
-        $expectedGetResults = @{
-            Name = $TestDBName
-            Server = $env:COMPUTERNAME
-            EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)\$($TestDBName).edb"
-            LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)"         
-            AutoDagExcludeFromMonitoring = $true
-            BackgroundDatabaseMaintenance = $true
-            CalendarLoggingQuota = "30mb"
-            CircularLoggingEnabled = $false
-            DatabaseCopyCount = 1
-            DeletedItemRetention = "15.00:00:00"
-            EventHistoryRetentionPeriod = "04:05:06"
-            IndexEnabled = $false
-            IsExcludedFromProvisioning = $true
-            IsSuspendedFromProvisioning = $true
-            MailboxRetention = "31.00:00:00"
-            MountAtStartup = $false
-            OfflineAddressBook = "\$testOabName"
-            RetainDeletedItemsUntilBackup = $true
-            IssueWarningQuota = "28 MB"
-            ProhibitSendQuota = "2GB"
-            ProhibitSendReceiveQuota = "2.5 GB"
-            RecoverableItemsQuota = "2 GB"
-            RecoverableItemsWarningQuota = "1.5 GB"
-        }
+        $expectedGetResults.CalendarLoggingQuota = "30mb"
+        $expectedGetResults.CircularLoggingEnabled = $false
+        $expectedGetResults.DeletedItemRetention = "15.00:00:00"
+        $expectedGetResults.EventHistoryRetentionPeriod = "04:05:06"
+        $expectedGetResults.IndexEnabled = $false
+        $expectedGetResults.IsExcludedFromProvisioning = $true
+        $expectedGetResults.IsSuspendedFromProvisioning = $true
+        $expectedGetResults.MailboxRetention = "31.00:00:00"
+        $expectedGetResults.MountAtStartup = $false
+        $expectedGetResults.RetainDeletedItemsUntilBackup = $true
+        $expectedGetResults.IssueWarningQuota = "28 MB"
+        $expectedGetResults.ProhibitSendQuota = "2GB"
+        $expectedGetResults.ProhibitSendReceiveQuota = "2.5 GB"
+        $expectedGetResults.RecoverableItemsQuota = "2 GB"
+        $expectedGetResults.RecoverableItemsWarningQuota = "1.5 GB"
 
         $serverVersion = GetExchangeVersion
 
@@ -168,6 +148,49 @@ if ($exchangeInstalled)
         }
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Change many DB properties" -ExpectedGetResults $expectedGetResults
+
+        #Test setting database quotas to unlimited, when they aren't already unlimited.
+        #To reproduce the issue in (https://github.com/PowerShell/xExchange/issues/193), you must run
+        #Test-TargetResource with an Unlimited parameter when the current value is not Unlimited.
+        #If the current value is already Unlimited, the Test will succeed.
+        Context "Test Unlimited Bug" {
+            $caughtException = $false
+
+            #First set a quota to a non-Unlimited value
+            $testParams.ProhibitSendReceiveQuota = "10GB"
+            Set-TargetResource @testParams 
+
+            #Now test for the value and look to see if it's Unlimited
+            $testParams.ProhibitSendReceiveQuota = "Unlimited"
+
+            try
+            {
+                Test-TargetResource @testParams
+            }
+            catch
+            {
+                $caughtException = $true
+            }
+
+            It "Should not hit exception trying to test for Unlimited" {
+                $caughtException | Should Be $false
+            }
+        }
+
+        #Set all quotas to unlimited
+        $testParams.IssueWarningQuota = "unlimited"
+        $testParams.ProhibitSendQuota = "Unlimited"
+        $testParams.ProhibitSendReceiveQuota = "unlimited"
+        $testParams.RecoverableItemsQuota = "unlimited"
+        $testParams.RecoverableItemsWarningQuota = "unlimited"
+
+        $expectedGetResults.IssueWarningQuota = "unlimited"
+        $expectedGetResults.ProhibitSendQuota = "Unlimited"
+        $expectedGetResults.ProhibitSendReceiveQuota = "unlimited"
+        $expectedGetResults.RecoverableItemsQuota = "unlimited"
+        $expectedGetResults.RecoverableItemsWarningQuota = "unlimited"
+
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set remaining quotas to Unlimited" -ExpectedGetResults $expectedGetResults
     }
 }
 else
