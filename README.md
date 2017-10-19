@@ -894,8 +894,6 @@ Defaults to $false.
 
 ### Unreleased
 
-* Fix issue where test for Unlimited quota fails if quota is not already set at Unlimited
-
 ### 1.16.0.0
 
 * Add missing parameters to xExchClientAccessServer
