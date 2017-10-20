@@ -348,9 +348,9 @@ function CompareUnlimitedWithString
     {
         return (CompareStrings -String1 "Unlimited" -String2 $String -IgnoreCase)
     }
-    elseif ($Unlimited.Value.GetType() -ne [Microsoft.Exchange.Data.ByteQuantifiedSize])
+    elseif ((CompareStrings -String1 "Unlimited" -String2 $String -IgnoreCase) -and !$Unlimited.IsUnlimited)
     {
-        return (CompareStrings -String1 $Unlimited -String2 $String -IgnoreCase)
+        return $false
     }
     else
     {
