@@ -118,6 +118,7 @@ function Set-TargetResource
         throw "Ambiguous parameter detected! Don't combine AlternateServiceAccountCredential with RemoveAlternateServiceAccountCredentials or CleanUpInvalidAlternateServiceAccountCredentials with RemoveAlternateServiceAccountCredentials!"
     }
     if ($AlternateServiceAccountCredential)
+    {
         #check if credentials are in correct format DOMAIN\USERNAME
         $parts = @($AlternateServiceAccountCredential.Username.Split('\'))
         if ($parts.Count -ne 2 -or $parts[0] -eq '')
