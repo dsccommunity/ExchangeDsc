@@ -894,6 +894,8 @@ Defaults to $false.
 
 ### Unreleased
 
+### 1.17.0.0
+
 * Fix issue where test for Unlimited quota fails if quota is not already set at Unlimited
 
 ### 1.16.0.0
