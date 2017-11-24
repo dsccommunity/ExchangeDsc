@@ -894,6 +894,8 @@ Defaults to $false.
 
 ### Unreleased
 
+* Fix issue #203 and add additional test for invalid ASA account format
+
 ### 1.17.0.0
 
 * Fix issue where test for Unlimited quota fails if quota is not already set at Unlimited
