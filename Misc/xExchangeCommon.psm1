@@ -1008,4 +1008,53 @@ function ConvertTo-Array
     }
 }
 
+#helper function to check SPN for Dotless name
+function Test-SPN
+{
+    [CmdletBinding()]
+    param(
+        [string[]]$SPN,
+        [Switch]$Dotless
+    )
+Begin
+{
+    $returnValue = $false
+}
+Process
+{
+    foreach ($S in $SPN)
+    {
+        $Name = $S.Split('/')[1]
+        if ([System.String]::IsNullOrEmpty($Name))
+        {
+            Write-Verbose "Invalid SPN:$($S)"
+            $returnValue = $false
+            break
+        }
+        else
+        {
+            if ($Dotless)
+            {
+                if (!$Name.Contains('.'))
+                {
+                    Write-Verbose "Dotless SPN found:$($S)"
+                    $returnValue = $true
+                    break
+                }
+            }
+            else
+            {
+                $returnValue = $true
+            }
+        }
+       
+    }
+}
+End
+{
+    return $returnValue
+}
+}
+
+
 Export-ModuleMember -Function *
