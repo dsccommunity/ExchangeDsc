@@ -31,10 +31,15 @@ function Get-TargetResource
         [System.String[]]
         $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443", "127.0.0.1:443"),
 
+        [System.String]
+        $ActiveSyncServer,
+
+        [System.Boolean]
+        $BadItemReportingEnabled,
+
         [System.Boolean]
         $BasicAuthEnabled,
 
-        [ValidateSet("Ignore", "Accepted", "Required")]
         [System.String]
         $ClientCertAuth,
 
@@ -45,16 +50,55 @@ function Get-TargetResource
         $DomainController,
 
         [System.String[]]
+        $ExtendedProtectionFlags,
+
+        [System.String[]]
+        $ExtendedProtectionSPNList,
+
+        [System.String]
+        $ExtendedProtectionTokenChecking,
+
+        [System.String[]]
         $ExternalAuthenticationMethods,
 
         [System.String]
         $ExternalUrl,
+
+        [System.Boolean]
+        $InstallIsapiFilter,
 
         [System.String[]]
         $InternalAuthenticationMethods,
 
         [System.String]
         $InternalUrl,
+
+        [System.String]
+        $MobileClientCertificateAuthorityURL,
+
+        [System.Boolean]
+        $MobileClientCertificateProvisioningEnabled,
+
+        [System.String]
+        $MobileClientCertTemplateName,
+
+        [System.String]
+        $Name,
+
+        [System.String]
+        $RemoteDocumentsActionForUnknownServers,
+
+        [System.String[]]
+        $RemoteDocumentsAllowedServers,
+
+        [System.String[]]
+        $RemoteDocumentsBlockedServers,
+
+        [System.String[]]
+        $RemoteDocumentsInternalDomainSuffixList,
+
+        [System.Boolean]
+        $SendWatsonReport,   
 
         [System.Boolean]
         $WindowsAuthEnabled
@@ -74,12 +118,29 @@ function Get-TargetResource
     {
         $returnValue = @{
             Identity = $Identity
-            InternalUrl = $easVdir.InternalUrl.AbsoluteUri
-            ExternalUrl = $easVdir.ExternalUrl.AbsoluteUri
+            ActiveSyncServer = $easVdir.ActiveSyncServer
+            BadItemReportingEnabled = $easVdir.BadItemReportingEnabled
             BasicAuthEnabled = $easVdir.BasicAuthEnabled
-            WindowsAuthEnabled = $easVdir.WindowsAuthEnabled
-            CompressionEnabled = $easVdir.CompressionEnabled
             ClientCertAuth = $easVdir.ClientCertAuth
+            CompressionEnabled = $easVdir.CompressionEnabled
+            ExtendedProtectionFlags = $(ConvertTo-Array -InputObject $easVdir.ExtendedProtectionFlags)
+            ExtendedProtectionSPNList = $(ConvertTo-Array -InputObject $easVdir.ExtendedProtectionSPNList)
+            ExtendedProtectionTokenChecking = $easVdir.ExtendedProtectionTokenChecking
+            ExternalAuthenticationMethods = $(ConvertTo-Array -InputObject $easVdir.ExternalAuthenticationMethods)
+            ExternalUrl = $easVdir.ExternalUrl.AbsoluteUri
+            InstallIsapiFilter = $(Test-ISAPIFilter)
+            InternalAuthenticationMethods = $(ConvertTo-Array -InputObject $easVdir.InternalAuthenticationMethods)
+            InternalUrl = $easVdir.InternalUrl.AbsoluteUri
+            MobileClientCertificateAuthorityURL = $easVdir.MobileClientCertificateAuthorityURL
+            MobileClientCertificateProvisioningEnabled = $easVdir.MobileClientCertificateProvisioningEnabled
+            MobileClientCertTemplateName = $easVdir.MobileClientCertTemplateName
+            Name = $easVdir.Name
+            RemoteDocumentsActionForUnknownServers = $easVdir.RemoteDocumentsActionForUnknownServers
+            RemoteDocumentsAllowedServers = $(ConvertTo-Array -InputObject $easVdir.RemoteDocumentsAllowedServers)
+            RemoteDocumentsBlockedServers = $(ConvertTo-Array -InputObject $easVdir.RemoteDocumentsBlockedServers)
+            RemoteDocumentsInternalDomainSuffixList = $(ConvertTo-Array -InputObject $easVdir.RemoteDocumentsInternalDomainSuffixList)
+            SendWatsonReport = $easVdir.SendWatsonReport
+            WindowsAuthEnabled = $easVdir.WindowsAuthEnabled
         }
     }
 
@@ -113,10 +174,15 @@ function Set-TargetResource
         [System.String[]]
         $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443", "127.0.0.1:443"),
 
+        [System.String]
+        $ActiveSyncServer,
+
+        [System.Boolean]
+        $BadItemReportingEnabled,
+
         [System.Boolean]
         $BasicAuthEnabled,
 
-        [ValidateSet("Ignore", "Accepted", "Required")]
         [System.String]
         $ClientCertAuth,
 
@@ -127,16 +193,55 @@ function Set-TargetResource
         $DomainController,
 
         [System.String[]]
+        $ExtendedProtectionFlags,
+
+        [System.String[]]
+        $ExtendedProtectionSPNList,
+
+        [System.String]
+        $ExtendedProtectionTokenChecking,
+
+        [System.String[]]
         $ExternalAuthenticationMethods,
 
         [System.String]
         $ExternalUrl,
+
+        [System.Boolean]
+        $InstallIsapiFilter,
 
         [System.String[]]
         $InternalAuthenticationMethods,
 
         [System.String]
         $InternalUrl,
+
+        [System.String]
+        $MobileClientCertificateAuthorityURL,
+
+        [System.Boolean]
+        $MobileClientCertificateProvisioningEnabled,
+
+        [System.String]
+        $MobileClientCertTemplateName,
+
+        [System.String]
+        $Name,
+
+        [System.String]
+        $RemoteDocumentsActionForUnknownServers,
+
+        [System.String[]]
+        $RemoteDocumentsAllowedServers,
+
+        [System.String[]]
+        $RemoteDocumentsBlockedServers,
+
+        [System.String[]]
+        $RemoteDocumentsInternalDomainSuffixList,
+
+        [System.Boolean]
+        $SendWatsonReport,   
 
         [System.Boolean]
         $WindowsAuthEnabled
@@ -155,6 +260,18 @@ function Set-TargetResource
     
     #Remove Credential and AllowServiceRestart because those parameters do not exist on Set-ActiveSyncVirtualDirectory
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart','AutoCertBasedAuth','AutoCertBasedAuthThumbprint','AutoCertBasedAuthHttpsBindings'
+
+    #verify SPNs depending on AllowDotlesSPN
+    if ($ExtendedProtectionSPNList)
+    {
+        if ($ExtendedProtectionFlags)
+        {
+            if (-not $ExtendedProtectionFlags.Contains('AllowDotlessSPN') -and ((Test-SPN -SPN $ExtendedProtectionSPNList -Dotless)) )
+            {
+                throw "SPN list contains DotlesSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags!"
+            }
+        }
+    }
 
     #Configure everything but CBA
     Set-ActiveSyncVirtualDirectory @PSBoundParameters
@@ -198,6 +315,15 @@ function Set-TargetResource
             Write-Warning "The configuration will not take effect until MSExchangeSyncAppPool is manually recycled."
         }
     }
+
+    #install IsapiFilter manually as workaround as Exchange Cmdlet doesn't do it
+    if ($InstallIsapiFilter)
+    {
+        if (-not (Test-ISAPIFilter))
+        {
+            Add-WebConfigurationProperty -PSPath 'MACHINE/WEBROOT/APPHOST' -Location 'Default Web Site' -Filter "system.webServer/isapiFilters" -Name "." -value @{name='Exchange ActiveSync ISAPI Filter';path="$env:ExchangeInstallPath\FrontEnd\HttpProxy\bin\AirFilter.dll"}        
+        }
+    }
 }
 
 function Test-TargetResource
@@ -228,10 +354,15 @@ function Test-TargetResource
         [System.String[]]
         $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443", "127.0.0.1:443"),
 
+        [System.String]
+        $ActiveSyncServer,
+
+        [System.Boolean]
+        $BadItemReportingEnabled,
+
         [System.Boolean]
         $BasicAuthEnabled,
 
-        [ValidateSet("Ignore", "Accepted", "Required")]
         [System.String]
         $ClientCertAuth,
 
@@ -242,16 +373,55 @@ function Test-TargetResource
         $DomainController,
 
         [System.String[]]
+        $ExtendedProtectionFlags,
+
+        [System.String[]]
+        $ExtendedProtectionSPNList,
+
+        [System.String]
+        $ExtendedProtectionTokenChecking,
+
+        [System.String[]]
         $ExternalAuthenticationMethods,
 
         [System.String]
         $ExternalUrl,
+
+        [System.Boolean]
+        $InstallIsapiFilter,
 
         [System.String[]]
         $InternalAuthenticationMethods,
 
         [System.String]
         $InternalUrl,
+
+        [System.String]
+        $MobileClientCertificateAuthorityURL,
+
+        [System.Boolean]
+        $MobileClientCertificateProvisioningEnabled,
+
+        [System.String]
+        $MobileClientCertTemplateName,
+
+        [System.String]
+        $Name,
+
+        [System.String]
+        $RemoteDocumentsActionForUnknownServers,
+
+        [System.String[]]
+        $RemoteDocumentsAllowedServers,
+
+        [System.String[]]
+        $RemoteDocumentsBlockedServers,
+
+        [System.String[]]
+        $RemoteDocumentsInternalDomainSuffixList,
+
+        [System.Boolean]
+        $SendWatsonReport,   
 
         [System.Boolean]
         $WindowsAuthEnabled
@@ -276,12 +446,12 @@ function Test-TargetResource
     }
     else
     {
-        if (-not (VerifySetting -Name "InternalUrl" -Type "String" -ExpectedValue $InternalUrl -ActualValue $easVdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name "ActiveSyncServer" -Type "String" -ExpectedValue $ActiveSyncServer -ActualValue $easVdir.ActiveSyncServer -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (-not (VerifySetting -Name "ExternalUrl" -Type "String" -ExpectedValue $ExternalUrl -ActualValue $easVdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name "BadItemReportingEnabled" -Type "Boolean" -ExpectedValue $BadItemReportingEnabled -ActualValue $easVdir.BadItemReportingEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -291,7 +461,7 @@ function Test-TargetResource
             return $false
         }
 
-        if (-not (VerifySetting -Name "WindowsAuthEnabled" -Type "Boolean" -ExpectedValue $WindowsAuthEnabled -ActualValue $easVdir.WindowsAuthEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name "ClientCertAuth" -Type "String" -ExpectedValue $ClientCertAuth -ActualValue $easVdir.ClientCertAuth -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -301,7 +471,17 @@ function Test-TargetResource
             return $false
         }
 
-        if (-not (VerifySetting -Name "ClientCertAuth" -Type "String" -ExpectedValue $ClientCertAuth -ActualValue $easVdir.ClientCertAuth -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name "ExtendedProtectionFlags" -Type "Array" -ExpectedValue $ExtendedProtectionFlags -ActualValue $easVdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "ExtendedProtectionSPNList" -Type "Array" -ExpectedValue $ExtendedProtectionSPNList -ActualValue $easVdir.ExtendedProtectionSPNList -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "ExtendedProtectionTokenChecking" -Type "String" -ExpectedValue $ExtendedProtectionTokenChecking -ActualValue $easVdir.ExtendedProtectionTokenChecking -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -311,7 +491,67 @@ function Test-TargetResource
             return $false
         }
 
+        if (-not (VerifySetting -Name "ExternalUrl" -Type "String" -ExpectedValue $ExternalUrl -ActualValue $easVdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
         if (-not (VerifySetting -Name "InternalAuthenticationMethods" -Type "Array" -ExpectedValue $InternalAuthenticationMethods -ActualValue $easVdir.InternalAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "InternalUrl" -Type "String" -ExpectedValue $InternalUrl -ActualValue $easVdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "MobileClientCertificateAuthorityURL" -Type "String" -ExpectedValue $MobileClientCertificateAuthorityURL -ActualValue $easVdir.MobileClientCertificateAuthorityURL -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "MobileClientCertificateProvisioningEnabled" -Type "Boolean" -ExpectedValue $MobileClientCertificateProvisioningEnabled -ActualValue $easVdir.MobileClientCertificateProvisioningEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "MobileClientCertTemplateName" -Type "String" -ExpectedValue $MobileClientCertTemplateName -ActualValue $easVdir.MobileClientCertTemplateName -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "Name" -Type "String" -ExpectedValue $Name -ActualValue $easVdir.Name -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "RemoteDocumentsActionForUnknownServers" -Type "String" -ExpectedValue $RemoteDocumentsActionForUnknownServers -ActualValue $easVdir.RemoteDocumentsActionForUnknownServers -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "RemoteDocumentsAllowedServers" -Type "Array" -ExpectedValue $RemoteDocumentsAllowedServers -ActualValue $easVdir.RemoteDocumentsAllowedServers -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "RemoteDocumentsBlockedServers" -Type "Array" -ExpectedValue $RemoteDocumentsBlockedServers -ActualValue $easVdir.RemoteDocumentsBlockedServers -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "RemoteDocumentsInternalDomainSuffixList" -Type "Array" -ExpectedValue $RemoteDocumentsInternalDomainSuffixList -ActualValue $easVdir.RemoteDocumentsInternalDomainSuffixList -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "SendWatsonReport" -Type "Boolean" -ExpectedValue $SendWatsonReport -ActualValue $easVdir.SendWatsonReport -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "WindowsAuthEnabled" -Type "Boolean" -ExpectedValue $WindowsAuthEnabled -ActualValue $easVdir.WindowsAuthEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -336,6 +576,14 @@ function Test-TargetResource
                 return $false
             }
         }
+
+        if ($InstallIsapiFilter)
+        {
+            if (-not (Test-ISAPIFilter)){
+                ReportBadSetting -SettingName "InstallIsapiFilter" -ExpectedValue $InstallIsapiFilter -ActualValue "false" -VerbosePreference $VerbosePreference
+                return $false
+            }
+        }
     }
 
     #If the code got to this point, all conditions are true   
@@ -351,7 +599,7 @@ function Get-ActiveSyncVirtualDirectoryInternal
         [System.String]
         $Identity,
 
-        [Parameter(Mandatory = $true)]
+        [parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
@@ -368,10 +616,15 @@ function Get-ActiveSyncVirtualDirectoryInternal
         [System.String[]]
         $AutoCertBasedAuthHttpsBindings = @("0.0.0.0:443", "127.0.0.1:443"),
 
+        [System.String]
+        $ActiveSyncServer,
+
+        [System.Boolean]
+        $BadItemReportingEnabled,
+
         [System.Boolean]
         $BasicAuthEnabled,
 
-        [ValidateSet("Ignore", "Accepted", "Required")]
         [System.String]
         $ClientCertAuth,
 
@@ -382,16 +635,55 @@ function Get-ActiveSyncVirtualDirectoryInternal
         $DomainController,
 
         [System.String[]]
+        $ExtendedProtectionFlags,
+
+        [System.String[]]
+        $ExtendedProtectionSPNList,
+
+        [System.String]
+        $ExtendedProtectionTokenChecking,
+
+        [System.String[]]
         $ExternalAuthenticationMethods,
 
         [System.String]
         $ExternalUrl,
+
+        [System.Boolean]
+        $InstallIsapiFilter,
 
         [System.String[]]
         $InternalAuthenticationMethods,
 
         [System.String]
         $InternalUrl,
+
+        [System.String]
+        $MobileClientCertificateAuthorityURL,
+
+        [System.Boolean]
+        $MobileClientCertificateProvisioningEnabled,
+
+        [System.String]
+        $MobileClientCertTemplateName,
+
+        [System.String]
+        $Name,
+
+        [System.String]
+        $RemoteDocumentsActionForUnknownServers,
+
+        [System.String[]]
+        $RemoteDocumentsAllowedServers,
+
+        [System.String[]]
+        $RemoteDocumentsBlockedServers,
+
+        [System.String[]]
+        $RemoteDocumentsInternalDomainSuffixList,
+
+        [System.Boolean]
+        $SendWatsonReport,   
 
         [System.Boolean]
         $WindowsAuthEnabled
@@ -655,6 +947,81 @@ function Test-PreReqsForCertBasedAuth
     {
         throw "Required Windows features need to be installed before the Auto Certification Based Authentication feature can be used"
     }
+}
+
+function Test-SPN
+{
+    [CmdletBinding()]
+    param(
+        [string[]]$SPN,
+        [Switch]$Dotless
+    )
+Begin
+{
+    $returnValue = $false
+}
+Process
+{
+    foreach ($S in $SPN)
+    {
+        $Name = $S.Split('/')[1]
+        if ([System.String]::IsNullOrEmpty($Name))
+        {
+            Write-Verbose "Invalid SPN:$($S)"
+            $returnValue = $false
+            break
+        }
+        else
+        {
+            if ($Dotless)
+            {
+                if (!$Name.Contains('.'))
+                {
+                    Write-Verbose "Dotless SPN found:$($S)"
+                    $returnValue = $true
+                    break
+                }
+            }
+            else
+            {
+                $returnValue = $true
+            }
+        }
+       
+    }
+}
+End
+{
+    return $returnValue
+}
+}
+
+function Test-ISAPIFilter
+{
+    [CmdletBinding()]
+    [OutputType([Boolean])]
+    param(
+        [string]$WebSite = 'Default Web Site',
+        [string]$ISAPIFilterName = 'Exchange ActiveSync ISAPI Filter'
+    )
+Begin
+{
+    $ISAPIFilters=Get-WebConfigurationProperty -PSPath 'MACHINE/WEBROOT/APPHOST' -Location $WebSite -Filter 'system.webServer/isapiFilters' -Name '.'
+    [boolean]$ReturnValue = $false
+}
+Process
+{
+    if ($ISAPIFilters.Collection.Count -gt 0)
+    {
+        if ($ISAPIFilters.Collection.Name.Contains($ISAPIFilterName)){
+            Write-Verbose "Filter $($ISAPIFilterName) was found"
+            $ReturnValue = $true
+        }
+    }
+}
+End{
+    return $ReturnValue
+}
 }
 
 Export-ModuleMember -Function *-TargetResource

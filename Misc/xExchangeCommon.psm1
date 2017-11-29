@@ -988,4 +988,24 @@ End {
 }
 }
 
+#helper function to convert Microsoft.Exchange.Data.MultiValuedPropertyBase to System.Array
+function ConvertTo-Array
+{
+    param(
+        $InputObject
+    )
+    begin
+    {
+        $output = @()
+    }
+    process
+    {
+        $InputObject | foreach{$output += $_}
+    }
+    end
+    {
+        return $output 
+    }
+}
+
 Export-ModuleMember -Function *
