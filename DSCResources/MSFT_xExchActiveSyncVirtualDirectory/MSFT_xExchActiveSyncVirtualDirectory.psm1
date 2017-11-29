@@ -40,6 +40,7 @@ function Get-TargetResource
         [System.Boolean]
         $BasicAuthEnabled,
 
+        [ValidateSet("Ignore", "Accepted", "Required")]
         [System.String]
         $ClientCertAuth,
 
@@ -49,15 +50,18 @@ function Get-TargetResource
         [System.String]
         $DomainController,
 
+        [ValidateSet("None","AllowDotlessSPN","NoServicenameCheck","Proxy","ProxyCoHosting")]
         [System.String[]]
         $ExtendedProtectionFlags,
 
         [System.String[]]
         $ExtendedProtectionSPNList,
 
+        [ValidateSet("None","Allow","Require")]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
+        [ValidateSet("Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity")]
         [System.String[]]
         $ExternalAuthenticationMethods,
 
@@ -67,6 +71,7 @@ function Get-TargetResource
         [System.Boolean]
         $InstallIsapiFilter,
 
+        [ValidateSet("Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity")]
         [System.String[]]
         $InternalAuthenticationMethods,
 
@@ -85,6 +90,7 @@ function Get-TargetResource
         [System.String]
         $Name,
 
+        [ValidateSet("Allow","Block")]
         [System.String]
         $RemoteDocumentsActionForUnknownServers,
 
@@ -183,6 +189,7 @@ function Set-TargetResource
         [System.Boolean]
         $BasicAuthEnabled,
 
+        [ValidateSet("Ignore", "Accepted", "Required")]
         [System.String]
         $ClientCertAuth,
 
@@ -192,15 +199,18 @@ function Set-TargetResource
         [System.String]
         $DomainController,
 
+        [ValidateSet("None","AllowDotlessSPN","NoServicenameCheck","Proxy","ProxyCoHosting")]
         [System.String[]]
         $ExtendedProtectionFlags,
 
         [System.String[]]
         $ExtendedProtectionSPNList,
 
+        [ValidateSet("None","Allow","Require")]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
+        [ValidateSet("Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity")]
         [System.String[]]
         $ExternalAuthenticationMethods,
 
@@ -210,6 +220,7 @@ function Set-TargetResource
         [System.Boolean]
         $InstallIsapiFilter,
 
+        [ValidateSet("Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity")]
         [System.String[]]
         $InternalAuthenticationMethods,
 
@@ -228,6 +239,7 @@ function Set-TargetResource
         [System.String]
         $Name,
 
+        [ValidateSet("Allow","Block")]
         [System.String]
         $RemoteDocumentsActionForUnknownServers,
 
@@ -363,6 +375,7 @@ function Test-TargetResource
         [System.Boolean]
         $BasicAuthEnabled,
 
+        [ValidateSet("Ignore", "Accepted", "Required")]
         [System.String]
         $ClientCertAuth,
 
@@ -372,15 +385,18 @@ function Test-TargetResource
         [System.String]
         $DomainController,
 
+        [ValidateSet("None","AllowDotlessSPN","NoServicenameCheck","Proxy","ProxyCoHosting")]
         [System.String[]]
         $ExtendedProtectionFlags,
 
         [System.String[]]
         $ExtendedProtectionSPNList,
 
+        [ValidateSet("None","Allow","Require")]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
+        [ValidateSet("Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity")]
         [System.String[]]
         $ExternalAuthenticationMethods,
 
@@ -390,6 +406,7 @@ function Test-TargetResource
         [System.Boolean]
         $InstallIsapiFilter,
 
+        [ValidateSet("Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity")]
         [System.String[]]
         $InternalAuthenticationMethods,
 
@@ -408,6 +425,7 @@ function Test-TargetResource
         [System.String]
         $Name,
 
+        [ValidateSet("Allow","Block")]
         [System.String]
         $RemoteDocumentsActionForUnknownServers,
 
@@ -625,6 +643,7 @@ function Get-ActiveSyncVirtualDirectoryInternal
         [System.Boolean]
         $BasicAuthEnabled,
 
+        [ValidateSet("Ignore", "Accepted", "Required")]
         [System.String]
         $ClientCertAuth,
 
@@ -634,15 +653,18 @@ function Get-ActiveSyncVirtualDirectoryInternal
         [System.String]
         $DomainController,
 
+        [ValidateSet("None","AllowDotlessSPN","NoServicenameCheck","Proxy","ProxyCoHosting")]
         [System.String[]]
         $ExtendedProtectionFlags,
 
         [System.String[]]
         $ExtendedProtectionSPNList,
 
+        [ValidateSet("None","Allow","Require")]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
+        [ValidateSet("Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity")]
         [System.String[]]
         $ExternalAuthenticationMethods,
 
@@ -652,6 +674,7 @@ function Get-ActiveSyncVirtualDirectoryInternal
         [System.Boolean]
         $InstallIsapiFilter,
 
+        [ValidateSet("Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity")]
         [System.String[]]
         $InternalAuthenticationMethods,
 
@@ -670,6 +693,7 @@ function Get-ActiveSyncVirtualDirectoryInternal
         [System.String]
         $Name,
 
+        [ValidateSet("Allow","Block")]
         [System.String]
         $RemoteDocumentsActionForUnknownServers,
 
