@@ -50,7 +50,6 @@ function Get-TargetResource
         [System.String]
         $DomainController,
 
-        [ValidateSet("None","AllowDotlessSPN","NoServicenameCheck","Proxy","ProxyCoHosting")]
         [System.String[]]
         $ExtendedProtectionFlags,
 
@@ -61,7 +60,6 @@ function Get-TargetResource
         [System.String]
         $ExtendedProtectionTokenChecking,
 
-        [ValidateSet("Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity")]
         [System.String[]]
         $ExternalAuthenticationMethods,
 
@@ -71,7 +69,6 @@ function Get-TargetResource
         [System.Boolean]
         $InstallIsapiFilter,
 
-        [ValidateSet("Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity")]
         [System.String[]]
         $InternalAuthenticationMethods,
 
@@ -199,7 +196,6 @@ function Set-TargetResource
         [System.String]
         $DomainController,
 
-        [ValidateSet("None","AllowDotlessSPN","NoServicenameCheck","Proxy","ProxyCoHosting")]
         [System.String[]]
         $ExtendedProtectionFlags,
 
@@ -210,7 +206,6 @@ function Set-TargetResource
         [System.String]
         $ExtendedProtectionTokenChecking,
 
-        [ValidateSet("Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity")]
         [System.String[]]
         $ExternalAuthenticationMethods,
 
@@ -220,7 +215,6 @@ function Set-TargetResource
         [System.Boolean]
         $InstallIsapiFilter,
 
-        [ValidateSet("Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity")]
         [System.String[]]
         $InternalAuthenticationMethods,
 
@@ -385,7 +379,6 @@ function Test-TargetResource
         [System.String]
         $DomainController,
 
-        [ValidateSet("None","AllowDotlessSPN","NoServicenameCheck","Proxy","ProxyCoHosting")]
         [System.String[]]
         $ExtendedProtectionFlags,
 
@@ -396,7 +389,6 @@ function Test-TargetResource
         [System.String]
         $ExtendedProtectionTokenChecking,
 
-        [ValidateSet("Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity")]
         [System.String[]]
         $ExternalAuthenticationMethods,
 
@@ -406,7 +398,6 @@ function Test-TargetResource
         [System.Boolean]
         $InstallIsapiFilter,
 
-        [ValidateSet("Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity")]
         [System.String[]]
         $InternalAuthenticationMethods,
 
@@ -653,7 +644,6 @@ function Get-ActiveSyncVirtualDirectoryInternal
         [System.String]
         $DomainController,
 
-        [ValidateSet("None","AllowDotlessSPN","NoServicenameCheck","Proxy","ProxyCoHosting")]
         [System.String[]]
         $ExtendedProtectionFlags,
 
@@ -664,7 +654,6 @@ function Get-ActiveSyncVirtualDirectoryInternal
         [System.String]
         $ExtendedProtectionTokenChecking,
 
-        [ValidateSet("Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity")]
         [System.String[]]
         $ExternalAuthenticationMethods,
 
@@ -674,7 +663,6 @@ function Get-ActiveSyncVirtualDirectoryInternal
         [System.Boolean]
         $InstallIsapiFilter,
 
-        [ValidateSet("Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity")]
         [System.String[]]
         $InternalAuthenticationMethods,
 

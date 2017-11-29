@@ -17,13 +17,13 @@ class MSFT_xExchActiveSyncVirtualdirectory : OMI_BaseResource
     [Write, ValueMap{"Ignore","Accepted","Required"}, Values{"Ignore","Accepted","Required"}] String ClientCertAuth;
     [Write] Boolean CompressionEnabled;
     [Write] String DomainController;
-    [Write, ValueMap{"None","AllowDotlessSPN","NoServicenameCheck","Proxy","ProxyCoHosting"}, Values{"None","AllowDotlessSPN","NoServicenameCheck","Proxy","ProxyCoHosting"}] String ExtendedProtectionFlags[];
+    [Write] String ExtendedProtectionFlags[];
     [Write] String ExtendedProtectionSPNList[];
     [Write, ValueMap{"None","Allow","Require"}, Values{"None","Allow","Require"}] String ExtendedProtectionTokenChecking;
-    [Write, ValueMap{"Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity"}, Values{"Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity"}] String ExternalAuthenticationMethods[];
+    [Write] String ExternalAuthenticationMethods[];
     [Write] String ExternalUrl;
     [Write] Boolean InstallIsapiFilter;
-    [Write, ValueMap{"Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity"}, Values{"Adfs","Basic","Certificate","Digest","Fba","Kerberos","LiveIdBasic","LiveIdFba","LiveIdNegotiate","NegoEx","Negotiate","Ntlm","OAuth","WindowsIntegrated","WSSecurity"}] String InternalAuthenticationMethods[];
+    [Write] String InternalAuthenticationMethods[];
     [Write] String InternalUrl;
     [Write] String MobileClientCertificateAuthorityURL;
     [Write] Boolean MobileClientCertificateProvisioningEnabled;
