@@ -146,7 +146,7 @@ function Set-TargetResource
     {
         if ($ExtendedProtectionFlags)
         {
-            if (-not $ExtendedProtectionFlags.Contains('AllowDotlessSPN') -and ((Test-SPN -SPN $ExtendedProtectionSPNList -Dotless)) )
+            if (-not (StringArrayToLower $ExtendedProtectionFlags).Contains("allowdotlessspn") -and ((Test-SPN -SPN $ExtendedProtectionSPNList -Dotless)) )
             {
                 throw "SPN list contains DotlesSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags!"
             }

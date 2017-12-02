@@ -56,7 +56,7 @@ if ($exchangeInstalled)
             BasicAuthEnabled = $true
             ClientCertAuth = 'Ignore'
             CompressionEnabled = $true
-            ExtendedProtectionFlags = @("AllowDotlessSPN","NoServicenameCheck")
+            ExtendedProtectionFlags = @("AllowDotlessspn","NoServicenameCheck")
             ExtendedProtectionSPNList = @("http/mail.fabrikam.com","http/mail.fabrikam.local","http/wxweqc")
             ExtendedProtectionTokenChecking = "Allow"
             ExternalAuthenticationMethods = @("Basic","Kerberos")

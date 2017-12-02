@@ -991,18 +991,19 @@ End {
 #helper function to convert Microsoft.Exchange.Data.MultiValuedPropertyBase to System.Array
 function ConvertTo-Array
 {
+    [CmdletBinding()]
     param(
-        $InputObject
+        [Object[]]$InputObject
     )
-    begin
+    Begin
     {
         $output = @()
     }
-    process
+    Process
     {
-        $InputObject | foreach{$output += $_}
+        $InputObject | ForEach-Object -Process {$output += $_}
     }
-    end
+    End
     {
         return $output 
     }
@@ -1013,47 +1014,46 @@ function Test-SPN
 {
     [CmdletBinding()]
     param(
-        [string[]]$SPN,
+        [System.String[]]$SPN,
         [Switch]$Dotless
     )
-Begin
-{
-    $returnValue = $false
-}
-Process
-{
-    foreach ($S in $SPN)
+    Begin
     {
-        $Name = $S.Split('/')[1]
-        if ([System.String]::IsNullOrEmpty($Name))
+        $returnValue = $false
+    }
+    Process
+    {
+        foreach ($S in $SPN)
         {
-            Write-Verbose "Invalid SPN:$($S)"
-            $returnValue = $false
-            break
-        }
-        else
-        {
-            if ($Dotless)
+            $Name = $S.Split('/')[1]
+            if ([System.String]::IsNullOrEmpty($Name))
             {
-                if (!$Name.Contains('.'))
-                {
-                    Write-Verbose "Dotless SPN found:$($S)"
-                    $returnValue = $true
-                    break
-                }
+                Write-Verbose "Invalid SPN:$($S)"
+                $returnValue = $false
+                break
             }
             else
             {
-                $returnValue = $true
+                if ($Dotless)
+                {
+                    if (!$Name.Contains('.'))
+                    {
+                        Write-Verbose "Dotless SPN found:$($S)"
+                        $returnValue = $true
+                        break
+                    }
+                }
+                else
+                {
+                    $returnValue = $true
+                }
             }
         }
-       
     }
-}
-End
-{
-    return $returnValue
-}
+    End
+    {
+        return $returnValue
+    }
 }
 
 

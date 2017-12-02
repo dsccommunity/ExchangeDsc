@@ -896,6 +896,7 @@ Defaults to $false.
 
 * Fix issue #203 and add additional test for invalid ASA account format
 * Added missing parameters to xExchActiveSyncVirtualDirectory
+* Added missing parameters to xExchAutoDiscoverVirtualDirectory
 
 ### 1.17.0.0
 

@@ -26,7 +26,7 @@ if ($exchangeInstalled)
             Credential = $Global:ShellCredentials
             BasicAuthentication = $true
             DigestAuthentication = $false
-            ExtendedProtectionFlags = @("AllowDotlessSPN","NoServicenameCheck")
+            ExtendedProtectionFlags = @("AllowDotlessspn","NoServicenameCheck")
             ExtendedProtectionSPNList = @("http/mail.fabrikam.com","http/mail.fabrikam.local","http/wxweqc")
             ExtendedProtectionTokenChecking = "Allow"
             OAuthAuthentication = $true

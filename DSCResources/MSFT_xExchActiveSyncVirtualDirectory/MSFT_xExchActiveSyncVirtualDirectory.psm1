@@ -272,7 +272,7 @@ function Set-TargetResource
     {
         if ($ExtendedProtectionFlags)
         {
-            if (-not $ExtendedProtectionFlags.Contains('AllowDotlessSPN') -and ((Test-SPN -SPN $ExtendedProtectionSPNList -Dotless)) )
+            if (-not (StringArrayToLower $ExtendedProtectionFlags).Contains("allowdotlessspn") -and ((Test-SPN -SPN $ExtendedProtectionSPNList -Dotless)) )
             {
                 throw "SPN list contains DotlesSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags!"
             }
@@ -959,53 +959,6 @@ function Test-PreReqsForCertBasedAuth
     {
         throw "Required Windows features need to be installed before the Auto Certification Based Authentication feature can be used"
     }
-}
-
-function Test-SPN
-{
-    [CmdletBinding()]
-    param(
-        [string[]]$SPN,
-        [Switch]$Dotless
-    )
-Begin
-{
-    $returnValue = $false
-}
-Process
-{
-    foreach ($S in $SPN)
-    {
-        $Name = $S.Split('/')[1]
-        if ([System.String]::IsNullOrEmpty($Name))
-        {
-            Write-Verbose "Invalid SPN:$($S)"
-            $returnValue = $false
-            break
-        }
-        else
-        {
-            if ($Dotless)
-            {
-                if (!$Name.Contains('.'))
-                {
-                    Write-Verbose "Dotless SPN found:$($S)"
-                    $returnValue = $true
-                    break
-                }
-            }
-            else
-            {
-                $returnValue = $true
-            }
-        }
-       
-    }
-}
-End
-{
-    return $returnValue
-}
 }
 
 function Test-ISAPIFilter
