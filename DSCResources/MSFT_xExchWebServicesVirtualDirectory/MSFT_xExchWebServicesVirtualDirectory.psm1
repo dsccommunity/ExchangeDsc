@@ -25,8 +25,8 @@ function Get-TargetResource
         [System.Boolean]
         $BasicAuthentication,
 
-        [System.Boolean]
-        $CertificateAuthentication,
+        #[System.Boolean]
+        #$CertificateAuthentication,
 
         [System.Boolean]
         $DigestAuthentication,
@@ -34,15 +34,32 @@ function Get-TargetResource
         [System.String]
         $DomainController,
 
+        [System.String[]]
+        $ExtendedProtectionFlags,
+
+        [System.String[]]
+        $ExtendedProtectionSPNList,
+
+        [ValidateSet("None","Allow","Require")]
+        [System.String]
+        $ExtendedProtectionTokenChecking,
+
         [System.String]
         $ExternalUrl,    
+
+        [ValidateSet("Off", "Low", "High", "Error")]
+        [System.String]
+        $GzipLevel,
 
         [System.String]
         $InternalNLBBypassUrl,
 
         [System.String]
         $InternalUrl,
-    
+
+        [System.Boolean]
+        $MRSProxyEnabled,
+
         [System.Boolean]
         $OAuthAuthentication,
 
@@ -68,15 +85,20 @@ function Get-TargetResource
     if ($null -ne $EwsVdir)
     {
         $returnValue = @{
-            EwsVirtualDirectoryIdentity = $Identity
-            InternalUrl = $EwsVdir.InternalUrl.AbsoluteUri
-            ExternalUrl = $EwsVdir.InternalUrl.AbsoluteUri
+            Identity = $Identity
             BasicAuthentication = $EwsVdir.BasicAuthentication
             CertificateAuthentication = $EwsVdir.CertificateAuthentication
             DigestAuthentication = $EwsVdir.DigestAuthentication
+            ExtendedProtectionFlags = $(ConvertTo-Array -InputObject $EwsVdir.ExtendedProtectionFlags)
+            ExtendedProtectionSPNList = $(ConvertTo-Array -InputObject $EwsVdir.ExtendedProtectionSPNList)
+            ExtendedProtectionTokenChecking = $EwsVdir.ExtendedProtectionTokenChecking
+            ExternalUrl = $EwsVdir.InternalUrl.AbsoluteUri
+            GzipLevel = $EwsVdir.GzipLevel
+            InternalNLBBypassUrl = $EwsVdir.InternalNLBBypassUrl
+            InternalUrl = $EwsVdir.InternalUrl.AbsoluteUri
+            MRSProxyEnabled = $EwsVdir.MRSProxyEnabled
             OAuthAuthentication = $EwsVdir.OAuthAuthentication
             WSSecurityAuthentication = $EwsVdir.WSSecurityAuthentication
-            InternalNLBBypassUrl = $EwsVdir.InternalNLBBypassUrl
             WindowsAuthentication = $EwsVdir.WindowsAuthentication
         }
     }
@@ -106,8 +128,8 @@ function Set-TargetResource
         [System.Boolean]
         $BasicAuthentication,
 
-        [System.Boolean]
-        $CertificateAuthentication,
+        #[System.Boolean]
+        #$CertificateAuthentication,
 
         [System.Boolean]
         $DigestAuthentication,
@@ -115,15 +137,32 @@ function Set-TargetResource
         [System.String]
         $DomainController,
 
+        [System.String[]]
+        $ExtendedProtectionFlags,
+
+        [System.String[]]
+        $ExtendedProtectionSPNList,
+
+        [ValidateSet("None","Allow","Require")]
+        [System.String]
+        $ExtendedProtectionTokenChecking,
+
         [System.String]
         $ExternalUrl,    
+
+        [ValidateSet("Off", "Low", "High", "Error")]
+        [System.String]
+        $GzipLevel,
 
         [System.String]
         $InternalNLBBypassUrl,
 
         [System.String]
         $InternalUrl,
-    
+
+        [System.Boolean]
+        $MRSProxyEnabled,
+
         [System.Boolean]
         $OAuthAuthentication,
 
@@ -147,6 +186,18 @@ function Set-TargetResource
 
     #Remove Credential and AllowServiceRestart because those parameters do not exist on Set-WebServicesVirtualDirectory
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
+
+    #verify SPNs depending on AllowDotlesSPN
+    if ($ExtendedProtectionSPNList)
+    {
+        if ($ExtendedProtectionFlags)
+        {
+            if (-not (StringArrayToLower $ExtendedProtectionFlags).Contains("allowdotlessspn") -and ((Test-SPN -SPN $ExtendedProtectionSPNList -Dotless)) )
+            {
+                throw "SPN list contains DotlesSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags!"
+            }
+        }
+    }
 
     #Need to do -Force and -Confirm:$false here or else an unresolvable URL will prompt for confirmation
     Set-WebServicesVirtualDirectory @PSBoundParameters -Force -Confirm:$false
@@ -185,8 +236,8 @@ function Test-TargetResource
         [System.Boolean]
         $BasicAuthentication,
 
-        [System.Boolean]
-        $CertificateAuthentication,
+        #[System.Boolean]
+        #$CertificateAuthentication,
 
         [System.Boolean]
         $DigestAuthentication,
@@ -194,15 +245,32 @@ function Test-TargetResource
         [System.String]
         $DomainController,
 
+        [System.String[]]
+        $ExtendedProtectionFlags,
+
+        [System.String[]]
+        $ExtendedProtectionSPNList,
+
+        [ValidateSet("None","Allow","Require")]
+        [System.String]
+        $ExtendedProtectionTokenChecking,
+
         [System.String]
         $ExternalUrl,    
+
+        [ValidateSet("Off", "Low", "High", "Error")]
+        [System.String]
+        $GzipLevel,
 
         [System.String]
         $InternalNLBBypassUrl,
 
         [System.String]
         $InternalUrl,
-    
+
+        [System.Boolean]
+        $MRSProxyEnabled,
+
         [System.Boolean]
         $OAuthAuthentication,
 
@@ -232,7 +300,32 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name "InternalUrl" -Type "String" -ExpectedValue $InternalUrl -ActualValue $EwsVdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "BasicAuthentication" -Type "Boolean" -ExpectedValue $BasicAuthentication -ActualValue $EwsVdir.BasicAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        <##if (!(VerifySetting -Name "CertificateAuthentication" -Type "Boolean" -ExpectedValue $CertificateAuthentication -ActualValue $EwsVdir.CertificateAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }##>
+
+        if (!(VerifySetting -Name "DigestAuthentication" -Type "Boolean" -ExpectedValue $DigestAuthentication -ActualValue $EwsVdir.DigestAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "ExtendedProtectionFlags" -Type "Array" -ExpectedValue $ExtendedProtectionFlags -ActualValue $EwsVdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "ExtendedProtectionSPNList" -Type "Array" -ExpectedValue $ExtendedProtectionSPNList -ActualValue $EwsVdir.ExtendedProtectionSPNList -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "ExtendedProtectionTokenChecking" -Type "String" -ExpectedValue $ExtendedProtectionTokenChecking -ActualValue $EwsVdir.ExtendedProtectionTokenChecking -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -242,17 +335,22 @@ function Test-TargetResource
             return $false
         }
 
-        if (!(VerifySetting -Name "BasicAuthentication" -Type "Boolean" -ExpectedValue $BasicAuthentication -ActualValue $EwsVdir.BasicAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "GzipLevel" -Type "Boolean" -ExpectedValue $GzipLevel -ActualValue $EwsVdir.GzipLevel -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "CertificateAuthentication" -Type "Boolean" -ExpectedValue $CertificateAuthentication -ActualValue $EwsVdir.CertificateAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "InternalNLBBypassUrl" -Type "String" -ExpectedValue $InternalNLBBypassUrl -ActualValue $EwsVdir.InternalNLBBypassUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "DigestAuthentication" -Type "Boolean" -ExpectedValue $DigestAuthentication -ActualValue $EwsVdir.DigestAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "InternalUrl" -Type "String" -ExpectedValue $InternalUrl -ActualValue $EwsVdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (!(VerifySetting -Name "MRSProxyEnabled" -Type "Boolean" -ExpectedValue $MRSProxyEnabled -ActualValue $EwsVdir.MRSProxyEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -268,11 +366,6 @@ function Test-TargetResource
         }
 
         if (!(VerifySetting -Name "WSSecurityAuthentication" -Type "Boolean" -ExpectedValue $WSSecurityAuthentication -ActualValue $EwsVdir.WSSecurityAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
-        {
-            return $false
-        }
-
-        if (!(VerifySetting -Name "InternalNLBBypassUrl" -Type "String" -ExpectedValue $InternalNLBBypassUrl -ActualValue $EwsVdir.InternalNLBBypassUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -302,8 +395,8 @@ function GetWebServicesVirtualDirectory
         [System.Boolean]
         $BasicAuthentication,
 
-        [System.Boolean]
-        $CertificateAuthentication,
+        #[System.Boolean]
+        #$CertificateAuthentication,
 
         [System.Boolean]
         $DigestAuthentication,
@@ -311,15 +404,32 @@ function GetWebServicesVirtualDirectory
         [System.String]
         $DomainController,
 
+        [System.String[]]
+        $ExtendedProtectionFlags,
+
+        [System.String[]]
+        $ExtendedProtectionSPNList,
+
+        [ValidateSet("None","Allow","Require")]
+        [System.String]
+        $ExtendedProtectionTokenChecking,
+
         [System.String]
         $ExternalUrl,    
+
+        [ValidateSet("Off", "Low", "High", "Error")]
+        [System.String]
+        $GzipLevel,
 
         [System.String]
         $InternalNLBBypassUrl,
 
         [System.String]
         $InternalUrl,
-    
+
+        [System.Boolean]
+        $MRSProxyEnabled,
+
         [System.Boolean]
         $OAuthAuthentication,
 
