@@ -9,6 +9,7 @@ class MSFT_xExchWebServicesVirtualDirectory : OMI_BaseResource
     //Remaining props correspond directly to Set-WebServicesVirtualDirectory parameters
     //https://technet.microsoft.com/en-us/library/aa997233(v=exchg.160).aspx
     [Write] Boolean BasicAuthentication;
+    //[Write] Boolean CertificateAuthentication;
     [Write] Boolean DigestAuthentication;
     [Write] String DomainController;
     [Write] String ExtendedProtectionFlags[];

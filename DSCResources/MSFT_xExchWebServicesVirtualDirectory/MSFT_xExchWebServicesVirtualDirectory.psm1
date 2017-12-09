@@ -25,6 +25,9 @@ function Get-TargetResource
         [System.Boolean]
         $BasicAuthentication,
 
+        #[System.Boolean]
+        #$CertificateAuthentication,
+
         [System.Boolean]
         $DigestAuthentication,
 
@@ -84,6 +87,7 @@ function Get-TargetResource
         $returnValue = @{
             Identity = $Identity
             BasicAuthentication = $EwsVdir.BasicAuthentication
+            CertificateAuthentication = $EwsVdir.CertificateAuthentication
             DigestAuthentication = $EwsVdir.DigestAuthentication
             ExtendedProtectionFlags = $(ConvertTo-Array -InputObject $EwsVdir.ExtendedProtectionFlags)
             ExtendedProtectionSPNList = $(ConvertTo-Array -InputObject $EwsVdir.ExtendedProtectionSPNList)
@@ -123,6 +127,9 @@ function Set-TargetResource
 
         [System.Boolean]
         $BasicAuthentication,
+
+        #[System.Boolean]
+        #$CertificateAuthentication,
 
         [System.Boolean]
         $DigestAuthentication,
@@ -229,6 +236,9 @@ function Test-TargetResource
         [System.Boolean]
         $BasicAuthentication,
 
+        #[System.Boolean]
+        #$CertificateAuthentication,
+
         [System.Boolean]
         $DigestAuthentication,
 
@@ -294,6 +304,11 @@ function Test-TargetResource
         {
             return $false
         }
+
+        <##if (!(VerifySetting -Name "CertificateAuthentication" -Type "Boolean" -ExpectedValue $CertificateAuthentication -ActualValue $EwsVdir.CertificateAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }##>
 
         if (!(VerifySetting -Name "DigestAuthentication" -Type "Boolean" -ExpectedValue $DigestAuthentication -ActualValue $EwsVdir.DigestAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
@@ -379,6 +394,9 @@ function GetWebServicesVirtualDirectory
 
         [System.Boolean]
         $BasicAuthentication,
+
+        #[System.Boolean]
+        #$CertificateAuthentication,
 
         [System.Boolean]
         $DigestAuthentication,
