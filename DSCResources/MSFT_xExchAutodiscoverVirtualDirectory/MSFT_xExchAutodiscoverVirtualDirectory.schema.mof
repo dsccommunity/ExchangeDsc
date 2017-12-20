@@ -11,7 +11,7 @@ class MSFT_xExchAutodiscoverVirtualDirectory : OMI_BaseResource
     [Write] Boolean BasicAuthentication;
     [Write] Boolean DigestAuthentication;
     [Write] String DomainController;
-    [Write] String ExtendedProtectionFlags[];
+    [Write, ValueMap{"None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting"}, Values{"None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting"}] String ExtendedProtectionFlags[];
     [Write] String ExtendedProtectionSPNList[];
     [Write, ValueMap{"None","Allow","Require"}, Values{"None","Allow","Require"}] String ExtendedProtectionTokenChecking;
     [Write] Boolean OAuthAuthentication;

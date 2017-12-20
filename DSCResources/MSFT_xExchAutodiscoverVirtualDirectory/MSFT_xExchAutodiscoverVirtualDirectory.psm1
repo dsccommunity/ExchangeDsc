@@ -31,6 +31,7 @@ function Get-TargetResource
         [System.String]
         $DomainController,
 
+        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
         [System.String[]]
         $ExtendedProtectionFlags,
 
@@ -67,8 +68,8 @@ function Get-TargetResource
             Identity = $Identity
             BasicAuthentication = $autoDVdir.BasicAuthentication
             DigestAuthentication = $autoDVdir.DigestAuthentication
-            ExtendedProtectionFlags = $(ConvertTo-Array -InputObject $autoDVdir.ExtendedProtectionFlags)
-            ExtendedProtectionSPNList = $(ConvertTo-Array -InputObject $autoDVdir.ExtendedProtectionSPNList)
+            ExtendedProtectionFlags = [System.Array]$(ConvertTo-Array -InputObject $autoDVdir.ExtendedProtectionFlags)
+            ExtendedProtectionSPNList = [System.Array]$(ConvertTo-Array -InputObject $autoDVdir.ExtendedProtectionSPNList)
             ExtendedProtectionTokenChecking = $autoDVdir.ExtendedProtectionTokenChecking
             OAuthAuthentication = $autoDVdir.OAuthAuthentication
             WindowsAuthentication = $autoDVdir.WindowsAuthentication
@@ -107,6 +108,7 @@ function Set-TargetResource
         [System.String]
         $DomainController,
 
+        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
         [System.String[]]
         $ExtendedProtectionFlags,
 
@@ -142,15 +144,9 @@ function Set-TargetResource
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
 
     #verify SPNs depending on AllowDotlesSPN
-    if ($ExtendedProtectionSPNList)
+    if ( -not (Test-ExtendedProtectionSPNList -SPNList $ExtendedProtectionSPNList -Flags $ExtendedProtectionFlags))
     {
-        if ($ExtendedProtectionFlags)
-        {
-            if (-not (StringArrayToLower $ExtendedProtectionFlags).Contains("allowdotlessspn") -and ((Test-SPN -SPN $ExtendedProtectionSPNList -Dotless)) )
-            {
-                throw "SPN list contains DotlesSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags!"
-            }
-        }
+        throw "SPN list contains DotlesSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags or invalid combination was used!"
     }
 
     Set-AutodiscoverVirtualDirectory @PSBoundParameters
@@ -195,6 +191,7 @@ function Test-TargetResource
         [System.String]
         $DomainController,
 
+        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
         [System.String[]]
         $ExtendedProtectionFlags,
 
@@ -244,7 +241,7 @@ function Test-TargetResource
             return $false
         }
 
-        if (-not (VerifySetting -Name "ExtendedProtectionFlags" -Type "Array" -ExpectedValue $ExtendedProtectionFlags -ActualValue $autoDVdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name "ExtendedProtectionFlags" -Type "ExtendedProtection" -ExpectedValue $ExtendedProtectionFlags -ActualValue $autoDVdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -306,6 +303,7 @@ function Get-AutodiscoverVirtualDirectoryWithCorrectParams
         [System.String]
         $DomainController,
 
+        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
         [System.String[]]
         $ExtendedProtectionFlags,
 

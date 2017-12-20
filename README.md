@@ -902,7 +902,7 @@ Where no description is listed, properties correspond directly to [Set-WebServic
 * **AllowServiceRestart**: Whether it is OK to recycle the app pool after making changes.
 Defaults to $false.
 * **BasicAuthentication**
-* **~~CertificateAuthentication~~**
+* **CertificateAuthentication**
 * **DigestAuthentication**
 * **DomainController**
 * **ExtendedProtectionFlags**
@@ -918,7 +918,7 @@ Defaults to $false.
 * **WSSecurityAuthentication**
 
 #### Common Issues
-CertificateAuthentication: This parameter affects the <Servername>/ews/management/ virtual directory. It doesn't affect the <Servername>/ews/ virtual directory. Therefore it was removed.
+CertificateAuthentication: This parameter affects the <Servername>/ews/management/ virtual directory. It doesn't affect the <Servername>/ews/ virtual directory.
 
 ## Versions
 

@@ -17,7 +17,7 @@ class MSFT_xExchActiveSyncVirtualdirectory : OMI_BaseResource
     [Write, ValueMap{"Ignore","Accepted","Required"}, Values{"Ignore","Accepted","Required"}] String ClientCertAuth;
     [Write] Boolean CompressionEnabled;
     [Write] String DomainController;
-    [Write] String ExtendedProtectionFlags[];
+    [Write, ValueMap{"None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting"}, Values{"None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting"}] String ExtendedProtectionFlags[];
     [Write] String ExtendedProtectionSPNList[];
     [Write, ValueMap{"None","Allow","Require"}, Values{"None","Allow","Require"}] String ExtendedProtectionTokenChecking;
     [Write] String ExternalAuthenticationMethods[];

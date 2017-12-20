@@ -50,6 +50,7 @@ function Get-TargetResource
         [System.String]
         $DomainController,
 
+        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
         [System.String[]]
         $ExtendedProtectionFlags,
 
@@ -126,22 +127,22 @@ function Get-TargetResource
             BasicAuthEnabled = $easVdir.BasicAuthEnabled
             ClientCertAuth = $easVdir.ClientCertAuth
             CompressionEnabled = $easVdir.CompressionEnabled
-            ExtendedProtectionFlags = $(ConvertTo-Array -InputObject $easVdir.ExtendedProtectionFlags)
-            ExtendedProtectionSPNList = $(ConvertTo-Array -InputObject $easVdir.ExtendedProtectionSPNList)
+            ExtendedProtectionFlags = [System.Array]$(ConvertTo-Array -InputObject $easVdir.ExtendedProtectionFlags)
+            ExtendedProtectionSPNList = [System.Array]$(ConvertTo-Array -InputObject $easVdir.ExtendedProtectionSPNList)
             ExtendedProtectionTokenChecking = $easVdir.ExtendedProtectionTokenChecking
-            ExternalAuthenticationMethods = $(ConvertTo-Array -InputObject $easVdir.ExternalAuthenticationMethods)
+            ExternalAuthenticationMethods = [System.Array]$(ConvertTo-Array -InputObject $easVdir.ExternalAuthenticationMethods)
             ExternalUrl = $easVdir.ExternalUrl.AbsoluteUri
             InstallIsapiFilter = $(Test-ISAPIFilter)
-            InternalAuthenticationMethods = $(ConvertTo-Array -InputObject $easVdir.InternalAuthenticationMethods)
+            InternalAuthenticationMethods = [System.Array]$(ConvertTo-Array -InputObject $easVdir.InternalAuthenticationMethods)
             InternalUrl = $easVdir.InternalUrl.AbsoluteUri
             MobileClientCertificateAuthorityURL = $easVdir.MobileClientCertificateAuthorityURL
             MobileClientCertificateProvisioningEnabled = $easVdir.MobileClientCertificateProvisioningEnabled
             MobileClientCertTemplateName = $easVdir.MobileClientCertTemplateName
             Name = $easVdir.Name
             RemoteDocumentsActionForUnknownServers = $easVdir.RemoteDocumentsActionForUnknownServers
-            RemoteDocumentsAllowedServers = $(ConvertTo-Array -InputObject $easVdir.RemoteDocumentsAllowedServers)
-            RemoteDocumentsBlockedServers = $(ConvertTo-Array -InputObject $easVdir.RemoteDocumentsBlockedServers)
-            RemoteDocumentsInternalDomainSuffixList = $(ConvertTo-Array -InputObject $easVdir.RemoteDocumentsInternalDomainSuffixList)
+            RemoteDocumentsAllowedServers = [System.Array]$(ConvertTo-Array -InputObject $easVdir.RemoteDocumentsAllowedServers)
+            RemoteDocumentsBlockedServers = [System.Array]$(ConvertTo-Array -InputObject $easVdir.RemoteDocumentsBlockedServers)
+            RemoteDocumentsInternalDomainSuffixList = [System.Array]$(ConvertTo-Array -InputObject $easVdir.RemoteDocumentsInternalDomainSuffixList)
             SendWatsonReport = $easVdir.SendWatsonReport
             WindowsAuthEnabled = $easVdir.WindowsAuthEnabled
         }
@@ -196,6 +197,7 @@ function Set-TargetResource
         [System.String]
         $DomainController,
 
+        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
         [System.String[]]
         $ExtendedProtectionFlags,
 
@@ -268,15 +270,9 @@ function Set-TargetResource
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart','AutoCertBasedAuth','AutoCertBasedAuthThumbprint','AutoCertBasedAuthHttpsBindings'
 
     #verify SPNs depending on AllowDotlesSPN
-    if ($ExtendedProtectionSPNList)
+    if ( -not (Test-ExtendedProtectionSPNList -SPNList $ExtendedProtectionSPNList -Flags $ExtendedProtectionFlags))
     {
-        if ($ExtendedProtectionFlags)
-        {
-            if (-not (StringArrayToLower $ExtendedProtectionFlags).Contains("allowdotlessspn") -and ((Test-SPN -SPN $ExtendedProtectionSPNList -Dotless)) )
-            {
-                throw "SPN list contains DotlesSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags!"
-            }
-        }
+        throw "SPN list contains DotlesSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags or invalid combination was used!"
     }
 
     #Configure everything but CBA
@@ -327,7 +323,7 @@ function Set-TargetResource
     {
         if (-not (Test-ISAPIFilter))
         {
-            Add-WebConfigurationProperty -PSPath 'MACHINE/WEBROOT/APPHOST' -Location 'Default Web Site' -Filter "system.webServer/isapiFilters" -Name "." -value @{name='Exchange ActiveSync ISAPI Filter';path="$env:ExchangeInstallPath\FrontEnd\HttpProxy\bin\AirFilter.dll"}        
+            Add-WebConfigurationProperty -PSPath 'MACHINE/WEBROOT/APPHOST' -Location 'Default Web Site' -Filter "system.webServer/isapiFilters" -Name "." -value @{name='Exchange ActiveSync ISAPI Filter';path="$env:ExchangeInstallPath\FrontEnd\HttpProxy\bin\AirFilter.dll"}
         }
     }
 }
@@ -379,6 +375,7 @@ function Test-TargetResource
         [System.String]
         $DomainController,
 
+        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
         [System.String[]]
         $ExtendedProtectionFlags,
 
@@ -480,7 +477,7 @@ function Test-TargetResource
             return $false
         }
 
-        if (-not (VerifySetting -Name "ExtendedProtectionFlags" -Type "Array" -ExpectedValue $ExtendedProtectionFlags -ActualValue $easVdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name "ExtendedProtectionFlags" -Type "ExtendedProtection" -ExpectedValue $ExtendedProtectionFlags -ActualValue $easVdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -644,6 +641,7 @@ function Get-ActiveSyncVirtualDirectoryInternal
         [System.String]
         $DomainController,
 
+        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
         [System.String[]]
         $ExtendedProtectionFlags,
 

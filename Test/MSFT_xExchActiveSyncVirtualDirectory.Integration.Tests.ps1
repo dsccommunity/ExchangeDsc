@@ -100,7 +100,6 @@ if ($exchangeInstalled)
         Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.ExtendedProtectionSPNList -GetResultParameterName "ExtendedProtectionSPNList" -ContextLabel "Verify ExtendedProtectionSPNList" -ItLabel "ExtendedProtectionSPNList should contain three values"
         Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.ExternalAuthenticationMethods -GetResultParameterName "ExternalAuthenticationMethods" -ContextLabel "Verify ExternalAuthenticationMethods" -ItLabel "ExternalAuthenticationMethods should contain two values"
         Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.InternalAuthenticationMethods -GetResultParameterName "InternalAuthenticationMethods" -ContextLabel "Verify InternalAuthenticationMethods" -ItLabel "InternalAuthenticationMethods should contain two values"
-        Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.ExtendedProtectionFlags -GetResultParameterName "ExtendedProtectionFlags" -ContextLabel "Verify ExtendedProtectionFlags" -ItLabel "ExtendedProtectionFlags should contain two values"
         Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.RemoteDocumentsAllowedServers -GetResultParameterName "RemoteDocumentsAllowedServers" -ContextLabel "Verify RemoteDocumentsAllowedServers" -ItLabel "RemoteDocumentsAllowedServers should contain two values"
         Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.RemoteDocumentsBlockedServers -GetResultParameterName "RemoteDocumentsBlockedServers" -ContextLabel "Verify RemoteDocumentsBlockedServers" -ItLabel "RemoteDocumentsBlockedServers should contain two values"
         Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.RemoteDocumentsInternalDomainSuffixList -GetResultParameterName "RemoteDocumentsInternalDomainSuffixList" -ContextLabel "Verify RemoteDocumentsInternalDomainSuffixList" -ItLabel "RemoteDocumentsInternalDomainSuffixList should contain two values"
@@ -149,6 +148,30 @@ if ($exchangeInstalled)
             }
         }
 
+        Context "Test invalid combination in ExtendedProtectionFlags" {
+            $caughtException = $false
+            $testParams.ExtendedProtectionFlags = @("NoServicenameCheck","None")
+            try
+            {
+                $SetResults = Set-TargetResource @testParams
+            }
+            catch
+            {
+                $caughtException = $true
+            }
+
+            It "Should hit exception for invalid combination ExtendedProtectionFlags" {
+                $caughtException | Should Be $true
+            }
+
+            It "Test results should be true after correction of ExtendedProtectionFlags" {
+                $testParams.ExtendedProtectionFlags = @("AllowDotlessSPN")
+                Set-TargetResource @testParams
+                $testResults = Test-TargetResource @testParams
+                $testResults | Should Be $true
+            }
+        }
+
         $testParams.ActiveSyncServer = "https://eas.$($env:USERDNSDOMAIN)/Microsoft-Server-ActiveSync"
         $testParams.Remove("ExternalUrl")
         $expectedGetResults.ActiveSyncServer = "https://eas.$($env:USERDNSDOMAIN)/Microsoft-Server-ActiveSync"
@@ -164,7 +187,7 @@ if ($exchangeInstalled)
             BasicAuthEnabled = $false
             ClientCertAuth = 'Ignore'
             CompressionEnabled = $false
-            ExtendedProtectionFlags = $null
+            ExtendedProtectionFlags = 'None'
             ExtendedProtectionSPNList = $null
             ExtendedProtectionTokenChecking = 'None'
             ExternalAuthenticationMethods = $null
@@ -186,9 +209,9 @@ if ($exchangeInstalled)
             BasicAuthEnabled = $false
             ClientCertAuth = 'Ignore'
             CompressionEnabled = $false
+            ExtendedProtectionTokenChecking = 'None'
             ExtendedProtectionFlags = $null
             ExtendedProtectionSPNList = $null
-            ExtendedProtectionTokenChecking = 'None'
             ExternalAuthenticationMethods = $null
             InternalAuthenticationMethods = $null
             MobileClientCertificateAuthorityURL = ''
@@ -203,6 +226,7 @@ if ($exchangeInstalled)
         }
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Reset values to default" -ExpectedGetResults $expectedGetResults
+
     }
 }
 else

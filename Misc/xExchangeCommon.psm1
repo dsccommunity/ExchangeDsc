@@ -656,6 +656,23 @@ function VerifySetting
                 $returnValue = $false
             }        
         }
+        elseif ($Type -like "ExtendedProtection")
+        {
+            if ((StringArrayToLower $ExpectedValue).Contains('none'))
+            {
+                if (-not [System.String]::IsNullOrEmpty($ActualValue))
+                {
+                    $returnValue = $false
+                }
+            }
+            else
+            {
+                if ((CompareArrayContents -Array1 $ExpectedValue -Array2 $ActualValue -IgnoreCase) -eq $false)
+                {
+                    $returnValue = $false
+                }
+            }
+        }
         else
         {
             throw "Type not found: $($Type)"
@@ -992,6 +1009,7 @@ End {
 function ConvertTo-Array
 {
     [CmdletBinding()]
+    [OutputType([System.Array])]
     param(
         [Object[]]$InputObject
     )
@@ -1010,49 +1028,82 @@ function ConvertTo-Array
 }
 
 #helper function to check SPN for Dotless name
-function Test-SPN
+function Test-ExtendedProtectionSPNList
 {
     [CmdletBinding()]
-    param(
-        [System.String[]]$SPN,
-        [Switch]$Dotless
+    [OutputType([System.Boolean])]
+    Param
+    (
+        [System.String[]]$SPNList,
+
+        [System.String[]]$Flags
     )
+
     Begin
     {
-        $returnValue = $false
-    }
-    Process
-    {
-        foreach ($S in $SPN)
+        #initialize variable
+        [System.Boolean]$IsDotless = $false
+        [System.Boolean]$returnValue = $true
+        [System.Boolean]$InvalidFlags = $false
+
+        #check for invalid ExtendedProtectionFlags
+        if (-not [System.String]::IsNullOrEmpty($Flags))
         {
-            $Name = $S.Split('/')[1]
-            if ([System.String]::IsNullOrEmpty($Name))
+            if ((StringArrayToLower $Flags).Contains("none") -and ($Flags.Count -gt 1))
             {
-                Write-Verbose "Invalid SPN:$($S)"
+                Write-Verbose "Invalid combination of ExtendedProtectionFlags detected!"
+                $InvalidFlags = $true
                 $returnValue = $false
-                break
             }
-            else
+        }
+
+        #check for invalid formatted and Dotless SPNs
+        if ((-not [System.String]::IsNullOrEmpty($SPNList)) -and (-not $InvalidFlags))
+        {
+            #check for Dotless SPN
+            foreach ($S in $SPNList)
             {
-                if ($Dotless)
+                $Name = $S.Split('/')[1]
+                if ([System.String]::IsNullOrEmpty($Name))
                 {
-                    if (!$Name.Contains('.'))
-                    {
-                        Write-Verbose "Dotless SPN found:$($S)"
-                        $returnValue = $true
-                        break
-                    }
+                    Write-Verbose "Invalid SPN:$($S)"
+                    break
                 }
                 else
                 {
-                    $returnValue = $true
+                    if (-not $Name.Contains('.'))
+                    {
+                        Write-Verbose -Message "Found Dotless SPN:$($Name)"
+                        $IsDotless = $true
+                        break
+                    }
+                }
+            }
+        }
+    }
+    Process
+    {
+        #check if AllowDotless is set in Flags
+        if($IsDotless)
+        {
+            if([System.String]::IsNullOrEmpty($Flags))
+            {
+                Write-Verbose "AllowDotless SPN found, but Flags is NULL!"
+                $returnValue = $false
+            }
+            else
+            {
+                if( -not (StringArrayToLower $Flags).Contains("allowdotlessspn"))
+                {
+                    Write-Verbose "AllowDotless is not found in Flags!"
+                    $returnValue = $false
                 }
             }
         }
     }
     End
     {
-        return $returnValue
+        $returnValue
     }
 }
 

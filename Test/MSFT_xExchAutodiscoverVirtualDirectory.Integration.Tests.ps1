@@ -31,7 +31,7 @@ if ($exchangeInstalled)
             ExtendedProtectionTokenChecking = "Allow"
             OAuthAuthentication = $true
             WindowsAuthentication = $true
-            WSSecurityAuthentication = $true        
+            WSSecurityAuthentication = $true
         }
 
         $expectedGetResults = @{
@@ -41,7 +41,7 @@ if ($exchangeInstalled)
             ExtendedProtectionTokenChecking = "Allow"
             OAuthAuthentication = $true
             WindowsAuthentication = $true
-            WSSecurityAuthentication = $true    
+            WSSecurityAuthentication = $true
         }
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
@@ -72,10 +72,34 @@ if ($exchangeInstalled)
             }
         }
 
+        Context "Test invalid combination in ExtendedProtectionFlags" {
+            $caughtException = $false
+            $testParams.ExtendedProtectionFlags = @("NoServicenameCheck","None")
+            try
+            {
+                $SetResults = Set-TargetResource @testParams
+            }
+            catch
+            {
+                $caughtException = $true
+            }
+
+            It "Should hit exception for invalid combination ExtendedProtectionFlags" {
+                $caughtException | Should Be $true
+            }
+
+            It "Test results should be true after correction of ExtendedProtectionFlags" {
+                $testParams.ExtendedProtectionFlags = @("AllowDotlessSPN")
+                Set-TargetResource @testParams
+                $testResults = Test-TargetResource @testParams
+                $testResults | Should Be $true
+            }
+        }
+
         $testParams.BasicAuthentication = $false
         $testParams.DigestAuthentication = $true
         $testParams.OAuthAuthentication = $true
-        $testParams.ExtendedProtectionFlags = $null
+        $testParams.ExtendedProtectionFlags = 'None'
         $testParams.ExtendedProtectionSPNList = $null
         $testParams.ExtendedProtectionTokenChecking = 'None'
         $testParams.WindowsAuthentication = $false
