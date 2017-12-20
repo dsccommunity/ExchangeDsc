@@ -894,6 +894,8 @@ Defaults to $false.
 
 ### Unreleased
 
+### 1.18.0.0
+
 * Fix issue #203 and add additional test for invalid ASA account format
 
 ### 1.17.0.0
