@@ -78,7 +78,37 @@ if ($exchangeInstalled)
         
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set AlternateServiceAccountCredential" -ExpectedGetResults $expectedGetResults
 
-        
+
+        #Test for invalid ASA account format
+        Context "Test looking for invalid format of ASA account" {
+            $caughtException = $false
+            $UserASA = "Fabrikam/ASA"
+            $PWordASA = ConvertTo-SecureString -String 'Pa$$w0rd!' -AsPlainText -Force
+            $Global:ASACredentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $UserASA, $PWordASA
+            #first clear the current ASA account credentials
+            $testParams.Remove('AlternateServiceAccountCredential')
+            #add the invalid credentials
+            $testParams.Add('AlternateServiceAccountCredential',$Global:ASACredentials)
+
+            try
+            {
+                $SetResults = Set-TargetResource @testParams
+            }
+            catch
+            {
+                $caughtException = $true
+            }
+
+            It "Should hit exception for invalid ASA account format" {
+                $caughtException | Should Be $true
+            }
+
+            It "Test results should be false after adding invalid ASA account" {
+                $testResults = Test-TargetResource @testParams
+                $testResults | Should Be $false
+            }
+        }
+
         #Now clear ASA account credentials
         $testParams.Remove('AlternateServiceAccountCredential')
         $testParams.RemoveAlternateServiceAccountCredentials = $true

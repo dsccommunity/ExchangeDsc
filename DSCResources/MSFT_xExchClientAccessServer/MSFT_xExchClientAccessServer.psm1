@@ -117,11 +117,14 @@ function Set-TargetResource
     {
         throw "Ambiguous parameter detected! Don't combine AlternateServiceAccountCredential with RemoveAlternateServiceAccountCredentials or CleanUpInvalidAlternateServiceAccountCredentials with RemoveAlternateServiceAccountCredentials!"
     }
-    #check if credentials are in correct format DOMAIN\USERNAME
-    $parts = @($AlternateServiceAccountCredential.Username.Split('\'))
-    if ($parts.Count -ne 2 -or $parts[0] -eq '')
+    if ($AlternateServiceAccountCredential)
     {
-        throw "The username must be fully qualified!"
+        #check if credentials are in correct format DOMAIN\USERNAME
+        $parts = @($AlternateServiceAccountCredential.Username.Split('\'))
+        if ($parts.Count -ne 2 -or $parts[0] -eq '')
+        {
+            throw "The username must be fully qualified!"
+        }
     }
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
