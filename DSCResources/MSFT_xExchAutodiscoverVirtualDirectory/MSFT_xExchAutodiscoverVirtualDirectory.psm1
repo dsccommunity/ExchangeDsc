@@ -31,6 +31,20 @@ function Get-TargetResource
         [System.String]
         $DomainController,
 
+        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
+        [System.String[]]
+        $ExtendedProtectionFlags,
+
+        [System.String[]]
+        $ExtendedProtectionSPNList,
+
+        [ValidateSet("None","Allow","Require")]
+        [System.String]
+        $ExtendedProtectionTokenChecking,
+
+        [System.Boolean]
+        $OAuthAuthentication,
+
         [System.Boolean]
         $WindowsAuthentication,
 
@@ -54,6 +68,10 @@ function Get-TargetResource
             Identity = $Identity
             BasicAuthentication = $autoDVdir.BasicAuthentication
             DigestAuthentication = $autoDVdir.DigestAuthentication
+            ExtendedProtectionFlags = [System.Array]$(ConvertTo-Array -InputObject $autoDVdir.ExtendedProtectionFlags)
+            ExtendedProtectionSPNList = [System.Array]$(ConvertTo-Array -InputObject $autoDVdir.ExtendedProtectionSPNList)
+            ExtendedProtectionTokenChecking = $autoDVdir.ExtendedProtectionTokenChecking
+            OAuthAuthentication = $autoDVdir.OAuthAuthentication
             WindowsAuthentication = $autoDVdir.WindowsAuthentication
             WSSecurityAuthentication = $autoDVdir.WSSecurityAuthentication
         }
@@ -90,6 +108,20 @@ function Set-TargetResource
         [System.String]
         $DomainController,
 
+        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
+        [System.String[]]
+        $ExtendedProtectionFlags,
+
+        [System.String[]]
+        $ExtendedProtectionSPNList,
+
+        [ValidateSet("None","Allow","Require")]
+        [System.String]
+        $ExtendedProtectionTokenChecking,
+
+        [System.Boolean]
+        $OAuthAuthentication,
+
         [System.Boolean]
         $WindowsAuthentication,
 
@@ -110,6 +142,12 @@ function Set-TargetResource
 
     #Remove Credential parameter does not exist on Set-OwaVirtualDirectory
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
+
+    #verify SPNs depending on AllowDotlesSPN
+    if ( -not (Test-ExtendedProtectionSPNList -SPNList $ExtendedProtectionSPNList -Flags $ExtendedProtectionFlags))
+    {
+        throw "SPN list contains DotlesSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags or invalid combination was used!"
+    }
 
     Set-AutodiscoverVirtualDirectory @PSBoundParameters
 
@@ -153,6 +191,20 @@ function Test-TargetResource
         [System.String]
         $DomainController,
 
+        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
+        [System.String[]]
+        $ExtendedProtectionFlags,
+
+        [System.String[]]
+        $ExtendedProtectionSPNList,
+
+        [ValidateSet("None","Allow","Require")]
+        [System.String]
+        $ExtendedProtectionTokenChecking,
+
+        [System.Boolean]
+        $OAuthAuthentication,
+
         [System.Boolean]
         $WindowsAuthentication,
 
@@ -185,6 +237,26 @@ function Test-TargetResource
         }
 
         if (!(VerifySetting -Name "DigestAuthentication" -Type "Boolean" -ExpectedValue $DigestAuthentication -ActualValue $autoDVdir.DigestAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "ExtendedProtectionFlags" -Type "ExtendedProtection" -ExpectedValue $ExtendedProtectionFlags -ActualValue $autoDVdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "ExtendedProtectionSPNList" -Type "Array" -ExpectedValue $ExtendedProtectionSPNList -ActualValue $autoDVdir.ExtendedProtectionSPNList -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (-not (VerifySetting -Name "ExtendedProtectionTokenChecking" -Type "String" -ExpectedValue $ExtendedProtectionTokenChecking -ActualValue $autoDVdir.ExtendedProtectionTokenChecking -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (!(VerifySetting -Name "OAuthAuthentication" -Type "Boolean" -ExpectedValue $OAuthAuthentication -ActualValue $autoDVdir.OAuthAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -230,6 +302,20 @@ function Get-AutodiscoverVirtualDirectoryWithCorrectParams
 
         [System.String]
         $DomainController,
+
+        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
+        [System.String[]]
+        $ExtendedProtectionFlags,
+
+        [System.String[]]
+        $ExtendedProtectionSPNList,
+
+        [ValidateSet("None","Allow","Require")]
+        [System.String]
+        $ExtendedProtectionTokenChecking,
+
+        [System.Boolean]
+        $OAuthAuthentication,
 
         [System.Boolean]
         $WindowsAuthentication,

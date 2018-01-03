@@ -64,15 +64,33 @@ Does not install ?Client Certificate Mapping Authentication? or ?IIS Client Cert
 * **AutoCertBasedAuthThumbprint**: The thumbprint of the in use Exchange certificate for IIS.
 * **AutoCertBasedAuthHttpsBindings**: The (IP:PORT)'s of the HTTPS bindings on the Default Web Site. 
 Defaults to "0.0.0.0:443","127.0.0.1:443"
+* **ActiveSyncServer**
+* **BadItemReportingEnabled**
 * **BasicAuthEnabled**
 * **ClientCertAuth**
 * **CompressionEnabled**
 * **DomainController**
+* **ExtendedProtectionFlags**
+* **ExtendedProtectionSPNList**
+* **ExtendedProtectionTokenChecking**
 * **ExternalAuthenticationMethods**
 * **ExternalUrl**
+* **InstallIsapiFilter**
 * **InternalAuthenticationMethods**
 * **InternalUrl**
+* **MobileClientCertificateAuthorityURL**
+* **MobileClientCertificateProvisioningEnabled**
+* **MobileClientCertTemplateName**
+* **Name**
+* **RemoteDocumentsActionForUnknownServers**
+* **RemoteDocumentsAllowedServers**
+* **RemoteDocumentsBlockedServers**
+* **RemoteDocumentsInternalDomainSuffixList**
+* **SendWatsonReport**
 * **WindowsAuthEnabled**: Auto Certificate Based Authentication Requirements: For AutoCertBasedAuth to work, the ?Client Certificate Mapping Authentication? and ?IIS Client Certificate Mapping Authentication? roles of IIS need to be installed.
+
+#### Common Issues
+The parameter Name can be a breaking setting. When you change the name the identity changes as well. The switch InstallIsapiFilter by the Cmdlet is doing nothing. Therefore Add-WebConfigurationProperty is used to add a missing IsapiFilter.
 
 ### xExchAntiMalwareScanning
 
@@ -93,6 +111,10 @@ Defaults to $false.
 * **BasicAuthEnabled**
 * **DigestAuthentication**
 * **DomainController**
+* **ExtendedProtectionFlags**
+* **ExtendedProtectionSPNList**
+* **ExtendedProtectionTokenChecking**
+* **OAuthAuthentication**
 * **WindowsAuthEnabled**
 * **WSSecurityAuthentication**
 
@@ -883,12 +905,20 @@ Defaults to $false.
 * **CertificateAuthentication**
 * **DigestAuthentication**
 * **DomainController**
+* **ExtendedProtectionFlags**
+* **ExtendedProtectionSPNList**
+* **ExtendedProtectionTokenChecking**
 * **ExternalUrl**
+* **GzipLevel**
 * **InternalNLBBypassUrl**
 * **InternalUrl**
+* **MRSProxyEnabled**
 * **OAuthAuthentication**
 * **WindowsAuthentication**
 * **WSSecurityAuthentication**
+
+#### Common Issues
+CertificateAuthentication: This parameter affects the <Servername>/ews/management/ virtual directory. It doesn't affect the <Servername>/ews/ virtual directory.
 
 ## Versions
 
@@ -897,6 +927,9 @@ Defaults to $false.
 ### 1.18.0.0
 
 * Fix issue #203 and add additional test for invalid ASA account format
+* Added missing parameters to xExchActiveSyncVirtualDirectory
+* Added missing parameters to xExchAutoDiscoverVirtualDirectory
+* Added missing parameters to xExchWebServicesVirtualDirectory
 
 ### 1.17.0.0
 

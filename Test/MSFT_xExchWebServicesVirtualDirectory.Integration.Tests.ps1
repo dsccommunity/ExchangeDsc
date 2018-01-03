@@ -28,27 +28,35 @@ if ($exchangeInstalled)
             BasicAuthentication = $false
             CertificateAuthentication = $false
             DigestAuthentication = $false
+            ExtendedProtectionFlags = @("AllowDotlessSPN","NoServicenameCheck")
+            ExtendedProtectionSPNList = @("http/mail.fabrikam.com","http/mail.fabrikam.local","http/wxweqc")
+            ExtendedProtectionTokenChecking = "Allow"
             ExternalUrl = "http://$($Global:ServerFqdn)/ews/exchange.asmx"
+            GzipLevel = 'High'
             InternalNLBBypassUrl = "http://$($Global:ServerFqdn)/ews/exchange.asmx"
             InternalUrl = "http://$($Global:ServerFqdn)/ews/exchange.asmx"
-            OAuthAuthentication = $false                       
+            OAuthAuthentication = $false
             WindowsAuthentication = $true
-            WSSecurityAuthentication = $true          
+            WSSecurityAuthentication = $true
         }
 
         $expectedGetResults = @{
             BasicAuthentication = $false
             CertificateAuthentication = $null
             DigestAuthentication = $false
+            ExtendedProtectionTokenChecking = "Allow"
             ExternalUrl = "http://$($Global:ServerFqdn)/ews/exchange.asmx"
+            GzipLevel = 'High'
             InternalNLBBypassUrl = "http://$($Global:ServerFqdn)/ews/exchange.asmx"
             InternalUrl = "http://$($Global:ServerFqdn)/ews/exchange.asmx"
-            OAuthAuthentication = $false                       
+            OAuthAuthentication = $false
             WindowsAuthentication = $true
-            WSSecurityAuthentication = $true    
+            WSSecurityAuthentication = $true
         }
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set standard parameters" -ExpectedGetResults $expectedGetResults
+        Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.ExtendedProtectionFlags -GetResultParameterName "ExtendedProtectionFlags" -ContextLabel "Verify ExtendedProtectionFlags" -ItLabel "ExtendedProtectionSPNList should contain three values"
+        Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.ExtendedProtectionSPNList -GetResultParameterName "ExtendedProtectionSPNList" -ContextLabel "Verify ExtendedProtectionSPNList" -ItLabel "ExtendedProtectionSPNList should contain three values"
 
 
         $testParams.ExternalUrl = ''
@@ -59,12 +67,64 @@ if ($exchangeInstalled)
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Try with empty URL's" -ExpectedGetResults $expectedGetResults
 
 
+        Context "Test missing ExtendedProtectionFlags for ExtendedProtectionSPNList" {
+            $caughtException = $false
+            $testParams.ExtendedProtectionFlags = @("NoServicenameCheck")
+            try
+            {
+                $SetResults = Set-TargetResource @testParams
+            }
+            catch
+            {
+                $caughtException = $true
+            }
+
+            It "Should hit exception for missing ExtendedProtectionFlags AllowDotlessSPN" {
+                $caughtException | Should Be $true
+            }
+
+            It "Test results should be true after adding missing ExtendedProtectionFlags" {
+                $testParams.ExtendedProtectionFlags = @("AllowDotlessSPN")
+                Set-TargetResource @testParams
+                $testResults = Test-TargetResource @testParams
+                $testResults | Should Be $true
+            }
+        }
+
+        Context "Test invalid combination in ExtendedProtectionFlags" {
+            $caughtException = $false
+            $testParams.ExtendedProtectionFlags = @("NoServicenameCheck","None")
+            try
+            {
+                $SetResults = Set-TargetResource @testParams
+            }
+            catch
+            {
+                $caughtException = $true
+            }
+
+            It "Should hit exception for invalid combination ExtendedProtectionFlags" {
+                $caughtException | Should Be $true
+            }
+
+            It "Test results should be true after correction of ExtendedProtectionFlags" {
+                $testParams.ExtendedProtectionFlags = @("AllowDotlessSPN")
+                Set-TargetResource @testParams
+                $testResults = Test-TargetResource @testParams
+                $testResults | Should Be $true
+            }
+        }
+
         #Set Authentication values back to default
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\EWS (Default Web Site)"
             Credential = $Global:ShellCredentials
             BasicAuthentication = $false
             DigestAuthentication = $false
+            ExtendedProtectionFlags = 'None'
+            ExtendedProtectionSPNList = $null
+            ExtendedProtectionTokenChecking = 'None'
+            GzipLevel = 'Low'
             OAuthAuthentication = $true                       
             WindowsAuthentication = $true
             WSSecurityAuthentication = $true          
@@ -73,12 +133,16 @@ if ($exchangeInstalled)
         $expectedGetResults = @{
             BasicAuthentication = $false
             DigestAuthentication = $false
-            OAuthAuthentication = $true                       
+            ExtendedProtectionFlags = $null
+            ExtendedProtectionSPNList = $null
+            ExtendedProtectionTokenChecking = 'None'
+            GzipLevel = 'Low'
+            OAuthAuthentication = $true
             WindowsAuthentication = $true
-            WSSecurityAuthentication = $true     
+            WSSecurityAuthentication = $true
         }
 
-        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Reset authentication to default" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Reset to default" -ExpectedGetResults $expectedGetResults
     }
 }
 else
