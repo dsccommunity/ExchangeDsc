@@ -12,7 +12,7 @@
 # RootModule = ''
 
 # Version number of this module.
-ModuleVersion = '1.18.0.0'
+ModuleVersion = '1.19.0.0'
 
 # ID used to uniquely identify this module
 GUID = '9a908ca3-8a67-485c-a014-66ba37fcc2a4'
@@ -101,7 +101,7 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Fix issue 203 and add additional test for invalid ASA account format
+        ReleaseNotes = '* Added missing parameters to MSFT_xExchActiveSyncVirtualDirectory/MSFT_xExchAutodiscoverVirtualDirectory/MSFT_xExchWebServicesVirtualDirectory and converted schema.mof to UTF-8
 
 '
 
@@ -116,6 +116,7 @@ PrivateData = @{
 # DefaultCommandPrefix = ''
 
 }
+
 
 
 
