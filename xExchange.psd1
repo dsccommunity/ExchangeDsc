@@ -101,7 +101,9 @@ PrivateData = @{
         # IconUri = ''
 
         # ReleaseNotes of this module
-        ReleaseNotes = '* Added missing parameters to MSFT_xExchActiveSyncVirtualDirectory/MSFT_xExchAutodiscoverVirtualDirectory/MSFT_xExchWebServicesVirtualDirectory and converted schema.mof to UTF-8
+        ReleaseNotes = '* Added missing parameters to xExchActiveSyncVirtualDirectory
+* Added missing parameters to xExchAutoDiscoverVirtualDirectory
+* Added missing parameters to xExchWebServicesVirtualDirectory
 
 '
 
