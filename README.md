@@ -926,14 +926,13 @@ CertificateAuthentication: This parameter affects the <Servername>/ews/managemen
 
 ### 1.19.0.0
 
-* Added missing parameters to MSFT_xExchActiveSyncVirtualDirectory/MSFT_xExchAutodiscoverVirtualDirectory/MSFT_xExchWebServicesVirtualDirectory and converted schema.mof to UTF-8
+* Added missing parameters to xExchActiveSyncVirtualDirectory
+* Added missing parameters to xExchAutoDiscoverVirtualDirectory
+* Added missing parameters to xExchWebServicesVirtualDirectory
 
 ### 1.18.0.0
 
 * Fix issue #203 and add additional test for invalid ASA account format
-* Added missing parameters to xExchActiveSyncVirtualDirectory
-* Added missing parameters to xExchAutoDiscoverVirtualDirectory
-* Added missing parameters to xExchWebServicesVirtualDirectory
 
 ### 1.17.0.0
 
