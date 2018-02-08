@@ -656,6 +656,23 @@ function VerifySetting
                 $returnValue = $false
             }        
         }
+        elseif ($Type -like "ExtendedProtection")
+        {
+            if ((StringArrayToLower $ExpectedValue).Contains('none'))
+            {
+                if (-not [System.String]::IsNullOrEmpty($ActualValue))
+                {
+                    $returnValue = $false
+                }
+            }
+            else
+            {
+                if ((CompareArrayContents -Array1 $ExpectedValue -Array2 $ActualValue -IgnoreCase) -eq $false)
+                {
+                    $returnValue = $false
+                }
+            }
+        }
         else
         {
             throw "Type not found: $($Type)"
@@ -987,5 +1004,108 @@ End {
     return $returnValue
 }
 }
+
+#helper function to convert Microsoft.Exchange.Data.MultiValuedPropertyBase to System.Array
+function ConvertTo-Array
+{
+    [CmdletBinding()]
+    [OutputType([System.Array])]
+    param(
+        [Object[]]$InputObject
+    )
+    Begin
+    {
+        $output = @()
+    }
+    Process
+    {
+        $InputObject | ForEach-Object -Process {$output += $_}
+    }
+    End
+    {
+        return $output 
+    }
+}
+
+#helper function to check SPN for Dotless name
+function Test-ExtendedProtectionSPNList
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    Param
+    (
+        [System.String[]]$SPNList,
+
+        [System.String[]]$Flags
+    )
+
+    Begin
+    {
+        #initialize variable
+        [System.Boolean]$IsDotless = $false
+        [System.Boolean]$returnValue = $true
+        [System.Boolean]$InvalidFlags = $false
+
+        #check for invalid ExtendedProtectionFlags
+        if (-not [System.String]::IsNullOrEmpty($Flags))
+        {
+            if ((StringArrayToLower $Flags).Contains("none") -and ($Flags.Count -gt 1))
+            {
+                Write-Verbose "Invalid combination of ExtendedProtectionFlags detected!"
+                $InvalidFlags = $true
+                $returnValue = $false
+            }
+        }
+
+        #check for invalid formatted and Dotless SPNs
+        if ((-not [System.String]::IsNullOrEmpty($SPNList)) -and (-not $InvalidFlags))
+        {
+            #check for Dotless SPN
+            foreach ($S in $SPNList)
+            {
+                $Name = $S.Split('/')[1]
+                if ([System.String]::IsNullOrEmpty($Name))
+                {
+                    Write-Verbose "Invalid SPN:$($S)"
+                    break
+                }
+                else
+                {
+                    if (-not $Name.Contains('.'))
+                    {
+                        Write-Verbose -Message "Found Dotless SPN:$($Name)"
+                        $IsDotless = $true
+                        break
+                    }
+                }
+            }
+        }
+    }
+    Process
+    {
+        #check if AllowDotless is set in Flags
+        if($IsDotless)
+        {
+            if([System.String]::IsNullOrEmpty($Flags))
+            {
+                Write-Verbose "AllowDotless SPN found, but Flags is NULL!"
+                $returnValue = $false
+            }
+            else
+            {
+                if( -not (StringArrayToLower $Flags).Contains("allowdotlessspn"))
+                {
+                    Write-Verbose "AllowDotless is not found in Flags!"
+                    $returnValue = $false
+                }
+            }
+        }
+    }
+    End
+    {
+        $returnValue
+    }
+}
+
 
 Export-ModuleMember -Function *
