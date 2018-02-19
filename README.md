@@ -924,6 +924,8 @@ CertificateAuthentication: This parameter affects the <Servername>/ews/managemen
 
 ### Unreleased
 
+* Fix issue where test of type Microsoft.Exchange.Data.Unlimited fails
+
 ### 1.19.0.0
 
 * Added missing parameters to xExchActiveSyncVirtualDirectory
