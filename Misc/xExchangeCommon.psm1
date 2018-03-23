@@ -352,7 +352,7 @@ function CompareUnlimitedWithString
     {
         return $false
     }
-	elseif (($Unlimited.Value -is [System.Int32]) -and !$Unlimited.IsUnlimited)
+    elseif (($Unlimited.Value -is [System.Int32]) -and !$Unlimited.IsUnlimited)
     {
         return (CompareStrings -String1 $Unlimited -String2 $String -IgnoreCase)
     }
