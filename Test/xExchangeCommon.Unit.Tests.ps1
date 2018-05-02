@@ -77,6 +77,29 @@ if ($exchangeInstalled)
                 ($null -eq $Session) | Should Be $true
             }
         }
+
+
+        #Test for issue (https://github.com/PowerShell/xExchange/issues/211)
+        #Calling CompareUnlimitedWithString when the Unlimited is of type [Microsoft.Exchange.Data.Unlimited`1[System.Int32]]
+        #and the string value contains a number throws an exception.
+        Context "Test CompareUnlimitedWithString with Int32 Unlimited and String Containing a Number" {
+            $caughtException = $false
+
+            [Microsoft.Exchange.Data.Unlimited`1[System.Int32]]$unlimitedInt32 = 1000
+
+            try
+            {
+                CompareUnlimitedWithString -Unlimited $unlimitedInt32 -String '1000'
+            }
+            catch
+            {
+                $caughtException = $true
+            }
+
+            It "Should not hit exception trying to test CompareUnlimitedWithString" {
+                $caughtException | Should Be $false
+            }
+        }
     }
 }
 else
