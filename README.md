@@ -924,6 +924,8 @@ CertificateAuthentication: This parameter affects the <Servername>/ews/managemen
 
 ### Unreleased
 
+### 1.20.0.0
+
 * Fix issue where test of type Microsoft.Exchange.Data.Unlimited fails
 
 ### 1.19.0.0
