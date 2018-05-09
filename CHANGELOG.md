@@ -5,6 +5,7 @@
 - Added CHANGELOG.md file
 - Added .markdownlint.json file
 - Updated README.md and CHANGELOG.md files to respect MD009, MD0013 and MD032 rules
+- Added .MetaTestOptIn.json file
 
 ## 1.20.0.0
 
