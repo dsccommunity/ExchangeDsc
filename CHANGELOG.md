@@ -271,8 +271,4 @@
   - xExchUMService
   - xExchWaitForDAG
   - xExchWaitForMailboxDatabase
-<<<<<<< HEAD
   - xExchWebServicesVirtualDirectory
-=======
-  - xExchWebServicesVirtualDirectory
->>>>>>> Added .markdownlint.json file
