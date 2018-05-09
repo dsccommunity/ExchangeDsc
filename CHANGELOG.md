@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Added CHANGELOG.md file.
+- Added CHANGELOG.md file
+- Added .MetaTestOptIn.json file
 
 ## 1.20.0.0
 
