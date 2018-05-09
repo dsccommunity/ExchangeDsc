@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Added CHANGELOG.md file.
+- Added CHANGELOG.md file
+- Added .markdownlint.json file
 
 ## 1.20.0.0
 
@@ -270,4 +271,8 @@
   - xExchUMService
   - xExchWaitForDAG
   - xExchWaitForMailboxDatabase
+<<<<<<< HEAD
   - xExchWebServicesVirtualDirectory
+=======
+  - xExchWebServicesVirtualDirectory
+>>>>>>> Added .markdownlint.json file

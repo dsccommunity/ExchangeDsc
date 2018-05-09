@@ -1,6 +1,8 @@
 # xExchange
 
-The **xExchange** module contains many DSC resources for configuring and managing Exchange 2013 and 2016 servers including individual server properties, databases, mount points, and Database Availability Groups.
+The **xExchange** module contains many DSC resources for configuring and managing
+Exchange 2013 and 2016 servers including individual server properties, databases,
+mount points, and Database Availability Groups.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/)
@@ -221,7 +223,7 @@ Where no description is listed, properties correspond directly to [Set-ClientAcc
 
 ### xExchDatabaseAvailabilityGroup
 
-**xExchDatabaseAvailabilityGroup** configures a Database Availability Group using New/Set-DatabaseAvailibilityGroup.  
+**xExchDatabaseAvailabilityGroup** configures a Database Availability Group using New/Set-DatabaseAvailibilityGroup.
 Only a single node in a configuration script should implement this resource.
 All DAG nodes, including the node implementing **xExchDatabaseAvailabilityGroup**, should use **xExchDatabaseAvailabilityGroupMember** to join a DAG. 
 
@@ -386,7 +388,7 @@ A crash of the JetstressCmd.exe process will also prevent the file from being wr
 Defaults to 0, which means there is no time limit.
 * **MinAchievedIOPS**: The minimum value reported in the 'Achieved Transactional I/O per Second' section of the Jetstress report for the run to be considered successful. 
 Defaults to 0. 
-    - **WARNING 1:** Jetstress should **NEVER** be run on a server that already has Exchange installed. 
+- **WARNING 1:** Jetstress should **NEVER** be run on a server that already has Exchange installed. 
     Jetstress is only meant to be used for pre-installation server validation.
     As such, it is recommended that **xExchJetstress** be used in a one time script which is separate from the script that performs ongoing server configuration validation.
     - **WARNING 2:** **xExchJetstress** should **NOT** be used in the same configuration script as **xExchJetstressCleanup**. 
@@ -903,7 +905,7 @@ xExchUMService configures a UM server using Set-UMService.
 
 ### xExchWaitForADPrep
 
-xExchWaitForADPrep ensures that Active Directory has been prepared for Exchange 2013 or 2016 using setup /PrepareSchema, /PrepareAD, and /PrepareDomain. 
+xExchWaitForADPrep ensures that Active Directory has been prepared for Exchange 2013 or 2016 using setup /PrepareSchema, /PrepareAD, and /PrepareDomain.
 To find appropriate version values for the SchemaVersion, OrganizationVersion, and DomainVersion parameters, consult the 'Exchange 2013 Active Directory versions' section of the article [Prepare Active Directory and domains](http://technet.microsoft.com/en-us/library/bb125224(v=exchg.150).aspx).
 
 * **Identity**: Not actually used. Enter anything, as long as it's not null.
@@ -912,38 +914,38 @@ To find appropriate version values for the SchemaVersion, OrganizationVersion, a
 * **OrganizationVersion**: Specifies that the Exchange Organization should have been prepared using Exchange 2013 or 2016 'setup /PrepareAD', and should be at the specified version.
 * **DomainVersion**: Specifies that the domain containing the target Exchange 2013 or 2016 server was prepared using setup /PrepareAD, /PrepareDomain, or /PrepareAllDomains, and should be at the specified version.
 * **ExchangeDomains**: The FQDN's of domains that should be checked for DomainVersion in addition to the domain that this Exchange server belongs to.
-* **RetryIntervalSec**: How many seconds to wait between retries when checking whether AD has been prepped. 
+* **RetryIntervalSec**: How many seconds to wait between retries when checking whether AD has been prepped.
 Defaults to 60.
-* **RetryCount**: How many retry attempts should be made to see if AD has been prepped before an exception is thrown. 
+* **RetryCount**: How many retry attempts should be made to see if AD has been prepped before an exception is thrown.
 Defaults to 30.
 
 ### xExchWaitForDAG
 
-xExchWaitForDAG is used by DAG members who are NOT maintaining the DAG configuration. 
-Intended to be used as a DependsOn property by **xExchDatabaseAvailabilityGroupMember**. 
-Throws an exception if the DAG still does not exist after the specified retry count and interval. 
+xExchWaitForDAG is used by DAG members who are NOT maintaining the DAG configuration.
+Intended to be used as a DependsOn property by **xExchDatabaseAvailabilityGroupMember**.
+Throws an exception if the DAG still does not exist after the specified retry count and interval.
 If this happens, DSC configurations run in push mode will need to be re-executed.
 
 * **Identity**: The name of the DAG.
 * **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
 * **DomainController**: Domain controller to talk to when running Get-DatabaseAvailabilityGroup.
-* **RetryIntervalSec**: How many seconds to wait between retries when checking whether the DAG exists. 
+* **RetryIntervalSec**: How many seconds to wait between retries when checking whether the DAG exists.
 Defaults to 60.
-* **RetryCount**: Mount many retry attempts should be made to find the DAG before an exception is thrown. 
+* **RetryCount**: Mount many retry attempts should be made to find the DAG before an exception is thrown.
 Defaults to 5.
 
 ### xExchWaitForMailboxDatabase
 
-xExchWaitForMailboxDatabase is used as a DependsOn property by **xExchMailboxDatabaseCopy** to ensure that a Mailbox Database exists prior to trying to add a copy. 
-Throws an exception if the database still does not exist after the specified retry count and interval. 
+xExchWaitForMailboxDatabase is used as a DependsOn property by **xExchMailboxDatabaseCopy** to ensure that a Mailbox Database exists prior to trying to add a copy.
+Throws an exception if the database still does not exist after the specified retry count and interval.
 If this happens, DSC configurations run in push mode will need to be re-executed.
 
 * **Identity**: The name of the Mailbox Database.
 * **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
 * **DomainController**: Domain controller to talk to when running Get-MailboxDatabase.
-* **RetryIntervalSec**: How many seconds to wait between retries when checking whether the database exists. 
+* **RetryIntervalSec**: How many seconds to wait between retries when checking whether the database exists.
 Defaults to 60.
-* **RetryCount**: Mount many retry attempts should be made to find the database before an exception is thrown. 
+* **RetryCount**: Mount many retry attempts should be made to find the database before an exception is thrown.
 Defaults to 5.
 
 ### xExchWebServicesVirtualDirectory
@@ -977,41 +979,41 @@ CertificateAuthentication: This parameter affects the <Servername>/ews/managemen
 
 ### ConfigureAutoMountPoint-FromCalculator
 
-Configures ExchangeDatabase and ExchangeVolume mount points automatically using the **xExchAutoMountPoint** resource. 
-Shows how to feed the .CSV files from the Server Role Requirements Calculator into the resource. 
-The example code for ConfigureAutoMountPoint-FromCalculator is located in "ConfigureAutoMountPoints-FromCalculator.ps1" in the module folder under ...\xExchange\Examples\ConfigureAutoMountPoint-FromCalculator. 
+Configures ExchangeDatabase and ExchangeVolume mount points automatically using the **xExchAutoMountPoint** resource.
+Shows how to feed the .CSV files from the Server Role Requirements Calculator into the resource.
+The example code for ConfigureAutoMountPoint-FromCalculator is located in "ConfigureAutoMountPoints-FromCalculator.ps1" in the module folder under ...\xExchange\Examples\ConfigureAutoMountPoint-FromCalculator.
 
 ### ConfigureAutoMountPoint-Manual
 
-Configures ExchangeDatabase and ExchangeVolume mount points automatically using the **xExchAutoMountPoint** resource. 
-Configures disk map manually. 
-The example code for ConfigureAutoMountPoint-Manual is located in "ConfigureAutoMountPoints-Manual.ps1" in the module folder under ...\xExchange\Examples\ConfigureAutoMountPoints-Manual.  
+Configures ExchangeDatabase and ExchangeVolume mount points automatically using the **xExchAutoMountPoint** resource.
+Configures disk map manually.
+The example code for ConfigureAutoMountPoint-Manual is located in "ConfigureAutoMountPoints-Manual.ps1" in the module folder under ...\xExchange\Examples\ConfigureAutoMountPoints-Manual.
 
 ### ConfigureDatabases-FromCalculator
 
-Configures primary databases and database copies using the **xExchMailboxDatabase, xExchMailboxDatabaseCopy, and xExchWaitForMailboxDatabase** resources. 
-Shows how to feed the .CSV files from the Server Role Requirements Calculator into the resource. 
-The example code for ConfigureDatabases-FromCalculator is located in "ConfigureDatabases-FromCalculator.ps1" in the module folder under ...\xExchange\Examples\ConfigureDatabases-FromCalculator.   
+Configures primary databases and database copies using the **xExchMailboxDatabase, xExchMailboxDatabaseCopy, and xExchWaitForMailboxDatabase** resources.
+Shows how to feed the .CSV files from the Server Role Requirements Calculator into the resource.
+The example code for ConfigureDatabases-FromCalculator is located in "ConfigureDatabases-FromCalculator.ps1" in the module folder under ...\xExchange\Examples\ConfigureDatabases-FromCalculator.
 
 ### ConfigureDatabases-Manual
 
-Configures primary databases and database copies using the **xExchMailboxDatabase, xExchMailboxDatabaseCopy, and xExchWaitForMailboxDatabase** resources. 
-Configures database list manually. 
-The example code for ConfigureDatabases-Manual is located in "ConfigureDatabases-Manual.ps1" in the module folder under ...\xExchange\Examples\ConfigureDatabases-Manual.  
+Configures primary databases and database copies using the **xExchMailboxDatabase, xExchMailboxDatabaseCopy, and xExchWaitForMailboxDatabase** resources.
+Configures database list manually.
+The example code for ConfigureDatabases-Manual is located in "ConfigureDatabases-Manual.ps1" in the module folder under ...\xExchange\Examples\ConfigureDatabases-Manual.
 
 ### ConfigureNamespaces
 
-Contains three different examples, **SingleNamespace**, **RegionalNamespaces**, and **InternetFacingSite**, which show different ways to configure Client Access Namespaces. 
-The three examples are in separate folders the module folder under ...\xExchange\Examples\PostInstallationConfiguration.  
+Contains three different examples, **SingleNamespace**, **RegionalNamespaces**, and **InternetFacingSite**, which show different ways to configure Client Access Namespaces.
+The three examples are in separate folders the module folder under ...\xExchange\Examples\PostInstallationConfiguration.
 
 ### ConfigureVirtualDirectories
 
-Configures various properties on Exchange Virtual Directories, like URL's and Authentication settings. 
-The example code for ConfigureVirtualDirectories is located in "ConfigureVirtualDirectories-Manual.ps1" in the module folder under ...\xExchange\Examples\ConfigureVirtualDirectories.  
+Configures various properties on Exchange Virtual Directories, like URL's and Authentication settings.
+The example code for ConfigureVirtualDirectories is located in "ConfigureVirtualDirectories-Manual.ps1" in the module folder under ...\xExchange\Examples\ConfigureVirtualDirectories.
 
 ### CreateAndConfigureDAG
 
-Creates a Database Availability Group, creates two new DAG networks and removes the default DAG network, and adds members to the DAG. 
+Creates a Database Availability Group, creates two new DAG networks and removes the default DAG network, and adds members to the DAG.
 The example code for CreateAndConfigureDAG is located in "CreateAndConfigureDAG.ps1" in the module folder under ...\xExchange\Examples\CreateAndConfigureDAG.
 
 ### EndToEndExample
@@ -1021,13 +1023,13 @@ The example code for EndToEndExample is located in in the module folder under ..
 
 ### InstallExchange
 
-Shows how to install Exchange using the **xExchInstall** resource. 
-The example code for InstallExchange is located in "InstallExchange.ps1" in the module folder under ...\xExchange\Examples\InstallExchange.  
+Shows how to install Exchange using the **xExchInstall** resource.
+The example code for InstallExchange is located in "InstallExchange.ps1" in the module folder under ...\xExchange\Examples\InstallExchange.
 
 ### JetstressAutomation
 
-Contains two separate example scripts which show how to use the **xExchJetstress** resource to automate running Jetstress, and the **xExchJetstressCleanup** resource to cleanup a Jetstress installation. 
-The example code for JetstressAutomation is located in "1-InstallAndRunJetstress.ps1" and "2-CleanupJetstress.ps1" in the module folder under ...\xExchange\Examples\JetstressAutomation.  
+Contains two separate example scripts which show how to use the **xExchJetstress** resource to automate running Jetstress, and the **xExchJetstressCleanup** resource to cleanup a Jetstress installation.
+The example code for JetstressAutomation is located in "1-InstallAndRunJetstress.ps1" and "2-CleanupJetstress.ps1" in the module folder under ...\xExchange\Examples\JetstressAutomation.
 
 ### MaintenanceMode
 
@@ -1035,10 +1037,10 @@ Shows examples of how to prepare for maintenance mode, enter maintenance mode, a
 
 ### PostInstallationConfiguration
 
-Shows how to use the majority of the post-installation resources in the **xExchange** module. 
-The example code for PostInstallationConfiguration is located in "PostInstallationConfiguration.ps1" in the module folder under ...\xExchange\Examples\PostInstallationConfiguration.  
+Shows how to use the majority of the post-installation resources in the **xExchange** module.
+The example code for PostInstallationConfiguration is located in "PostInstallationConfiguration.ps1" in the module folder under ...\xExchange\Examples\PostInstallationConfiguration.
 
 ### WaitForADPrep
 
-Shows how to use the **xExchWaitForADPrep** resource to ensure that Setup /PrepareSchema and /PrepareAD were run successfully. 
-The example code for WaitForADPrep is located in "WaitForADPrep.ps1" in the module folder under ...\xExchange\Examples\WaitForADPrep. 
+Shows how to use the **xExchWaitForADPrep** resource to ensure that Setup /PrepareSchema and /PrepareAD were run successfully.
+The example code for WaitForADPrep is located in "WaitForADPrep.ps1" in the module folder under ...\xExchange\Examples\WaitForADPrep.
