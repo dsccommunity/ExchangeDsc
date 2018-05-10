@@ -3,9 +3,14 @@
 ## Unreleased
 
 - Added CHANGELOG.md file
+<<<<<<< HEAD
+=======
+- Added CHANGELOG.md file
+>>>>>>> Updated appveyor.yml file
 - Added .markdownlint.json file
 - Updated README.md and CHANGELOG.md files to respect MD009, MD0013 and MD032 rules
 - Added .MetaTestOptIn.json file
+- Updated appveyor.yml file
 
 ## 1.20.0.0
 
