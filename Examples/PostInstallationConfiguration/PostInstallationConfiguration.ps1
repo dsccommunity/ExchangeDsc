@@ -73,40 +73,6 @@ $ConfigurationData = @{
                 DB3 = @{Name = 'DB3'; ActivationPreference = 2; ReplayLagTime = '00:00:00'}
             }
         }
-
-        @{
-            NodeName    = 'e15-3'
-            Fqdn        = 'e15-3.mikelab.local'
-            Role        = 'AdditionalDAGMember'
-            DAGId       = 'DAG1'
-            CASID       = 'Site2CAS'
-
-            DiskToDBMap = 'DB1,DB2','DB3,DB4'
-
-            CopyDBList  = @{
-                DB1 = @{Name = 'DB1'; ActivationPreference = 3; ReplayLagTime = '00:00:00'};
-                DB2 = @{Name = 'DB2'; ActivationPreference = 4; ReplayLagTime = '7.00:00:00'}; #Lag copy
-                DB3 = @{Name = 'DB3'; ActivationPreference = 3; ReplayLagTime = '00:00:00'};
-                DB4 = @{Name = 'DB4'; ActivationPreference = 4; ReplayLagTime = '7.00:00:00'} #Lag copy
-            }
-        }
-
-        @{
-            NodeName    = 'e15-4'
-            Fqdn        = 'e15-4.mikelab.local'
-            Role        = 'AdditionalDAGMember'
-            DAGId       = 'DAG1'
-            CASID       = 'Site2CAS'
-
-            DiskToDBMap = 'DB1,DB2','DB3,DB4'
-
-            CopyDBList  = @{
-                DB1 = @{Name = 'DB1'; ActivationPreference = 4; ReplayLagTime = '7.00:00:00'}; #Lag copy
-                DB2 = @{Name = 'DB2'; ActivationPreference = 3; ReplayLagTime = '00:00:00'};
-                DB3 = @{Name = 'DB3'; ActivationPreference = 4; ReplayLagTime = '7.00:00:00'}; #Lag copy
-                DB4 = @{Name = 'DB4'; ActivationPreference = 3; ReplayLagTime = '00:00:00'}
-            }
-        }
     );
 
     #Settings that are unique per DAG will go in separate hash table entries.
