@@ -13,6 +13,7 @@
   - TransportMaintenance.psm1
 - Fixed Validate Example files in:
   - ConfigureAutoMountPoints-FromCalculator.ps1
+  - ConfigureAutoMountPoints-Manual.ps1
   - InstallExchange.ps1
   - WaitForADPrep.ps1
 
