@@ -66,8 +66,8 @@ function Get-TargetResource
         }
         if ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials.Count -gt 0)
         {
-            $UserName = ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | sort WhenAddedUTC | select -Last 1).Credential.UserName
-            $PassWord = ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | sort WhenAddedUTC | select -Last 1).Credential.GetNetworkCredential().Password
+            $UserName = ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | Sort-Object WhenAddedUTC | Select-Object -Last 1).Credential.UserName
+            $PassWord = ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | Sort-Object WhenAddedUTC | Select-Object -Last 1).Credential.GetNetworkCredential().Password
             $returnValue.Add("AlternateServiceAccountCredential","UserName:$UserName Password:$PassWord")
         }
     }
@@ -216,7 +216,7 @@ function Test-TargetResource
             return $false
         }
 
-        if (!(VerifySetting -Name "AlternateServiceAccountCredential" -Type "PSCredential" -ExpectedValue $AlternateServiceAccountCredential -ActualValue ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | sort WhenAddedUTC | select -Last 1).Credential $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "AlternateServiceAccountCredential" -Type "PSCredential" -ExpectedValue $AlternateServiceAccountCredential -ActualValue ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | Sort-Object WhenAddedUTC | Select-Object -Last 1).Credential $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }

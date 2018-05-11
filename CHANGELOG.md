@@ -10,7 +10,8 @@
 - Added .codecov.yml file
 - Renamed Test folder to Tests
 - Updated README.md: Add codecov badges
-- Fixed PSSA issues in:
+- Fixed PSSA required rules in:
+  - xExchClientAccessServer.psm1
   - TransportMaintenance.psm1
 - Fixed Validate Example files in:
   - ConfigureAutoMountPoints-FromCalculator.ps1
