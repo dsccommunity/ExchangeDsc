@@ -13,6 +13,7 @@
 - Fixed PSSA required rules in:
   - xExchClientAccessServer.psm1
   - xExchInstall.psm1
+  - xExchMaintenanceMode.psm1
   - TransportMaintenance.psm1
 - Fixed Validate Example files in:
   - ConfigureAutoMountPoints-FromCalculator.ps1

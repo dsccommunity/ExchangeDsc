@@ -548,7 +548,7 @@ function GetQueueMessageCount
         $MaintenanceModeStatus
     )
 
-    [Uint32]$messageCount = 0
+    $messageCount = 0
 
     if ($null -ne $MaintenanceModeStatus.Queues)
     {
@@ -563,7 +563,7 @@ function GetQueueMessageCount
         Write-Warning "No Transport Queues were detected on this server. This can occur if the MSExchangeTransport service is not started, or if Get-Queue was run too quickly after restarting the service."
     }
 
-    return $messageCount
+    return [System.UInt32] $messageCount
 }
 
 #Gets a count of database that are replication enabled, and are still activated on the local server (even if they are dismounted)
@@ -581,7 +581,7 @@ function GetActiveDBCount
         $DomainController
     )
 
-    [Uint32]$activeDBCount = 0
+    $activeDBCount = 0
 
     #Get DB's with a status of Mounted, Mounting, Dismounted, or Dismounting
     $localDBs = $MaintenanceModeStatus.DBCopyStatus | Where-Object {$_.Status -like "Mount*" -or $_.Status -like "Dismount*"}    
@@ -598,7 +598,7 @@ function GetActiveDBCount
         }
     }
 
-    return $activeDBCount
+    return [System.UInt32] $activeDBCount
 }
 
 #Gets a count of active UM calls on the local server
@@ -646,7 +646,7 @@ function GetMessageRedirectionExclusions
         $DomainController
     )
 
-    [string[]]$exclusions = @()
+    $exclusions = @()
 
     $mbxServer = GetMailboxServer -Identity $env:COMPUTERNAME -DomainController $DomainController
 
@@ -692,7 +692,7 @@ function GetMessageRedirectionExclusions
         }
     }
 
-    return $exclusions
+    return [string[]] $exclusions
 }
 
 #If UpgradedServerVersion was specified, checks to see whether the server is already at the desired version
@@ -1004,7 +1004,7 @@ function GetExchangeServer
     param(
         [parameter(Mandatory = $true)]
         [System.String]
-        $Identity = $env:COMPUTERNAME,
+        $Identity,
 
         [System.String]
         $DomainController
@@ -1045,7 +1045,7 @@ function GetServerComponentState
     (
         [parameter(Mandatory = $true)]
         [System.String]
-        $Identity = $env:COMPUTERNAME,
+        $Identity,
 
         [System.String]
         $Component,
@@ -1171,7 +1171,7 @@ function GetMailboxServer
     param(
         [parameter(Mandatory = $true)]
         [System.String]
-        $Identity = $env:COMPUTERNAME,
+        $Identity,
 
         [System.String]
         $DomainController
@@ -1191,7 +1191,7 @@ function SetMailboxServer
     param(
         [parameter(Mandatory = $true)]
         [System.String]
-        $Identity = $env:COMPUTERNAME,
+        $Identity,
 
         [System.String]
         $DomainController,
@@ -1218,7 +1218,7 @@ function GetUMActiveCalls
     (
         [parameter(Mandatory = $true)]
         [System.String]
-        $Server = $env:COMPUTERNAME,
+        $Server,
 
         [System.String]
         $DomainController
