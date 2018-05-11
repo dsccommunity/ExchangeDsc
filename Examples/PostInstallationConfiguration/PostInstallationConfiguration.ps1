@@ -309,13 +309,13 @@ Configuration Example
         #This imports a certificate .PFX that had been previously exported, and enabled services on it
         xExchExchangeCertificate Certificate
         {
-            Thumbprint              = $dagSettings.Thumbprint
-            Credential              = $ExchangeAdminCredential
-            Ensure                  = 'Present'
-            AllowExtraServices      = $dagSettings.AllowExtraServices        
-            ExchangeCertCredential  = $ExchangeCertCredential
-            CertFilePath            = $dagSettings.CertFilePath
-            Services                = $dagSettings.Services
+            Thumbprint          = $dagSettings.Thumbprint
+            Credential          = $ExchangeAdminCredential
+            Ensure              = 'Present'
+            AllowExtraServices  = $dagSettings.AllowExtraServices        
+            CertCreds           = $ExchangeCertCredential
+            CertFilePath        = $dagSettings.CertFilePath
+            Services            = $dagSettings.Services
         }
 
         ###CAS specific settings###

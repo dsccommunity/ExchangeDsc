@@ -28,7 +28,7 @@ $ConfigurationData = @{
     )
 }
 
-Configuration InstallExchange
+Configuration Example
 {
     param
     (
@@ -55,7 +55,7 @@ Configuration InstallExchange
         #Check if a reboot is needed before installing Exchange
         xPendingReboot BeforeExchangeInstall
         {
-            Name      = 'BeforeExchangeInstall'
+            Name       = 'BeforeExchangeInstall'
             DependsOn  = '[File]ExchangeBinaries'
         }
 

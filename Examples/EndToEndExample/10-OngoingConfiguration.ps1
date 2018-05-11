@@ -169,7 +169,7 @@ Configuration Example
             Credential         = $ExchangeAdminCredential
             Ensure             = 'Present'
             AllowExtraServices = $true        
-            ExchangeCertCredential          = $ExchangeCertCredential
+            CertCreds          = $ExchangeCertCredential
             CertFilePath       = 'C:\Binaries\Certificates\ExchangeCert.pfx'
             Services           = 'IIS','POP','IMAP','SMTP'
             DependsOn          = '[File]CopyExchangeCert'

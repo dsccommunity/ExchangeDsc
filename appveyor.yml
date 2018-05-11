@@ -12,12 +12,12 @@
 #      environment configuration  #
 #---------------------------------#
 
-version: 1.20.{build}.0
+version: 1.13.{build}.0
 install:
     - git clone https://github.com/PowerShell/DscResource.Tests
     - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
-    - ps: Install-Module -Name xPendingReboot -Verbose
-    - ps: Install-Module -Name xWebAdministration -Verbose
+    - ps: Install-Module -Name xPendingReboot
+    - ps: Install-Module -Name xWebAdministration
     - ps: Import-Module "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
     - ps: Invoke-AppveyorInstallTask
 
