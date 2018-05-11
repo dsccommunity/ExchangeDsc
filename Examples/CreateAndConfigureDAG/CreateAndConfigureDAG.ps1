@@ -83,6 +83,7 @@ Configuration Example
         [System.Management.Automation.PSCredential]
         $ExchangeAdminCredential
     )
+    
     Import-DscResource -Module xExchange
 
     #This section only configures a single DAG node, the first member of the DAG.
