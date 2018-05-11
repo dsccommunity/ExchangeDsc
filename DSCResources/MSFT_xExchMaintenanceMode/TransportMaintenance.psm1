@@ -31,13 +31,13 @@ $ServiceState = $null
 #endregion
 
 #region New Code or Wrappers
+
 <#
-.DESCRIPTION
-Begin maintenance script for HUB components.
+    .SYNOPSIS
+        Begin maintenance script for HUB components.
 
-.PARAMETER Target
-The name of the machine being put into maintenance.
-
+    .PARAMETER Target
+        The name of the machine being put into maintenance.
 #>
 function Start-TransportMaintenance
 {
@@ -1901,28 +1901,27 @@ function Wait-EmptyDiscardsCompletion
     return $remaining
 }
 
-# .DESCRIPTION
-#   Waits for the event log StartScanForMessages (id = 17008) to be logged to Windows Event Log
-#   This tells that the bootscanner had completed counting for the outstanding items and
-#   start boot-scanning messages
-#
-# .PARAMETER ServerFqdn
-#   Fqdn of the server
-#
-# .PARAMETER PollingFrequency
-#   Frequency of polling for event
-#
-# .PARAMETER Timeout
-#   Timeout not to exceed
-#
-# .PARAMETER NoProgressTimeout
-#   Timeout for when no progress is made
-#
-# .PARAMETER ThrowOnTimeout
-#   Whether to throw error on timeout
-#
-# .RETURN
-#   none
+<# 
+    .SYNOPSIS
+        Waits for the event log StartScanForMessages (id = 17008) to be logged to Windows Event Log
+        This tells that the bootscanner had completed counting for the outstanding items and
+        start boot-scanning messages
+
+    .PARAMETER ServerFqdn
+        Fqdn of the server
+
+    .PARAMETER PollingFrequency
+        Frequency of polling for event
+
+    .PARAMETER Timeout
+        Timeout not to exceed
+
+    .PARAMETER NoProgressTimeout
+        Timeout for when no progress is made
+
+    .PARAMETER ThrowOnTimeout
+        Whether to throw error on timeout
+#>
 function Wait-BootLoaderCountCheck
 {
     param
@@ -2095,32 +2094,30 @@ function Wait-BootLoaderSubmitCheck
     return $remaining
 }
 
-# .DESCRIPTION
-#   If the process has been running for more than 30 mins, then this function returns immediately.
-#   Otherwise, wait for the bootscanner to complete up to 30 minutes or the specified timeout, whichever
-#   less.
-#
-# .PARAMETER Server
-#   Target server for the operation.
-#
-# .PARAMETER MaxBootLoaderProcessTimeout
-#   Max time for the BootLoader to completely bootscanning all the unprocessed messages.
-#
-# .PARAMETER PollingFrequency
-#   Frequency of polling queues for status
-#
-# .PARAMETER Timeout
-#   Timeout not to exceed
-#
-# .PARAMETER NoProgressTimeout
-#   Timeout for when no progress is made
-#
-# .PARAMETER ThrowOnTimeout
-#   Whether to throw error on timeout
-#
-# .RETURN
-#   Returns the remaining count of the outstanding items in the BootLoader.  When the wait ends with
-#   timeout exceeded or no progress, this function returns a non-zero value.
+<#
+    .SYNOPSIS
+        If the process has been running for more than 30 mins, then this function returns immediately.
+        Otherwise, wait for the bootscanner to complete up to 30 minutes or the specified timeout, whichever
+        less.
+
+    .PARAMETER Server
+        Target server for the operation.
+
+    .PARAMETER MaxBootLoaderProcessTimeout
+        Max time for the BootLoader to completely bootscanning all the unprocessed messages.
+
+    .PARAMETER PollingFrequency
+        Frequency of polling queues for status
+
+    .PARAMETER Timeout
+        Timeout not to exceed
+
+    .PARAMETER NoProgressTimeout
+        Timeout for when no progress is made
+
+    .PARAMETER ThrowOnTimeout
+        Whether to throw error on timeout
+#>
 function Wait-BootLoaderReady
 {
     param
