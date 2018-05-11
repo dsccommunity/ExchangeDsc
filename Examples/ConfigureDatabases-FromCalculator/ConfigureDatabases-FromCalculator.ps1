@@ -1,8 +1,45 @@
-Configuration ConfigureDatabasesFromCalculator
+$ConfigurationData = @{
+    AllNodes = @(
+        #Settings under 'NodeName = *' apply to all nodes.
+        @{
+            NodeName        = '*'
+
+            <#
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                This is added so that AppVeyor automatic tests can pass, otherwise
+                the tests will fail on passwords being in plain text and not being
+                encrypted. Because it is not possible to have a certificate in
+                AppVeyor to encrypt the passwords we need to add the parameter
+                'PSDscAllowPlainTextPassword'.
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                See:
+                http://blogs.msdn.com/b/powershell/archive/2014/01/31/want-to-secure-credentials-in-windows-powershell-desired-state-configuration.aspx
+            #>
+            PSDscAllowPlainTextPassword = $true
+        }
+
+        #Individual target nodes are defined next
+        @{
+            NodeName           = 'e15-1'
+            ServerNameInCsv    = 'SRV-nn-01'
+            DbNameReplacements = @{"-nn-" = "-01-"}
+        }
+
+        @{
+            NodeName           = 'e15-2'
+            ServerNameInCsv    = 'SRV-nn-02'
+            DbNameReplacements = @{"-nn-" = "-01-"}
+        }
+    )
+}
+
+Configuration Example
 {
     param
     (
-        [PSCredential]$ShellCreds
+        [Parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $ShellCreds
     )
 
     Import-DscResource -Module xExchange
@@ -10,13 +47,7 @@ Configuration ConfigureDatabasesFromCalculator
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.FullName)\HelperScripts\ExchangeConfigHelper.psm1"
 
     Node $AllNodes.NodeName
-    {
-        #Thumbprint of the certificate used to decrypt credentials on the target node
-        LocalConfigurationManager
-        {
-            CertificateId = $Node.Thumbprint
-        }
-        
+    {       
         #Load the primary and copy lists from the calculator files
         $primaryDbList = DBListFromMailboxDatabasesCsv `
                             -MailboxDatabasesCsvPath "$($PSScriptRoot)\CalculatorAndScripts\MailboxDatabases.csv" `
@@ -76,17 +107,3 @@ Configuration ConfigureDatabasesFromCalculator
         }
     }
 }
-
-if ($null -eq $ShellCreds)
-{
-    $ShellCreds = Get-Credential -Message 'Enter credentials for establishing Remote Powershell sessions to Exchange'
-}
-
-###Compiles the example
-ConfigureDatabasesFromCalculator -ConfigurationData $PSScriptRoot\ConfigureDatabases-FromCalculator-Config.psd1 -ShellCreds $ShellCreds
-
-###Sets up LCM on target computers to decrypt credentials.
-Set-DscLocalConfigurationManager -Path .\ConfigureDatabasesFromCalculator -Verbose
-
-###Pushes configuration and waits for execution
-Start-DscConfiguration -Path .\ConfigureDatabasesFromCalculator -Verbose -Wait 
