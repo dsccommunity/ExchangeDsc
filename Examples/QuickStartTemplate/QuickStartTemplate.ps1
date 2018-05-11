@@ -49,9 +49,3 @@ Configuration Example
         }
     }
 }
-
-#Get credentials if they haven't already been passed
-if ($null -eq $ExchangeAdminCredential)
-{
-    $ExchangeAdminCredential = Get-Credential -Message 'Enter credentials for establishing Remote Powershell sessions to Exchange'
-}

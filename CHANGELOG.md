@@ -17,6 +17,8 @@
   - ConfigureAutoMountPoints-Manual.ps1
   - ConfigureDatabases-FromCalculator.ps1
   - InternetFacingSite.ps1
+  - RegionalNamespaces.ps1
+  - SingleNamespace.ps1
   - InstallExchange.ps1
   - QuickStartTemplate.ps1
   - WaitForADPrep.ps1

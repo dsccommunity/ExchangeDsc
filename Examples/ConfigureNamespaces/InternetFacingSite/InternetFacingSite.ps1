@@ -1,6 +1,6 @@
 <#
 .EXAMPLE
-    This example shows how to configure databases manually.
+    This example shows how to configure Internet facing Site.
 #>
 
 $ConfigurationData = @{

@@ -91,13 +91,7 @@ Configuration Example
     Import-DscResource -Module xExchange
 
     Node $AllNodes.NodeName
-    {
-        #Thumbprint of the certificate used to decrypt credentials on the target node
-        LocalConfigurationManager
-        {
-            CertificateId = $Node.Thumbprint
-        }
-        
+    {      
         #Create primary databases
         foreach ($DB in $Node.PrimaryDBList.Values)
         {
