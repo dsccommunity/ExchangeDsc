@@ -740,7 +740,7 @@ function Set-TargetResource
         if ($arguments)
         {
             $expression = 'Set-TransportService @PSBoundParameters '+$Arguments
-            Invoke-Expression $expression
+            & $expression
         }
         else
         {

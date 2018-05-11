@@ -15,6 +15,7 @@
   - xExchInstall.psm1
   - xExchMaintenanceMode.psm1
   - TransportMaintenance.psm1
+  - xExchTransportService.psm1
 - Fixed Validate Example files in:
   - ConfigureAutoMountPoints-FromCalculator.ps1
   - ConfigureAutoMountPoints-Manual.ps1
