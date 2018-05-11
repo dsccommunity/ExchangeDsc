@@ -8,6 +8,7 @@
 - Added .MetaTestOptIn.json file
 - Updated appveyor.yml file
 - Added .codecov.yml file
+- Renamed Test folder to Tests
 - Updated README.md: Add codecov badges
 - Fixed PSSA issues in:
   - TransportMaintenance.psm1
