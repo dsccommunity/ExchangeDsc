@@ -12,6 +12,7 @@
 - Updated README.md: Add codecov badges
 - Fixed PSSA required rules in:
   - xExchClientAccessServer.psm1
+  - xExchInstall.psm1
   - TransportMaintenance.psm1
 - Fixed Validate Example files in:
   - ConfigureAutoMountPoints-FromCalculator.ps1
