@@ -52,30 +52,6 @@ $ConfigurationData = @{
                 DB4 = @{Name = 'DB4'; ActivationPreference = 2; ReplayLagTime = '00:00:00'}
             }
         }
-
-        @{
-            NodeName        = 'e15-3'
-
-            #Configure just copies for this node
-            CopyDBList    = @{
-                DB1 = @{Name = 'DB1'; ActivationPreference = 3; ReplayLagTime = '00:00:00'};
-                DB2 = @{Name = 'DB2'; ActivationPreference = 4; ReplayLagTime = '7.00:00:00'};
-                DB3 = @{Name = 'DB3'; ActivationPreference = 3; ReplayLagTime = '00:00:00'};
-                DB4 = @{Name = 'DB4'; ActivationPreference = 4; ReplayLagTime = '7.00:00:00'}
-            }
-        }
-
-        @{
-            NodeName        = 'e15-4'
-
-            #Configure just copies for this node
-            CopyDBList    = @{
-                DB1 = @{Name = 'DB1'; ActivationPreference = 4; ReplayLagTime = '7.00:00:00'};
-                DB2 = @{Name = 'DB2'; ActivationPreference = 3; ReplayLagTime = '00:00:00'};
-                DB3 = @{Name = 'DB3'; ActivationPreference = 4; ReplayLagTime = '7.00:00:00'};
-                DB4 = @{Name = 'DB4'; ActivationPreference = 3; ReplayLagTime = '00:00:00'}
-            }
-        }
     )
 }
 
