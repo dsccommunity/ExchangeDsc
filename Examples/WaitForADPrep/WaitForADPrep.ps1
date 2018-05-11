@@ -11,7 +11,7 @@ Configuration Example
         [Parameter(Mandatory = $true)]
         [ValidateNotNullorEmpty()]
         [System.Management.Automation.PSCredential]
-        $Creds    
+        $ExchangeAdminCredential    
     )
 
     Import-DscResource -Module xExchange
@@ -21,7 +21,7 @@ Configuration Example
         xExchWaitForADPrep WaitForADPrep
         {
             Identity            = "Doesn'tMatter"
-            Credential          = $Creds
+            Credential          = $ExchangeAdminCredential
             SchemaVersion       = 15303
             OrganizationVersion = 15965
             DomainVersion       = 13236

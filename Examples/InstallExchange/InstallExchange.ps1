@@ -27,13 +27,14 @@ $ConfigurationData = @{
         }
     )
 }
+
 Configuration InstallExchange
 {
     param
     (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        $Creds    
+        $ExchangeAdminCredential    
     )
 
     Import-DscResource -Module xExchange
@@ -63,7 +64,7 @@ Configuration InstallExchange
         {
             Path       = 'C:\Binaries\E15CU6\Setup.exe'
             Arguments  = '/mode:Install /role:Mailbox,ClientAccess /Iacceptexchangeserverlicenseterms'
-            Credential = $Creds
+            Credential = $ExchangeAdminCredential
             DependsOn  = '[xPendingReboot]BeforeExchangeInstall'
         }
 
