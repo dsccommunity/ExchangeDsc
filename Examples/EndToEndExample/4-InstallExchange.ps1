@@ -3,8 +3,6 @@
     This example shows how to install Exchange.
 #>
 
-Import-Module -Name xPendingReboot -Force
-
 $ConfigurationData = @{
     AllNodes = @(
         @{

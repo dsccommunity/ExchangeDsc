@@ -21,10 +21,7 @@
   - SingleNamespace.ps1
   - ConfigureVirtualDirectories.ps1
   - CreateAndConfigureDAG.ps1
-  - 1-ConfigureLCMForDeployment.ps1
-  - 2-InstallAndRunJetstress.ps1
-  - 3-CleanupJetstress.ps1
-  - 4-InstallExchange.ps1
+  - EndToEndExample 1 to 10 files
   - InstallExchange.ps1
   - QuickStartTemplate.ps1
   - WaitForADPrep.ps1
