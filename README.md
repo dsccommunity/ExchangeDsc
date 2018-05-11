@@ -14,11 +14,15 @@ questions or comments.
 ### master
 
 [![Build status](https://ci.appveyor.com/api/projects/status/k9oq77p9xn6bo2j6/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xexchange/branch/master)
+[![codecov](https://codecov.io/gh/PowerShell/xexchange/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/xexchange/branch/master)
 
 This is the branch containing the latest release -
 no contributions should be made directly to this branch.
 
 ### dev
+
+[![Build status](https://ci.appveyor.com/api/projects/status/k9oq77p9xn6bo2j6/branch/dev?svg=true)](https://ci.appveyor.com/project/PowerShell/xexchange/branch/dev)
+[![codecov](https://codecov.io/gh/PowerShell/xexchange/branch/dev/graph/badge.svg)](https://codecov.io/gh/PowerShell/xexchange/branch/dev)
 
 This is the development branch
 to which contributions should be proposed by contributors as pull requests.
