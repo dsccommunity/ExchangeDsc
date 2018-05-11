@@ -10,6 +10,8 @@
 - Updated appveyor.yml file
 - Fixed PSSA issues in:
   - TransportMaintenance.psm1
+- Fixed Validate Example files in:
+  - ConfigureAutoMountPoints-FromCalculator.ps1
 
 ## 1.20.0.0
 
