@@ -11,6 +11,7 @@
   - TransportMaintenance.psm1
 - Fixed Validate Example files in:
   - ConfigureAutoMountPoints-FromCalculator.ps1
+  - WaitForADPrep.ps1
 
 ## 1.20.0.0
 
