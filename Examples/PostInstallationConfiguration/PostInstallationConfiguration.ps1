@@ -312,7 +312,7 @@ Configuration Example
             Thumbprint          = $dagSettings.Thumbprint
             Credential          = $ExchangeAdminCredential
             Ensure              = 'Present'
-            AllowExtraServices  = $dagSettings.AllowExtraServices        
+            AllowExtraServices  = $false        
             CertCreds           = $ExchangeCertCredential
             CertFilePath        = $dagSettings.CertFilePath
             Services            = $dagSettings.Services
