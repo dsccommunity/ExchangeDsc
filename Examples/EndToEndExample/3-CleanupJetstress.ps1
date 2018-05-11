@@ -9,14 +9,18 @@ $ConfigurationData = @{
             #region Common Settings for All Nodes
             NodeName        = '*'
 
-            #CertificateFile and Thumbprint are used for securing credentials. See:
-            #http://blogs.msdn.com/b/powershell/archive/2014/01/31/want-to-secure-credentials-in-windows-powershell-desired-state-configuration.aspx
-            
-            #The location on the compiling machine of the public key export of the certfificate which will be used to encrypt credentials
-            CertificateFile = 'C:\Certificates\DSCCertificate-Public.cer' 
-
-            #Thumbprint of the certificate being used for encrypting credentials
-            Thumbprint      = '49930c16428c9e5fdc8461d551eae19d9eb3670c'
+            <#
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                This is added so that AppVeyor automatic tests can pass, otherwise
+                the tests will fail on passwords being in plain text and not being
+                encrypted. Because it is not possible to have a certificate in
+                AppVeyor to encrypt the passwords we need to add the parameter
+                'PSDscAllowPlainTextPassword'.
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                See:
+                http://blogs.msdn.com/b/powershell/archive/2014/01/31/want-to-secure-credentials-in-windows-powershell-desired-state-configuration.aspx
+            #>
+            PSDscAllowPlainTextPassword = $true
 
             #The product key to license Exchange 2013
             ProductKey = '12345-12345-12345-12345-12345'
