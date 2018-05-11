@@ -28,7 +28,7 @@ $ConfigurationData = @{
     )
 }
 
-Configuration WaitForADPrep
+Configuration Example
 {
     param
     (
