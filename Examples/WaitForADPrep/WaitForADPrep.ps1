@@ -6,7 +6,7 @@
 $ConfigurationData = @{
     AllNodes = @(
         @{
-            NodeName                    = '*'
+            NodeName = 'localhost'
 
             <#
                 NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
@@ -20,10 +20,6 @@ $ConfigurationData = @{
                 http://blogs.msdn.com/b/powershell/archive/2014/01/31/want-to-secure-credentials-in-windows-powershell-desired-state-configuration.aspx
             #>
             PSDscAllowPlainTextPassword = $true
-        },
-
-        @{
-            NodeName = 'DSCPULL-1'
         }
     )
 }
@@ -39,8 +35,7 @@ Configuration Example
 
     Import-DscResource -Module xExchange
 
-    Node $AllNodes.NodeName
-    {
+    node localhost {
         xExchWaitForADPrep WaitForADPrep
         {
             Identity            = "Doesn'tMatter"
