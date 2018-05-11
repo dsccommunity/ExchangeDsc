@@ -17,6 +17,7 @@
   - ConfigureAutoMountPoints-Manual.ps1
   - ConfigureDatabases-FromCalculator.ps1
   - InstallExchange.ps1
+  - QuickStartTemplate.ps1
   - WaitForADPrep.ps1
 
 ## 1.20.0.0
