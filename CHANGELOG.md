@@ -7,6 +7,7 @@
 - Updated README.md and CHANGELOG.md files to respect MD009, MD0013 and MD032 rules
 - Added .MetaTestOptIn.json file
 - Updated appveyor.yml file
+- Added .codecov.yml file
 - Fixed PSSA issues in:
   - TransportMaintenance.psm1
 - Fixed Validate Example files in:

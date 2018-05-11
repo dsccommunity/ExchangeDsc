@@ -37,10 +37,8 @@ test_script:
         if ($res.FailedCount -gt 0) { 
             throw "$($res.FailedCount) tests failed."
         }
-        # TODO:
-        # To use -CodeCovIo parameter, the repository need to connected
-        # to Codecov (see https://codecov.io/).
-        # Invoke-AppveyorTestScriptTask -CodeCoverage -CodeCovIo -ExcludeTag @()
+
+        Invoke-AppveyorTestScriptTask -CodeCoverage -CodeCovIo -ExcludeTag @() -RunTestInOrder
 
 #---------------------------------#
 #      deployment configuration   #
