@@ -22,6 +22,7 @@
   - ConfigureVirtualDirectories.ps1
   - CreateAndConfigureDAG.ps1
   - EndToEndExample 1 to 10 files
+  - JetstressAutomation
   - InstallExchange.ps1
   - QuickStartTemplate.ps1
   - WaitForADPrep.ps1
