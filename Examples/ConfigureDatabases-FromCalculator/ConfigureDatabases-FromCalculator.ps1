@@ -86,8 +86,8 @@ Configuration Example
         #Create the copies
         foreach ($DB in $copyDbList)
         {
-            $waitResourceId = "WaitForDB:$($DB.Name)" #Unique ID for the xExchWaitForMailboxDatabase resource
-            $copyResourceId = "MDBCopy:$($DB.Name)" #Unique ID for the xExchMailboxDatabaseCopy resource 
+            $waitResourceId = "WaitForDB_$($DB.Name)" #Unique ID for the xExchWaitForMailboxDatabase resource
+            $copyResourceId = "MDBCopy_$($DB.Name)" #Unique ID for the xExchMailboxDatabaseCopy resource 
 
             #Need to wait for a primary copy to be created before we add a copy
             xExchWaitForMailboxDatabase $waitResourceId
