@@ -95,7 +95,7 @@ Configuration Example
         xExchDatabaseAvailabilityGroup DAG
         {
             Name                                 = $dagSettings.DAGName
-            Credential                           = $ShellCreds
+            Credential                           = $ExchangeAdminCredential
             AutoDagTotalNumberOfServers          = $dagSettings.AutoDagTotalNumberOfServers
             AutoDagDatabaseCopiesPerVolume       = $dagSettings.AutoDagDatabaseCopiesPerVolume
             AutoDagDatabasesRootFolderPath       = 'C:\ExchangeDatabases'
@@ -113,7 +113,7 @@ Configuration Example
         xExchDatabaseAvailabilityGroupMember DAGMember
         {
             MailboxServer     = $Node.NodeName
-            Credential        = $ShellCreds
+            Credential        = $ExchangeAdminCredential
             DAGName           = $dagSettings.DAGName
             SkipDagValidation = $true
             DependsOn         = '[xExchDatabaseAvailabilityGroup]DAG'
@@ -123,7 +123,7 @@ Configuration Example
         xExchDatabaseAvailabilityGroupNetwork DAGNet1
         {
             Name                      = $dagSettings.DAGNet1NetworkName
-            Credential                = $ShellCreds
+            Credential                = $ExchangeAdminCredential
             DatabaseAvailabilityGroup = $dagSettings.DAGName
             Ensure                    = 'Present'
             ReplicationEnabled        = $dagSettings.DAGNet1ReplicationEnabled
@@ -134,7 +134,7 @@ Configuration Example
         xExchDatabaseAvailabilityGroupNetwork DAGNet2
         {
             Name                      = $dagSettings.DAGNet2NetworkName
-            Credential                = $ShellCreds
+            Credential                = $ExchangeAdminCredential
             DatabaseAvailabilityGroup = $dagSettings.DAGName
             Ensure                    = 'Present'
             ReplicationEnabled        = $dagSettings.DAGNet2ReplicationEnabled
@@ -146,7 +146,7 @@ Configuration Example
         xExchDatabaseAvailabilityGroupNetwork DAGNetOld
         {
             Name                      = $dagSettings.OldNetworkName
-            Credential                = $ShellCreds
+            Credential                = $ExchangeAdminCredential
             DatabaseAvailabilityGroup = $dagSettings.DAGName
             Ensure                    = 'Absent'
             DependsOn                 = '[xExchDatabaseAvailabilityGroupNetwork]DAGNet1','[xExchDatabaseAvailabilityGroupNetwork]DAGNet2' #Dont remove the old one until the new one is in place
@@ -162,13 +162,13 @@ Configuration Example
         xExchWaitForDAG WaitForDAG
         {
             Identity   = $dagSettings.DAGName
-            Credential = $ShellCreds
+            Credential = $ExchangeAdminCredential
         }
 
         xExchDatabaseAvailabilityGroupMember DAGMember
         {
             MailboxServer     = $Node.NodeName
-            Credential        = $ShellCreds
+            Credential        = $ExchangeAdminCredential
             DAGName           = $dagSettings.DAGName
             SkipDagValidation = $true
             DependsOn         = '[xExchWaitForDAG]WaitForDAG'
