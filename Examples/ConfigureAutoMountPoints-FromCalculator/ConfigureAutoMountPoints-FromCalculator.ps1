@@ -32,7 +32,7 @@ $ConfigurationData = @{
     }
 }
 
-Configuration ConfigureAutoMountPointsFromCalculator
+Configuration Example
 {
     Import-DscResource -Module xExchange
 
