@@ -20,6 +20,7 @@
   - RegionalNamespaces.ps1
   - SingleNamespace.ps1
   - ConfigureVirtualDirectories.ps1
+  - CreateAndConfigureDAG.ps1
   - InstallExchange.ps1
   - QuickStartTemplate.ps1
   - WaitForADPrep.ps1

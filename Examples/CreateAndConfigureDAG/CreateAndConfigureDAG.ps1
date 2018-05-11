@@ -1,22 +1,89 @@
-Configuration CreateAndConfigureDAG
+<#
+.EXAMPLE
+    This example shows how to configure databases manually.
+#>
+
+$ConfigurationData = @{
+    AllNodes = @(
+        #Settings under 'NodeName = *' apply to all nodes.
+        @{
+            NodeName                    = '*'
+
+            <#
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                This is added so that AppVeyor automatic tests can pass, otherwise
+                the tests will fail on passwords being in plain text and not being
+                encrypted. Because it is not possible to have a certificate in
+                AppVeyor to encrypt the passwords we need to add the parameter
+                'PSDscAllowPlainTextPassword'.
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                See:
+                http://blogs.msdn.com/b/powershell/archive/2014/01/31/want-to-secure-credentials-in-windows-powershell-desired-state-configuration.aspx
+            #>
+            PSDscAllowPlainTextPassword = $true
+        },
+
+        #Individual target nodes are defined next
+        @{
+            NodeName      = 'e15-1'
+            Role          = 'FirstDAGMember'
+            DAGId         = 'DAG1' #Used to determine which DAG settings the servers should use. Corresponds to DAG1 hashtable entry below.
+        }
+
+        @{
+            NodeName      = 'e15-2'
+            Role          = 'AdditionalDAGMember'
+            DAGId         = 'DAG1'
+        }
+
+        @{
+            NodeName    = 'e15-3'
+            Role        = 'AdditionalDAGMember'
+            DAGId       = 'DAG1'
+        }
+
+        @{
+            NodeName    = 'e15-4'
+            Role        = 'AdditionalDAGMember'
+            DAGId       = 'DAG1'
+        }
+    );
+
+    #Settings that are unique per DAG will go in separate hash table entries.
+    DAG1 = @(
+        @{
+            ###DAG Settings###
+            DAGName                              = 'TestDAG1'           
+            AutoDagTotalNumberOfServers          = 4     
+            AutoDagDatabaseCopiesPerVolume       = 2
+            DatabaseAvailabilityGroupIPAddresses = '192.168.1.99','192.168.2.99'     
+            WitnessServer                        = 'e14-1.mikelab.local'
+
+            #xDatabaseAvailabilityGroupNetwork params
+            #New network params
+            DAGNet1NetworkName                   = 'MapiNetwork'
+            DAGNet1ReplicationEnabled            = $false
+            DAGNet1Subnets                       = '192.168.1.0/24','192.168.2.0/24'
+
+            DAGNet2NetworkName                   = 'ReplNetwork'
+            DAGNet2ReplicationEnabled            = $true
+            DAGNet2Subnets                       = '10.10.10.0/24','10.10.11.0/24'
+
+            #Old network to remove
+            OldNetworkName                       = 'MapiDagNetwork'
+        }
+    );
+}
+
+Configuration Example
 {
     param
     (
-        [PSCredential]$ShellCreds
+        [Parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $ExchangeAdminCredential
     )
-
     Import-DscResource -Module xExchange
-
-
-    Node $AllNodes.NodeName
-    {
-        #Thumbprint of the certificate used to decrypt credentials on the target node
-        LocalConfigurationManager
-        {
-            CertificateId = $Node.Thumbprint
-        }
-    }
-
 
     #This section only configures a single DAG node, the first member of the DAG.
     #The first member of the DAG will be responsible for DAG creation and maintaining its configuration
@@ -31,8 +98,9 @@ Configuration CreateAndConfigureDAG
             Credential                           = $ShellCreds
             AutoDagTotalNumberOfServers          = $dagSettings.AutoDagTotalNumberOfServers
             AutoDagDatabaseCopiesPerVolume       = $dagSettings.AutoDagDatabaseCopiesPerVolume
-            AutoDagDatabasesRootFolderPath       = 'C:\ExchangeDatabases'            AutoDagVolumesRootFolderPath         = 'C:\ExchangeVolumes'
-            DatacenterActivationMode             = "DagOnly"
+            AutoDagDatabasesRootFolderPath       = 'C:\ExchangeDatabases'
+            AutoDagVolumesRootFolderPath         = 'C:\ExchangeVolumes'
+            DatacenterActivationMode             = 'DagOnly'
             DatabaseAvailabilityGroupIPAddresses = $dagSettings.DatabaseAvailabilityGroupIPAddresses 
             ManualDagNetworkConfiguration        = $true
             ReplayLagManagerEnabled              = $true
@@ -48,7 +116,6 @@ Configuration CreateAndConfigureDAG
             Credential        = $ShellCreds
             DAGName           = $dagSettings.DAGName
             SkipDagValidation = $true
-
             DependsOn         = '[xExchDatabaseAvailabilityGroup]DAG'
         }
 
@@ -61,7 +128,6 @@ Configuration CreateAndConfigureDAG
             Ensure                    = 'Present'
             ReplicationEnabled        = $dagSettings.DAGNet1ReplicationEnabled
             Subnets                   = $dagSettings.DAGNet1Subnets
-
             DependsOn                 = '[xExchDatabaseAvailabilityGroupMember]DAGMember' #Can't do work on DAG networks until at least one member is in the DAG...
         }
 
@@ -72,8 +138,7 @@ Configuration CreateAndConfigureDAG
             DatabaseAvailabilityGroup = $dagSettings.DAGName
             Ensure                    = 'Present'
             ReplicationEnabled        = $dagSettings.DAGNet2ReplicationEnabled
-            Subnets                   = $dagSettings.DAGNet2Subnets
-            
+            Subnets                   = $dagSettings.DAGNet2Subnets            
             DependsOn                 = '[xExchDatabaseAvailabilityGroupMember]DAGMember' #Can't do work on DAG networks until at least one member is in the DAG...
         }
 
@@ -84,11 +149,9 @@ Configuration CreateAndConfigureDAG
             Credential                = $ShellCreds
             DatabaseAvailabilityGroup = $dagSettings.DAGName
             Ensure                    = 'Absent'
-
             DependsOn                 = '[xExchDatabaseAvailabilityGroupNetwork]DAGNet1','[xExchDatabaseAvailabilityGroupNetwork]DAGNet2' #Dont remove the old one until the new one is in place
         }
     }
-
 
     #Next we'll add the remaining nodes to the DAG
     Node $AllNodes.Where{$_.Role -eq 'AdditionalDAGMember'}.NodeName
@@ -108,22 +171,7 @@ Configuration CreateAndConfigureDAG
             Credential        = $ShellCreds
             DAGName           = $dagSettings.DAGName
             SkipDagValidation = $true
-
             DependsOn         = '[xExchWaitForDAG]WaitForDAG'
         }
     }
 }
-
-if ($null -eq $ShellCreds)
-{
-    $ShellCreds = Get-Credential -Message 'Enter credentials for establishing Remote Powershell sessions to Exchange'
-}
-
-###Compiles the example
-CreateAndConfigureDAG -ConfigurationData $PSScriptRoot\CreateAndConfigureDAG-Config.psd1 -ShellCreds $ShellCreds
-
-###Sets up LCM on target computers to decrypt credentials.
-Set-DscLocalConfigurationManager -Path .\CreateAndConfigureDAG -Verbose
-
-###Pushes configuration and waits for execution
-Start-DscConfiguration -Path .\CreateAndConfigureDAG -Verbose -Wait 
