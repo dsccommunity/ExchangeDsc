@@ -25,23 +25,12 @@ $ConfigurationData = @{
         #Individual target nodes are defined next
         @{
             NodeName = 'e15-1'
-            CASID    = 'Site1CAS'
         }
 
         @{
             NodeName = 'e15-2'
-            CASID    = 'Site2CAS'
         }
     )
-
-    #Individual target nodes are defined next
-    @{
-        NodeName = 'e15-1'
-    }
-
-    @{
-        NodeName = 'e15-2'
-    }
 }
 
 Configuration Example

@@ -101,7 +101,7 @@ Configuration Example
             {
                 Name                     = $DB.Name
                 Credential               = $ExchangeAdminCredential
-                EdbFilePath              = $DB.DBFilePath
+                EdbFilePath              = $DB.EdbFilePath
                 LogFolderPath            = $DB.LogFolderPath
                 Server                   = $Node.NodeName
                 CircularLoggingEnabled   = $true
@@ -133,8 +133,7 @@ Configuration Example
                 MailboxServer        = $Node.NodeName
                 ActivationPreference = $DB.ActivationPreference
                 ReplayLagTime        = $DB.ReplayLagTime
-                AllowServiceRestart  = $true
-                
+                AllowServiceRestart  = $true                
                 DependsOn            = "[xExchWaitForMailboxDatabase]$($waitResourceId)"
             }
         }
