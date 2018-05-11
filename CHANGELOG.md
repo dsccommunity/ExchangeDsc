@@ -24,6 +24,7 @@
   - EndToEndExample 1 to 10 files
   - JetstressAutomation
   - MaintenanceMode
+  - PostInstallationConfiguration.ps1
   - InstallExchange.ps1
   - QuickStartTemplate.ps1
   - WaitForADPrep.ps1
