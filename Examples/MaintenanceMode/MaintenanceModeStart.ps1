@@ -1,8 +1,46 @@
-Configuration MaintenanceModeStart
+<#
+.EXAMPLE
+    This example shows how to start maintenance mode.
+#>
+
+$ConfigurationData = @{
+    AllNodes = @(
+        @{
+            NodeName        = '*'
+
+            <#
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                This is added so that AppVeyor automatic tests can pass, otherwise
+                the tests will fail on passwords being in plain text and not being
+                encrypted. Because it is not possible to have a certificate in
+                AppVeyor to encrypt the passwords we need to add the parameter
+                'PSDscAllowPlainTextPassword'.
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                See:
+                http://blogs.msdn.com/b/powershell/archive/2014/01/31/want-to-secure-credentials-in-windows-powershell-desired-state-configuration.aspx
+            #>
+            PSDscAllowPlainTextPassword = $true
+
+            Site1DC         = 'dc-1'
+            Site2DC         = 'dc-2'
+        }
+
+        #Individual target nodes are defined next
+        @{
+            NodeName = 'e15-1'
+            NodeFqdn = 'e15-1.mikelab.local'
+        }
+    )
+}
+
+Configuration Example
 {
     param
     (
-        [PSCredential]$ShellCreds
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullorEmpty()]
+        [System.Management.Automation.PSCredential]    
+        $ExchangeAdminCredential
     )
 
     Import-DscResource -Module xExchange
@@ -12,18 +50,7 @@ Configuration MaintenanceModeStart
         xExchMaintenanceMode EnterMaintenanceMode
         {
             Enabled    = $true
-            Credential = $ShellCreds
+            Credential = $ExchangeAdminCredential
         }
     }
 }
-
-if ($null -eq $ShellCreds)
-{
-    $ShellCreds = Get-Credential -Message 'Enter credentials for establishing Remote Powershell sessions to Exchange'
-}
-
-###Compiles the example
-MaintenanceModeStart -ConfigurationData $PSScriptRoot\MaintenanceMode-Config.psd1 -ShellCreds $ShellCreds
-
-###Pushes configuration and waits for execution
-#Start-DscConfiguration -Path .\MaintenanceModeStart -Verbose -Wait -ComputerName XXX

@@ -23,6 +23,7 @@
   - CreateAndConfigureDAG.ps1
   - EndToEndExample 1 to 10 files
   - JetstressAutomation
+  - MaintenanceMode
   - InstallExchange.ps1
   - QuickStartTemplate.ps1
   - WaitForADPrep.ps1
