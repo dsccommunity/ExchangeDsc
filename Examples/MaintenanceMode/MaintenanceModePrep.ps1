@@ -21,7 +21,7 @@ $ConfigurationData = @{
             #>
             PSDscAllowPlainTextPassword = $true
 
-            #Thumbprint of the certificate being used for encrypting credentials
+            #Thumbprint of the certificate being used for decrypting credentials
             Thumbprint      = '49930c16428c9e5fdc8461d551eae19d9eb3670c'
 
             Site1DC         = 'dc-1'

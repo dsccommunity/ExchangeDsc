@@ -548,7 +548,7 @@ function GetQueueMessageCount
         $MaintenanceModeStatus
     )
 
-    $messageCount = 0
+    [UInt32]$messageCount = 0
 
     if ($null -ne $MaintenanceModeStatus.Queues)
     {
@@ -581,7 +581,7 @@ function GetActiveDBCount
         $DomainController
     )
 
-    $activeDBCount = 0
+    [UInt32]$activeDBCount = 0
 
     #Get DB's with a status of Mounted, Mounting, Dismounted, or Dismounting
     $localDBs = $MaintenanceModeStatus.DBCopyStatus | Where-Object {$_.Status -like "Mount*" -or $_.Status -like "Dismount*"}    
@@ -632,7 +632,7 @@ function GetUMCallCount
         }
     }
 
-    return $umCallCount
+    return [System.UInt32] $umCallCount
 }
 
 #Gets a list of servers in the DAG with HubTransport not set to Active, or DatabaseCopyAutoActivationPolicy set to Blocked
@@ -646,7 +646,7 @@ function GetMessageRedirectionExclusions
         $DomainController
     )
 
-    $exclusions = @()
+    [string[]]$exclusions = @()
 
     $mbxServer = GetMailboxServer -Identity $env:COMPUTERNAME -DomainController $DomainController
 
