@@ -3,7 +3,11 @@
     This example shows how to install Exchange.
 #>
 
-$ConfigurationData = Import-PowerShellDataFile -Path (Join-Path -Path $PSScriptRoot -ChildPath 'ConfigurationData.psd1')
+Write-Verbose -Message 'Loading Configuration File - ConfigurationData.psd1.'
+$ConfigRoot = "$PSScriptRoot\Config"
+$ConfigFile = Get-ChildItem "$ConfigRoot\ConfigurationData.psd1"
+$ConfigurationData = New-Object -TypeName hashtable
+$ConfigurationData = (Import-PowerShellDataFile -Path $ConfigFile.FullName)
 
 Configuration Example
 {

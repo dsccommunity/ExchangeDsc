@@ -3,7 +3,11 @@
     This example shows how to configure primary databases.
 #>
 
-$ConfigurationData = Import-PowerShellDataFile -Path (Join-Path -Path $PSScriptRoot -ChildPath 'ConfigurationData.psd1')
+Write-Verbose -Message 'Loading Configuration File - ConfigurationData.psd1.'
+$ConfigRoot = "$PSScriptRoot\Config"
+$ConfigFile = Get-ChildItem "$ConfigRoot\ConfigurationData.psd1"
+$ConfigurationData = New-Object -TypeName hashtable
+$ConfigurationData = (Import-PowerShellDataFile -Path $ConfigFile.FullName)
 
 Configuration Example
 {
@@ -16,7 +20,7 @@ Configuration Example
     )
 
     Import-DscResource -Module xExchange
-    
+
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Examples\HelperScripts\ExchangeConfigHelper.psm1"
 
     #This section will handle configuring all non-DAG specific settings, including CAS and MBX settings.

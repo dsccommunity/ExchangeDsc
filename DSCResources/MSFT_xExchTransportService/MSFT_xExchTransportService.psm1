@@ -733,17 +733,9 @@ function Set-TargetResource
             {
                 Write-Verbose "ExternalDNSServers is NULL"
                 RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "ExternalDNSServers"
-                $Arguments += '-ExternalDNSServers $null '
+                $PSBoundParameters['ExternalDNSServers'] = $null
             }
-        }
-
-        if ($arguments)
-        {
-            $expression = 'Set-TransportService @PSBoundParameters '+$Arguments
-            & $expression
-        }
-        else
-        {
+            
             Set-TransportService @PSBoundParameters
         }
     }
