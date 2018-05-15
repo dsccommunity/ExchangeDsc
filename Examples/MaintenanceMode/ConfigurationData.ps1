@@ -1,4 +1,4 @@
-@{
+$ConfigurationData = @{
     AllNodes = @(
         @{
             #region Common Settings for All Nodes
@@ -20,8 +20,8 @@
             <#
                 The location of the exported public certifcate which will be used to encrypt
                 credentials during compilation.
+                CertificateFile = 'C:\public-certificate.cer' 
             #>
-            CertificateFile = 'C:\public-certificate.cer' 
             
             #Thumbprint of the certificate being used for decrypting credentials
             Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673' 

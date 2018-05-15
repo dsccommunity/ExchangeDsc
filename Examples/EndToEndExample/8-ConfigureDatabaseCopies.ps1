@@ -3,11 +3,8 @@
     This example shows how to configure databases copies.
 #>
 
-Write-Verbose -Message 'Loading Configuration File - ConfigurationData.psd1.'
-$ConfigRoot = "$PSScriptRoot\Config"
-$ConfigFile = Get-ChildItem "$ConfigRoot\ConfigurationData.psd1"
-$ConfigurationData = New-Object -TypeName hashtable
-$ConfigurationData = (Import-PowerShellDataFile -Path $ConfigFile.FullName)
+$ConfigurationDataFile = Join-Path -Path $PSScriptRoot -ChildPath 'ConfigurationData.ps1'
+. $ConfigurationDataFile
 
 Configuration Example
 {
