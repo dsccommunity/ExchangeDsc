@@ -3,7 +3,7 @@
     This example shows how to prepare maintenance mode.
 #>
 
-$ConfigurationDataFile = Join-Path -Path $PSScriptRoot -ChildPath 'ConfigurationData.ps1'
+$ConfigurationDataFile = Join-Path -Path $PSScriptRoot -ChildPath 'ConfigurationData.psm1'
 . $ConfigurationDataFile
 
 Configuration Example
