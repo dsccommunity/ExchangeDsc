@@ -648,24 +648,34 @@ function Test-TargetResource
 
             if ([string]::IsNullOrEmpty($AutoCertBasedAuthThumbprint))
             {
-                ReportBadSetting -SettingName 'AutoCertBasedAuthThumbprint' -ExpectedValue 'Not null or empty' -ActualValue '' -VerbosePreference $VerbosePreference
+                ReportBadSetting -SettingName 'AutoCertBasedAuthThumbprint' `
+                                 -ExpectedValue 'Not null or empty' `
+                                 -ActualValue '' `
+                                 -VerbosePreference $VerbosePreference
                 return $false
             }
             elseif ($null -eq $AutoCertBasedAuthHttpsBindings -or $AutoCertBasedAuthHttpsBindings.Count -eq 0)
             {
-                ReportBadSetting -SettingName 'AutoCertBasedAuthHttpsBindings' -ExpectedValue 'Not null or empty' -ActualValue '' -VerbosePreference $VerbosePreference
+                ReportBadSetting -SettingName 'AutoCertBasedAuthHttpsBindings' `
+                                 -ExpectedValue 'Not null or empty' `
+                                 -ActualValue '' `
+                                 -VerbosePreference $VerbosePreference
                 return $false
             }
             elseif ((Test-CertBasedAuth -AutoCertBasedAuthThumbprint $AutoCertBasedAuthThumbprint -AutoCertBasedAuthHttpsBindings $AutoCertBasedAuthHttpsBindings) -eq $false)
             {
-                ReportBadSetting -SettingName 'TestCertBasedAuth' -ExpectedValue $true -ActualValue $false -VerbosePreference $VerbosePreference
+                ReportBadSetting -SettingName 'TestCertBasedAuth' `
+                                 -ExpectedValue $true `
+                                 -ActualValue $false `
+                                 -VerbosePreference $VerbosePreference
                 return $false
             }
         }
 
         if ($InstallIsapiFilter)
         {
-            if (-not (Test-ISAPIFilter)){
+            if (-not (Test-ISAPIFilter))
+            {
                 ReportBadSetting -SettingName 'InstallIsapiFilter' -ExpectedValue $InstallIsapiFilter -ActualValue 'false' -VerbosePreference $VerbosePreference
                 return $false
             }
@@ -1025,8 +1035,8 @@ function Test-NetshSslCertSetting
             {
                 $i++
                 
-                while (-not $NetshSslCertOutput[$i].ToLower().Contains('ip:port') -and -not $foundSetting)
-                {                    
+                while ( -not $NetshSslCertOutput[$i].ToLower().Contains('ip:port') -and -not $foundSetting )
+                {
                     if ($NetshSslCertOutput[$i].ToLower().Contains($SettingName))
                     {
                         $foundSetting = $true
