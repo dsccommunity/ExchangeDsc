@@ -32,6 +32,13 @@
   - InstallExchange.ps1
   - QuickStartTemplate.ps1
   - WaitForADPrep.ps1
+- BREAKING CHANGE: Remove default value for Switch Parameter in
+  TransportMaintenance.psm1 for functions:
+  - Clear-DiscardEvent
+  - LogIfRemain
+  - Wait-EmptyEntriesCompletion
+  - Update-EntriesTracker
+  - Remove-CompletedEntriesFromHashtable
 
 ## 1.20.0.0
 
