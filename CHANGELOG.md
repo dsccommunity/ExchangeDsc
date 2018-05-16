@@ -39,6 +39,8 @@
   - Wait-EmptyEntriesCompletion
   - Update-EntriesTracker
   - Remove-CompletedEntriesFromHashtable
+- Fixed PSSA custom rules in:
+  - xExchActiveSyncVirtualDirectory.psm1
 
 ## 1.20.0.0
 
