@@ -5,6 +5,42 @@
 - Added CHANGELOG.md file
 - Added .markdownlint.json file
 - Updated README.md and CHANGELOG.md files to respect MD009, MD0013 and MD032 rules
+- Added .MetaTestOptIn.json file
+- Updated appveyor.yml file
+- Added .codecov.yml file
+- Renamed Test folder to Tests
+- Updated README.md: Add codecov badges
+- Fixed PSSA required rules in:
+  - xExchClientAccessServer.psm1
+  - xExchInstall.psm1
+  - xExchMaintenanceMode.psm1
+  - TransportMaintenance.psm1
+  - xExchTransportService.psm1
+- Fixed Validate Example files in:
+  - ConfigureAutoMountPoints-FromCalculator.ps1
+  - ConfigureAutoMountPoints-Manual.ps1
+  - ConfigureDatabases-FromCalculator.ps1
+  - InternetFacingSite.ps1
+  - RegionalNamespaces.ps1
+  - SingleNamespace.ps1
+  - ConfigureVirtualDirectories.ps1
+  - CreateAndConfigureDAG.ps1
+  - EndToEndExample 1 to 10 files
+  - JetstressAutomation
+  - MaintenanceMode
+  - PostInstallationConfiguration.ps1
+  - InstallExchange.ps1
+  - QuickStartTemplate.ps1
+  - WaitForADPrep.ps1
+- Remove default value for Switch Parameter in
+  TransportMaintenance.psm1 for functions:
+  - Clear-DiscardEvent
+  - LogIfRemain
+  - Wait-EmptyEntriesCompletion
+  - Update-EntriesTracker
+  - Remove-CompletedEntriesFromHashtable
+- Fixed PSSA custom rules in:
+  - xExchActiveSyncVirtualDirectory.psm1
 
 ## 1.20.0.0
 

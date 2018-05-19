@@ -238,7 +238,7 @@ function CheckWSManConfig
             Write-Verbose "Value 'UpdatedConfig' missing from registry key HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN. Running: winrm i restore winrm/config"
 
             Set-Location "$($env:windir)\System32\inetsrv"
-            Invoke-Expression -Command "winrm i restore winrm/config" | Out-Null
+            & "winrm i restore winrm/config" | Out-Null
 
             Write-Verbose "Machine needs to be rebooted before Exchange setup can proceed"
 

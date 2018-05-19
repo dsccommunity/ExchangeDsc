@@ -31,26 +31,32 @@ $ServiceState = $null
 #endregion
 
 #region New Code or Wrappers
+
 <#
-.DESCRIPTION
-Begin maintenance script for HUB components.
+    .SYNOPSIS
+        Begin maintenance script for HUB components.
 
-.PARAMETER Target
-The name of the machine being put into maintenance.
-
+    .PARAMETER Target
+        The name of the machine being put into maintenance.
 #>
 function Start-TransportMaintenance
 {
     [CmdletBinding()]
-    param(
-        [Parameter(Mandatory = $false)]
-        [string]$Target = $env:COMPUTERNAME,
+    param
+    (
+        [Parameter()]
+        [string]
+        $Target = $env:COMPUTERNAME,
 
-        [switch]$ExcludeLocalSiteFromMessageRedirect,
+        [Parameter()]
+        [Switch]
+        $ExcludeLocalSiteFromMessageRedirect,
 
-        [boolean]$LoadLocalShell = $false,
+        [boolean]
+        $LoadLocalShell = $false,
         
-        [string[]]$MessageRedirectExclusions
+        [string[]]
+        $MessageRedirectExclusions
     )
 
     if ($LoadLocalShell -eq $true)
@@ -99,8 +105,10 @@ function Stop-TransportMaintenance
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
     [CmdletBinding()]
-    param(
-        [boolean]$LoadLocalShell = $false
+    param
+    (
+        [boolean]
+        $LoadLocalShell = $false
     )
 
     if ($LoadLocalShell -eq $true)
@@ -134,10 +142,12 @@ function AddExchangeSnapinIfRequired
 #   Else, returns false and caller should NOT continue with the MM.
 function Initialize-TransportMaintenance
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [string]$Target
-        )
+        [string]
+        $Target
+    )
         
     $ErrorActionPreference = "Stop"
     $Error.Clear()
@@ -195,13 +205,18 @@ function Initialize-TransportMaintenance
 #   None
 function Invoke-FullyDrainTransport
 {
-    param(
-        [Parameter(Mandatory = $false)]
-        [string]$Target = $env:COMPUTERNAME,
+    param
+    (
+        [Parameter()]
+        [string]
+        $Target = $env:COMPUTERNAME,
 
-        [switch]$ExcludeLocalSiteFromMessageRedirect,
+        [switch]
+        $ExcludeLocalSiteFromMessageRedirect,
         
-        [string[]]$MessageRedirectExclusions)
+        [string[]]
+        $MessageRedirectExclusions
+    )
 
     #drain active messages
     Clear-ActiveMessage -Server $Target -TransportService $script:TransportService
@@ -221,7 +236,7 @@ function Invoke-FullyDrainTransport
     
     Write-Verbose "Setting HubTransport component state to Inactive"
     Set-ComponentState -Server $Target -State Inactive
-    Log-InfoEvent -Source $Target -Stage RestartTransport -Reason  @{ComponentState = 'Inactive'}
+    Write-InfoEvent -Source $Target -Stage RestartTransport -Reason  @{ComponentState = 'Inactive'}
 }
 
 # .DESCRIPTION
@@ -232,13 +247,17 @@ function Invoke-FullyDrainTransport
 #
 function Invoke-RemoteMaintenance
 {
-    param(
-        [Parameter(Mandatory = $false)]
-        [string]$Target = $env:COMPUTERNAME,
+    param
+    (
+        [Parameter()]
+        [string]
+        $Target = $env:COMPUTERNAME,
 
-        [switch]$ExcludeLocalSiteFromMessageRedirect,
+        [switch]
+        $ExcludeLocalSiteFromMessageRedirect,
         
-        [string[]]$MessageRedirectExclusions
+        [string[]]
+        $MessageRedirectExclusions
     )
 
     if(($Script:TransportService.Status -ne "Running") -or `
@@ -305,12 +324,15 @@ function Start-HUBEndMaintenance
 # the submission queue.
 function Enable-SubmissionQueue
 {
-    param(
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $PollingFrequency = (New-TimeSpan -Seconds 10),
+    param
+    (
+        [Parameter()]
+        [TimeSpan]
+        $PollingFrequency = (New-TimeSpan -Seconds 10),
         
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $Timeout = (New-TimeSpan -Minutes 5)
+        [Parameter()]
+        [TimeSpan]
+        $Timeout = (New-TimeSpan -Minutes 5)
     )
     
     $endTime = (Get-Date) + $Timeout
@@ -326,12 +348,12 @@ function Enable-SubmissionQueue
                 try
                 {
                     Resume-Queue $submissionQName -confirm:$false
-                    Log-InfoEvent -source $env:COMPUTERNAME -stage SubmissionQueueCheck -Reason @{EnableSubmissionQueue = 'Succeeded'}
+                    Write-InfoEvent -source $env:COMPUTERNAME -stage SubmissionQueueCheck -Reason @{EnableSubmissionQueue = 'Succeeded'}
                     return $true
                 }
                 catch
                 {
-                    Log-InfoEvent -source $env:COMPUTERNAME -stage SubmissionQueueCheck -Reason @{EnableSubmissionQueue = 'Failed'}
+                    Write-InfoEvent -source $env:COMPUTERNAME -stage SubmissionQueueCheck -Reason @{EnableSubmissionQueue = 'Failed'}
                     return $false
                 }
             }
@@ -342,7 +364,7 @@ function Enable-SubmissionQueue
         
         if ((Get-Date) -gt $endTime)
         {
-            Log-InfoEvent -source $env:COMPUTERNAME -stage SubmissionQueueCheck -Reason @{EnableSubmissionQueue = 'QueueNotFound'}
+            Write-InfoEvent -source $env:COMPUTERNAME -stage SubmissionQueueCheck -Reason @{EnableSubmissionQueue = 'QueueNotFound'}
             return $false
         }
         else
@@ -439,16 +461,20 @@ function Set-TransportInactive
 #
 function Get-ServersInDag
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String]$server,
+        [String]
+        $server,
 
         [Parameter(Mandatory = $true)]
-        [Switch]$ExcludeLocalSite,
+        [Switch]
+        $ExcludeLocalSite,
         
-        [string[]]$AdditionalExclusions
-        )
+        [string[]]
+        $AdditionalExclusions
+    )
 
     Write-Verbose "$server - Retrieving the DAG for the target server"
     $exchangeServer = (Get-ExchangeServer $server)
@@ -521,11 +547,13 @@ function Get-ServersInDag
 #   Array of active servers
 function Get-ActiveServer
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String[]]$Servers
-        )
+        [String[]]
+        $Servers
+    )
 
     $activeServers = $Servers | `
         Where-Object{(Get-ServerComponentState -Identity $_ -Component HubTransport).State -eq 'Active' } | `
@@ -551,11 +579,13 @@ function Get-ActiveServer
 #
 function Get-ExchangeVersion
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String]$server
-        )
+        [String]
+        $server
+    )
 
     Write-Verbose "$server - Retrieving version for the target server"
 
@@ -589,12 +619,15 @@ function Get-ExchangeVersion
 #  Array of file objects of files that are in the Maintenance Log folder
 function Get-TransportMaintenanceLogFileList()
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [Object] $TransportService,
+        [Object]
+        $TransportService,
 
         [Parameter(Mandatory = $true)]
-        [string] $LogPath
+        [string]
+        $LogPath
     )
 
     $logFilesMatch = "{0}\{1}*.log" -f $LogPath, $Script:TransportMaintenanceLogPrefix
@@ -613,7 +646,8 @@ function Get-TransportMaintenanceLogFileList()
 #   This object holds configuration and size limits of the Maintenance Log folder
 function Register-TransportMaintenanceLog
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [Object] $TransportService,
 
@@ -679,12 +713,15 @@ function Register-TransportMaintenanceLog
 #   This object holds configuration and size limits of the Maintenance Log folder
 function Remove-TransportMaintenanceLogsOverMaxAge
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [Object] $TransportService,
+        [Object]
+        $TransportService,
 
         [Parameter(Mandatory = $true)]
-        [string] $LogPath
+        [string]
+        $LogPath
     )
 
     $maxLogAge = [TimeSpan]$TransportService.TransportMaintenanceLogMaxAge
@@ -707,12 +744,15 @@ function Remove-TransportMaintenanceLogsOverMaxAge
 #   This object holds configuration and size limits of the Maintenance Log folder
 function Remove-TransportMaintenanceLogsOverMaxDirectorySize
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [Object] $TransportService,
+        [Object]
+        $TransportService,
 
         [Parameter(Mandatory = $true)]
-        [string] $LogPath
+        [string]
+        $LogPath
     )
 
     $maxDirectorySize = $TransportService.TransportMaintenanceLogMaxDirectorySize.Value.ToBytes()
@@ -755,12 +795,15 @@ function Remove-TransportMaintenanceLogsOverMaxDirectorySize
 #   The path to the log folder adjusted for remote or local logging depending on the specified $Server.
 function Get-MaintenanceLogPath
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [Object] $TransportService,
+        [Object]
+        $TransportService,
 
-        [Parameter(Mandatory = $false)]
-        [String] $Server = $env:ComputerName
+        [Parameter()]
+        [String]
+        $Server = $env:ComputerName
     )
     
     if(-not $TransportService.TransportMaintenanceLogPath)
@@ -802,9 +845,11 @@ function Get-MaintenanceLogPath
 #   Name of Server to write the maintenance log to
 function Initialize-TransportMaintenanceLog()
 {
-    param(
-        [Parameter(Mandatory = $false)]
-        [String] $Server = $env:ComputerName
+    param
+    (
+        [Parameter()]
+        [String]
+        $Server = $env:ComputerName
     )
 
     #read MM log limits
@@ -874,29 +919,37 @@ function Initialize-TransportMaintenanceLog()
 #  True if successful, false otherwise.
 function Set-ServiceState
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [string]$ServiceName,
+        [string]
+        $ServiceName,
         
-        [Parameter(Mandatory = $false)]
-        [string]$Server = $env:COMPUTERNAME,
+        [Parameter()]
+        [string]
+        $Server = $env:COMPUTERNAME,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [ValidateSet("NoChange", "Stopped", "Running", "Paused")]
-        [string]$State = "NoChange",
+        [string]
+        $State = "NoChange",
         
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [ValidateSet("NoChange", "Auto", "Automatic", "Manual", "Disabled")]
-        [string]$StartMode = "NoChange",
+        [string]
+        $StartMode = "NoChange",
         
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $WaitTime = (New-TimeSpan -Minutes 5),
+        [Parameter()]
+        [TimeSpan]
+        $WaitTime = (New-TimeSpan -Minutes 5),
         
-        [Parameter(Mandatory = $false)]
-        [string] $LoggingStage,
+        [Parameter()]
+        [string]
+        $LoggingStage,
         
-        [Parameter(Mandatory = $false)]
-        [Switch] $ThrowOnFailure
+        [Parameter()]
+        [Switch]
+        $ThrowOnFailure
     )
     
     $service = Get-CimInstance -ClassName win32_service -filter "name = '$ServiceName'" -ComputerName $Server
@@ -1030,18 +1083,23 @@ function Set-ServiceState
 #   Log Entry object which can be use Write-EventOfEntry & Write-SkippedEvent
 function New-LogEntry
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [String] $Source,
+        [String]
+        $Source,
 
         [Parameter(Mandatory = $true)]
-        [string] $Stage,
+        [string]
+        $Stage,
 
-        [Parameter(Mandatory = $false)]
-        [string] $Id,
+        [Parameter()]
+        [string]
+        $Id,
 
-        [Parameter(Mandatory = $false)]
-        [int] $Count = -1
+        [Parameter()]
+        [int]
+        $Count = -1
     )
 
     $logProps = @{
@@ -1069,15 +1127,19 @@ function New-LogEntry
 #   Reason of this event
 function Write-EventOfEntry
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [string] $Event,
+        [string]
+        $Event,
 
         [Parameter(Mandatory = $true)]
-        [Object] $Entry,
+        [Object]
+        $Entry,
 
-        [Parameter(Mandatory = $false)]
-        [hashtable] $Reason
+        [Parameter()]
+        [hashtable]
+        $Reason
     )
 
     if($Event -eq "Completed")
@@ -1161,21 +1223,27 @@ function Write-EventOfEntry
 
 function Write-SkippedEvent
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [String] $Source,
+        [String]
+        $Source,
 
         [Parameter(Mandatory = $true)]
-        [string] $Stage,
+        [string]
+        $Stage,
 
-        [Parameter(Mandatory = $false)]
-        [string] $Id,
+        [Parameter()]
+        [string]
+        $Id,
 
-        [Parameter(Mandatory = $false)]
-        [int] $Count,
+        [Parameter()]
+        [int]
+        $Count,
 
-        [Parameter(Mandatory = $false)]
-        [hashtable] $Reason
+        [Parameter()]
+        [hashtable]
+        $Reason
     )
 
     $entry = New-LogEntry -Source $Source -Stage $Stage -Id $Id -Count $Count
@@ -1200,23 +1268,29 @@ function Write-SkippedEvent
 # .PARAMETER Reason
 #   Reason of this event
 
-function Log-InfoEvent
+function Write-InfoEvent
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [String] $Source,
+        [String]
+        $Source,
 
         [Parameter(Mandatory = $true)]
-        [string] $Stage,
+        [string]
+        $Stage,
 
-        [Parameter(Mandatory = $false)]
-        [string] $Id,
+        [Parameter()]
+        [string]
+        $Id,
 
-        [Parameter(Mandatory = $false)]
-        [int] $Count,
+        [Parameter()]
+        [int]
+        $Count,
 
-        [Parameter(Mandatory = $false)]
-        [hashtable] $Reason
+        [Parameter()]
+        [hashtable]
+        $Reason
     )
 
     $entry = New-LogEntry -Source $Source -Stage $Stage -Id $Id -Count $Count
@@ -1241,15 +1315,19 @@ function Log-InfoEvent
 function Remove-CompletedEntriesFromHashtable
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
-    param (
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [HashTable] $Tracker,
+        [HashTable]
+        $Tracker,
 
-        [Parameter(Mandatory = $false)]
-        [Object[]] $ActiveEntries = @(),
+        [Parameter()]
+        [Object[]]
+        $ActiveEntries = @(),
 
-        [Parameter(Mandatory = $false)]
-        [Switch] $DetailLogging = $true
+        [Parameter()]
+        [Switch]
+        $DetailLogging
     )
 
     $progressMade = $false
@@ -1297,20 +1375,25 @@ function Remove-CompletedEntriesFromHashtable
 #  Returns True if at least an entry is updated or created. Otherwise returns False.
 function Update-EntriesTracker
 {
-    param (
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [HashTable] $Tracker,
+        [HashTable]
+        $Tracker,
 
         [Parameter(Mandatory = $true)]
-        [string] $Source,
+        [string]
+        $Source,
 
         [Parameter(Mandatory = $true)]
-        [string] $Stage,
+        [string]
+        $Stage,
 
-        [Parameter(Mandatory = $false)]
-        [Switch] $DetailLogging = $true,
+        [Parameter()]
+        [Switch]
+        $DetailLogging,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [Object[]] $ActiveEntries = @()
     )
 
@@ -1391,33 +1474,43 @@ function Update-EntriesTracker
 #   or no progress timeout, this function returns a non-zero value.
 function Wait-EmptyEntriesCompletion
 {
-    Param (
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [ScriptBlock] $GetEntries,
+        [ScriptBlock]
+        $GetEntries,
 
         [Parameter(Mandatory = $true)]
-        [string] $Stage,
+        [string]
+        $Stage,
 
-        [Parameter(Mandatory = $false)]
-        [Switch] $DetailLogging = $true,
+        [Parameter()]
+        [Switch]
+        $DetailLogging,
 
-        [Parameter(Mandatory = $false)]
-        [object[]] $GetEntriesArgs = @(),
+        [Parameter()]
+        [object[]]
+        $GetEntriesArgs = @(),
 
-        [Parameter(Mandatory = $false)]
-        [string] $Source = $env:COMPUTERNAME,
+        [Parameter()]
+        [string]
+        $Source = $env:COMPUTERNAME,
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $PollingFrequency = (New-TimeSpan -Seconds 10),
+        [Parameter()]
+        [TimeSpan]
+        $PollingFrequency = (New-TimeSpan -Seconds 10),
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $Timeout = (New-TimeSpan -Minutes 5),
+        [Parameter()]
+        [TimeSpan]
+        $Timeout = (New-TimeSpan -Minutes 5),
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $NoProgressTimeout = (New-TimeSpan -Minutes 1),
+        [Parameter()]
+        [TimeSpan]
+        $NoProgressTimeout = (New-TimeSpan -Minutes 1),
 
-        [Parameter(Mandatory = $false)]
-        [Switch] $ThrowOnTimeout
+        [Parameter()]
+        [Switch]
+        $ThrowOnTimeout
     )
 
     $tracker = @{}
@@ -1558,43 +1651,55 @@ function Wait-EmptyEntriesCompletion
 #   this function returns a non-zero value.
 function Wait-EmptyQueuesCompletion
 {
-    Param (
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [string]$Server = $null,
+        [string]
+        $Server = $null,
 
-        [Parameter(Mandatory = $false)]
-        [String[]] $QueueTypes = $null,
+        [Parameter()]
+        [String[]]
+        $QueueTypes = $null,
 
-        [Parameter(Mandatory = $false)]
-        [bool] $ActiveMsgOnly = $false,
+        [Parameter()]
+        [bool]
+        $ActiveMsgOnly = $false,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]$Stage = "QueueDrain",
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $PollingFrequency = (New-TimeSpan -Seconds 10),
+        [Parameter()]
+        [TimeSpan]
+        $PollingFrequency = (New-TimeSpan -Seconds 10),
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $Timeout = (New-TimeSpan -Minutes 5),
+        [Parameter()]
+        [TimeSpan]
+        $Timeout = (New-TimeSpan -Minutes 5),
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $NoProgressTimeout = (New-TimeSpan -Minutes 1),
+        [Parameter()]
+        [TimeSpan]
+        $NoProgressTimeout = (New-TimeSpan -Minutes 1),
 
-        [Parameter(Mandatory = $false)]
-        [Switch] $ThrowOnTimeout
+        [Parameter()]
+        [Switch]
+        $ThrowOnTimeout
     )
 
     $getQueueEntries = `
     {
-        param(
-        [Parameter(Mandatory = $true)]
-        [string]$Server = $null,
+        param
+        (
+            [Parameter(Mandatory = $true)]
+            [string]
+            $Server = $null,
 
-        [Parameter(Mandatory = $true)]
-        [string[]]$QueueTypes,
+            [Parameter(Mandatory = $true)]
+            [string[]]
+            $QueueTypes,
 
-        [Parameter(Mandatory = $true)]
-        [bool]$ActiveMsgOnly
+            [Parameter(Mandatory = $true)]
+            [bool]
+            $ActiveMsgOnly
         )
 
         $filter = "{MessageCount -gt 0 -and DeliveryType -ne 'ShadowRedundancy' -and NextHopDomain -ne 'Poison Message'}"
@@ -1655,12 +1760,16 @@ function Wait-EmptyQueuesCompletion
 #   DiscardIDs of each shadow server are also returned.
 function Get-DiscardInfo
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [string]$Server,
-        [Parameter(Mandatory = $false)]
-        [switch]$Detail
-        )
+        [string]
+        $Server,
+
+        [Parameter()]
+        [switch]
+        $Detail
+    )
 
     if($Detail)
     {
@@ -1723,24 +1832,31 @@ function Get-DiscardInfo
 #   this functions returns a non-zero value.
 function Wait-EmptyDiscardsCompletion
 {
-    Param (
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [string]$Server = $null,
+        [string]
+        $Server = $null,
 
         [Parameter(Mandatory = $true)]
-        [string[]]$ActiveServers = $null,
+        [string[]]
+        $ActiveServers = $null,
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $PollingFrequency = (New-TimeSpan -Seconds 10),
+        [Parameter()]
+        [TimeSpan]
+        $PollingFrequency = (New-TimeSpan -Seconds 10),
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $Timeout = (New-TimeSpan -Minutes 5),
+        [Parameter()]
+        [TimeSpan]
+        $Timeout = (New-TimeSpan -Minutes 5),
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $NoProgressTimeout = (New-TimeSpan -Minutes 1),
+        [Parameter()]
+        [TimeSpan]
+        $NoProgressTimeout = (New-TimeSpan -Minutes 1),
 
-        [Parameter(Mandatory = $false)]
-        [Switch] $ThrowOnTimeout
+        [Parameter()]
+        [Switch]
+        $ThrowOnTimeout
     )
 
     Write-Verbose "$Server - Start waiting for ShadowDiscardDrain..."
@@ -1755,12 +1871,15 @@ function Wait-EmptyDiscardsCompletion
     # wait for discard events to be drained
     $getDiscardInfo = `
     {
-        param (
+        param
+        (
             [Parameter(Mandatory = $true)]
-            [string]$Server = $null,
+            [string]
+            $Server = $null,
 
             [Parameter(Mandatory = $true)]
-            [string[]]$ActiveServers = $null
+            [string[]]
+            $ActiveServers = $null
         )
 
         $discardInfo = Get-DiscardInfo -server $Server
@@ -1782,55 +1901,63 @@ function Wait-EmptyDiscardsCompletion
     return $remaining
 }
 
-# .DESCRIPTION
-#   Waits for the event log StartScanForMessages (id = 17008) to be logged to Windows Event Log
-#   This tells that the bootscanner had completed counting for the outstanding items and
-#   start boot-scanning messages
-#
-# .PARAMETER ServerFqdn
-#   Fqdn of the server
-#
-# .PARAMETER PollingFrequency
-#   Frequency of polling for event
-#
-# .PARAMETER Timeout
-#   Timeout not to exceed
-#
-# .PARAMETER NoProgressTimeout
-#   Timeout for when no progress is made
-#
-# .PARAMETER ThrowOnTimeout
-#   Whether to throw error on timeout
-#
-# .RETURN
-#   none
+<# 
+    .SYNOPSIS
+        Waits for the event log StartScanForMessages (id = 17008) to be logged to Windows Event Log
+        This tells that the bootscanner had completed counting for the outstanding items and
+        start boot-scanning messages
+
+    .PARAMETER ServerFqdn
+        Fqdn of the server
+
+    .PARAMETER PollingFrequency
+        Frequency of polling for event
+
+    .PARAMETER Timeout
+        Timeout not to exceed
+
+    .PARAMETER NoProgressTimeout
+        Timeout for when no progress is made
+
+    .PARAMETER ThrowOnTimeout
+        Whether to throw error on timeout
+#>
 function Wait-BootLoaderCountCheck
 {
-    Param (
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [string]$ServerFqdn,
+        [string]
+        $ServerFqdn,
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $PollingFrequency = (New-TimeSpan -Seconds 10),
+        [Parameter()]
+        [TimeSpan]
+        $PollingFrequency = (New-TimeSpan -Seconds 10),
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $Timeout = (New-TimeSpan -Minutes 5),
+        [Parameter()]
+        [TimeSpan]
+        $Timeout = (New-TimeSpan -Minutes 5),
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $NoProgressTimeout = (New-TimeSpan -Minutes 1),
+        [Parameter()]
+        [TimeSpan]
+        $NoProgressTimeout = (New-TimeSpan -Minutes 1),
 
-        [Parameter(Mandatory = $false)]
-        [Switch] $ThrowOnTimeout
+        [Parameter()]
+        [Switch]
+        $ThrowOnTimeout
     )
 
     $waitBootScanningEvent =
     {
-        param(
+        param
+        (
             [Parameter(Mandatory = $true)]
-            [string]$fqdn = $null,
+            [string]
+            $fqdn = $null,
 
             [Parameter(Mandatory = $true)]
-            [DateTime]$StartTime = $null
+            [DateTime]
+            $StartTime = $null
         )
 
         $bootScanningEvent = @{
@@ -1897,28 +2024,36 @@ function Wait-BootLoaderCountCheck
 #   none
 function Wait-BootLoaderSubmitCheck
 {
-    Param (
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [string] $ServerFqdn,
+        [string]
+        $ServerFqdn,
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $PollingFrequency = (New-TimeSpan -Seconds 10),
+        [Parameter()]
+        [TimeSpan]
+        $PollingFrequency = (New-TimeSpan -Seconds 10),
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $Timeout = (New-TimeSpan -Minutes 5),
+        [Parameter()]
+        [TimeSpan]
+        $Timeout = (New-TimeSpan -Minutes 5),
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $NoProgressTimeout = (New-TimeSpan -Minutes 1),
+        [Parameter()]
+        [TimeSpan]
+        $NoProgressTimeout = (New-TimeSpan -Minutes 1),
 
-        [Parameter(Mandatory = $false)]
-        [Switch] $ThrowOnTimeout
+        [Parameter()]
+        [Switch]
+        $ThrowOnTimeout
     )
 
     $getOutstandingItems =
     {
-        param(
+        param
+        (
             [Parameter(Mandatory = $true)]
-            [string]$fqdn = $null
+            [string]
+            $fqdn = $null
         )
 
         $counter = Get-Counter `
@@ -1959,52 +2094,57 @@ function Wait-BootLoaderSubmitCheck
     return $remaining
 }
 
-# .DESCRIPTION
-#   If the process has been running for more than 30 mins, then this function returns immediately.
-#   Otherwise, wait for the bootscanner to complete up to 30 minutes or the specified timeout, whichever
-#   less.
-#
-# .PARAMETER Server
-#   Target server for the operation.
-#
-# .PARAMETER MaxBootLoaderProcessTimeout
-#   Max time for the BootLoader to completely bootscanning all the unprocessed messages.
-#
-# .PARAMETER PollingFrequency
-#   Frequency of polling queues for status
-#
-# .PARAMETER Timeout
-#   Timeout not to exceed
-#
-# .PARAMETER NoProgressTimeout
-#   Timeout for when no progress is made
-#
-# .PARAMETER ThrowOnTimeout
-#   Whether to throw error on timeout
-#
-# .RETURN
-#   Returns the remaining count of the outstanding items in the BootLoader.  When the wait ends with
-#   timeout exceeded or no progress, this function returns a non-zero value.
+<#
+    .SYNOPSIS
+        If the process has been running for more than 30 mins, then this function returns immediately.
+        Otherwise, wait for the bootscanner to complete up to 30 minutes or the specified timeout, whichever
+        less.
+
+    .PARAMETER Server
+        Target server for the operation.
+
+    .PARAMETER MaxBootLoaderProcessTimeout
+        Max time for the BootLoader to completely bootscanning all the unprocessed messages.
+
+    .PARAMETER PollingFrequency
+        Frequency of polling queues for status
+
+    .PARAMETER Timeout
+        Timeout not to exceed
+
+    .PARAMETER NoProgressTimeout
+        Timeout for when no progress is made
+
+    .PARAMETER ThrowOnTimeout
+        Whether to throw error on timeout
+#>
 function Wait-BootLoaderReady
 {
-    Param (
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [string]$Server = $null,
+        [string]
+        $Server = $null,
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan]$MaxBootLoaderProcessTimeout = (New-TimeSpan -Minutes 30),
+        [Parameter()]
+        [TimeSpan]
+        $MaxBootLoaderProcessTimeout = (New-TimeSpan -Minutes 30),
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $PollingFrequency = (New-TimeSpan -Seconds 10),
+        [Parameter()]
+        [TimeSpan]
+        $PollingFrequency = (New-TimeSpan -Seconds 10),
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $Timeout = (New-TimeSpan -Minutes 5),
+        [Parameter()]
+        [TimeSpan]
+        $Timeout = (New-TimeSpan -Minutes 5),
 
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $NoProgressTimeout = (New-TimeSpan -Minutes 1),
+        [Parameter()]
+        [TimeSpan]
+        $NoProgressTimeout = (New-TimeSpan -Minutes 1),
 
-        [Parameter(Mandatory = $false)]
-        [Switch] $ThrowOnTimeout
+        [Parameter()]
+        [Switch]
+        $ThrowOnTimeout
     )
 
     Write-Verbose "$Server - Waiting for BootLoader to be ready..."
@@ -2107,13 +2247,16 @@ function Wait-BootLoaderReady
 #   Optional MsExchangeTransport service object.
 function Clear-ActiveMessage
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String] $Server = $env:COMPUTERNAME,
+        [String]
+        $Server = $env:COMPUTERNAME,
 
-        [Parameter(Mandatory = $false)]
-        [object] $TransportService
+        [Parameter()]
+        [object]
+        $TransportService
     )
 
     Wait-BootLoaderReady -Server $Server
@@ -2151,18 +2294,24 @@ function Clear-ActiveMessage
 #
 function Send-MessagesToNewServer
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String] $Server,
+        [String]
+        $Server,
 
-        [Parameter(Mandatory = $false)]
-        [switch] $ExcludeLocalSite,
+        [Parameter()]
+        [switch]
+        $ExcludeLocalSite,
 
-        [Parameter(Mandatory = $false)]
-        [switch] $LogIfRemain = $true,
+        [Parameter()]
+        [switch]
+        $LogIfRemain,
         
-        [string[]]$MessageRedirectExclusions
+        [Parameter()]
+        [string[]]
+        $MessageRedirectExclusions
     )
 
     # get domain name of the server
@@ -2215,17 +2364,21 @@ function Send-MessagesToNewServer
 #
 function Clear-DiscardEvent
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String] $Primary,
+        [String]
+        $Primary,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String[]] $ShadowServers,
+        [String[]]
+        $ShadowServers,
 
-        [Parameter(Mandatory = $false)]
-        [switch] $LogIfRemain = $true
+        [Parameter()]
+        [switch]
+        $LogIfRemain
     )
 
     $filter = "{DeliveryType -eq 'ShadowRedundancy' -and NextHopDomain -like '$Primary*'}"
@@ -2321,13 +2474,13 @@ function Set-ComponentState
         [ValidateSet("Active", "Inactive")]
         [string]$State,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]$Component = "HubTransport",
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]$Requester = "Maintenance",
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]$Server = $env:COMPUTERNAME
     )
 
@@ -2353,10 +2506,10 @@ function Get-ComponentState
 {
     param
     (
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]$Server = $env:COMPUTERNAME,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]$Component = "HubTransport"
     )
 
@@ -2398,29 +2551,37 @@ function Get-ComponentState
 #  True if successful, false otherwise.
 function Set-ServiceState
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [string]$ServiceName,
+        [string]
+        $ServiceName,
         
-        [Parameter(Mandatory = $false)]
-        [string]$Server = $env:COMPUTERNAME,
+        [Parameter()]
+        [string]
+        $Server = $env:COMPUTERNAME,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [ValidateSet("NoChange", "Stopped", "Running", "Paused")]
-        [string]$State = "NoChange",
+        [string]
+        $State = "NoChange",
         
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [ValidateSet("NoChange", "Auto", "Automatic", "Manual", "Disabled")]
-        [string]$StartMode = "NoChange",
+        [string]
+        $StartMode = "NoChange",
         
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $WaitTime = (New-TimeSpan -Minutes 5),
+        [Parameter()]
+        [TimeSpan]
+        $WaitTime = (New-TimeSpan -Minutes 5),
         
-        [Parameter(Mandatory = $false)]
-        [string] $LoggingStage,
+        [Parameter()]
+        [string]
+        $LoggingStage,
         
-        [Parameter(Mandatory = $false)]
-        [Switch] $ThrowOnFailure
+        [Parameter()]
+        [Switch]
+        $ThrowOnFailure
     )
     
     $service = Get-CimInstance -ClassName win32_service -filter "name = '$ServiceName'" -ComputerName $Server
@@ -2557,22 +2718,28 @@ function Set-ServiceState
 #  None
 function Wait-ServiceState 
 {
-    param(
+    param
+    (
         [Parameter(Mandatory = $true)]
-        [string]$ServiceName,
+        [string]
+        $ServiceName,
         
-        [Parameter(Mandatory = $false)]
-        [string]$Server = $env:COMPUTERNAME,
+        [Parameter()]
+        [string]
+        $Server = $env:COMPUTERNAME,
         
         [Parameter(Mandatory = $True)]
         [ValidateSet("Stopped", "Running", "Paused")]
-        [string]$State,
+        [string]
+        $State,
         
-        [Parameter(Mandatory = $false)]
-        [TimeSpan] $WaitTime = (New-TimeSpan -Minutes 5),
+        [Parameter()]
+        [TimeSpan]
+        $WaitTime = (New-TimeSpan -Minutes 5),
         
-        [Parameter(Mandatory = $false)]
-        [Switch] $ThrowOnFailure
+        [Parameter()]
+        [Switch]
+        $ThrowOnFailure
     )
     
     $service = Get-Service -ComputerName $Server -ServiceName $ServiceName

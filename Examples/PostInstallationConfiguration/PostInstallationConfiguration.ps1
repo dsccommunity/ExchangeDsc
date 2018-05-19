@@ -1,19 +1,169 @@
-Configuration PostInstallationConfiguration
+<#
+.EXAMPLE
+    This example shows how to configure exchange after installation.
+    This script shows examples of how to utilize most resources in the xExchange module.
+    Where possible, configuration settings have been entered directly into this script.
+    That was done for all settings which will be common for every server being configured.
+    Settings which may be different, like for DAG's, CAS in different sites, or for individual
+    servers, are defined in EndToEndExample-Config.psd1.
+#>
+
+$ConfigurationData = @{
+    AllNodes = @(
+        @{
+            NodeName        = '*'
+
+            <#
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                This is added so that AppVeyor automatic tests can pass, otherwise
+                the tests will fail on passwords being in plain text and not being
+                encrypted. Because it is not possible to have a certificate in
+                AppVeyor to encrypt the passwords we need to add the parameter
+                'PSDscAllowPlainTextPassword'.
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                See:
+                http://blogs.msdn.com/b/powershell/archive/2014/01/31/want-to-secure-credentials-in-windows-powershell-desired-state-configuration.aspx
+            #>
+            PSDscAllowPlainTextPassword = $true
+
+            <#
+                The location of the exported public certifcate which will be used to encrypt
+                credentials during compilation.
+                CertificateFile = 'C:\public-certificate.cer' 
+            #>
+            
+            #Thumbprint of the certificate being used for decrypting credentials
+            Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673' 
+        }
+
+        #Individual target nodes are defined next
+        @{
+            NodeName      = 'e15-1'
+            Fqdn          = 'e15-1.mikelab.local'
+            Role          = 'FirstDAGMember'
+            DAGId         = 'DAG1' #Used to determine which DAG settings the servers should use. Corresponds to DAG1 hashtable entry below.
+            CASId         = 'Site1CAS' #Used to determine which CAS settings the server should use. Corresponds to Site1CAS hashtable entry below.
+
+            #DB's that should be on the same disk must be in the same string, and comma separated. In this example, DB1 and DB2 will go on one disk, and DB3 and DB4 will go on another
+            DiskToDBMap   = 'DB1,DB2','DB3,DB4'
+
+            #Configure the databases whose primary copies will reside on this server
+            PrimaryDBList = @{
+                DB1 = @{Name = 'DB1'; EdbFilePath = 'C:\ExchangeDatabases\DB1\DB1.db\DB1.edb'; LogFolderPath = 'C:\ExchangeDatabases\DB1\DB1.log'};
+                DB3 = @{Name = 'DB3'; EdbFilePath = 'C:\ExchangeDatabases\DB3\DB3.db\DB3.edb'; LogFolderPath = 'C:\ExchangeDatabases\DB3\DB3.log'}
+            }
+
+            #Configure the copies next.
+            CopyDBList    = @{
+                DB2 = @{Name = 'DB2'; ActivationPreference = 2; ReplayLagTime = '00:00:00'};
+                DB4 = @{Name = 'DB4'; ActivationPreference = 2; ReplayLagTime = '00:00:00'}
+            }
+        }
+
+        @{
+            NodeName      = 'e15-2'
+            Fqdn          = 'e15-2.mikelab.local'
+            Role          = 'AdditionalDAGMember'
+            DAGId         = 'DAG1'
+            CASID         = 'Site1CAS'
+
+            DiskToDBMap   = 'DB1,DB2','DB3,DB4'
+
+            PrimaryDBList = @{
+                DB2 = @{Name = 'DB2'; EdbFilePath = 'C:\ExchangeDatabases\DB2\DB2.db\DB2.edb'; LogFolderPath = 'C:\ExchangeDatabases\DB2\DB2.log'};
+                DB4 = @{Name = 'DB4'; EdbFilePath = 'C:\ExchangeDatabases\DB4\DB4.db\DB4.edb'; LogFolderPath = 'C:\ExchangeDatabases\DB4\DB4.log'}
+            }
+
+            CopyDBList    = @{
+                DB1 = @{Name = 'DB1'; ActivationPreference = 2; ReplayLagTime = '00:00:00'};
+                DB3 = @{Name = 'DB3'; ActivationPreference = 2; ReplayLagTime = '00:00:00'}
+            }
+        }
+    );
+
+    #Settings that are unique per DAG will go in separate hash table entries.
+    DAG1 = @(
+        @{
+            ###DAG Settings###
+            DAGName                              = 'TestDAG1'           
+            AutoDagTotalNumberOfServers          = 4     
+            AutoDagDatabaseCopiesPerVolume       = 2
+            DatabaseAvailabilityGroupIPAddresses = '192.168.1.99','192.168.2.99'     
+            ManualDagNetworkConfiguration        = $true
+            ReplayLagManagerEnabled              = $true
+            SkipDagValidation                    = $true
+            WitnessServer                        = 'e14-1.mikelab.local'
+
+            #xDatabaseAvailabilityGroupNetwork params
+            #New network params
+            DAGNet1NetworkName                   = 'MapiNetwork'
+            DAGNet1ReplicationEnabled            = $false
+            DAGNet1Subnets                       = '192.168.1.0/24','192.168.2.0/24'
+
+            DAGNet2NetworkName                   = 'ReplNetwork'
+            DAGNet2ReplicationEnabled            = $true
+            DAGNet2Subnets                       = '10.10.10.0/24','10.10.11.0/24'
+
+            #Old network to remove
+            OldNetworkName                       = 'MapiDagNetwork'
+
+            #Certificate Settings
+            Thumbprint                           = '7D959B3A37E45978445F8EC8F01D200D00C3141F'
+            CertFilePath                         = 'c:\certexport1.pfx'
+            Services                             = 'IIS','POP','IMAP','SMTP'
+        }
+    );
+
+    #CAS settings that are unique per site will go in separate hash table entries as well.
+    Site1CAS = @(
+        @{
+            InternalNLBFqdn            = 'mail-site1.mikelab.local'
+            ExternalNLBFqdn            = 'mail.mikelab.local'
+
+            #ClientAccessServer Settings
+            AutoDiscoverSiteScope      = 'Site1'
+
+            #OAB Settings
+            OABsToDistribute           = 'Default Offline Address Book - Site1'
+
+            #OWA Settings
+            InstantMessagingServerName = 'lync-site1.mikelab.local'
+        }
+    );
+
+    Site2CAS = @(
+        @{
+            InternalNLBFqdn            = 'mail-site2.mikelab.local'
+            ExternalNLBFqdn            = 'mail.mikelab.local'
+
+            #ClientAccessServer Settings
+            AutoDiscoverSiteScope      = 'Site2'
+
+            #OAB Settings
+            OABsToDistribute           = 'Default Offline Address Book - Site2'
+
+            #OWA Settings
+            InstantMessagingServerName = 'lync-site2.mikelab.local'
+        }
+    );
+}
+
+Configuration Example
 {
     param
     (
-        [PSCredential]$ShellCreds,
-        [PSCredential]$CertCreds
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullorEmpty()]
+        [System.Management.Automation.PSCredential]    
+        $ExchangeAdminCredential,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullorEmpty()]
+        [System.Management.Automation.PSCredential]
+        $ExchangeCertCredential
     )
 
     Import-DscResource -Module xExchange
-
-    #This script shows examples of how to utilize most resources in the xExchange module.
-    #Where possible, configuration settings have been entered directly into this script.
-    #That was done for all settings which will be common for every server being configured.
-    #Settings which may be different, like for DAG's, CAS in different sites, or for individual
-    #servers, are defined in EndToEndExample-Config.psd1.
-
 
     #This first section only configures a single DAG node, the first member of the DAG.
     #The first member of the DAG will be responsible for DAG creation and maintaining its configuration
@@ -25,11 +175,12 @@ Configuration PostInstallationConfiguration
         xExchDatabaseAvailabilityGroup DAG
         {
             Name                                 = $dagSettings.DAGName
-            Credential                           = $ShellCreds
+            Credential                           = $ExchangeAdminCredential
             AutoDagTotalNumberOfServers          = $dagSettings.AutoDagTotalNumberOfServers
             AutoDagDatabaseCopiesPerVolume       = $dagSettings.AutoDagDatabaseCopiesPerVolume
-            AutoDagDatabasesRootFolderPath       = 'C:\ExchangeDatabases'            AutoDagVolumesRootFolderPath         = 'C:\ExchangeVolumes'
-            DatacenterActivationMode             = "DagOnly"
+            AutoDagDatabasesRootFolderPath       = 'C:\ExchangeDatabases'
+            AutoDagVolumesRootFolderPath         = 'C:\ExchangeVolumes'
+            DatacenterActivationMode             = 'DagOnly'
             DatabaseAvailabilityGroupIPAddresses = $dagSettings.DatabaseAvailabilityGroupIPAddresses 
             ManualDagNetworkConfiguration        = $dagSettings.ManualDagNetworkConfiguration
             ReplayLagManagerEnabled              = $dagSettings.ReplayLagManagerEnabled 
@@ -42,10 +193,9 @@ Configuration PostInstallationConfiguration
         xExchDatabaseAvailabilityGroupMember DAGMember
         {
             MailboxServer     = $Node.NodeName
-            Credential        = $ShellCreds
+            Credential        = $ExchangeAdminCredential
             DAGName           = $dagSettings.DAGName
             SkipDagValidation = $true
-
             DependsOn         = '[xExchDatabaseAvailabilityGroup]DAG'
         }
 
@@ -53,24 +203,22 @@ Configuration PostInstallationConfiguration
         xExchDatabaseAvailabilityGroupNetwork DAGNet1
         {
             Name                      = $dagSettings.DAGNet1NetworkName
-            Credential                = $ShellCreds
+            Credential                = $ExchangeAdminCredential
             DatabaseAvailabilityGroup = $dagSettings.DAGName
             Ensure                    = 'Present'
             ReplicationEnabled        = $dagSettings.DAGNet1ReplicationEnabled
             Subnets                   = $dagSettings.DAGNet1Subnets
-
             DependsOn                 = '[xExchDatabaseAvailabilityGroupMember]DAGMember' #Can't do work on DAG networks until at least one member is in the DAG...
         }
 
         xExchDatabaseAvailabilityGroupNetwork DAGNet2
         {
             Name                      = $dagSettings.DAGNet2NetworkName
-            Credential                = $ShellCreds
+            Credential                = $ExchangeAdminCredential
             DatabaseAvailabilityGroup = $dagSettings.DAGName
             Ensure                    = 'Present'
             ReplicationEnabled        = $dagSettings.DAGNet2ReplicationEnabled
-            Subnets                   = $dagSettings.DAGNet2Subnets
-            
+            Subnets                   = $dagSettings.DAGNet2Subnets            
             DependsOn                 = '[xExchDatabaseAvailabilityGroupMember]DAGMember' #Can't do work on DAG networks until at least one member is in the DAG...
         }
 
@@ -78,10 +226,9 @@ Configuration PostInstallationConfiguration
         xExchDatabaseAvailabilityGroupNetwork DAGNetOld
         {
             Name                      = $dagSettings.OldNetworkName
-            Credential                = $ShellCreds
+            Credential                = $ExchangeAdminCredential
             DatabaseAvailabilityGroup = $dagSettings.DAGName
             Ensure                    = 'Absent'
-
             DependsOn                 = '[xExchDatabaseAvailabilityGroupNetwork]DAGNet1','[xExchDatabaseAvailabilityGroupNetwork]DAGNet2' #Dont remove the old one until the new one is in place
         }
     }
@@ -96,20 +243,18 @@ Configuration PostInstallationConfiguration
         xExchWaitForDAG WaitForDAG
         {
             Identity   = $dagSettings.DAGName
-            Credential = $ShellCreds
+            Credential = $ExchangeAdminCredential
         }
 
         xExchDatabaseAvailabilityGroupMember DAGMember
         {
             MailboxServer     = $Node.NodeName
-            Credential        = $ShellCreds
+            Credential        = $ExchangeAdminCredential
             DAGName           = $dagSettings.DAGName
             SkipDagValidation = $true
-
             DependsOn         = '[xExchWaitForDAG]WaitForDAG'
         }
     }
-
 
     #This section will handle configuring all non-DAG specific settings, including CAS and MBX settings.
     Node $AllNodes.NodeName
@@ -128,7 +273,7 @@ Configuration PostInstallationConfiguration
         xExchExchangeServer EXServer
         {
             Identity            = $Node.NodeName
-            Credential          = $ShellCreds
+            Credential          = $ExchangeAdminCredential
             ProductKey          = '12345-12345-12345-12345-12345'
             AllowServiceRestart = $true
         }
@@ -136,21 +281,20 @@ Configuration PostInstallationConfiguration
         #This imports a certificate .PFX that had been previously exported, and enabled services on it
         xExchExchangeCertificate Certificate
         {
-            Thumbprint         = $dagSettings.Thumbprint
-            Credential         = $ShellCreds
-            Ensure             = 'Present'
-            AllowExtraServices = $dagSettings.AllowExtraServices        
-            CertCreds          = $CertCreds
-            CertFilePath       = $dagSettings.CertFilePath
-            Services           = $dagSettings.Services
+            Thumbprint          = $dagSettings.Thumbprint
+            Credential          = $ExchangeAdminCredential
+            Ensure              = 'Present'
+            AllowExtraServices  = $false        
+            CertCreds           = $ExchangeCertCredential
+            CertFilePath        = $dagSettings.CertFilePath
+            Services            = $dagSettings.Services
         }
-
 
         ###CAS specific settings###
         xExchClientAccessServer CAS
         {
             Identity                       = $Node.NodeName
-            Credential                     = $ShellCreds
+            Credential                     = $ExchangeAdminCredential
             AutoDiscoverServiceInternalUri = "https://$($casSettings.InternalNLBFqdn)/autodiscover/autodiscover.xml"
             AutoDiscoverSiteScope          = $casSettings.AutoDiscoverSiteScope
         }
@@ -172,7 +316,7 @@ Configuration PostInstallationConfiguration
         xExchActiveSyncVirtualDirectory ASVdir
         {
             Identity                    = "$($Node.NodeName)\Microsoft-Server-ActiveSync (Default Web Site)"
-            Credential                  = $ShellCreds
+            Credential                  = $ExchangeAdminCredential
             AutoCertBasedAuth           = $true
             AutoCertBasedAuthThumbprint = $dagSettings.Thumbprint
             BasicAuthEnabled            = $false
@@ -180,8 +324,7 @@ Configuration PostInstallationConfiguration
             ExternalUrl                 = "https://$($casSettings.ExternalNLBFqdn)/Microsoft-Server-ActiveSync"  
             InternalUrl                 = "https://$($casSettings.InternalNLBFqdn)/Microsoft-Server-ActiveSync"  
             WindowsAuthEnabled          = $false
-            AllowServiceRestart         = $true
-            
+            AllowServiceRestart         = $true            
             DependsOn                   = '[WindowsFeature]WebClientAuth','[WindowsFeature]WebCertAuth','[xExchExchangeCertificate]Certificate' #Can't configure CBA until we have a valid cert, and have required features
         }
 
@@ -189,7 +332,7 @@ Configuration PostInstallationConfiguration
         xExchEcpVirtualDirectory ECPVDir
         {
             Identity                      = "$($Node.NodeName)\ecp (Default Web Site)"
-            Credential                    = $ShellCreds
+            Credential                    = $ExchangeAdminCredential
             BasicAuthentication           = $true
             ExternalAuthenticationMethods = 'Fba'
             ExternalUrl                   = "https://$($casSettings.ExternalNLBFqdn)/ecp"
@@ -203,7 +346,7 @@ Configuration PostInstallationConfiguration
         xExchMapiVirtualDirectory MAPIVdir
         {
             Identity                 = "$($Node.NodeName)\mapi (Default Web Site)"
-            Credential               = $ShellCreds
+            Credential               = $ExchangeAdminCredential
             ExternalUrl              = "https://$($casSettings.ExternalNLBFqdn)/mapi"
             IISAuthenticationMethods = 'NTLM','Negotiate'
             InternalUrl              = "https://$($casSettings.InternalNLBFqdn)/mapi" 
@@ -214,7 +357,7 @@ Configuration PostInstallationConfiguration
         xExchOabVirtualDirectory OABVdir
         {
             Identity            = "$($Node.NodeName)\OAB (Default Web Site)"
-            Credential          = $ShellCreds
+            Credential          = $ExchangeAdminCredential
             ExternalUrl         = "https://$($casSettings.ExternalNLBFqdn)/oab"
             InternalUrl         = "https://$($casSettings.InternalNLBFqdn)/oab"     
             OABsToDistribute    = $casSettings.OABsToDistribute
@@ -225,7 +368,7 @@ Configuration PostInstallationConfiguration
         xExchOutlookAnywhere OAVdir
         {
             Identity                           = "$($Node.NodeName)\Rpc (Default Web Site)"
-            Credential                         = $ShellCreds
+            Credential                         = $ExchangeAdminCredential
             ExternalClientAuthenticationMethod = 'Ntlm'
             ExternalClientsRequireSSL          = $true
             ExternalHostName                   = $casSettings.ExternalNLBFqdn
@@ -240,7 +383,7 @@ Configuration PostInstallationConfiguration
         xExchOwaVirtualDirectory OWAVdir
         {
             Identity                              = "$($Node.NodeName)\owa (Default Web Site)"
-            Credential                            = $ShellCreds
+            Credential                            = $ExchangeAdminCredential
             BasicAuthentication                   = $true
             ExternalAuthenticationMethods         = 'Fba'
             ExternalUrl                           = "https://$($casSettings.ExternalNLBFqdn)/owa"
@@ -251,8 +394,7 @@ Configuration PostInstallationConfiguration
             InstantMessagingType                  = 'Ocs'
             InternalUrl                           = "https://$($casSettings.InternalNLBFqdn)/owa"    
             WindowsAuthentication                 = $false
-            AllowServiceRestart                   = $true
-            
+            AllowServiceRestart                   = $true            
             DependsOn                             = '[xExchExchangeCertificate]Certificate' #Can't configure the IM cert until it's valid
         }
 
@@ -260,7 +402,7 @@ Configuration PostInstallationConfiguration
         xExchPowerShellVirtualDirectory PSVdir
         {
             Identity              = "$($Node.NodeName)\PowerShell (Default Web Site)"
-            Credential            = $ShellCreds
+            Credential            = $ExchangeAdminCredential
             WindowsAuthentication = $true
             AllowServiceRestart   = $true
         }
@@ -269,19 +411,18 @@ Configuration PostInstallationConfiguration
         xExchWebServicesVirtualDirectory EWSVdir
         {
             Identity            = "$($Node.NodeName)\EWS (Default Web Site)"
-            Credential          = $ShellCreds
+            Credential          = $ExchangeAdminCredential
             ExternalUrl         = "https://$($casSettings.ExternalNLBFqdn)/ews/exchange.asmx" 
             InternalUrl         = "https://$($casSettings.InternalNLBFqdn)/ews/exchange.asmx"
             AllowServiceRestart = $true         
         }
-
 
         ###Transport specific settings###
         #Create a custom receive connector which could be used to receive SMTP mail from internal non-Exchange mail servers
         xExchReceiveConnector CustomConnector1
         {
             Identity         = "$($Node.NodeName)\Internal SMTP Servers to $($Node.NodeName)"
-            Credential       = $ShellCreds
+            Credential       = $ExchangeAdminCredential
             Ensure           = 'Present'
             AuthMechanism    = 'Tls','ExternalAuthoritative'
             Bindings         = '0.0.0.0:25'
@@ -296,9 +437,8 @@ Configuration PostInstallationConfiguration
         xExchAntiMalwareScanning AMS
         {
             Enabled    = $true
-            Credential = $ShellCreds
+            Credential = $ExchangeAdminCredential
         }
-
         
         ###Mailbox Server settings###
         #Create database and volume mount points for AutoReseed
@@ -315,12 +455,12 @@ Configuration PostInstallationConfiguration
         #Create primary databases
         foreach ($DB in $Node.PrimaryDBList.Values)
         {
-            $resourceId = "MDB:$($DB.Name)" #Need to define a unique ID for each database
+            $resourceId = "MDB_$($DB.Name)" #Need to define a unique ID for each database
 
             xExchMailboxDatabase $resourceId 
             {
                 Name                     = $DB.Name
-                Credential               = $ShellCreds
+                Credential               = $ExchangeAdminCredential
                 EdbFilePath              = $DB.EdbFilePath
                 LogFolderPath            = $DB.LogFolderPath
                 Server                   = $Node.NodeName
@@ -331,7 +471,6 @@ Configuration PostInstallationConfiguration
                 ProhibitSendQuota        = '5300MB'
                 ProhibitSendReceiveQuota = '5500MB'
                 AllowServiceRestart      = $true
-
                 DependsOn                = '[xExchAutoMountPoint]AMP' #Can"t create databases until the mount points exist
             }
         }
@@ -339,46 +478,26 @@ Configuration PostInstallationConfiguration
         #Create the copies
         foreach ($DB in $Node.CopyDBList.Values)
         {
-            $waitResourceId = "WaitForDB:$($DB.Name)" #Unique ID for the xWaitForMailboxDatabase resource
-            $copyResourceId = "MDBCopy:$($DB.Name)" #Unique ID for the xMailboxDatabaseCopy resource 
+            $waitResourceId = "WaitForDB_$($DB.Name)" #Unique ID for the xWaitForMailboxDatabase resource
+            $copyResourceId = "MDBCopy_$($DB.Name)" #Unique ID for the xMailboxDatabaseCopy resource 
 
             #Need to wait for a primary copy to be created before we add a copy
             xExchWaitForMailboxDatabase $waitResourceId
             {
                 Identity   = $DB.Name
-                Credential = $ShellCreds                
+                Credential = $ExchangeAdminCredential                
             }
 
             xExchMailboxDatabaseCopy $copyResourceId
             {
                 Identity             = $DB.Name
-                Credential           = $ShellCreds
+                Credential           = $ExchangeAdminCredential
                 MailboxServer        = $Node.NodeName
                 ActivationPreference = $DB.ActivationPreference
                 ReplayLagTime        = $DB.ReplayLagTime
-                AllowServiceRestart  = $true
-                
+                AllowServiceRestart  = $true                
                 DependsOn            = "[xExchWaitForMailboxDatabase]$($waitResourceId)"
             }
         }
     }
 }
-
-if ($null -eq $ShellCreds)
-{
-    $ShellCreds = Get-Credential -Message 'Enter credentials for establishing Remote Powershell sessions to Exchange'
-}
-
-if ($null -eq $CertCreds)
-{
-    $CertCreds = Get-Credential -Message 'Enter credentials for importing the Exchange certificate'
-}
-
-###Compiles the example
-PostInstallationConfiguration -ConfigurationData $PSScriptRoot\PostInstallationConfiguration-Config.psd1 -ShellCreds $ShellCreds -CertCreds $CertCreds
-
-###Sets up LCM on target computers to decrypt credentials.
-Set-DscLocalConfigurationManager -Path .\PostInstallationConfiguration -Verbose
-
-###Pushes configuration and waits for execution
-Start-DscConfiguration -Path .\PostInstallationConfiguration -Verbose -Wait 
