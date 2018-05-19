@@ -32,7 +32,7 @@
   - InstallExchange.ps1
   - QuickStartTemplate.ps1
   - WaitForADPrep.ps1
-- BREAKING CHANGE: Remove default value for Switch Parameter in
+- Remove default value for Switch Parameter in
   TransportMaintenance.psm1 for functions:
   - Clear-DiscardEvent
   - LogIfRemain
