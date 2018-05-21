@@ -45,7 +45,7 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-            ReleaseNotes = 'Fix issue where test of type Microsoft.Exchange.Data.Unlimited fails'
+            ReleaseNotes = '* Fix issue where test of type Microsoft.Exchange.Data.Unlimited fails'
 
         } # End of PSData hashtable
 
