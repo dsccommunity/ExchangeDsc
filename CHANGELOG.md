@@ -41,6 +41,7 @@
   - Remove-CompletedEntriesFromHashtable
 - Fixed PSSA custom rules in:
   - xExchActiveSyncVirtualDirectory.psm1
+- Updated xExchange.psd1
 
 ## 1.20.0.0
 
