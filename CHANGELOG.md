@@ -42,6 +42,7 @@
 - Fixed PSSA custom rules in:
   - xExchActiveSyncVirtualDirectory.psm1
 - Updated xExchange.psd1
+- Added ISSUE_TEMPLATE.md and PULL_REQUEST_TEMPLATE.md
 
 ## 1.20.0.0
 
