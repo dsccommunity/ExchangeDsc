@@ -41,7 +41,8 @@
   - Remove-CompletedEntriesFromHashtable
 - Fixed PSSA custom rules in:
   - xExchActiveSyncVirtualDirectory.psm1
-- Added ISSUE_TEMPLATE.md and PULL_REQUEST_TEMPLATE.md
+- Added issue template file (ISSUE\_TEMPLATE.md) for 'New Issue' and pull request
+  template file (PULL\_REQUEST\_TEMPLATE.md) for 'New Pull Request'.
 
 ## 1.20.0.0
 
