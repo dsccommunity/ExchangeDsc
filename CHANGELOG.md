@@ -56,6 +56,8 @@
   - xExchInstall.psm1
   - xExchJetstress.psm1
   - xExchJetstressCleanup.psm1
+  - xExchMailboxDatabase.psm1
+  - xExchMailboxDatabaseCopy.psm1
 - Updated xExchange.psd1
 - Added issue template file (ISSUE\_TEMPLATE.md) for 'New Issue' and pull request
   template file (PULL\_REQUEST\_TEMPLATE.md) for 'New Pull Request'.
