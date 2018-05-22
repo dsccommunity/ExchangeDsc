@@ -5,22 +5,24 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
-        [ValidateSet("Performance","Stress","DatabaseBackup","SoftRecovery")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Performance','Stress','DatabaseBackup','SoftRecovery')]
         [System.String]
         $Type,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $JetstressPath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $JetstressParams,
 
+        [Parameter()]
         [System.UInt32]
         $MaxWaitMinutes = 0,
 
+        [Parameter()]
         [System.UInt32]
         $MinAchievedIOPS = 0
     )
@@ -28,7 +30,7 @@ function Get-TargetResource
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath; "JetstressParams" = $JetstressParams} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'JetstressPath' = $JetstressPath; 'JetstressParams' = $JetstressParams} -VerbosePreference $VerbosePreference
 
     $returnValue = @{
         Type = $Type
@@ -42,26 +44,37 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
+    <#
+        Suppressing this rule because $global:DSCMachineStatus is used to trigger
+        a reboot, either by force or when there are pending changes.
+    #>
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
+    <#
+        Suppressing this rule because $global:DSCMachineStatus is only set,
+        never used (by design of Desired State Configuration).
+    #>
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function', Target='DSCMachineStatus')]
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
-        [ValidateSet("Performance","Stress","DatabaseBackup","SoftRecovery")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Performance','Stress','DatabaseBackup','SoftRecovery')]
         [System.String]
         $Type,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $JetstressPath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $JetstressParams,
 
+        [Parameter()]
         [System.UInt32]
         $MaxWaitMinutes = 0,
 
+        [Parameter()]
         [System.UInt32]
         $MinAchievedIOPS = 0
     )
@@ -69,7 +82,7 @@ function Set-TargetResource
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath; "JetstressParams" = $JetstressParams} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'JetstressPath' = $JetstressPath; 'JetstressParams' = $JetstressParams} -VerbosePreference $VerbosePreference
 
     $jetstressRunning = IsJetstressRunning
     $jetstressSuccessful = JetstressTestSuccessful @PSBoundParameters
@@ -95,7 +108,7 @@ function Set-TargetResource
         #Give an additional 60 seconds if ESE counters were just initialized.
         if ($initializingESE -eq $true)
         {
-            Write-Verbose "Jetstress has never initialized performance counters for ESE. Waiting a full 60 seconds for this to occurr"
+            Write-Verbose 'Jetstress has never initialized performance counters for ESE. Waiting a full 60 seconds for this to occurr'
             
             Start-Sleep -Seconds 5
 
@@ -120,14 +133,14 @@ function Set-TargetResource
             {
                 if ((Test-Path -LiteralPath "$($env:SystemRoot)\Inf\ESE\eseperf.ini") -eq $true)
                 {
-                    Write-Verbose "ESE performance counters were registered. Need to reboot server."
+                    Write-Verbose 'ESE performance counters were registered. Need to reboot server.'
 
                     $global:DSCMachineStatus = 1
                     return
                 }
                 else
                 {
-                    throw "Jetstress failed to register MSExchange Database performance counters"
+                    throw 'Jetstress failed to register MSExchange Database performance counters'
                 }
             }
             else
@@ -155,7 +168,7 @@ function Set-TargetResource
 
         if ($jetstressRunning -eq $false)
         {
-            throw "Waited 60 seconds after launching the Jetstress scheduled task, but failed to detect that JetstressCmd.exe is running"
+            throw 'Waited 60 seconds after launching the Jetstress scheduled task, but failed to detect that JetstressCmd.exe is running'
         }
     }
 
@@ -184,11 +197,11 @@ function Set-TargetResource
 
         if ($overallTestSuccessful -eq $false)
         {
-            throw "Jetstress finished running, but the test did not complete successfully"
+            throw 'Jetstress finished running, but the test did not complete successfully'
         }
         else
         {
-            Write-Verbose "Jetstress finished, and the configured test passed"
+            Write-Verbose 'Jetstress finished, and the configured test passed'
         }
     }
     else
@@ -205,22 +218,24 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
-        [ValidateSet("Performance","Stress","DatabaseBackup","SoftRecovery")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Performance','Stress','DatabaseBackup','SoftRecovery')]
         [System.String]
         $Type,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $JetstressPath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $JetstressParams,
 
+        [Parameter()]
         [System.UInt32]
         $MaxWaitMinutes = 0,
 
+        [Parameter()]
         [System.UInt32]
         $MinAchievedIOPS = 0
     )
@@ -228,7 +243,7 @@ function Test-TargetResource
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath; "JetstressParams" = $JetstressParams} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'JetstressPath' = $JetstressPath; 'JetstressParams' = $JetstressParams} -VerbosePreference $VerbosePreference
 
     $jetstressRunning = IsJetstressRunning -MaximumWaitSeconds 1
 
@@ -258,31 +273,33 @@ function StartJetstress
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
-        [ValidateSet("Performance","Stress","DatabaseBackup","SoftRecovery")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Performance','Stress','DatabaseBackup','SoftRecovery')]
         [System.String]
         $Type,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $JetstressPath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $JetstressParams,
 
+        [Parameter()]
         [System.UInt32]
         $MaxWaitMinutes = 0,
 
+        [Parameter()]
         [System.UInt32]
         $MinAchievedIOPS = 0
     )
 
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    $fullPath = Join-Path -Path "$($JetstressPath)" -ChildPath "JetstressCmd.exe"
+    $fullPath = Join-Path -Path "$($JetstressPath)" -ChildPath 'JetstressCmd.exe'
 
-    StartScheduledTask -Path "$($fullPath)" -Arguments "$($JetstressParams)" -WorkingDirectory "$($JetstressPath)" -TaskName "Jetstress" -MaxWaitMinutes $MaxWaitMinutes -VerbosePreference $VerbosePreference -TaskPriority 1
+    StartScheduledTask -Path "$($fullPath)" -Arguments "$($JetstressParams)" -WorkingDirectory "$($JetstressPath)" -TaskName 'Jetstress' -MaxWaitMinutes $MaxWaitMinutes -VerbosePreference $VerbosePreference -TaskPriority 1
 }
 
 #Looks in the latest Type*.html file to determine whether the last Jetstress run passed
@@ -292,22 +309,24 @@ function JetstressTestSuccessful
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
-        [ValidateSet("Performance","Stress","DatabaseBackup","SoftRecovery")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Performance','Stress','DatabaseBackup','SoftRecovery')]
         [System.String]
         $Type,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $JetstressPath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $JetstressParams,
 
+        [Parameter()]
         [System.UInt32]
         $MaxWaitMinutes = 0,
 
+        [Parameter()]
         [System.UInt32]
         $MinAchievedIOPS = 0
     )
@@ -343,7 +362,7 @@ function JetstressTestSuccessful
 
                     Write-Verbose "File $($latest.FullName)'' has an 'Overall Test Result' of '$($result)'"
 
-                    if ($result -like "Pass")
+                    if ($result -like 'Pass')
                     {
                         $overallTestSuccessful = $true
                     }
@@ -365,7 +384,7 @@ function JetstressTestSuccessful
                     }
                     else
                     {
-                        Write-Verbose "Value for 'Achieved Transactional I/O per Second' is empty"
+                        Write-Verbose 'Value for 'Achieved Transactional I/O per Second' is empty'
                     }
                 }
             }

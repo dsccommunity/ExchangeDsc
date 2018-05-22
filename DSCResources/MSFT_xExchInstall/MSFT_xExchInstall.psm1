@@ -172,6 +172,8 @@ function GetInstallStatus
 {
     param
     (
+        [Parameter()]    
+        [System.String]
         $Arguments
     )
 
