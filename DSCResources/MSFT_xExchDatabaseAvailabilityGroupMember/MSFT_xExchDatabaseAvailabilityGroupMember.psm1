@@ -5,22 +5,24 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $MailboxServer,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $DAGName,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $SkipDagValidation
     )
@@ -56,29 +58,30 @@ function Get-TargetResource
     $returnValue
 }
 
-
 function Set-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $MailboxServer,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $DAGName,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $SkipDagValidation
     )
@@ -114,7 +117,6 @@ function Set-TargetResource
     Add-DatabaseAvailabilityGroupServer @PSBoundParameters
 }
 
-
 function Test-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -122,22 +124,24 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $MailboxServer,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $DAGName,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $SkipDagValidation
     )

@@ -5,33 +5,37 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $DatabaseAvailabilityGroup,
 
-        [parameter(Mandatory = $true)]
-        [ValidateSet("Present","Absent")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $IgnoreNetwork,
 
+        [Parameter()]
         [System.Boolean]
         $ReplicationEnabled,
 
+        [Parameter()]
         [System.String[]]
         $Subnets
     )
@@ -39,10 +43,10 @@ function Get-TargetResource
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    LogFunctionEntry -Parameters @{"Name" = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Name' = $Name; 'DatabaseAvailabilityGroup' = $DatabaseAvailabilityGroup} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-DatabaseAvailabilityGroupNetwork" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroupNetwork' -VerbosePreference $VerbosePreference
 
     $dagNet = GetDatabaseAvailabilityGroupNetwork @PSBoundParameters
 
@@ -67,33 +71,37 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $DatabaseAvailabilityGroup,
 
-        [parameter(Mandatory = $true)]
-        [ValidateSet("Present","Absent")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $IgnoreNetwork,
 
+        [Parameter()]
         [System.Boolean]
         $ReplicationEnabled,
 
+        [Parameter()]
         [System.String[]]
         $Subnets
     )
@@ -101,16 +109,16 @@ function Set-TargetResource
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    LogFunctionEntry -Parameters @{"Name" = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Name' = $Name; 'DatabaseAvailabilityGroup' = $DatabaseAvailabilityGroup} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "*DatabaseAvailabilityGroup*" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*DatabaseAvailabilityGroup*' -VerbosePreference $VerbosePreference
 
     $dagId = "$($DatabaseAvailabilityGroup)\$($Name)"
 
     $dagNet = GetDatabaseAvailabilityGroupNetwork @PSBoundParameters
 
-    if ($Ensure -eq "Absent")
+    if ($Ensure -eq 'Absent')
     {
         #Only try to remove the network if it has 0 associated subnets
         if ($null -ne $dagNet)
@@ -121,14 +129,14 @@ function Set-TargetResource
             }
             else
             {
-                throw "Unable to remove network, as it still has associated subnets."
+                throw 'Unable to remove network, as it still has associated subnets.'
             }
         }
     }
     else
     {
         #Remove Credential and Ensure so we don't pass it into the next command
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential","Ensure"
+        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','Ensure'
 
         SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
@@ -139,8 +147,8 @@ function Set-TargetResource
         }
         else #Set props on the existing network
         {
-            AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = $dagId}
-            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Name","DatabaseAvailabilityGroup"
+            AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $dagId}
+            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Name','DatabaseAvailabilityGroup'
                    
             Set-DatabaseAvailabilityGroupNetwork @PSBoundParameters
         }
@@ -155,33 +163,37 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $DatabaseAvailabilityGroup,
 
-        [parameter(Mandatory = $true)]
-        [ValidateSet("Present","Absent")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $IgnoreNetwork,
 
+        [Parameter()]
         [System.Boolean]
         $ReplicationEnabled,
 
+        [Parameter()]
         [System.String[]]
         $Subnets
     )
@@ -189,18 +201,18 @@ function Test-TargetResource
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    LogFunctionEntry -Parameters @{"Name" = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Name' = $Name; 'DatabaseAvailabilityGroup' = $DatabaseAvailabilityGroup} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-DatabaseAvailabilityGroupNetwork" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroupNetwork' -VerbosePreference $VerbosePreference
 
     $dagNet = GetDatabaseAvailabilityGroupNetwork @PSBoundParameters
 
     if ($null -eq $dagNet)
     {
-        if ($Ensure -eq "Present")
+        if ($Ensure -eq 'Present')
         {
-            ReportBadSetting -SettingName "Ensure" -ExpectedValue "Present" -ActualValue "Absent" -VerbosePreference $VerbosePreference
+            ReportBadSetting -SettingName 'Ensure' -ExpectedValue 'Present' -ActualValue 'Absent' -VerbosePreference $VerbosePreference
             return $false
         }
         else
@@ -210,24 +222,24 @@ function Test-TargetResource
     }
     else
     {
-        if ($Ensure -eq "Absent")
+        if ($Ensure -eq 'Absent')
         {
-            ReportBadSetting -SettingName "Ensure" -ExpectedValue "Absent" -ActualValue "Present" -VerbosePreference $VerbosePreference
+            ReportBadSetting -SettingName 'Ensure' -ExpectedValue 'Absent' -ActualValue 'Present' -VerbosePreference $VerbosePreference
             return $false
         }
         else
         {
-            if (!(VerifySetting -Name "IgnoreNetwork" -Type "Boolean" -ExpectedValue $IgnoreNetwork -ActualValue $dagNet.IgnoreNetwork -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'IgnoreNetwork' -Type 'Boolean' -ExpectedValue $IgnoreNetwork -ActualValue $dagNet.IgnoreNetwork -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "ReplicationEnabled" -Type "Boolean" -ExpectedValue $ReplicationEnabled -ActualValue $dagNet.ReplicationEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'ReplicationEnabled' -Type 'Boolean' -ExpectedValue $ReplicationEnabled -ActualValue $dagNet.ReplicationEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "Subnets" -Type "Array" -ExpectedValue $Subnets -ActualValue (SubnetsToArray -Subnets $dagNet.Subnets) -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'Subnets' -Type 'Array' -ExpectedValue $Subnets -ActualValue (SubnetsToArray -Subnets $dagNet.Subnets) -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
@@ -244,21 +256,21 @@ function GetDatabaseAvailabilityGroupNetwork
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $DatabaseAvailabilityGroup,
 
-        [parameter(Mandatory = $true)]
-        [ValidateSet("Present","Absent")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure,
 
@@ -275,12 +287,11 @@ function GetDatabaseAvailabilityGroupNetwork
         $Subnets
     )
 
-    AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = "$($DatabaseAvailabilityGroup)\$($Name)"; "ErrorAction" = "SilentlyContinue"}
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","ErrorAction","DomainController"
+    AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = "$($DatabaseAvailabilityGroup)\$($Name)"; 'ErrorAction' = 'SilentlyContinue'}
+    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','ErrorAction','DomainController'
 
     return (Get-DatabaseAvailabilityGroupNetwork @PSBoundParameters)
 }
-
 
 #Takes an array of Microsoft.Exchange.Data.DatabaseAvailabilityGroupNetworkSubnet objects and converts the SubnetId props to a string[]
 function SubnetsToArray

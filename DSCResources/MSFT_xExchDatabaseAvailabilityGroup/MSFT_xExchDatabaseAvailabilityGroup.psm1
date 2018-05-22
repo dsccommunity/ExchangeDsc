@@ -5,89 +5,112 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Int32]
         $AutoDagTotalNumberOfServers,
 
+        [Parameter()]
         [System.String]
         $AlternateWitnessDirectory,
 
+        [Parameter()]
         [System.String]
         $AlternateWitnessServer,
 
+        [Parameter()]
         [System.Boolean]
         $AutoDagAutoRedistributeEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $AutoDagAutoReseedEnabled,
 
+        [Parameter()]
         [System.Int32]
         $AutoDagDatabaseCopiesPerDatabase,
 
+        [Parameter()]
         [System.Int32]
         $AutoDagDatabaseCopiesPerVolume,
 
+        [Parameter()]
         [System.String]
         $AutoDagDatabasesRootFolderPath,
 
+        [Parameter()]
         [System.Boolean]
         $AutoDagDiskReclaimerEnabled,
 
+        [Parameter()]
         [System.Int32]
         $AutoDagTotalNumberOfDatabases,
 
+        [Parameter()]
         [System.String]
         $AutoDagVolumesRootFolderPath,
 
+        [Parameter()]
         [System.String[]]
         $DatabaseAvailabilityGroupIpAddresses,
 
-        [ValidateSet("Off","DagOnly")]
+        [Parameter()]
+        [ValidateSet('Off','DagOnly')]
         [System.String]
         $DatacenterActivationMode,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
-        [ValidateSet("NTFS","ReFS")]
+        [Parameter()]
+        [ValidateSet('NTFS','ReFS')]
         [System.String]
         $FileSystem,
 
+        [Parameter()]
         [System.Boolean]
         $ManualDagNetworkConfiguration,
 
-        [ValidateSet("Disabled","Enabled","InterSubnetOnly","SeedOnly")]
+        [Parameter()]
+        [ValidateSet('Disabled','Enabled','InterSubnetOnly','SeedOnly')]
         [System.String]
         $NetworkCompression,
 
-        [ValidateSet("Disabled","Enabled","InterSubnetOnly","SeedOnly")]
+        [Parameter()]
+        [ValidateSet('Disabled','Enabled','InterSubnetOnly','SeedOnly')]
         [System.String]
         $NetworkEncryption,
 
+        [Parameter()]
         [System.String]
         $PreferenceMoveFrequency,
 
+        [Parameter()]
         [System.Boolean]
         $ReplayLagManagerEnabled,
 
+        [Parameter()]
         [System.UInt16]
         $ReplicationPort,
 
+        [Parameter()]
         [System.Boolean]
         $SkipDagValidation,
 
+        [Parameter()]
         [System.String]
         $WitnessDirectory,
 
+        [Parameter()]
         [System.String]
         $WitnessServer
     )
@@ -146,89 +169,112 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Int32]
         $AutoDagTotalNumberOfServers,
 
+        [Parameter()]
         [System.String]
         $AlternateWitnessDirectory,
 
+        [Parameter()]
         [System.String]
         $AlternateWitnessServer,
 
+        [Parameter()]
         [System.Boolean]
         $AutoDagAutoRedistributeEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $AutoDagAutoReseedEnabled,
 
+        [Parameter()]
         [System.Int32]
         $AutoDagDatabaseCopiesPerDatabase,
 
+        [Parameter()]
         [System.Int32]
         $AutoDagDatabaseCopiesPerVolume,
 
+        [Parameter()]
         [System.String]
         $AutoDagDatabasesRootFolderPath,
 
+        [Parameter()]
         [System.Boolean]
         $AutoDagDiskReclaimerEnabled,
 
+        [Parameter()]
         [System.Int32]
         $AutoDagTotalNumberOfDatabases,
 
+        [Parameter()]
         [System.String]
         $AutoDagVolumesRootFolderPath,
 
+        [Parameter()]
         [System.String[]]
         $DatabaseAvailabilityGroupIpAddresses,
 
-        [ValidateSet("Off","DagOnly")]
+        [Parameter()]
+        [ValidateSet('Off','DagOnly')]
         [System.String]
         $DatacenterActivationMode,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
-        [ValidateSet("NTFS","ReFS")]
+        [Parameter()]
+        [ValidateSet('NTFS','ReFS')]
         [System.String]
         $FileSystem,
 
+        [Parameter()]
         [System.Boolean]
         $ManualDagNetworkConfiguration,
 
-        [ValidateSet("Disabled","Enabled","InterSubnetOnly","SeedOnly")]
+        [Parameter()]
+        [ValidateSet('Disabled','Enabled','InterSubnetOnly','SeedOnly')]
         [System.String]
         $NetworkCompression,
 
-        [ValidateSet("Disabled","Enabled","InterSubnetOnly","SeedOnly")]
+        [Parameter()]
+        [ValidateSet('Disabled','Enabled','InterSubnetOnly','SeedOnly')]
         [System.String]
         $NetworkEncryption,
 
+        [Parameter()]
         [System.String]
         $PreferenceMoveFrequency,
 
+        [Parameter()]
         [System.Boolean]
         $ReplayLagManagerEnabled,
 
+        [Parameter()]
         [System.UInt16]
         $ReplicationPort,
 
+        [Parameter()]
         [System.Boolean]
         $SkipDagValidation,
 
+        [Parameter()]
         [System.String]
         $WitnessDirectory,
 
+        [Parameter()]
         [System.String]
         $WitnessServer
     )
@@ -318,89 +364,112 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Int32]
         $AutoDagTotalNumberOfServers,
 
+        [Parameter()]
         [System.String]
         $AlternateWitnessDirectory,
 
+        [Parameter()]
         [System.String]
         $AlternateWitnessServer,
 
+        [Parameter()]
         [System.Boolean]
         $AutoDagAutoRedistributeEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $AutoDagAutoReseedEnabled,
 
+        [Parameter()]
         [System.Int32]
         $AutoDagDatabaseCopiesPerDatabase,
 
+        [Parameter()]
         [System.Int32]
         $AutoDagDatabaseCopiesPerVolume,
 
+        [Parameter()]
         [System.String]
         $AutoDagDatabasesRootFolderPath,
 
+        [Parameter()]
         [System.Boolean]
         $AutoDagDiskReclaimerEnabled,
 
+        [Parameter()]
         [System.Int32]
         $AutoDagTotalNumberOfDatabases,
 
+        [Parameter()]
         [System.String]
         $AutoDagVolumesRootFolderPath,
 
+        [Parameter()]
         [System.String[]]
         $DatabaseAvailabilityGroupIpAddresses,
 
-        [ValidateSet("Off","DagOnly")]
+        [Parameter()]
+        [ValidateSet('Off','DagOnly')]
         [System.String]
         $DatacenterActivationMode,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
-        [ValidateSet("NTFS","ReFS")]
+        [Parameter()]
+        [ValidateSet('NTFS','ReFS')]
         [System.String]
         $FileSystem,
 
+        [Parameter()]
         [System.Boolean]
         $ManualDagNetworkConfiguration,
 
-        [ValidateSet("Disabled","Enabled","InterSubnetOnly","SeedOnly")]
+        [Parameter()]
+        [ValidateSet('Disabled','Enabled','InterSubnetOnly','SeedOnly')]
         [System.String]
         $NetworkCompression,
 
-        [ValidateSet("Disabled","Enabled","InterSubnetOnly","SeedOnly")]
+        [Parameter()]
+        [ValidateSet('Disabled','Enabled','InterSubnetOnly','SeedOnly')]
         [System.String]
         $NetworkEncryption,
 
+        [Parameter()]
         [System.String]
         $PreferenceMoveFrequency,
 
+        [Parameter()]
         [System.Boolean]
         $ReplayLagManagerEnabled,
 
+        [Parameter()]
         [System.UInt16]
         $ReplicationPort,
 
+        [Parameter()]
         [System.Boolean]
         $SkipDagValidation,
 
+        [Parameter()]
         [System.String]
         $WitnessDirectory,
 
+        [Parameter()]
         [System.String]
         $WitnessServer
     )
@@ -571,95 +640,118 @@ function GetDatabaseAvailabilityGroup
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Int32]
         $AutoDagTotalNumberOfServers,
 
+        [Parameter()]
         [System.String]
         $AlternateWitnessDirectory,
 
+        [Parameter()]
         [System.String]
         $AlternateWitnessServer,
 
+        [Parameter()]
         [System.Boolean]
         $AutoDagAutoRedistributeEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $AutoDagAutoReseedEnabled,
 
+        [Parameter()]
         [System.Int32]
         $AutoDagDatabaseCopiesPerDatabase,
 
+        [Parameter()]
         [System.Int32]
         $AutoDagDatabaseCopiesPerVolume,
 
+        [Parameter()]
         [System.String]
         $AutoDagDatabasesRootFolderPath,
 
+        [Parameter()]
         [System.Boolean]
         $AutoDagDiskReclaimerEnabled,
 
+        [Parameter()]
         [System.Int32]
         $AutoDagTotalNumberOfDatabases,
 
+        [Parameter()]
         [System.String]
         $AutoDagVolumesRootFolderPath,
 
+        [Parameter()]
         [System.String[]]
         $DatabaseAvailabilityGroupIpAddresses,
 
-        [ValidateSet("Off","DagOnly")]
+        [Parameter()]
+        [ValidateSet('Off','DagOnly')]
         [System.String]
         $DatacenterActivationMode,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
-        [ValidateSet("NTFS","ReFS")]
+        [Parameter()]
+        [ValidateSet('NTFS','ReFS')]
         [System.String]
         $FileSystem,
 
+        [Parameter()]
         [System.Boolean]
         $ManualDagNetworkConfiguration,
 
-        [ValidateSet("Disabled","Enabled","InterSubnetOnly","SeedOnly")]
+        [Parameter()]
+        [ValidateSet('Disabled','Enabled','InterSubnetOnly','SeedOnly')]
         [System.String]
         $NetworkCompression,
 
-        [ValidateSet("Disabled","Enabled","InterSubnetOnly","SeedOnly")]
+        [Parameter()]
+        [ValidateSet('Disabled','Enabled','InterSubnetOnly','SeedOnly')]
         [System.String]
         $NetworkEncryption,
 
+        [Parameter()]
         [System.String]
         $PreferenceMoveFrequency,
 
+        [Parameter()]
         [System.Boolean]
         $ReplayLagManagerEnabled,
 
+        [Parameter()]
         [System.UInt16]
         $ReplicationPort,
 
+        [Parameter()]
         [System.Boolean]
         $SkipDagValidation,
 
+        [Parameter()]
         [System.String]
         $WitnessDirectory,
 
+        [Parameter()]
         [System.String]
         $WitnessServer
     )
 
-    AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = $PSBoundParameters["Name"]; "ErrorAction" = "SilentlyContinue"}
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","ErrorAction","DomainController"
+    AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $PSBoundParameters['Name']; 'ErrorAction' = 'SilentlyContinue'}
+    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','ErrorAction','DomainController'
 
     return (Get-DatabaseAvailabilityGroup @PSBoundParameters -Status)
 }
