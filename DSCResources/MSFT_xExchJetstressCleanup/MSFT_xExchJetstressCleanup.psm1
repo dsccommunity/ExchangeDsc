@@ -7,25 +7,31 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $JetstressPath,
 
+        [Parameter()]
         [System.String]
         $ConfigFilePath,
 
+        [Parameter()]
         [System.String[]]
         $DatabasePaths,
 
+        [Parameter()]
         [System.Boolean]
         $DeleteAssociatedMountPoints,
 
+        [Parameter()]
         [System.String[]]
         $LogPaths,
 
+        [Parameter()]
         [System.String]
         $OutputSaveLocation,
 
+        [Parameter()]
         [System.Boolean]
         $RemoveBinaries
     )
@@ -45,25 +51,31 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $JetstressPath,
 
+        [Parameter()]
         [System.String]
         $ConfigFilePath,
 
+        [Parameter()]
         [System.String[]]
         $DatabasePaths,
 
+        [Parameter()]
         [System.Boolean]
         $DeleteAssociatedMountPoints,
 
+        [Parameter()]
         [System.String[]]
         $LogPaths,
 
+        [Parameter()]
         [System.String]
         $OutputSaveLocation,
 
+        [Parameter()]
         [System.Boolean]
         $RemoveBinaries
     )
@@ -76,11 +88,11 @@ function Set-TargetResource
 
     if ($jetstressInstalled)
     {
-        throw "Jetstress must be uninstalled before using the xExchJetstressCleanup resource"
+        throw 'Jetstress must be uninstalled before using the xExchJetstressCleanup resource'
     }
 
     #If a config file was specified, pull the database and log paths out and put them into $DatabasePaths and $LogPaths
-    if ($PSBoundParameters.ContainsKey("ConfigFilePath"))
+    if ($PSBoundParameters.ContainsKey('ConfigFilePath'))
     {
         [xml]$configFile = LoadConfigXml -ConfigFilePath "$($ConfigFilePath)"
 
@@ -146,8 +158,14 @@ function Set-TargetResource
                 mkdir -Path "$($OutputSaveLocation)"
             }
 
-            $outputFiles = Get-ChildItem -LiteralPath "$($JetstressPath)" | `
-                Where-Object {$_.Name -like "Performance*" -or $_.Name -like "Stress*" -or $_.Name -like "DBChecksum*" -or $_.Name -like "XmlConfig*" -or $_.Name -like "*.evt" -or $_.Name -like "*.log"}
+            $outputFiles = Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object -FilterScript { 
+                $_.Name -like 'Performance*' -or `
+                $_.Name -like 'Stress*' -or `
+                $_.Name -like 'DBChecksum*' -or `
+                $_.Name -like 'XmlConfig*' -or `
+                $_.Name -like '*.evt' -or `
+                $_.Name -like '*.log'
+            }
 
             $outputFiles | Move-Item -Destination "$($OutputSaveLocation)" -Confirm:$false -Force
         }
@@ -170,7 +188,7 @@ function Set-TargetResource
 
     if ($cleanedUp -eq $true)
     {
-        Write-Verbose "Jetstress was successfully cleaned up. A reboot must occur to finish the cleanup."
+        Write-Verbose 'Jetstress was successfully cleaned up. A reboot must occur to finish the cleanup.'
 
         $global:DSCMachineStatus = 1
     }
@@ -182,25 +200,31 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $JetstressPath,
 
+        [Parameter()]
         [System.String]
         $ConfigFilePath,
 
+        [Parameter()]
         [System.String[]]
         $DatabasePaths,
 
+        [Parameter()]
         [System.Boolean]
         $DeleteAssociatedMountPoints,
 
+        [Parameter()]
         [System.String[]]
         $LogPaths,
 
+        [Parameter()]
         [System.String]
         $OutputSaveLocation,
 
+        [Parameter()]
         [System.Boolean]
         $RemoveBinaries
     )
@@ -213,13 +237,13 @@ function Test-TargetResource
 
     if ($jetstressInstalled)
     {
-        Write-Verbose "Jetstress is still installed"
+        Write-Verbose 'Jetstress is still installed'
         return $false
     }
     else
     {
         #If a config file was specified, pull the database and log paths out and put them into $DatabasePaths and $LogPaths
-        if ($PSBoundParameters.ContainsKey("ConfigFilePath"))
+        if ($PSBoundParameters.ContainsKey('ConfigFilePath'))
         {
             [xml]$configFile = LoadConfigXml -ConfigFilePath "$($ConfigFilePath)"
 
@@ -276,7 +300,7 @@ function Test-TargetResource
         }
     }
 
-    Write-Verbose "Jetstress has been successfully cleaned up."
+    Write-Verbose 'Jetstress has been successfully cleaned up.'
 
     return $true
 }
@@ -287,35 +311,43 @@ function VerifyParameters
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $JetstressPath,
 
+        [Parameter()]
         [System.String]
         $ConfigFilePath,
 
+        [Parameter()]
         [System.String[]]
         $DatabasePaths,
 
+        [Parameter()]
         [System.Boolean]
         $DeleteAssociatedMountPoints,
 
+        [Parameter()]
         [System.String[]]
         $LogPaths,
 
+        [Parameter()]
         [System.String]
         $OutputSaveLocation,
 
+        [Parameter()]
         [System.Boolean]
         $RemoveBinaries
     )
 
-    if ($PSBoundParameters.ContainsKey("ConfigFilePath") -eq $false -and ($PSBoundParameters.ContainsKey("DatabasePaths") -eq $false -or $PSBoundParameters.ContainsKey("LogPaths") -eq $false))
+    if ($PSBoundParameters.ContainsKey('ConfigFilePath') -eq $false -and `
+       ($PSBoundParameters.ContainsKey('DatabasePaths') -eq $false -or `
+        $PSBoundParameters.ContainsKey('LogPaths') -eq $false))
     {
-        throw "Either the ConfigFilePath parameter must be specified, or DatabasePaths and LogPaths must be specified."
+        throw 'Either the ConfigFilePath parameter must be specified, or DatabasePaths and LogPaths must be specified.'
     }
 
-    if ($PSBoundParameters.ContainsKey("ConfigFilePath") -eq $true)
+    if ($PSBoundParameters.ContainsKey('ConfigFilePath') -eq $true)
     {
         if ([string]::IsNullOrEmpty($ConfigFilePath) -or ((Test-Path -LiteralPath "$($ConfigFilePath)") -eq $false))
         {
@@ -326,12 +358,12 @@ function VerifyParameters
     {
         if ($null -eq $DatabasePaths -or $DatabasePaths.Count -eq 0)
         {
-            throw "No paths were specified in the DatabasePaths parameter"
+            throw 'No paths were specified in the DatabasePaths parameter'
         }
 
         if ($null -eq $LogPaths -or $LogPaths.Count -eq 0)
         {
-            throw "No paths were specified in the LogPaths parameter"
+            throw 'No paths were specified in the LogPaths parameter'
         }
     }
 }
@@ -339,7 +371,12 @@ function VerifyParameters
 #Get a string for a folder without the trailing slash
 function GetFolderNoTrailingSlash
 {
-    param([string]$Folder)
+    param
+    (
+        [Parameter()]
+        [string]
+        $Folder
+    )
 
     if ($Folder.EndsWith('\'))
     {
@@ -352,7 +389,12 @@ function GetFolderNoTrailingSlash
 #Simple string parsing method to determine what the parent folder of a folder is given the child folder's path
 function GetParentFolderFromString
 {
-    param([string]$Folder)
+    param
+    (
+        [Parameter()]
+        [string]
+        $Folder
+    )
 
     $Folder = GetFolderNoTrailingSlash -Folder "$($Folder)"
 
@@ -365,7 +407,12 @@ function GetParentFolderFromString
 function RemoveFolder
 {
     [CmdletBinding()]
-    param([string]$Path)
+    param
+    (
+        [Parameter()]
+        [string]
+        $Path
+    )
 
     if ((Test-Path -LiteralPath "$($Path)") -eq $true)
     {
@@ -385,7 +432,7 @@ function LoadConfigXml
     [OutputType([Xml])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ConfigFilePath
     )
