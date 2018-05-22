@@ -5,24 +5,28 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.UInt32]
         $RetryIntervalSec = 60,
 
+        [Parameter()]
         [System.UInt32]
         $RetryCount = 5,
 
+        [Parameter()]
         [System.String]
         $AdServerSettingsPreferredServer
     )
@@ -30,12 +34,12 @@ function Get-TargetResource
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MailboxDatabase","Set-AdServerSettings" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase','Set-AdServerSettings' -VerbosePreference $VerbosePreference
 
-    if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
+    if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
         Set-ADServerSettings -PreferredServer "$($AdServerSettingsPreferredServer)"
     }
@@ -58,24 +62,28 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.UInt32]
         $RetryIntervalSec = 60,
 
+        [Parameter()]
         [System.UInt32]
         $RetryCount = 5,
 
+        [Parameter()]
         [System.String]
         $AdServerSettingsPreferredServer
     )
@@ -83,12 +91,12 @@ function Set-TargetResource
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MailboxDatabase","Set-AdServerSettings" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase','Set-AdServerSettings' -VerbosePreference $VerbosePreference
 
-    if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
+    if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
         Set-ADServerSettings -PreferredServer "$($AdServerSettingsPreferredServer)"
     }
@@ -123,24 +131,28 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.UInt32]
         $RetryIntervalSec = 60,
 
+        [Parameter()]
         [System.UInt32]
         $RetryCount = 5,
 
+        [Parameter()]
         [System.String]
         $AdServerSettingsPreferredServer
     )
@@ -148,12 +160,12 @@ function Test-TargetResource
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MailboxDatabase","Set-AdServerSettings" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase','Set-AdServerSettings' -VerbosePreference $VerbosePreference
 
-    if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
+    if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
         Set-ADServerSettings -PreferredServer "$($AdServerSettingsPreferredServer)"
     }
@@ -190,7 +202,7 @@ function GetMailboxDatabase
         $AdServerSettingsPreferredServer
     )
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
+    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
     return (Get-MailboxDatabase @PSBoundParameters -ErrorAction SilentlyContinue)
 }

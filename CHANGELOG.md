@@ -58,6 +58,22 @@
   - xExchJetstressCleanup.psm1
   - xExchMailboxDatabase.psm1
   - xExchMailboxDatabaseCopy.psm1
+  - xExchMailboxServer.psm1
+  - xExchMailboxTransportService.psm1
+  - xExchMaintenanceMode.psm1
+  - xExchMapiVirtualDirectory.psm1
+  - xExchOabVirtualDirectory.psm1
+  - xExchOutlookAnywhere.psm1
+  - xExchOwaVirtualDirectory.psm1
+  - xExchPopSettings.psm1
+  - xExchPowerShellVirtualDirectory.psm1
+  - xExchReceiveConnector.psm1
+  - xExchUMCallRouterSettings.psm1
+  - xExchUMService.psm1
+  - xExchWaitForADPrep.psm1
+  - xExchWaitForDAG.psm1
+  - xExchWaitForMailboxDatabase.psm1
+  - xExchWebServicesVirtualDirectory.psm1
 - Updated xExchange.psd1
 - Added issue template file (ISSUE\_TEMPLATE.md) for 'New Issue' and pull request
   template file (PULL\_REQUEST\_TEMPLATE.md) for 'New Pull Request'.
