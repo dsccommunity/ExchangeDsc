@@ -41,10 +41,15 @@
   - Remove-CompletedEntriesFromHashtable
 - Fixed PSSA custom rules in:
   - xExchActiveSyncVirtualDirectory.psm1
+  - xExchAntiMalwareScanning.psm1
+  - xExchAutodiscoverVirtualDirectory.psm1
+  - xExchAutoMountPoint.psm1
+  - xExchClientAccessServer.psm1
 - Updated xExchange.psd1
 - Added issue template file (ISSUE\_TEMPLATE.md) for 'New Issue' and pull request
   template file (PULL\_REQUEST\_TEMPLATE.md) for 'New Pull Request'.
 - Fix issue Diagnostics.CodeAnalysis.SuppressMessageAttribute best practices
+- Updated .MetaTestOptIn.json file with Custom Script Analyzer Rules
 
 ## 1.20.0.0
 

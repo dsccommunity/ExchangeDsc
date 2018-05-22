@@ -5,48 +5,55 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AutoDagDatabasesRootFolderPath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AutoDagVolumesRootFolderPath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String[]]
         $DiskToDBMap,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.UInt32]
         $SpareVolumeCount,
 
+        [Parameter()]
         [System.Boolean]
         $EnsureExchangeVolumeMountPointIsLast = $false,
 
+        [Parameter()]
         [System.Boolean]
         $CreateSubfolders = $false,
 
-        [ValidateSet("NTFS","REFS")]
+        [Parameter()]
+        [ValidateSet('NTFS','REFS')]
         [System.String]
-        $FileSystem = "NTFS",
+        $FileSystem = 'NTFS',
 
+        [Parameter()]
         [System.String]
-        $MinDiskSize = "",
+        $MinDiskSize = '',
 
-        [ValidateSet("MBR","GPT")]
+        [Parameter()]
+        [ValidateSet('MBR','GPT')]
         [System.String]
-        $PartitioningScheme = "GPT",
+        $PartitioningScheme = 'GPT',
 
+        [Parameter()]
         [System.String]
-        $UnitSize = "64K",
+        $UnitSize = '64K',
 
+        [Parameter()]
         [System.String]
-        $VolumePrefix = "EXVOL"
+        $VolumePrefix = 'EXVOL'
     )
 
     #Load helper modules
@@ -81,48 +88,55 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AutoDagDatabasesRootFolderPath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AutoDagVolumesRootFolderPath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String[]]
         $DiskToDBMap,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.UInt32]
         $SpareVolumeCount,
 
+        [Parameter()]
         [System.Boolean]
         $EnsureExchangeVolumeMountPointIsLast = $false,
 
+        [Parameter()]
         [System.Boolean]
         $CreateSubfolders = $false,
 
-        [ValidateSet("NTFS","REFS")]
+        [Parameter()]
+        [ValidateSet('NTFS','REFS')]
         [System.String]
-        $FileSystem = "NTFS",
+        $FileSystem = 'NTFS',
 
+        [Parameter()]
         [System.String]
-        $MinDiskSize = "",
+        $MinDiskSize = '',
 
-        [ValidateSet("MBR","GPT")]
+        [Parameter()]
+        [ValidateSet('MBR','GPT')]
         [System.String]
-        $PartitioningScheme = "GPT",
+        $PartitioningScheme = 'GPT',
 
+        [Parameter()]
         [System.String]
-        $UnitSize = "64K",
+        $UnitSize = '64K',
 
+        [Parameter()]
         [System.String]
-        $VolumePrefix = "EXVOL"
+        $VolumePrefix = 'EXVOL'
     )
 
     #Load helper modules
@@ -183,48 +197,55 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AutoDagDatabasesRootFolderPath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AutoDagVolumesRootFolderPath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String[]]
         $DiskToDBMap,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.UInt32]
         $SpareVolumeCount,
 
+        [Parameter()]
         [System.Boolean]
         $EnsureExchangeVolumeMountPointIsLast = $false,
 
+        [Parameter()]
         [System.Boolean]
         $CreateSubfolders = $false,
 
-        [ValidateSet("NTFS","REFS")]
+        [Parameter()]
+        [ValidateSet('NTFS','REFS')]
         [System.String]
-        $FileSystem = "NTFS",
+        $FileSystem = 'NTFS',
 
+        [Parameter()]
         [System.String]
-        $MinDiskSize = "",
+        $MinDiskSize = '',
 
-        [ValidateSet("MBR","GPT")]
+        [Parameter()]
+        [ValidateSet('MBR','GPT')]
         [System.String]
-        $PartitioningScheme = "GPT",
+        $PartitioningScheme = 'GPT',
 
+        [Parameter()]
         [System.String]
-        $UnitSize = "64K",
+        $UnitSize = '64K',
 
+        [Parameter()]
         [System.String]
-        $VolumePrefix = "EXVOL"
+        $VolumePrefix = 'EXVOL'
     )
 
     #Load helper modules
@@ -274,23 +295,23 @@ function CreateMissingExVolumes
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AutoDagDatabasesRootFolderPath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AutoDagVolumesRootFolderPath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String[]]
         $DiskToDBMap,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.UInt32]
         $SpareVolumeCount,
 
@@ -358,23 +379,23 @@ function CreateMissingExDatabases
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AutoDagDatabasesRootFolderPath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $AutoDagVolumesRootFolderPath,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String[]]
         $DiskToDBMap,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.UInt32]
         $SpareVolumeCount,
 

@@ -5,32 +5,38 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         [ValidateNotNullOrEmpty()]
         $AlternateServiceAccountCredential,
 
+        [Parameter()]
         [System.String]
         $AutoDiscoverServiceInternalUri,
 
+        [Parameter()]
         [System.String[]]
         $AutoDiscoverSiteScope,
 
+        [Parameter()]
         [System.Boolean]
         $CleanUpInvalidAlternateServiceAccountCredentials,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $RemoveAlternateServiceAccountCredentials
     )
@@ -77,32 +83,38 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         [ValidateNotNullOrEmpty()]
         $AlternateServiceAccountCredential,
 
+        [Parameter()]
         [System.String]
         $AutoDiscoverServiceInternalUri,
 
+        [Parameter()]
         [System.String[]]
         $AutoDiscoverSiteScope,
 
+        [Parameter()]
         [System.Boolean]
         $CleanUpInvalidAlternateServiceAccountCredentials,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $RemoveAlternateServiceAccountCredentials
     )
@@ -153,32 +165,38 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         [ValidateNotNullOrEmpty()]
         $AlternateServiceAccountCredential,
 
+        [Parameter()]
         [System.String]
         $AutoDiscoverServiceInternalUri,
 
+        [Parameter()]
         [System.String[]]
         $AutoDiscoverSiteScope,
 
+        [Parameter()]
         [System.Boolean]
         $CleanUpInvalidAlternateServiceAccountCredentials,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $RemoveAlternateServiceAccountCredentials
     )
@@ -234,38 +252,44 @@ function GetClientAccessServer
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         [ValidateNotNullOrEmpty()]
         $AlternateServiceAccountCredential,
 
+        [Parameter()]
         [System.String]
         $AutoDiscoverServiceInternalUri,
 
+        [Parameter()]
         [System.String[]]
         $AutoDiscoverSiteScope,
 
+        [Parameter()]
         [System.Boolean]
         $CleanUpInvalidAlternateServiceAccountCredentials,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $RemoveAlternateServiceAccountCredentials
     )
 
     #Remove params we don't want to pass into the next command
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
+    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
     $serverVersion = GetExchangeVersion -ThrowIfUnknownVersion $true
     if (($null -ne $AlternateServiceAccountCredential) -or ($RemoveAlternateServiceAccountCredentials))
@@ -273,11 +297,11 @@ function GetClientAccessServer
         $PSBoundParameters.Add('IncludeAlternateServiceAccountCredentialPassword',$true)
     }
 
-    if ($serverVersion -eq "2016")
+    if ($serverVersion -eq '2016')
     {
         return (Get-ClientAccessService @PSBoundParameters)
     }
-    elseif ($serverVersion -eq "2013")
+    elseif ($serverVersion -eq '2013')
     {
         return (Get-ClientAccessServer @PSBoundParameters)
     } 
