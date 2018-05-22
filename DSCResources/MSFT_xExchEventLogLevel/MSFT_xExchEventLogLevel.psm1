@@ -5,17 +5,17 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
-        [ValidateSet("Lowest","Low","Medium","High","Expert")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Lowest','Low','Medium','High','Expert')]
         [System.String]
         $Level
     )
@@ -23,7 +23,7 @@ function Get-TargetResource
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-EventLogLevel" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-EventLogLevel' -VerbosePreference $VerbosePreference
 
     $eventLogLevel = Get-EventLogLevel -Identity "$($env:COMPUTERNAME)\$($Identity)"
 
@@ -44,17 +44,17 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
-        [ValidateSet("Lowest","Low","Medium","High","Expert")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Lowest','Low','Medium','High','Expert')]
         [System.String]
         $Level
     )
@@ -62,7 +62,7 @@ function Set-TargetResource
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Set-EventLogLevel" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-EventLogLevel' -VerbosePreference $VerbosePreference
 
     Set-EventLogLevel -Identity "$($env:COMPUTERNAME)\$($Identity)" -Level $Level
 }
@@ -74,17 +74,17 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
-        [ValidateSet("Lowest","Low","Medium","High","Expert")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Lowest','Low','Medium','High','Expert')]
         [System.String]
         $Level
     )
@@ -92,19 +92,19 @@ function Test-TargetResource
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-EventLogLevel" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-EventLogLevel' -VerbosePreference $VerbosePreference
 
     $eventLogLevel = Get-EventLogLevel -Identity "$($env:COMPUTERNAME)\$($Identity)"
 
     if ($null -eq $eventLogLevel)
     {
-        Write-Error "Failed to retrieve any objects with specified Identity."
+        Write-Error 'Failed to retrieve any objects with specified Identity.'
 
         return $false
     }
     else
     {
-        if (!(VerifySetting -Name "Level" -Type "String" -ExpectedValue $Level -ActualValue $eventLogLevel.EventLevel -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'Level' -Type 'String' -ExpectedValue $Level -ActualValue $eventLogLevel.EventLevel -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }

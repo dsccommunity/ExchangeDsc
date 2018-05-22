@@ -45,6 +45,12 @@
   - xExchAutodiscoverVirtualDirectory.psm1
   - xExchAutoMountPoint.psm1
   - xExchClientAccessServer.psm1
+  - xExchDatabaseAvailabilityGroup.psm1
+  - xExchDatabaseAvailabilityGroupMember.psm1
+  - xExchDatabaseAvailabilityGroupNetwork.psm1
+  - xExchEcpVirtualDirectory.psm1
+  - xExchEventLogLevel.psm1
+  - xExchExchangeCertificate.psm1
 - Updated xExchange.psd1
 - Added issue template file (ISSUE\_TEMPLATE.md) for 'New Issue' and pull request
   template file (PULL\_REQUEST\_TEMPLATE.md) for 'New Pull Request'.
