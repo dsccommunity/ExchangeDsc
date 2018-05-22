@@ -3,7 +3,7 @@
 ### * Requires that the ActiveDirectory module is installed
 
 Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchExchangeServer\MSFT_xExchExchangeServer.psm1
-Import-Module $PSScriptRoot\..\Misc\xExchangeCommon.psm1 -Verbose:0
+Import-Module $PSScriptRoot\..\Modules\xExchangeHelper.psm1 -Verbose:0
 Import-Module $PSScriptRoot\xExchange.Tests.Common.psm1 -Verbose:0
 
 #Sets props retrieved by Get-ExchangeServer back to their default values

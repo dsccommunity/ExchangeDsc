@@ -30,9 +30,6 @@ function Get-TargetResource
         $UpgradedServerVersion
     )
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{"Enabled" = $Enabled} -VerbosePreference $VerbosePreference
 
     #Load TransportMaintenanceMode Helper
@@ -114,9 +111,6 @@ function Set-TargetResource
         [System.String]
         $UpgradedServerVersion
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Enabled" = $Enabled} -VerbosePreference $VerbosePreference
 
@@ -314,9 +308,6 @@ function Test-TargetResource
         [System.String]
         $UpgradedServerVersion
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Enabled" = $Enabled} -VerbosePreference $VerbosePreference
 

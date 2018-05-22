@@ -31,9 +31,6 @@ function Get-TargetResource
         $X509CertificateName
     )
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{"Server" = $Server} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
@@ -84,9 +81,6 @@ function Set-TargetResource
         [System.String]
         $X509CertificateName
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Server" = $Server} -VerbosePreference $VerbosePreference
 
@@ -141,9 +135,6 @@ function Test-TargetResource
         [System.String]
         $X509CertificateName
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Server" = $Server} -VerbosePreference $VerbosePreference
 

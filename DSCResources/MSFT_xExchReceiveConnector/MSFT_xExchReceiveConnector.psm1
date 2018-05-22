@@ -181,9 +181,6 @@ function Get-TargetResource
 
     ValidateIdentity -Identity $Identity
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
@@ -432,9 +429,6 @@ function Set-TargetResource
 
     ValidateIdentity -Identity $Identity
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
@@ -521,7 +515,6 @@ function Set-TargetResource
         }
     }
 }
-
 
 function Test-TargetResource
 {
@@ -705,9 +698,6 @@ function Test-TargetResource
     )
 
     ValidateIdentity -Identity $Identity
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 

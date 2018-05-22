@@ -1,3 +1,5 @@
+Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Modules\xExchangeDiskPart.psm1" -Force
+
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -48,10 +50,6 @@ function Get-TargetResource
         [System.String]
         $VolumePrefix = "EXVOL"
     )
-
-    #Load helper modules
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeDiskPart.psm1" -Verbose:0
 
     LogFunctionEntry -VerbosePreference $VerbosePreference
 
@@ -124,10 +122,6 @@ function Set-TargetResource
         [System.String]
         $VolumePrefix = "EXVOL"
     )
-
-    #Load helper modules
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeDiskPart.psm1" -Verbose:0
 
     LogFunctionEntry -VerbosePreference $VerbosePreference
 
@@ -226,10 +220,6 @@ function Test-TargetResource
         [System.String]
         $VolumePrefix = "EXVOL"
     )
-
-    #Load helper modules
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeDiskPart.psm1" -Verbose:0
 
     LogFunctionEntry -VerbosePreference $VerbosePreference
 

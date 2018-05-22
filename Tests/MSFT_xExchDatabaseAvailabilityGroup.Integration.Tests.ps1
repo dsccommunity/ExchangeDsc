@@ -6,7 +6,7 @@
 
 Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
 Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchDatabaseAvailabilityGroup\MSFT_xExchDatabaseAvailabilityGroup.psm1
-Import-Module $PSScriptRoot\..\Misc\xExchangeCommon.psm1 -Verbose:0
+Import-Module $PSScriptRoot\..\Modules\xExchangeHelper.psm1 -Verbose:0
 Import-Module $PSScriptRoot\xExchange.Tests.Common.psm1 -Verbose:0
 
 #Removes the test DAG if it exists, and any associated databases

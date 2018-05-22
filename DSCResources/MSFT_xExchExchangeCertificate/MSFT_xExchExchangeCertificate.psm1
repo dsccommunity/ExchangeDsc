@@ -37,9 +37,6 @@ function Get-TargetResource
         $Services
     )
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{"Thumbprint" = $Thumbprint} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
@@ -94,9 +91,6 @@ function Set-TargetResource
         [System.String[]]
         $Services
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Thumbprint" = $Thumbprint} -VerbosePreference $VerbosePreference
 
@@ -230,9 +224,6 @@ function Test-TargetResource
         [System.String[]]
         $Services
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Thumbprint" = $Thumbprint} -VerbosePreference $VerbosePreference
 

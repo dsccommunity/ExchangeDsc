@@ -25,9 +25,6 @@ function Get-TargetResource
         $SkipDagValidation
     )
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{"MailboxServer" = $MailboxServer;"DAGName" = $DAGName} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
@@ -56,7 +53,6 @@ function Get-TargetResource
     $returnValue
 }
 
-
 function Set-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -82,9 +78,6 @@ function Set-TargetResource
         [System.Boolean]
         $SkipDagValidation
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"MailboxServer" = $MailboxServer;"DAGName" = $DAGName} -VerbosePreference $VerbosePreference
 
@@ -114,7 +107,6 @@ function Set-TargetResource
     Add-DatabaseAvailabilityGroupServer @PSBoundParameters
 }
 
-
 function Test-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -141,9 +133,6 @@ function Test-TargetResource
         [System.Boolean]
         $SkipDagValidation
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"MailboxServer" = $MailboxServer;"DAGName" = $DAGName} -VerbosePreference $VerbosePreference
 

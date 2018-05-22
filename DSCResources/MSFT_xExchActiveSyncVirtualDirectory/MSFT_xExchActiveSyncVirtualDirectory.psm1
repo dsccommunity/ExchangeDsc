@@ -1,6 +1,3 @@
-#Load helper module
-Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
 function Get-TargetResource
 {
     [CmdletBinding()]

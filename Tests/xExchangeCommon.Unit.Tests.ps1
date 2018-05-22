@@ -1,6 +1,6 @@
 ###NOTE: This test module requires use of credentials. The first run through of the tests will prompt for credentials from the logged on user.
 
-Import-Module $PSScriptRoot\..\Misc\xExchangeCommon.psm1 -Verbose:0
+Import-Module $PSScriptRoot\..\Modules\xExchangeHelper.psm1 -Verbose:0
 Import-Module $PSScriptRoot\xExchange.Tests.Common.psm1 -Verbose:0
 
 #Remove any existing Remote PowerShell sessions created by xExchange and verify they are gone

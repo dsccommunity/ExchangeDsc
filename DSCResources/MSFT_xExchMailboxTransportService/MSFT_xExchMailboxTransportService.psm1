@@ -84,9 +84,6 @@ function Get-TargetResource
         $SendProtocolLogPath
     )
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath $PSScriptRoot).Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
@@ -210,9 +207,6 @@ function Set-TargetResource
         $SendProtocolLogPath
     )
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath $PSScriptRoot).Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Set-MailboxTransportService" -VerbosePreference $VerbosePreference
 
@@ -326,9 +320,6 @@ function Test-TargetResource
         [System.String]
         $SendProtocolLogPath
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath $PSScriptRoot).Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 

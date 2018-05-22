@@ -31,9 +31,6 @@ function Get-TargetResource
         $X509CertificateName
     )
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{"Server" = $Server} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
@@ -53,7 +50,6 @@ function Get-TargetResource
 
     $returnValue
 }
-
 
 function Set-TargetResource
 {
@@ -86,9 +82,6 @@ function Set-TargetResource
         $X509CertificateName
     )
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{"Server" = $Server} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
@@ -109,7 +102,6 @@ function Set-TargetResource
         Write-Warning "The configuration will not take effect until MSExchangePOP services are manually restarted."
     }
 }
-
 
 function Test-TargetResource
 {
@@ -143,9 +135,6 @@ function Test-TargetResource
         [System.String]
         $X509CertificateName
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Server" = $Server} -VerbosePreference $VerbosePreference
 

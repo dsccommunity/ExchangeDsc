@@ -1,7 +1,7 @@
 ###NOTE: This test module requires use of credentials. The first run through of the tests will prompt for credentials from the logged on user.
 
 Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchAutodiscoverVirtualDirectory\MSFT_xExchAutodiscoverVirtualDirectory.psm1
-Import-Module $PSScriptRoot\..\Misc\xExchangeCommon.psm1 -Verbose:0
+Import-Module $PSScriptRoot\..\Modules\xExchangeHelper.psm1 -Verbose:0
 Import-Module $PSScriptRoot\xExchange.Tests.Common.psm1 -Verbose:0
 
 #Check if Exchange is installed on this machine. If not, we can't run tests

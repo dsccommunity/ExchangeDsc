@@ -45,6 +45,10 @@
 - Added issue template file (ISSUE\_TEMPLATE.md) for 'New Issue' and pull request
   template file (PULL\_REQUEST\_TEMPLATE.md) for 'New Pull Request'.
 - Fix issue Diagnostics.CodeAnalysis.SuppressMessageAttribute best practices
+- Renamed xExchangeCommon.psm1 to xExchangeHelper.psm1
+- Renamed the folder MISC (that contains the helper) to Modules
+- Added xExchangeHelper.psm1 in xExchange.psd1 (section NestedModules)
+- Removed all lines with Import-Module xExchangeCommon.psm1
 
 ## 1.20.0.0
 

@@ -57,9 +57,6 @@ function Get-TargetResource
         $SSLOffloading
     )
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
@@ -87,7 +84,6 @@ function Get-TargetResource
 
     $returnValue
 }
-
 
 function Set-TargetResource
 {
@@ -146,9 +142,6 @@ function Set-TargetResource
         $SSLOffloading
     )
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
@@ -173,7 +166,6 @@ function Set-TargetResource
         Write-Warning "The configuration will not take effect until MSExchangeRpcProxyAppPool and MSExchangeRpcProxyFrontEndAppPool are manually recycled."
     }
 }
-
 
 function Test-TargetResource
 {
@@ -233,9 +225,6 @@ function Test-TargetResource
         [System.Boolean]
         $SSLOffloading
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 

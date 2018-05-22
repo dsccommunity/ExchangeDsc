@@ -1,3 +1,5 @@
+Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Modules\xExchangeDiskPart.psm1" -Force
+
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -27,9 +29,6 @@ function Get-TargetResource
         [System.Boolean]
         $RemoveBinaries
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -VerbosePreference $VerbosePreference
 
@@ -68,10 +67,6 @@ function Set-TargetResource
         [System.Boolean]
         $RemoveBinaries
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeDiskPart.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -VerbosePreference $VerbosePreference
 
@@ -209,10 +204,6 @@ function Test-TargetResource
         [System.Boolean]
         $RemoveBinaries
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeDiskPart.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -VerbosePreference $VerbosePreference
 

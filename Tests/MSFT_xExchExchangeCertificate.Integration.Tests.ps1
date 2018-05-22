@@ -4,7 +4,7 @@
 param ()
 
 Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchExchangeCertificate\MSFT_xExchExchangeCertificate.psm1
-Import-Module $PSScriptRoot\..\Misc\xExchangeCommon.psm1 -Verbose:0
+Import-Module $PSScriptRoot\..\Modules\xExchangeHelper.psm1 -Verbose:0
 Import-Module $PSScriptRoot\xExchange.Tests.Common.psm1 -Verbose:0
 
 function Test-ServicesInCertificate
