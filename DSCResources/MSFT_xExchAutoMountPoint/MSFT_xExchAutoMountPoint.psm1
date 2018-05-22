@@ -1,7 +1,3 @@
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscExamplesPresent", "")]
-[CmdletBinding()]
-param()
-
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -911,8 +907,4 @@ function AddMountPoint
     StartDiskpart -Commands "select volume $($VolumeNumber)","assign mount=`"$($Folder)`"" -VerbosePreference $VerbosePreference | Out-Null
 }
 
-
 Export-ModuleMember -Function *-TargetResource
-
-
-

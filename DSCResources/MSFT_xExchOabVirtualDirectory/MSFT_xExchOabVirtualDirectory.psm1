@@ -1,8 +1,3 @@
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscTestsPresent", "")]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscExamplesPresent", "")]
-[CmdletBinding()]
-param()
-
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -386,7 +381,25 @@ function AddOabDistributionPoint
     AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = $TargetOabName}
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
 
-    $oab = Get-OfflineAddressBook @PSBoundParameters    if ($null -ne $oab)    {        #Assemble the list of existing Virtual Directories        [string[]]$allVdirs = @()              foreach ($vdir in $oab.VirtualDirectories)        {            $oabServer = ServerFromOABVdirDN -OabVdirDN $vdir.DistinguishedName                        [string]$entry = $oabServer + "\" + $vdir.Name                        $allVdirs += $entry        }        #Add desired vdir to existing list        $allVdirs += $vdirIdentity
+    $oab = Get-OfflineAddressBook @PSBoundParameters
+
+    if ($null -ne $oab)
+    {
+        #Assemble the list of existing Virtual Directories
+        [string[]]$allVdirs = @()
+
+      
+        foreach ($vdir in $oab.VirtualDirectories)
+        {
+            $oabServer = ServerFromOABVdirDN -OabVdirDN $vdir.DistinguishedName
+            
+            [string]$entry = $oabServer + "\" + $vdir.Name    
+        
+            $allVdirs += $entry
+        }
+
+        #Add desired vdir to existing list
+        $allVdirs += $vdirIdentity
 
         #Set back to the OAB
         Set-OfflineAddressBook @PSBoundParameters -VirtualDirectories $allVdirs
@@ -397,9 +410,18 @@ function AddOabDistributionPoint
     }
 }
 
-#Gets just the server netbios name from an OAB virtual directory distinguishedNamefunction ServerFromOABVdirDN($OabVdirDN){    $startString = "CN=Protocols,CN="    $endString = ",CN=Servers"    $startIndex = $OabVdirDN.IndexOf($startString) + $startString.Length    $length = $OabVdirDN.IndexOf($endString) - $startIndex    $serverName = $OabVdirDN.Substring($startIndex, $length)        return $serverName}
+#Gets just the server netbios name from an OAB virtual directory distinguishedName
+function ServerFromOABVdirDN($OabVdirDN)
+{
+    $startString = "CN=Protocols,CN="
+    $endString = ",CN=Servers"
+
+    $startIndex = $OabVdirDN.IndexOf($startString) + $startString.Length
+    $length = $OabVdirDN.IndexOf($endString) - $startIndex
+
+    $serverName = $OabVdirDN.Substring($startIndex, $length)
+    
+    return $serverName
+}
 
 Export-ModuleMember -Function *-TargetResource
-
-
-

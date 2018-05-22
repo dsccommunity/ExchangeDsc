@@ -1,8 +1,3 @@
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscTestsPresent", "")]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscExamplesPresent", "")]
-[CmdletBinding()]
-param()
-
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -122,7 +117,7 @@ function Get-TargetResource
 
     if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
-        Set-ADServerSettings –PreferredServer "$($AdServerSettingsPreferredServer)"
+        Set-ADServerSettings ï¿½PreferredServer "$($AdServerSettingsPreferredServer)"
     }
 
     $db = GetMailboxDatabase @PSBoundParameters
@@ -289,7 +284,7 @@ function Set-TargetResource
 
     if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
-        Set-ADServerSettings –PreferredServer "$($AdServerSettingsPreferredServer)"
+        Set-ADServerSettings ï¿½PreferredServer "$($AdServerSettingsPreferredServer)"
     }
 
     $db = GetMailboxDatabase @PSBoundParameters
@@ -493,7 +488,7 @@ function Test-TargetResource
 
     if ($PSBoundParameters.ContainsKey("AdServerSettingsPreferredServer") -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
-        Set-ADServerSettings –PreferredServer "$($AdServerSettingsPreferredServer)"
+        Set-ADServerSettings ï¿½PreferredServer "$($AdServerSettingsPreferredServer)"
     }
 
     $db = GetMailboxDatabase @PSBoundParameters
@@ -987,6 +982,3 @@ function MountDatabase
 }
 
 Export-ModuleMember -Function *-TargetResource
-
-
-

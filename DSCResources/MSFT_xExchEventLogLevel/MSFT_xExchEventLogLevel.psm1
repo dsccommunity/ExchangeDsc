@@ -1,7 +1,3 @@
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscTestsPresent", "")]
-[CmdletBinding()]
-param()
-
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -45,7 +41,6 @@ function Get-TargetResource
     $returnValue
 }
 
-
 function Set-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -77,7 +72,6 @@ function Set-TargetResource
 
     Set-EventLogLevel -Identity "$($env:COMPUTERNAME)\$($Identity)" -Level $Level
 }
-
 
 function Test-TargetResource
 {
@@ -128,6 +122,4 @@ function Test-TargetResource
     return $true
 }
 
-
 Export-ModuleMember -Function *-TargetResource
-

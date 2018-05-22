@@ -1,7 +1,3 @@
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscExamplesPresent", "")]
-[CmdletBinding()]
-param()
-
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -55,7 +51,6 @@ function Get-TargetResource
 
     $returnValue
 }
-
 
 function Set-TargetResource
 {
@@ -120,7 +115,6 @@ function Set-TargetResource
         throw "Database '$($Identity)' does not yet exist. This will prevent resources that are dependant on this resource from executing. If you are running the DSC configuration in push mode, you will need to re-run the configuration once the database has been created."
     }
 }
-
 
 function Test-TargetResource
 {
@@ -201,8 +195,4 @@ function GetMailboxDatabase
     return (Get-MailboxDatabase @PSBoundParameters -ErrorAction SilentlyContinue)
 }
 
-
 Export-ModuleMember -Function *-TargetResource
-
-
-

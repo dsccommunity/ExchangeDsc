@@ -1,7 +1,3 @@
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscExamplesPresent", "")]
-[CmdletBinding()]
-param()
-
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -433,8 +429,4 @@ function IsJetstressInstalled
     return ($null -ne (Get-CimInstance -ClassName Win32_Product -Filter "IdentifyingNumber = '{75189587-0D84-4404-8F02-79C39728FA64}'"))
 }
 
-
 Export-ModuleMember -Function *-TargetResource
-
-
-
