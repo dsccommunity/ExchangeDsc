@@ -22,7 +22,7 @@ function Get-TargetResource
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Path' = $Path; 'Arguments' = $Arguments} -VerbosePreference $VerbosePreference
 
     $returnValue = @{
         Path = $Path
@@ -53,7 +53,7 @@ function Set-TargetResource
 
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Path' = $Path; 'Arguments' = $Arguments} -VerbosePreference $VerbosePreference
 
     $installStatus = GetInstallStatus -Arguments $Arguments
 
@@ -64,17 +64,17 @@ function Set-TargetResource
 
         if ($needReboot -eq $true)
         {
-            Write-Warning "Server needs a reboot before the installation of Exchange can begin."
+            Write-Warning 'Server needs a reboot before the installation of Exchange can begin.'
             return
         }
 
         Write-Verbose "Initiating Exchange Setup. Command: $($Path) $($Arguments)"
 
-        StartScheduledTask -Path "$($Path)" -Arguments "$($Arguments)" -Credential $Credential -TaskName "Install Exchange" -VerbosePreference $VerbosePreference
+        StartScheduledTask -Path "$($Path)" -Arguments "$($Arguments)" -Credential $Credential -TaskName 'Install Exchange' -VerbosePreference $VerbosePreference
 
         $detectedExsetup = $false
 
-        Write-Verbose "Waiting up to 60 seconds before exiting to give time for ExSetup.exe to start"
+        Write-Verbose 'Waiting up to 60 seconds before exiting to give time for ExSetup.exe to start'
 
         for ($i = 0; $i -lt 60; $i++)
         {
@@ -84,7 +84,7 @@ function Set-TargetResource
             }
             else
             {
-                Write-Verbose "Detected that ExSetup.exe is running"
+                Write-Verbose 'Detected that ExSetup.exe is running'
                 $detectedExsetup = $true
                 break
             }
@@ -92,7 +92,7 @@ function Set-TargetResource
 
         if ($detectedExsetup -eq $false)
         {
-            throw "Waited 60 seconds, but was unable to detect that ExSetup.exe was started"
+            throw 'Waited 60 seconds, but was unable to detect that ExSetup.exe was started'
         }
 
         #Now wait for setup to finish
@@ -106,11 +106,11 @@ function Set-TargetResource
     {
         if ($installStatus.SetupComplete)
         {
-            Write-Verbose "Exchange setup has already successfully completed."
+            Write-Verbose 'Exchange setup has already successfully completed.'
         }
         else
         {
-            Write-Verbose "Exchange setup is already in progress."
+            Write-Verbose 'Exchange setup is already in progress.'
         }         
     }
 }
@@ -137,7 +137,7 @@ function Test-TargetResource
 
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Path' = $Path; 'Arguments' = $Arguments} -VerbosePreference $VerbosePreference
 
     $installStatus = GetInstallStatus -Arguments $Arguments
 
@@ -145,22 +145,22 @@ function Test-TargetResource
     {
         if($installStatus.ShouldInstallLanguagePack -eq $true)
         {
-            Write-Verbose "Language pack will be installed"
+            Write-Verbose 'Language pack will be installed'
         }
         else
         {
-            Write-Verbose "Exchange is either not installed, or a previous install only partially completed."
+            Write-Verbose 'Exchange is either not installed, or a previous install only partially completed.'
         }
     }
     else
     {
         if ($installStatus.SetupComplete)
         {
-            Write-Verbose "Exchange setup has already successfully completed."
+            Write-Verbose 'Exchange setup has already successfully completed.'
         }
         else
         {
-            Write-Verbose "Exchange setup is already in progress."
+            Write-Verbose 'Exchange setup is already in progress.'
         }
     }
 
@@ -215,7 +215,16 @@ function GetInstallStatus
 #If any required keys are missing, configure WinRM, then force a reboot
 function CheckWSManConfig
 {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
+    <#
+        Suppressing this rule because $global:DSCMachineStatus is used to trigger
+        a reboot, either by force or when there are pending changes.
+    #>
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
+    <#
+        Suppressing this rule because $global:DSCMachineStatus is only set,
+        never used (by design of Desired State Configuration).
+    #>
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function', Target='DSCMachineStatus')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -223,7 +232,7 @@ function CheckWSManConfig
 
     $needReboot = $false
 
-    $wsmanKey = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN" -ErrorAction SilentlyContinue
+    $wsmanKey = Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN' -ErrorAction SilentlyContinue
 
     if ($null -ne $wsmanKey)
     {
@@ -234,16 +243,16 @@ function CheckWSManConfig
             Write-Verbose "Value 'UpdatedConfig' missing from registry key HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN. Running: winrm i restore winrm/config"
 
             Set-Location "$($env:windir)\System32\inetsrv"
-            & "winrm i restore winrm/config" | Out-Null
+            & 'winrm i restore winrm/config' | Out-Null
 
-            Write-Verbose "Machine needs to be rebooted before Exchange setup can proceed"
+            Write-Verbose 'Machine needs to be rebooted before Exchange setup can proceed'
 
             $global:DSCMachineStatus = 1
         }
     }
     else
     {
-        throw "Unable to find registry key: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN"
+        throw 'Unable to find registry key: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN'
     }
 
     return $needReboot
@@ -253,6 +262,7 @@ function ShouldInstallLanguagePack
 {
     param
     (
+        [Parameter()]    
         [System.String]
         $Arguments
     )
@@ -261,7 +271,7 @@ function ShouldInstallLanguagePack
     {
         $Cultures = $Matches[0]
         Write-Verbose "AddUMLanguagePack parameters detected: $Cultures"
-        $Cultures = $Cultures -split ","
+        $Cultures = $Cultures -split ','
 
         foreach($Culture in $Cultures)
         {

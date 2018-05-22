@@ -5,33 +5,40 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $CustomerFeedbackEnabled,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String]
         $InternetWebProxy,
 
+        [Parameter()]
         [System.String]
         $MonitoringGroup,
 
+        [Parameter()]
         [System.String]
         $ProductKey,
 
+        [Parameter()]
         [System.String]
         $WorkloadManagementPolicy
     )
@@ -39,15 +46,15 @@ function Get-TargetResource
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ExchangeServer","Set-ExchangeServer" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer','Set-ExchangeServer' -VerbosePreference $VerbosePreference
 
-    if ($PSBoundParameters.ContainsKey("WorkloadManagementPolicy") -and (CheckForCmdletParameter -CmdletName "Set-ExchangeServer" -ParameterName "WorkloadManagementPolicy") -eq $false)
+    if ($PSBoundParameters.ContainsKey('WorkloadManagementPolicy') -and (CheckForCmdletParameter -CmdletName 'Set-ExchangeServer' -ParameterName 'WorkloadManagementPolicy') -eq $false)
     {
-        Write-Warning "WorkloadManagementPolicy has been removed from the Set-ExchangeServer cmdlet. This parameter will be ignored."
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "WorkloadManagementPolicy"
+        Write-Warning 'WorkloadManagementPolicy has been removed from the Set-ExchangeServer cmdlet. This parameter will be ignored.'
+        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'WorkloadManagementPolicy'
     }
 
     $server = GetExchangeServer @PSBoundParameters
@@ -57,11 +64,11 @@ function Get-TargetResource
         #There's no way to read the product key that was sent in, so just mark it is "Licensed" if it is
         if ($server.IsExchangeTrialEdition -eq $false)
         {
-            $ProductKey = "Licensed"
+            $ProductKey = 'Licensed'
         }
         else
         {
-            $ProductKey = ""
+            $ProductKey = ''
         }
 
         $returnValue = @{
@@ -82,33 +89,40 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $CustomerFeedbackEnabled,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String]
         $InternetWebProxy,
 
+        [Parameter()]
         [System.String]
         $MonitoringGroup,
 
+        [Parameter()]
         [System.String]
         $ProductKey,
 
+        [Parameter()]
         [System.String]
         $WorkloadManagementPolicy
     )
@@ -116,15 +130,15 @@ function Set-TargetResource
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ExchangeServer","Set-ExchangeServer" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer','Set-ExchangeServer' -VerbosePreference $VerbosePreference
 
-    if ($PSBoundParameters.ContainsKey("WorkloadManagementPolicy") -and (CheckForCmdletParameter -CmdletName "Set-ExchangeServer" -ParameterName "WorkloadManagementPolicy") -eq $false)
+    if ($PSBoundParameters.ContainsKey('WorkloadManagementPolicy') -and (CheckForCmdletParameter -CmdletName 'Set-ExchangeServer' -ParameterName 'WorkloadManagementPolicy') -eq $false)
     {
-        Write-Warning "WorkloadManagementPolicy has been removed from the Set-ExchangeServer cmdlet. This parameter will be ignored."
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "WorkloadManagementPolicy"
+        Write-Warning 'WorkloadManagementPolicy has been removed from the Set-ExchangeServer cmdlet. This parameter will be ignored.'
+        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'WorkloadManagementPolicy'
     }
 
     #Check existing config first to see if we are currently licensing a server
@@ -132,13 +146,13 @@ function Set-TargetResource
 
     $needRestart = $false
 
-    if ($PSBoundParameters.ContainsKey("ProductKey") -and !([string]::IsNullOrEmpty($ProductKey)) -and $null -ne $server -and $server.IsExchangeTrialEdition -eq $true)
+    if ($PSBoundParameters.ContainsKey('ProductKey') -and !([string]::IsNullOrEmpty($ProductKey)) -and $null -ne $server -and $server.IsExchangeTrialEdition -eq $true)
     {
         $needRestart = $true
     }
 
     #Setup params for next command
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential","AllowServiceRestart"
+    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
 
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
@@ -149,17 +163,16 @@ function Set-TargetResource
     {
         if ($AllowServiceRestart -eq $true)
         {
-            Write-Verbose "Restarting Information Store"
+            Write-Verbose 'Restarting Information Store'
 
             Restart-Service MSExchangeIS
         }
         else
         {
-            Write-Warning "The configuration will not take effect until MSExchangeIS is manually restarted."
+            Write-Warning 'The configuration will not take effect until MSExchangeIS is manually restarted.'
         }
     }
 }
-
 
 function Test-TargetResource
 {
@@ -168,33 +181,40 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $CustomerFeedbackEnabled,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String]
         $InternetWebProxy,
 
+        [Parameter()]
         [System.String]
         $MonitoringGroup,
 
+        [Parameter()]
         [System.String]
         $ProductKey,
 
+        [Parameter()]
         [System.String]
         $WorkloadManagementPolicy
     )
@@ -202,15 +222,15 @@ function Test-TargetResource
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ExchangeServer","Set-ExchangeServer" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer','Set-ExchangeServer' -VerbosePreference $VerbosePreference
 
-    if ($PSBoundParameters.ContainsKey("WorkloadManagementPolicy") -and (CheckForCmdletParameter -CmdletName "Set-ExchangeServer" -ParameterName "WorkloadManagementPolicy") -eq $false)
+    if ($PSBoundParameters.ContainsKey('WorkloadManagementPolicy') -and (CheckForCmdletParameter -CmdletName 'Set-ExchangeServer' -ParameterName 'WorkloadManagementPolicy') -eq $false)
     {
-        Write-Warning "WorkloadManagementPolicy has been removed from the Set-ExchangeServer cmdlet. This parameter will be ignored."
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "WorkloadManagementPolicy"
+        Write-Warning 'WorkloadManagementPolicy has been removed from the Set-ExchangeServer cmdlet. This parameter will be ignored.'
+        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'WorkloadManagementPolicy'
     }
 
     $server = GetExchangeServer @PSBoundParameters
@@ -221,33 +241,33 @@ function Test-TargetResource
     }
     else #Validate server params
     {
-        if (!(VerifySetting -Name "CustomerFeedbackEnabled" -Type "Boolean" -ExpectedValue $CustomerFeedbackEnabled -ActualValue $server.CustomerFeedbackEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'CustomerFeedbackEnabled' -Type 'Boolean' -ExpectedValue $CustomerFeedbackEnabled -ActualValue $server.CustomerFeedbackEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if ($PSBoundParameters.ContainsKey("InternetWebProxy") -and !(CompareStrings -String1 $InternetWebProxy -String2 $server.InternetWebProxy.AbsoluteUri -IgnoreCase))
+        if ($PSBoundParameters.ContainsKey('InternetWebProxy') -and !(CompareStrings -String1 $InternetWebProxy -String2 $server.InternetWebProxy.AbsoluteUri -IgnoreCase))
         {
             #The AbsolueUri that comes back from the server can have a trailing slash. Check if the AbsoluteUri at least contains the requested Uri
             if (($null -ne $server.InternetWebProxy -and $null -ne $server.InternetWebProxy.AbsoluteUri -and $server.InternetWebProxy.AbsoluteUri.Contains($InternetWebProxy)) -eq $false)
             {
-                ReportBadSetting -SettingName "InternetWebProxy" -ExpectedValue $InternetWebProxy -ActualValue $server.InternetWebProxy -VerbosePreference $VerbosePreference
+                ReportBadSetting -SettingName 'InternetWebProxy' -ExpectedValue $InternetWebProxy -ActualValue $server.InternetWebProxy -VerbosePreference $VerbosePreference
                 return $false
             }
         }
 
-        if (!(VerifySetting -Name "MonitoringGroup" -Type "String" -ExpectedValue $MonitoringGroup -ActualValue $server.MonitoringGroup -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'MonitoringGroup' -Type 'String' -ExpectedValue $MonitoringGroup -ActualValue $server.MonitoringGroup -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if ($PSBoundParameters.ContainsKey("ProductKey") -and !([string]::IsNullOrEmpty($ProductKey)) -and $server.IsExchangeTrialEdition -eq $true)
+        if ($PSBoundParameters.ContainsKey('ProductKey') -and !([string]::IsNullOrEmpty($ProductKey)) -and $server.IsExchangeTrialEdition -eq $true)
         {
-            ReportBadSetting -SettingName "ProductKey" -ExpectedValue $ProductKey -ActualValue $server.ProductKey -VerbosePreference $VerbosePreference
+            ReportBadSetting -SettingName 'ProductKey' -ExpectedValue $ProductKey -ActualValue $server.ProductKey -VerbosePreference $VerbosePreference
             return $false
         }
 
-        if (!(VerifySetting -Name "WorkloadManagementPolicy" -Type "String" -ExpectedValue $WorkloadManagementPolicy -ActualValue $server.WorkloadManagementPolicy -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'WorkloadManagementPolicy' -Type 'String' -ExpectedValue $WorkloadManagementPolicy -ActualValue $server.WorkloadManagementPolicy -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -262,38 +282,45 @@ function GetExchangeServer
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.Boolean]
         $CustomerFeedbackEnabled,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String]
         $InternetWebProxy,
 
+        [Parameter()]
         [System.String]
         $MonitoringGroup,
 
+        [Parameter()]
         [System.String]
         $ProductKey,
 
+        [Parameter()]
         [System.String]
         $WorkloadManagementPolicy,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false
     )
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
+    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
     return (Get-ExchangeServer @PSBoundParameters)
 }
