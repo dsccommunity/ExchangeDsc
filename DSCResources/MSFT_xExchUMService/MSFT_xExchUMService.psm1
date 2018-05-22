@@ -5,33 +5,35 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
-        [ValidateSet("TCP","TLS","Dual")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('TCP','TLS','Dual')]
         [System.String]
         $UMStartupMode,
         
+        [Parameter()]
         [System.String[]]
         $DialPlans,
         
+        [Parameter()]
         [System.String]
         $DomainController
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "*UMService" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMService' -VerbosePreference $VerbosePreference
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
+    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
     $umService = Get-UMService @PSBoundParameters
 
@@ -53,37 +55,38 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
-        [ValidateSet("TCP","TLS","Dual")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('TCP','TLS','Dual')]
         [System.String]
         $UMStartupMode,
                 
+        [Parameter()]
         [System.String[]]
         $DialPlans,
 
+        [Parameter()]
         [System.String]
         $DomainController
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "*UMService" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMService' -VerbosePreference $VerbosePreference
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential"
+    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential'
 
     Set-UMService @PSBoundParameters
 }
-
 
 function Test-TargetResource
 {
@@ -92,28 +95,31 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
-        [ValidateSet("TCP","TLS","Dual")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('TCP','TLS','Dual')]
         [System.String]
         $UMStartupMode,
         
+        [Parameter()]
         [System.String[]]
         $DialPlans,
         
+        [Parameter()]
         [System.String]
         $DomainController
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
+
 
     $umService = Get-TargetResource @PSBoundParameters
 
@@ -123,11 +129,11 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name "UMStartupMode" -Type "String" -ExpectedValue $UMStartupMode -ActualValue $umService.UMStartupMode -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'UMStartupMode' -Type 'String' -ExpectedValue $UMStartupMode -ActualValue $umService.UMStartupMode -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
-        if (!(VerifySetting -Name "DialPlans" -Type "Array" -ExpectedValue $DialPlans -ActualValue $umService.DialPlans -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'DialPlans' -Type 'Array' -ExpectedValue $DialPlans -ActualValue $umService.DialPlans -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }

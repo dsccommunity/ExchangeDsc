@@ -5,29 +5,36 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Int32]
         $SchemaVersion,
 
+        [Parameter()]
         [System.Int32]
         $OrganizationVersion,
 
+        [Parameter()]
         [System.Int32]
         $DomainVersion,
 
+        [Parameter()]
         [System.String[]]
         $ExchangeDomains,
 
+        [Parameter()]
         [System.UInt32]
         $RetryIntervalSec = 60,
 
+        [Parameter()]
         [System.UInt32]
         $RetryCount = 30
     )
@@ -36,10 +43,10 @@ function Get-TargetResource
 
     $dse = GetADRootDSE -Credential $Credential
 
-    if ($PSBoundParameters.ContainsKey("SchemaVersion"))
+    if ($PSBoundParameters.ContainsKey('SchemaVersion'))
     {
         #Check for existence of schema object
-        $schemaObj = GetADObject -Credential $credential -DistinguishedName "CN=ms-Exch-Schema-Version-Pt,$($dse.schemaNamingContext)" -Properties "rangeUpper"
+        $schemaObj = GetADObject -Credential $credential -DistinguishedName "CN=ms-Exch-Schema-Version-Pt,$($dse.schemaNamingContext)" -Properties 'rangeUpper'
 
         if ($null -ne $schemaObj)
         {
@@ -51,13 +58,13 @@ function Get-TargetResource
         }
     }
 
-    if ($PSBoundParameters.ContainsKey("OrganizationVersion"))
+    if ($PSBoundParameters.ContainsKey('OrganizationVersion'))
     {
-        $exchangeContainer = GetADObject -Credential $credential -DistinguishedName "CN=Microsoft Exchange,CN=Services,$($dse.configurationNamingContext)" -Properties "rangeUpper"
+        $exchangeContainer = GetADObject -Credential $credential -DistinguishedName "CN=Microsoft Exchange,CN=Services,$($dse.configurationNamingContext)" -Properties 'rangeUpper'
 
         if ($null -ne $exchangeContainer)
         {
-            $orgContainer = GetADObject -Credential $Credential -Searching $true -DistinguishedName "CN=Microsoft Exchange,CN=Services,$($dse.configurationNamingContext)" -Properties "objectVersion" -Filter "objectClass -like 'msExchOrganizationContainer'" -SearchScope "OneLevel"
+            $orgContainer = GetADObject -Credential $Credential -Searching $true -DistinguishedName "CN=Microsoft Exchange,CN=Services,$($dse.configurationNamingContext)" -Properties 'objectVersion' -Filter "objectClass -like 'msExchOrganizationContainer'" -SearchScope 'OneLevel'
 
             if ($null -ne $orgContainer)
             {
@@ -74,7 +81,7 @@ function Get-TargetResource
         }  
     }
 
-    if ($PSBoundParameters.ContainsKey("DomainVersion"))
+    if ($PSBoundParameters.ContainsKey('DomainVersion'))
     {
         #Get this server's domain
         [string]$machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
@@ -103,7 +110,7 @@ function Get-TargetResource
         {
             $domainDn = DomainDNFromFQDN -Fqdn $domain
 
-            $mesoContainer = GetADObject -Credential $Credential -DistinguishedName "CN=Microsoft Exchange System Objects,$($domainDn)" -Properties "objectVersion"
+            $mesoContainer = GetADObject -Credential $Credential -DistinguishedName "CN=Microsoft Exchange System Objects,$($domainDn)" -Properties 'objectVersion'
 
             $mesoVersion = $null
 
@@ -136,35 +143,41 @@ function Get-TargetResource
     $returnValue
 }
 
-
 function Set-TargetResource
 {
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Int32]
         $SchemaVersion,
 
+        [Parameter()]
         [System.Int32]
         $OrganizationVersion,
 
+        [Parameter()]
         [System.Int32]
         $DomainVersion,
 
+        [Parameter()]
         [System.String[]]
         $ExchangeDomains,
 
+        [Parameter()]
         [System.UInt32]
         $RetryIntervalSec = 60,
 
+        [Parameter()]
         [System.UInt32]
         $RetryCount = 30
     )
@@ -190,7 +203,7 @@ function Set-TargetResource
     
     if ($testResults -eq $false)
     {
-        throw "AD has still not been prepped after the maximum amount of retries."
+        throw 'AD has still not been prepped after the maximum amount of retries.'
     }
 }
 
@@ -201,29 +214,36 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Int32]
         $SchemaVersion,
 
+        [Parameter()]
         [System.Int32]
         $OrganizationVersion,
 
+        [Parameter()]
         [System.Int32]
         $DomainVersion,
 
+        [Parameter()]
         [System.String[]]
         $ExchangeDomains,
 
+        [Parameter()]
         [System.UInt32]
         $RetryIntervalSec = 60,
 
+        [Parameter()]
         [System.UInt32]
         $RetryCount = 30
     )
@@ -240,17 +260,17 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name "SchemaVersion" -Type "Int" -ExpectedValue $SchemaVersion -ActualValue $adStatus.SchemaVersion -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'SchemaVersion' -Type 'Int' -ExpectedValue $SchemaVersion -ActualValue $adStatus.SchemaVersion -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             $returnValue = $false
         }
 
-        if (!(VerifySetting -Name "OrganizationVersion" -Type "Int" -ExpectedValue $OrganizationVersion -ActualValue $adStatus.OrganizationVersion -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'OrganizationVersion' -Type 'Int' -ExpectedValue $OrganizationVersion -ActualValue $adStatus.OrganizationVersion -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             $returnValue = $false
         }
 
-        if ($PSBoundParameters.ContainsKey("DomainVersion"))
+        if ($PSBoundParameters.ContainsKey('DomainVersion'))
         {
             #Get this server's domain
             [string]$machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
@@ -275,7 +295,7 @@ function Test-TargetResource
             #Compare the desired DomainVersion with the actual version of each domain
             foreach ($domain in $targetDomains)
             {
-                if (!(VerifySetting -Name "DomainVersion" -Type "Int" -ExpectedValue $DomainVersion -ActualValue $adStatus.DomainVersion[$domain] -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+                if (!(VerifySetting -Name 'DomainVersion' -Type 'Int' -ExpectedValue $DomainVersion -ActualValue $adStatus.DomainVersion[$domain] -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
                 {
                     $returnValue = $false
                 }
@@ -290,6 +310,7 @@ function GetADRootDSE
 {
     param
     (
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential
@@ -311,53 +332,59 @@ function GetADObject
 {
     param
     (
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [boolean]
         $Searching = $false,
 
+        [Parameter()]
         [string]
         $DistinguishedName,
 
+        [Parameter()]
         [string[]]
         $Properties,
 
+        [Parameter()]
         [string]
         $Filter,
 
+        [Parameter()]
         [string]
         $SearchScope
     )
 
     if ($Searching -eq $false)
     {
-        $getAdObjParams = @{"Identity" = $DistinguishedName}
+        $getAdObjParams = @{'Identity' = $DistinguishedName}
     }
     else
     {
-        $getAdObjParams = @{"SearchBase" = $DistinguishedName}
+        $getAdObjParams = @{'SearchBase' = $DistinguishedName}
 
         if ([string]::IsNullOrEmpty($Filter) -eq $false)
         {
-            $getAdObjParams.Add("Filter", $Filter)
+            $getAdObjParams.Add('Filter', $Filter)
         }
 
         if ([string]::IsNullOrEmpty($SearchScope) -eq $false)
         {
-            $getAdObjParams.Add("SearchScope", $SearchScope)
+            $getAdObjParams.Add('SearchScope', $SearchScope)
         }
     }
 
     if ($null -ne $Credential)
     {
-        $getAdObjParams.Add("Credential", $Credential)
+        $getAdObjParams.Add('Credential', $Credential)
     }
 
     if ([string]::IsNullOrEmpty($Properties) -eq $false)
     {
-        $getAdObjParams.Add("Properties", $Properties)
+        $getAdObjParams.Add('Properties', $Properties)
     }
 
     #ErrorAction SilentlyContinue doesn't seem to work with Get-ADObject. Doing in Try/Catch instead
@@ -375,7 +402,12 @@ function GetADObject
 
 function DomainDNFromFQDN
 {
-    param([string]$Fqdn)
+    param
+    (
+        [Parameter()]
+        [string]
+        $Fqdn
+    )
 
     if ($Fqdn.Contains('.'))
     {
@@ -394,7 +426,7 @@ function DomainDNFromFQDN
     }
     else
     {
-        throw "Empty value specified for domain name"
+        throw 'Empty value specified for domain name'
     }
 
     return $domainDn

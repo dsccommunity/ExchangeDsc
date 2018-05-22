@@ -5,186 +5,237 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
-        [ValidateSet("Present","Absent")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure,
 
+        [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
         $ExtendedRightAllowEntries,
 
+        [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
         $ExtendedRightDenyEntries,
 
+        [Parameter()]
         [System.Boolean]
         $AdvertiseClientSettings,
 
+        [Parameter()]
         [System.String[]]
         $AuthMechanism,
 
+        [Parameter()]
         [System.String]
         $Banner,
 
+        [Parameter()]
         [System.Boolean]
         $BareLinefeedRejectionEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $BinaryMimeEnabled,
 
+        [Parameter()]
         [System.String[]]
         $Bindings,
 
+        [Parameter()]
         [System.Boolean]
         $ChunkingEnabled,
 
+        [Parameter()]
         [System.String]
         $Comment,
 
+        [Parameter()]
         [System.String]
         $ConnectionInactivityTimeout,
 
+        [Parameter()]
         [System.String]
         $ConnectionTimeout,
 
+        [Parameter()]
         [System.String]
         $DefaultDomain,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $DeliveryStatusNotificationEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $DomainSecureEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $EightBitMimeEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $EnableAuthGSSAPI,
 
+        [Parameter()]
         [System.Boolean]
         $Enabled,
 
+        [Parameter()]
         [System.Boolean]
         $EnhancedStatusCodesEnabled,
 
-        [ValidateSet("None","Allow","Require")]
+        [Parameter()]
+        [ValidateSet('None','Allow','Require')]
         [System.String]
         $ExtendedProtectionPolicy,
 
+        [Parameter()]
         [System.String]
         $Fqdn,
 
+        [Parameter()]
         [System.Boolean]
         $LongAddressesEnabled,
 
+        [Parameter()]
         [System.String]
         $MaxAcknowledgementDelay,
 
+        [Parameter()]
         [System.String]
         $MaxHeaderSize,
 
+        [Parameter()]
         [System.Int32]
         $MaxHopCount,
 
+        [Parameter()]
         [System.String]
         $MaxInboundConnection,
 
+        [Parameter()]
         [System.Int32]
         $MaxInboundConnectionPercentagePerSource,
 
+        [Parameter()]
         [System.String]
         $MaxInboundConnectionPerSource,
 
+        [Parameter()]
         [System.Int32]
         $MaxLocalHopCount,
 
+        [Parameter()]
         [System.Int32]
         $MaxLogonFailures,
 
+        [Parameter()]
         [System.String]
         $MaxMessageSize,
 
+        [Parameter()]
         [System.String]
         $MaxProtocolErrors,
 
+        [Parameter()]
         [System.Int32]
         $MaxRecipientsPerMessage,
 
+        [Parameter()]
         [System.String]
         $MessageRateLimit,
 
-        [ValidateSet("None","IPAddress","User","All")]
+        [Parameter()]
+        [ValidateSet('None','IPAddress','User','All')]
         [System.String]
         $MessageRateSource,
 
+        [Parameter()]
         [System.Boolean]
         $OrarEnabled,
 
+        [Parameter()]
         [System.String[]]
         $PermissionGroups,
 
+        [Parameter()]
         [System.Boolean]
         $PipeliningEnabled,
 
-        [ValidateSet("None","Verbose")]
+        [Parameter()]
+        [ValidateSet('None','Verbose')]
         [System.String]
         $ProtocolLoggingLevel,
 
+        [Parameter()]
         [System.String[]]
         $RemoteIPRanges,
 
+        [Parameter()]
         [System.Boolean]
         $RequireEHLODomain,
 
+        [Parameter()]
         [System.Boolean]
         $RequireTLS,
 
+        [Parameter()]
         [System.String]
         $ServiceDiscoveryFqdn,
 
-        [ValidateSet("Enabled","Disabled","EnabledWithoutValue")]
+        [Parameter()]
+        [ValidateSet('Enabled','Disabled','EnabledWithoutValue')]
         [System.String]
         $SizeEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $SuppressXAnonymousTls,
 
+        [Parameter()]
         [System.String]
         $TarpitInterval,
 
+        [Parameter()]
         [System.String]
         $TlsCertificateName,
 
+        [Parameter()]
         [System.String[]]
         $TlsDomainCapabilities,
 
-        [ValidateSet("FrontendTransport","HubTransport")]
+        [Parameter()]
+        [ValidateSet('FrontendTransport','HubTransport')]
         [System.String]
         $TransportRole,
 
-        [ValidateSet("Client","Internal","Internet","Partner","Custom")]
+        [Parameter()]
+        [ValidateSet('Client','Internal','Internet','Partner','Custom')]
         [System.String]
         $Usage
     )
 
     ValidateIdentity -Identity $Identity
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ReceiveConnector" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ReceiveConnector' -VerbosePreference $VerbosePreference
 
     $connector = GetReceiveConnector @PSBoundParameters
 
@@ -253,194 +304,245 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
-        [ValidateSet("Present","Absent")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure,
 
+        [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
         $ExtendedRightAllowEntries,
 
+        [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
         $ExtendedRightDenyEntries,
 
+        [Parameter()]
         [System.Boolean]
         $AdvertiseClientSettings,
 
+        [Parameter()]
         [System.String[]]
         $AuthMechanism,
 
+        [Parameter()]
         [System.String]
         $Banner,
 
+        [Parameter()]
         [System.Boolean]
         $BareLinefeedRejectionEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $BinaryMimeEnabled,
 
+        [Parameter()]
         [System.String[]]
         $Bindings,
 
+        [Parameter()]
         [System.Boolean]
         $ChunkingEnabled,
 
+        [Parameter()]
         [System.String]
         $Comment,
 
+        [Parameter()]
         [System.String]
         $ConnectionInactivityTimeout,
 
+        [Parameter()]
         [System.String]
         $ConnectionTimeout,
 
+        [Parameter()]
         [System.String]
         $DefaultDomain,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $DeliveryStatusNotificationEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $DomainSecureEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $EightBitMimeEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $EnableAuthGSSAPI,
 
+        [Parameter()]
         [System.Boolean]
         $Enabled,
 
+        [Parameter()]
         [System.Boolean]
         $EnhancedStatusCodesEnabled,
 
-        [ValidateSet("None","Allow","Require")]
+        [Parameter()]
+        [ValidateSet('None','Allow','Require')]
         [System.String]
         $ExtendedProtectionPolicy,
 
+        [Parameter()]
         [System.String]
         $Fqdn,
 
+        [Parameter()]
         [System.Boolean]
         $LongAddressesEnabled,
 
+        [Parameter()]
         [System.String]
         $MaxAcknowledgementDelay,
 
+        [Parameter()]
         [System.String]
         $MaxHeaderSize,
 
+        [Parameter()]
         [System.Int32]
         $MaxHopCount,
 
+        [Parameter()]
         [System.String]
         $MaxInboundConnection,
 
+        [Parameter()]
         [System.Int32]
         $MaxInboundConnectionPercentagePerSource,
 
+        [Parameter()]
         [System.String]
         $MaxInboundConnectionPerSource,
 
+        [Parameter()]
         [System.Int32]
         $MaxLocalHopCount,
 
+        [Parameter()]
         [System.Int32]
         $MaxLogonFailures,
 
+        [Parameter()]
         [System.String]
         $MaxMessageSize,
 
+        [Parameter()]
         [System.String]
         $MaxProtocolErrors,
 
+        [Parameter()]
         [System.Int32]
         $MaxRecipientsPerMessage,
 
+        [Parameter()]
         [System.String]
         $MessageRateLimit,
 
-        [ValidateSet("None","IPAddress","User","All")]
+        [Parameter()]
+        [ValidateSet('None','IPAddress','User','All')]
         [System.String]
         $MessageRateSource,
 
+        [Parameter()]
         [System.Boolean]
         $OrarEnabled,
 
+        [Parameter()]
         [System.String[]]
         $PermissionGroups,
 
+        [Parameter()]
         [System.Boolean]
         $PipeliningEnabled,
 
-        [ValidateSet("None","Verbose")]
+        [Parameter()]
+        [ValidateSet('None','Verbose')]
         [System.String]
         $ProtocolLoggingLevel,
 
+        [Parameter()]
         [System.String[]]
         $RemoteIPRanges,
 
+        [Parameter()]
         [System.Boolean]
         $RequireEHLODomain,
 
+        [Parameter()]
         [System.Boolean]
         $RequireTLS,
 
+        [Parameter()]
         [System.String]
         $ServiceDiscoveryFqdn,
 
-        [ValidateSet("Enabled","Disabled","EnabledWithoutValue")]
+        [Parameter()]
+        [ValidateSet('Enabled','Disabled','EnabledWithoutValue')]
         [System.String]
         $SizeEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $SuppressXAnonymousTls,
 
+        [Parameter()]
         [System.String]
         $TarpitInterval,
 
+        [Parameter()]
         [System.String]
         $TlsCertificateName,
 
+        [Parameter()]
         [System.String[]]
         $TlsDomainCapabilities,
 
-        [ValidateSet("FrontendTransport","HubTransport")]
+        [Parameter()]
+        [ValidateSet('FrontendTransport','HubTransport')]
         [System.String]
         $TransportRole,
 
-        [ValidateSet("Client","Internal","Internet","Partner","Custom")]
+        [Parameter()]
+        [ValidateSet('Client','Internal','Internet','Partner','Custom')]
         [System.String]
         $Usage
     )
 
     ValidateIdentity -Identity $Identity
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "*ReceiveConnector","*ADPermission" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*ReceiveConnector','*ADPermission' -VerbosePreference $VerbosePreference
 
     $connector = GetReceiveConnector @PSBoundParameters
 
-    if ($Ensure -eq "Absent")
+    if ($Ensure -eq 'Absent')
     {
         if ($null -ne $connector)
         {
-            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
+            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
             Remove-ReceiveConnector @PSBoundParameters -Confirm:$false
         }
@@ -448,7 +550,7 @@ function Set-TargetResource
     else
     {
         #Remove Credential and Ensure so we don't pass it into the next command
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential","Ensure"
+        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','Ensure'
        
         SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
@@ -459,14 +561,14 @@ function Set-TargetResource
             $originalPSBoundParameters = @{} + $PSBoundParameters
 
             #The following aren't valid for New-ReceiveConnector 
-            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Identity","BareLinefeedRejectionEnabled","ExtendedRightAllowEntries","ExtendedRightDenyEntries"
+            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Identity','BareLinefeedRejectionEnabled','ExtendedRightAllowEntries','ExtendedRightDenyEntries'
 
             #Parse out the server name and connector name from the given Identity
-            $serverName = $Identity.Substring(0, $Identity.IndexOf("\"))
-            $connectorName = $Identity.Substring($Identity.IndexOf("\") + 1)
+            $serverName = $Identity.Substring(0, $Identity.IndexOf('\'))
+            $connectorName = $Identity.Substring($Identity.IndexOf('\') + 1)
 
             #Add in server and name parameters
-            AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Server" = $serverName; "Name" = $connectorName}
+            AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Server' = $serverName; 'Name' = $connectorName}
 
             #Create the connector
             $connector = New-ReceiveConnector @PSBoundParameters
@@ -475,14 +577,14 @@ function Set-TargetResource
             if ($null -ne $connector)
             {
                 #Remove the two props we added
-                RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Server","Name"
+                RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server','Name'
                 
                 #Add original props back
                 AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters                          
             }
             else
             {
-                throw "Failed to create new Receive Connector."
+                throw 'Failed to create new Receive Connector.'
             }
         }
 
@@ -490,7 +592,7 @@ function Set-TargetResource
         if ($null -ne $connector)
         {
             #Usage is not a valid command for Set-ReceiveConnector
-            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Usage","ExtendedRightAllowEntries","ExtendedRightDenyEntries"
+            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Usage','ExtendedRightAllowEntries','ExtendedRightDenyEntries'
 
             Set-ReceiveConnector @PSBoundParameters
             
@@ -498,7 +600,7 @@ function Set-TargetResource
             if ($ExtendedRightAllowEntries)
             {
                 foreach ($ExtendedRightAllowEntry in $ExtendedRightAllowEntries) {
-                    foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(","))) {
+                    foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(','))) {
                         $connector | Add-ADPermission -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
                     }
                 }
@@ -507,7 +609,7 @@ function Set-TargetResource
             if ($ExtendedRightDenyEntries)
             {
                 foreach ($ExtendedRightDenyEntry in $ExtendedRightDenyEntries) {
-                    foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(","))) {
+                    foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(','))) {
                         $connector | Remove-ADPermission -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Confirm:$false
                     }
                 }
@@ -523,186 +625,237 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
-        [ValidateSet("Present","Absent")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure,
 
+        [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
         $ExtendedRightAllowEntries,
 
+        [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
         $ExtendedRightDenyEntries,
 
+        [Parameter()]
         [System.Boolean]
         $AdvertiseClientSettings,
 
+        [Parameter()]
         [System.String[]]
         $AuthMechanism,
 
+        [Parameter()]
         [System.String]
         $Banner,
 
+        [Parameter()]
         [System.Boolean]
         $BareLinefeedRejectionEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $BinaryMimeEnabled,
 
+        [Parameter()]
         [System.String[]]
         $Bindings,
 
+        [Parameter()]
         [System.Boolean]
         $ChunkingEnabled,
 
+        [Parameter()]
         [System.String]
         $Comment,
 
+        [Parameter()]
         [System.String]
         $ConnectionInactivityTimeout,
 
+        [Parameter()]
         [System.String]
         $ConnectionTimeout,
 
+        [Parameter()]
         [System.String]
         $DefaultDomain,
 
-        [System.Boolean]
-        $DeliveryStatusNotificationEnabled,
-
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
+        [System.Boolean]
+        $DeliveryStatusNotificationEnabled,
+
+        [Parameter()]
         [System.Boolean]
         $DomainSecureEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $EightBitMimeEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $EnableAuthGSSAPI,
 
+        [Parameter()]
         [System.Boolean]
         $Enabled,
 
+        [Parameter()]
         [System.Boolean]
         $EnhancedStatusCodesEnabled,
 
-        [ValidateSet("None","Allow","Require")]
+        [Parameter()]
+        [ValidateSet('None','Allow','Require')]
         [System.String]
         $ExtendedProtectionPolicy,
 
+        [Parameter()]
         [System.String]
         $Fqdn,
 
+        [Parameter()]
         [System.Boolean]
         $LongAddressesEnabled,
 
+        [Parameter()]
         [System.String]
         $MaxAcknowledgementDelay,
 
+        [Parameter()]
         [System.String]
         $MaxHeaderSize,
 
+        [Parameter()]
         [System.Int32]
         $MaxHopCount,
 
+        [Parameter()]
         [System.String]
         $MaxInboundConnection,
 
+        [Parameter()]
         [System.Int32]
         $MaxInboundConnectionPercentagePerSource,
 
+        [Parameter()]
         [System.String]
         $MaxInboundConnectionPerSource,
 
+        [Parameter()]
         [System.Int32]
         $MaxLocalHopCount,
 
+        [Parameter()]
         [System.Int32]
         $MaxLogonFailures,
 
+        [Parameter()]
         [System.String]
         $MaxMessageSize,
 
+        [Parameter()]
         [System.String]
         $MaxProtocolErrors,
 
+        [Parameter()]
         [System.Int32]
         $MaxRecipientsPerMessage,
 
+        [Parameter()]
         [System.String]
         $MessageRateLimit,
 
-        [ValidateSet("None","IPAddress","User","All")]
+        [Parameter()]
+        [ValidateSet('None','IPAddress','User','All')]
         [System.String]
         $MessageRateSource,
 
+        [Parameter()]
         [System.Boolean]
         $OrarEnabled,
 
+        [Parameter()]
         [System.String[]]
         $PermissionGroups,
 
+        [Parameter()]
         [System.Boolean]
         $PipeliningEnabled,
 
-        [ValidateSet("None","Verbose")]
+        [Parameter()]
+        [ValidateSet('None','Verbose')]
         [System.String]
         $ProtocolLoggingLevel,
 
+        [Parameter()]
         [System.String[]]
         $RemoteIPRanges,
 
+        [Parameter()]
         [System.Boolean]
         $RequireEHLODomain,
 
+        [Parameter()]
         [System.Boolean]
         $RequireTLS,
 
+        [Parameter()]
         [System.String]
         $ServiceDiscoveryFqdn,
 
-        [ValidateSet("Enabled","Disabled","EnabledWithoutValue")]
+        [Parameter()]
+        [ValidateSet('Enabled','Disabled','EnabledWithoutValue')]
         [System.String]
         $SizeEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $SuppressXAnonymousTls,
 
+        [Parameter()]
         [System.String]
         $TarpitInterval,
 
+        [Parameter()]
         [System.String]
         $TlsCertificateName,
 
+        [Parameter()]
         [System.String[]]
         $TlsDomainCapabilities,
 
-        [ValidateSet("FrontendTransport","HubTransport")]
+        [Parameter()]
+        [ValidateSet('FrontendTransport','HubTransport')]
         [System.String]
         $TransportRole,
 
-        [ValidateSet("Client","Internal","Internet","Partner","Custom")]
+        [Parameter()]
+        [ValidateSet('Client','Internal','Internet','Partner','Custom')]
         [System.String]
         $Usage
     )
 
     ValidateIdentity -Identity $Identity
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ReceiveConnector","Get-ADPermission" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ReceiveConnector','Get-ADPermission' -VerbosePreference $VerbosePreference
 
     $connector = GetReceiveConnector @PSBoundParameters
 
@@ -714,7 +867,7 @@ function Test-TargetResource
     
     if ($null -eq $connector)
     {
-        if ($Ensure -eq "Present")
+        if ($Ensure -eq 'Present')
         {
             return $false
         }
@@ -725,246 +878,246 @@ function Test-TargetResource
     }
     else
     {
-        if ($Ensure -eq "Absent")
+        if ($Ensure -eq 'Absent')
         {
             return $false
         }
         else
         {
             #remove "Custom" from PermissionGroups
-            $connector.PermissionGroups = ($connector.PermissionGroups -split "," ) -notmatch "Custom" -join ","
+            $connector.PermissionGroups = ($connector.PermissionGroups -split ',' ) -notmatch 'Custom' -join ','
 
-            if (!(VerifySetting -Name "AdvertiseClientSettings" -Type "Boolean" -ExpectedValue $AdvertiseClientSettings -ActualValue $connector.AdvertiseClientSettings -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'AdvertiseClientSettings' -Type 'Boolean' -ExpectedValue $AdvertiseClientSettings -ActualValue $connector.AdvertiseClientSettings -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "AuthMechanism" -Type "Array" -ExpectedValue $AuthMechanism -ActualValue (StringToArray -StringIn "$($connector.AuthMechanism)" -Separator ',') -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'AuthMechanism' -Type 'Array' -ExpectedValue $AuthMechanism -ActualValue (StringToArray -StringIn "$($connector.AuthMechanism)" -Separator ',') -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "Banner" -Type "String" -ExpectedValue $Banner -ActualValue $connector.Banner -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'Banner' -Type 'String' -ExpectedValue $Banner -ActualValue $connector.Banner -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "BareLinefeedRejectionEnabled" -Type "Boolean" -ExpectedValue $BareLinefeedRejectionEnabled -ActualValue $connector.BareLinefeedRejectionEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'BareLinefeedRejectionEnabled' -Type 'Boolean' -ExpectedValue $BareLinefeedRejectionEnabled -ActualValue $connector.BareLinefeedRejectionEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "BinaryMimeEnabled" -Type "Boolean" -ExpectedValue $BinaryMimeEnabled -ActualValue $connector.BinaryMimeEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'BinaryMimeEnabled' -Type 'Boolean' -ExpectedValue $BinaryMimeEnabled -ActualValue $connector.BinaryMimeEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "Bindings" -Type "Array" -ExpectedValue $Bindings -ActualValue $connector.Bindings -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'Bindings' -Type 'Array' -ExpectedValue $Bindings -ActualValue $connector.Bindings -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "ChunkingEnabled" -Type "Boolean" -ExpectedValue $ChunkingEnabled -ActualValue $connector.ChunkingEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'ChunkingEnabled' -Type 'Boolean' -ExpectedValue $ChunkingEnabled -ActualValue $connector.ChunkingEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "Comment" -Type "String" -ExpectedValue $Comment -ActualValue $connector.Comment -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'Comment' -Type 'String' -ExpectedValue $Comment -ActualValue $connector.Comment -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "ConnectionInactivityTimeout" -Type "Timespan" -ExpectedValue $ConnectionInactivityTimeout -ActualValue $connector.ConnectionInactivityTimeout -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'ConnectionInactivityTimeout' -Type 'Timespan' -ExpectedValue $ConnectionInactivityTimeout -ActualValue $connector.ConnectionInactivityTimeout -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "ConnectionTimeout" -Type "Timespan" -ExpectedValue $ConnectionTimeout -ActualValue $connector.ConnectionTimeout -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'ConnectionTimeout' -Type 'Timespan' -ExpectedValue $ConnectionTimeout -ActualValue $connector.ConnectionTimeout -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "DefaultDomain" -Type "String" -ExpectedValue $DefaultDomain -ActualValue $connector.DefaultDomain -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'DefaultDomain' -Type 'String' -ExpectedValue $DefaultDomain -ActualValue $connector.DefaultDomain -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "DeliveryStatusNotificationEnabled" -Type "Boolean" -ExpectedValue $DeliveryStatusNotificationEnabled -ActualValue $connector.DeliveryStatusNotificationEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'DeliveryStatusNotificationEnabled' -Type 'Boolean' -ExpectedValue $DeliveryStatusNotificationEnabled -ActualValue $connector.DeliveryStatusNotificationEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "DomainSecureEnabled" -Type "Boolean" -ExpectedValue $DomainSecureEnabled -ActualValue $connector.DomainSecureEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'DomainSecureEnabled' -Type 'Boolean' -ExpectedValue $DomainSecureEnabled -ActualValue $connector.DomainSecureEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "EightBitMimeEnabled" -Type "Boolean" -ExpectedValue $EightBitMimeEnabled -ActualValue $connector.EightBitMimeEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'EightBitMimeEnabled' -Type 'Boolean' -ExpectedValue $EightBitMimeEnabled -ActualValue $connector.EightBitMimeEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "EnableAuthGSSAPI" -Type "Boolean" -ExpectedValue $EnableAuthGSSAPI -ActualValue $connector.EnableAuthGSSAPI -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'EnableAuthGSSAPI' -Type 'Boolean' -ExpectedValue $EnableAuthGSSAPI -ActualValue $connector.EnableAuthGSSAPI -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "Enabled" -Type "Boolean" -ExpectedValue $Enabled -ActualValue $connector.Enabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'Enabled' -Type 'Boolean' -ExpectedValue $Enabled -ActualValue $connector.Enabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "EnhancedStatusCodesEnabled" -Type "Boolean" -ExpectedValue $EnhancedStatusCodesEnabled -ActualValue $connector.EnhancedStatusCodesEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'EnhancedStatusCodesEnabled' -Type 'Boolean' -ExpectedValue $EnhancedStatusCodesEnabled -ActualValue $connector.EnhancedStatusCodesEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "ExtendedProtectionPolicy" -Type "String" -ExpectedValue $ExtendedProtectionPolicy -ActualValue $connector.ExtendedProtectionPolicy -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'ExtendedProtectionPolicy' -Type 'String' -ExpectedValue $ExtendedProtectionPolicy -ActualValue $connector.ExtendedProtectionPolicy -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "Fqdn" -Type "String" -ExpectedValue $Fqdn -ActualValue $connector.Fqdn -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'Fqdn' -Type 'String' -ExpectedValue $Fqdn -ActualValue $connector.Fqdn -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "LongAddressesEnabled" -Type "Boolean" -ExpectedValue $LongAddressesEnabled -ActualValue $connector.LongAddressesEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'LongAddressesEnabled' -Type 'Boolean' -ExpectedValue $LongAddressesEnabled -ActualValue $connector.LongAddressesEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "MaxHopCount" -Type "Int" -ExpectedValue $MaxHopCount -ActualValue $connector.MaxHopCount -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'MaxHopCount' -Type 'Int' -ExpectedValue $MaxHopCount -ActualValue $connector.MaxHopCount -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "MaxAcknowledgementDelay" -Type "Timespan" -ExpectedValue $MaxAcknowledgementDelay -ActualValue $connector.MaxAcknowledgementDelay -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'MaxAcknowledgementDelay' -Type 'Timespan' -ExpectedValue $MaxAcknowledgementDelay -ActualValue $connector.MaxAcknowledgementDelay -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "MaxInboundConnection" -Type "String" -ExpectedValue $MaxInboundConnection -ActualValue $connector.MaxInboundConnection -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'MaxInboundConnection' -Type 'String' -ExpectedValue $MaxInboundConnection -ActualValue $connector.MaxInboundConnection -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "MaxInboundConnectionPercentagePerSource" -Type "Int" -ExpectedValue $MaxInboundConnectionPercentagePerSource -ActualValue $connector.MaxInboundConnectionPercentagePerSource -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'MaxInboundConnectionPercentagePerSource' -Type 'Int' -ExpectedValue $MaxInboundConnectionPercentagePerSource -ActualValue $connector.MaxInboundConnectionPercentagePerSource -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "MaxInboundConnectionPerSource" -Type "String" -ExpectedValue $MaxInboundConnectionPerSource -ActualValue $connector.MaxInboundConnectionPerSource -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'MaxInboundConnectionPerSource' -Type 'String' -ExpectedValue $MaxInboundConnectionPerSource -ActualValue $connector.MaxInboundConnectionPerSource -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "MaxHeaderSize" -Type "ByteQuantifiedSize" -ExpectedValue $MaxHeaderSize -ActualValue $connector.MaxHeaderSize -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'MaxHeaderSize' -Type 'ByteQuantifiedSize' -ExpectedValue $MaxHeaderSize -ActualValue $connector.MaxHeaderSize -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "MaxLocalHopCount" -Type "Int" -ExpectedValue $MaxLocalHopCount -ActualValue $connector.MaxLocalHopCount -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'MaxLocalHopCount' -Type 'Int' -ExpectedValue $MaxLocalHopCount -ActualValue $connector.MaxLocalHopCount -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "MaxLogonFailures" -Type "Int" -ExpectedValue $MaxLogonFailures -ActualValue $connector.MaxLogonFailures -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'MaxLogonFailures' -Type 'Int' -ExpectedValue $MaxLogonFailures -ActualValue $connector.MaxLogonFailures -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "MaxMessageSize" -Type "ByteQuantifiedSize" -ExpectedValue $MaxMessageSize -ActualValue $connector.MaxMessageSize -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'MaxMessageSize' -Type 'ByteQuantifiedSize' -ExpectedValue $MaxMessageSize -ActualValue $connector.MaxMessageSize -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "MaxProtocolErrors" -Type "String" -ExpectedValue $MaxProtocolErrors -ActualValue $connector.MaxProtocolErrors -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'MaxProtocolErrors' -Type 'String' -ExpectedValue $MaxProtocolErrors -ActualValue $connector.MaxProtocolErrors -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "MaxRecipientsPerMessage" -Type "Int" -ExpectedValue $MaxRecipientsPerMessage -ActualValue $connector.MaxRecipientsPerMessage -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'MaxRecipientsPerMessage' -Type 'Int' -ExpectedValue $MaxRecipientsPerMessage -ActualValue $connector.MaxRecipientsPerMessage -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "MessageRateLimit" -Type "String" -ExpectedValue $MessageRateLimit -ActualValue $connector.MessageRateLimit -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'MessageRateLimit' -Type 'String' -ExpectedValue $MessageRateLimit -ActualValue $connector.MessageRateLimit -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "MessageRateSource" -Type "String" -ExpectedValue $MessageRateSource -ActualValue $connector.MessageRateSource -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'MessageRateSource' -Type 'String' -ExpectedValue $MessageRateSource -ActualValue $connector.MessageRateSource -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "OrarEnabled" -Type "Boolean" -ExpectedValue $OrarEnabled -ActualValue $connector.OrarEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'OrarEnabled' -Type 'Boolean' -ExpectedValue $OrarEnabled -ActualValue $connector.OrarEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "PermissionGroups" -Type "Array" -ExpectedValue $PermissionGroups -ActualValue (StringToArray -StringIn $connector.PermissionGroups -Separator ',') -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'PermissionGroups' -Type 'Array' -ExpectedValue $PermissionGroups -ActualValue (StringToArray -StringIn $connector.PermissionGroups -Separator ',') -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "PipeliningEnabled" -Type "Boolean" -ExpectedValue $PipeliningEnabled -ActualValue $connector.PipeliningEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'PipeliningEnabled' -Type 'Boolean' -ExpectedValue $PipeliningEnabled -ActualValue $connector.PipeliningEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "ProtocolLoggingLevel" -Type "String" -ExpectedValue $ProtocolLoggingLevel -ActualValue $connector.ProtocolLoggingLevel -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'ProtocolLoggingLevel' -Type 'String' -ExpectedValue $ProtocolLoggingLevel -ActualValue $connector.ProtocolLoggingLevel -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "RemoteIPRanges" -Type "Array" -ExpectedValue $RemoteIPRanges -ActualValue $connector.RemoteIPRanges -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'RemoteIPRanges' -Type 'Array' -ExpectedValue $RemoteIPRanges -ActualValue $connector.RemoteIPRanges -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "RequireEHLODomain" -Type "Boolean" -ExpectedValue $RequireEHLODomain -ActualValue $connector.RequireEHLODomain -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'RequireEHLODomain' -Type 'Boolean' -ExpectedValue $RequireEHLODomain -ActualValue $connector.RequireEHLODomain -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "RequireTLS" -Type "Boolean" -ExpectedValue $RequireTLS -ActualValue $connector.RequireTLS -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'RequireTLS' -Type 'Boolean' -ExpectedValue $RequireTLS -ActualValue $connector.RequireTLS -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "ServiceDiscoveryFqdn" -Type "String" -ExpectedValue $ServiceDiscoveryFqdn -ActualValue $connector.ServiceDiscoveryFqdn -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'ServiceDiscoveryFqdn' -Type 'String' -ExpectedValue $ServiceDiscoveryFqdn -ActualValue $connector.ServiceDiscoveryFqdn -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "SizeEnabled" -Type "String" -ExpectedValue $SizeEnabled -ActualValue $connector.SizeEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'SizeEnabled' -Type 'String' -ExpectedValue $SizeEnabled -ActualValue $connector.SizeEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "SuppressXAnonymousTls" -Type "Boolean" -ExpectedValue $SuppressXAnonymousTls -ActualValue $connector.SuppressXAnonymousTls -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'SuppressXAnonymousTls' -Type 'Boolean' -ExpectedValue $SuppressXAnonymousTls -ActualValue $connector.SuppressXAnonymousTls -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "TarpitInterval" -Type "Timespan" -ExpectedValue $TarpitInterval -ActualValue $connector.TarpitInterval -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'TarpitInterval' -Type 'Timespan' -ExpectedValue $TarpitInterval -ActualValue $connector.TarpitInterval -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "TlsCertificateName" -Type "String" -ExpectedValue $TlsCertificateName -ActualValue $connector.TlsCertificateName -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'TlsCertificateName' -Type 'String' -ExpectedValue $TlsCertificateName -ActualValue $connector.TlsCertificateName -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "TlsDomainCapabilities" -Type "Array" -ExpectedValue $TlsDomainCapabilities -ActualValue $connector.TlsDomainCapabilities -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'TlsDomainCapabilities' -Type 'Array' -ExpectedValue $TlsDomainCapabilities -ActualValue $connector.TlsDomainCapabilities -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
 
-            if (!(VerifySetting -Name "TransportRole" -Type "String" -ExpectedValue $TransportRole -ActualValue $connector.TransportRole -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'TransportRole' -Type 'String' -ExpectedValue $TransportRole -ActualValue $connector.TransportRole -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
                 return $false
             }
@@ -998,178 +1151,228 @@ function GetReceiveConnector
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [parameter(Mandatory = $true)]
-        [ValidateSet("Present","Absent")]
+        [Parameter(Mandatory = $true)]
+        [ValidateSet('Present','Absent')]
         [System.String]
         $Ensure,
 
+        [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
         $ExtendedRightAllowEntries,
 
+        [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
         $ExtendedRightDenyEntries,
 
+        [Parameter()]
         [System.Boolean]
         $AdvertiseClientSettings,
 
+        [Parameter()]
         [System.String[]]
         $AuthMechanism,
 
+        [Parameter()]
         [System.String]
         $Banner,
 
+        [Parameter()]
         [System.Boolean]
         $BareLinefeedRejectionEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $BinaryMimeEnabled,
 
+        [Parameter()]
         [System.String[]]
         $Bindings,
 
+        [Parameter()]
         [System.Boolean]
         $ChunkingEnabled,
 
+        [Parameter()]
         [System.String]
         $Comment,
 
+        [Parameter()]
         [System.String]
         $ConnectionInactivityTimeout,
 
+        [Parameter()]
         [System.String]
         $ConnectionTimeout,
 
+        [Parameter()]
         [System.String]
         $DefaultDomain,
 
+        [Parameter()]
         [System.Boolean]
         $DeliveryStatusNotificationEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $DomainSecureEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $EightBitMimeEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $EnableAuthGSSAPI,
 
+        [Parameter()]
         [System.Boolean]
         $Enabled,
 
+        [Parameter()]
         [System.Boolean]
         $EnhancedStatusCodesEnabled,
 
-        [ValidateSet("None","Allow","Require")]
+        [Parameter()]
+        [ValidateSet('None','Allow','Require')]
         [System.String]
         $ExtendedProtectionPolicy,
 
+        [Parameter()]
         [System.String]
         $Fqdn,
 
+        [Parameter()]
         [System.Boolean]
         $LongAddressesEnabled,
 
+        [Parameter()]
         [System.String]
         $MaxAcknowledgementDelay,
 
+        [Parameter()]
         [System.String]
         $MaxHeaderSize,
 
+        [Parameter()]
         [System.Int32]
         $MaxHopCount,
 
+        [Parameter()]
         [System.String]
         $MaxInboundConnection,
 
+        [Parameter()]
         [System.Int32]
         $MaxInboundConnectionPercentagePerSource,
 
+        [Parameter()]
         [System.String]
         $MaxInboundConnectionPerSource,
 
+        [Parameter()]
         [System.Int32]
         $MaxLocalHopCount,
 
+        [Parameter()]
         [System.Int32]
         $MaxLogonFailures,
 
+        [Parameter()]
         [System.String]
         $MaxMessageSize,
 
+        [Parameter()]
         [System.String]
         $MaxProtocolErrors,
 
+        [Parameter()]
         [System.Int32]
         $MaxRecipientsPerMessage,
 
+        [Parameter()]
         [System.String]
         $MessageRateLimit,
 
-        [ValidateSet("None","IPAddress","User","All")]
+        [Parameter()]
+        [ValidateSet('None','IPAddress','User','All')]
         [System.String]
         $MessageRateSource,
 
+        [Parameter()]
         [System.Boolean]
         $OrarEnabled,
 
+        [Parameter()]
         [System.String[]]
         $PermissionGroups,
 
+        [Parameter()]
         [System.Boolean]
         $PipeliningEnabled,
 
-        [ValidateSet("None","Verbose")]
+        [Parameter()]
+        [ValidateSet('None','Verbose')]
         [System.String]
         $ProtocolLoggingLevel,
 
+        [Parameter()]
         [System.String[]]
         $RemoteIPRanges,
 
+        [Parameter()]
         [System.Boolean]
         $RequireEHLODomain,
 
+        [Parameter()]
         [System.Boolean]
         $RequireTLS,
 
+        [Parameter()]
         [System.String]
         $ServiceDiscoveryFqdn,
 
-        [ValidateSet("Enabled","Disabled","EnabledWithoutValue")]
+        [Parameter()]
+        [ValidateSet('Enabled','Disabled','EnabledWithoutValue')]
         [System.String]
         $SizeEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $SuppressXAnonymousTls,
 
+        [Parameter()]
         [System.String]
         $TarpitInterval,
 
+        [Parameter()]
         [System.String]
         $TlsCertificateName,
 
+        [Parameter()]
         [System.String[]]
         $TlsDomainCapabilities,
 
-        [ValidateSet("FrontendTransport","HubTransport")]
+        [Parameter()]
+        [ValidateSet('FrontendTransport','HubTransport')]
         [System.String]
         $TransportRole,
 
-        [ValidateSet("Client","Internal","Internet","Partner","Custom")]
+        [Parameter()]
+        [ValidateSet('Client','Internal','Internet','Partner','Custom')]
         [System.String]
         $Usage
     )
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
+    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
     return (Get-ReceiveConnector @PSBoundParameters -ErrorAction SilentlyContinue)
 }
@@ -1179,7 +1382,7 @@ function ValidateIdentity
 {
     param([string]$Identity)
 
-    if ([string]::IsNullOrEmpty($Identity) -or !($Identity.Contains("\")))
+    if ([string]::IsNullOrEmpty($Identity) -or !($Identity.Contains('\')))
     {
         throw "Identity must be in the format: 'SERVERNAME\Connector Name' (No quotes)"
     }
@@ -1199,15 +1402,15 @@ function ExtendedRightExists
     $returnvalue = $false
     foreach ($Right in $ExtendedRights)
     {
-        foreach ($Value in $($Right.Value.Split(",")))
+        foreach ($Value in $($Right.Value.Split(',')))
         {
             if ($null -ne ($ADPermissions | Where-Object {($_.User.RawIdentity -eq $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value)}))
             {
                 $returnvalue = $true
                 if (!($ShouldbeTrue))
                 {
-                    Write-Verbose "Should report exist!"
-                    ReportBadSetting -SettingName "ExtendedRight" -ExpectedValue "User:$($Right.Key) Value:$($Value)" -ActualValue "Present" -VerbosePreference $VerbosePreference
+                    Write-Verbose 'Should report exist!'
+                    ReportBadSetting -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$($Value)" -ActualValue 'Present' -VerbosePreference $VerbosePreference
                     return $returnvalue
                     exit;
                 }
@@ -1217,7 +1420,7 @@ function ExtendedRightExists
                 $returnvalue = $false
                 if ($ShouldbeTrue)
                 {
-                    ReportBadSetting -SettingName "ExtendedRight" -ExpectedValue "User:$($Right.Key) Value:$($Value)" -ActualValue "Absent" -VerbosePreference $VerbosePreference
+                    ReportBadSetting -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$($Value)" -ActualValue 'Absent' -VerbosePreference $VerbosePreference
                     return $returnvalue
                     exit;
                 }

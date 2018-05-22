@@ -5,27 +5,32 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Boolean]
         $Enabled,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.String[]]
         $AdditionalComponentsToActivate,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $MovePreferredDatabasesBack = $false,
 
+        [Parameter()]
         [System.Boolean]
         $SetInactiveComponentsFromAnyRequesterToActive = $false,
 
+        [Parameter()]
         [System.String]
         $UpgradedServerVersion
     )
@@ -87,27 +92,32 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Boolean]
         $Enabled,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.String[]]
         $AdditionalComponentsToActivate,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $MovePreferredDatabasesBack = $false,
 
+        [Parameter()]
         [System.Boolean]
         $SetInactiveComponentsFromAnyRequesterToActive = $false,
 
+        [Parameter()]
         [System.String]
         $UpgradedServerVersion
     )
@@ -284,27 +294,32 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Boolean]
         $Enabled,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.String[]]
         $AdditionalComponentsToActivate,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $MovePreferredDatabasesBack = $false,
 
+        [Parameter()]
         [System.Boolean]
         $SetInactiveComponentsFromAnyRequesterToActive = $false,
 
+        [Parameter()]
         [System.String]
         $UpgradedServerVersion
     )
@@ -480,9 +495,11 @@ function GetMaintenanceModeStatus
     [OutputType([System.Collections.Hashtable])]
     param
     (
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $EnteringMaintenanceMode = $true
     )
@@ -529,7 +546,7 @@ function GetQueueMessageCount
     [OutputType([System.UInt32])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Collections.Hashtable]
         $MaintenanceModeStatus
     )
@@ -559,10 +576,11 @@ function GetActiveDBCount
     [OutputType([System.UInt32])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Collections.Hashtable]
         $MaintenanceModeStatus,
 
+        [Parameter()]
         [System.String]
         $DomainController
     )
@@ -594,10 +612,11 @@ function GetUMCallCount
     [OutputType([System.UInt32])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Collections.Hashtable]
         $MaintenanceModeStatus,
 
+        [Parameter()]
         [System.String]
         $DomainController
     )
@@ -628,6 +647,7 @@ function GetMessageRedirectionExclusions
     [OutputType([System.String[]])]
     param
     (
+        [Parameter()]
         [System.String]
         $DomainController
     )
@@ -688,9 +708,11 @@ function IsExchangeAtDesiredVersion
     [OutputType([System.Boolean])]
     param
     (
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String]
         $UpgradedServerVersion
     )
@@ -738,7 +760,7 @@ function IsComponentCheckedByDefault
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [string]
         $ComponentName
     )
@@ -758,7 +780,9 @@ function GetDAGMemberCount
 {
     [CmdletBinding()]
     [OutputType([System.Int32])]
-    param(
+    param
+    (
+        [Parameter()]
         [System.String]
         $DomainController
     )
@@ -784,7 +808,9 @@ function IsServerPAM
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param(
+    param
+    (
+        [Parameter()]
         [System.String]
         $DomainController
     )
@@ -813,12 +839,15 @@ function WaitForUMToDrain
     [OutputType([System.Boolean])]
     param
     (
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.UInt32]
         $SleepSeconds = 15,
 
+        [Parameter()]
         [System.UInt32]
         $WaitMinutes = 5
     )
@@ -859,24 +888,26 @@ function ChangeComponentState
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Component,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Requester,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         $ServerComponentState,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $State,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $SetInactiveComponentsFromAnyRequesterToActive = $false
     )
@@ -927,6 +958,7 @@ function MovePrimaryDatabasesBack
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [System.String]
         $DomainController
     )
@@ -987,11 +1019,13 @@ function MovePrimaryDatabasesBack
 function GetExchangeServer
 {
     [CmdletBinding()]
-    param(
-        [parameter(Mandatory = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.String]
         $DomainController
     )
@@ -1007,11 +1041,13 @@ function GetExchangeServer
 function GetDatabaseAvailabilityGroup
 {
     [CmdletBinding()]
-    param(
-        [parameter(Mandatory = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.String]
         $DomainController
     )
@@ -1029,13 +1065,15 @@ function GetServerComponentState
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.String]
         $Component,
 
+        [Parameter()]
         [System.String]
         $DomainController
     )
@@ -1058,18 +1096,19 @@ function SetServerComponentState
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Component,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Requester,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $State,
 
+        [Parameter()]
         [System.String]
         $DomainController
     )
@@ -1087,15 +1126,19 @@ function GetMailboxDatabase
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String]
         $Server,
 
+        [Parameter()]
         [switch]
         $Status
     )
@@ -1123,12 +1166,15 @@ function GetMailboxDatabaseCopyStatus
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String]
         $Server
     )
@@ -1154,11 +1200,13 @@ function GetMailboxDatabaseCopyStatus
 function GetMailboxServer
 {
     [CmdletBinding()]
-    param(
-        [parameter(Mandatory = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.String]
         $DomainController
     )
@@ -1174,14 +1222,17 @@ function GetMailboxServer
 function SetMailboxServer
 {
     [CmdletBinding()]
-    param(
-        [parameter(Mandatory = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Collections.Hashtable]
         $AdditionalParams
     )
@@ -1202,10 +1253,11 @@ function GetUMActiveCalls
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Server,
 
+        [Parameter()]
         [System.String]
         $DomainController
     )
@@ -1223,18 +1275,23 @@ function MoveActiveMailboxDatabase
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [System.String]
         $ActivateOnServer,
 
+        [Parameter()]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String]
         $MoveComment,
 
+        [Parameter()]
         [System.String]
         $Server = $env:COMPUTERNAME
     )

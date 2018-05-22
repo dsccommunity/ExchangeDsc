@@ -5,49 +5,61 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.String[]]
         $OABsToDistribute,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $BasicAuthentication,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String[]]
         $ExtendedProtectionFlags,
 
+        [Parameter()]
         [System.String[]]
         $ExtendedProtectionSPNList,
 
+        [Parameter()]
         [ValidateSet("None","Allow","Require")]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
+        [Parameter()]
         [System.String]
         $ExternalUrl,
 
+        [Parameter()]
         [System.String]
         $InternalUrl,
 
+        [Parameter()]
         [System.Int32]
         $PollInterval,
 
+        [Parameter()]
         [System.Boolean]
         $RequireSSL,
 
+        [Parameter()]
         [System.Boolean]
         $WindowsAuthentication
     )
@@ -101,49 +113,61 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.String[]]
         $OABsToDistribute,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $BasicAuthentication,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String[]]
         $ExtendedProtectionFlags,
 
+        [Parameter()]
         [System.String[]]
         $ExtendedProtectionSPNList,
 
+        [Parameter()]
         [ValidateSet("None","Allow","Require")]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
+        [Parameter()]
         [System.String]
         $ExternalUrl,
 
+        [Parameter()]
         [System.String]
         $InternalUrl,
 
+        [Parameter()]
         [System.Int32]
         $PollInterval,
 
+        [Parameter()]
         [System.Boolean]
         $RequireSSL,
 
+        [Parameter()]
         [System.Boolean]
         $WindowsAuthentication
     )
@@ -188,7 +212,6 @@ function Set-TargetResource
     }
 }
 
-
 function Test-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -196,49 +219,61 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.String[]]
         $OABsToDistribute,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $BasicAuthentication,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String[]]
         $ExtendedProtectionFlags,
 
+        [Parameter()]
         [System.String[]]
         $ExtendedProtectionSPNList,
 
+        [Parameter()]
         [ValidateSet("None","Allow","Require")]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
+        [Parameter()]
         [System.String]
         $ExternalUrl,
 
+        [Parameter()]
         [System.String]
         $InternalUrl,
 
+        [Parameter()]
         [System.Int32]
         $PollInterval,
 
+        [Parameter()]
         [System.Boolean]
         $RequireSSL,
 
+        [Parameter()]
         [System.Boolean]
         $WindowsAuthentication
     )
@@ -313,53 +348,65 @@ function AddOabDistributionPoint
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.String[]]
         $OABsToDistribute,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $BasicAuthentication,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String[]]
         $ExtendedProtectionFlags,
 
+        [Parameter()]
         [System.String[]]
         $ExtendedProtectionSPNList,
 
+        [Parameter()]
         [ValidateSet("None","Allow","Require")]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
+        [Parameter()]
         [System.String]
         $ExternalUrl,
 
+        [Parameter()]
         [System.String]
         $InternalUrl,
 
+        [Parameter()]
         [System.Int32]
         $PollInterval,
 
+        [Parameter()]
         [System.Boolean]
         $RequireSSL,
 
+        [Parameter()]
         [System.Boolean]
         $WindowsAuthentication,
 
-        [parameter(Mandatory = $true)] #Extra parameter added just for this function
+        [Parameter(Mandatory = $true)] #Extra parameter added just for this function
         [System.String]
         $TargetOabName
     )
