@@ -44,6 +44,7 @@
 - Updated xExchange.psd1
 - Added issue template file (ISSUE\_TEMPLATE.md) for 'New Issue' and pull request
   template file (PULL\_REQUEST\_TEMPLATE.md) for 'New Pull Request'.
+- Fix issue Diagnostics.CodeAnalysis.SuppressMessageAttribute best practices
 
 ## 1.20.0.0
 

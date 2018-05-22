@@ -1,8 +1,3 @@
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscTestsPresent", "")]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscExamplesPresent", "")]
-[CmdletBinding()]
-param()
-
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -107,10 +102,8 @@ function Get-TargetResource
     $returnValue
 }
 
-
 function Set-TargetResource
 {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
     [CmdletBinding()]
     param
     (
@@ -208,7 +201,6 @@ function Set-TargetResource
         Write-Warning "The configuration will not take effect until MSExchangeServicesAppPool is manually recycled."
     }
 }
-
 
 function Test-TargetResource
 {
@@ -443,9 +435,4 @@ function GetWebServicesVirtualDirectory
     return (Get-WebServicesVirtualDirectory @PSBoundParameters)
 }
 
-
 Export-ModuleMember -Function *-TargetResource
-
-
-
-

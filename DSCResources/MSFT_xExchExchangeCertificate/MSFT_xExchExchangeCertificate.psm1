@@ -1,8 +1,3 @@
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscTestsPresent", "")]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscExamplesPresent", "")]
-[CmdletBinding()]
-param()
-
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -63,10 +58,8 @@ function Get-TargetResource
     $returnValue
 }
 
-
 function Set-TargetResource
 {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
     [CmdletBinding()]
     param
     (
@@ -198,7 +191,6 @@ function Set-TargetResource
         Start-Service -Name MSExchangeUMCR -Confirm:$false
     }
 }
-
 
 function Test-TargetResource
 {
@@ -342,8 +334,5 @@ function CompareCertServices
     return $result
 }
 
-
 Export-ModuleMember -Function *-TargetResource
 Export-ModuleMember -Function CompareCertServices
-
-
