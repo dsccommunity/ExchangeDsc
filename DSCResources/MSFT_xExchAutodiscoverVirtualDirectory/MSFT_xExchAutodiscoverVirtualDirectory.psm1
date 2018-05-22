@@ -14,35 +14,45 @@ function Get-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $BasicAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $DigestAuthentication,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
-        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
+        [Parameter()]
+        [ValidateSet('None','Proxy','NoServiceNameCheck','AllowDotlessSpn','ProxyCohosting')]
         [System.String[]]
         $ExtendedProtectionFlags,
 
+        [Parameter()]
         [System.String[]]
         $ExtendedProtectionSPNList,
 
-        [ValidateSet("None","Allow","Require")]
+        [Parameter()]
+        [ValidateSet('None','Allow','Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
+        [Parameter()]
         [System.Boolean]
         $OAuthAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $WindowsAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $WSSecurityAuthentication
     )
@@ -87,35 +97,45 @@ function Set-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $BasicAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $DigestAuthentication,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
-        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
+        [Parameter()]
+        [ValidateSet('None','Proxy','NoServiceNameCheck','AllowDotlessSpn','ProxyCohosting')]
         [System.String[]]
         $ExtendedProtectionFlags,
 
+        [Parameter()]
         [System.String[]]
         $ExtendedProtectionSPNList,
 
-        [ValidateSet("None","Allow","Require")]
+        [Parameter()]
+        [ValidateSet('None','Allow','Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
+        [Parameter()]
         [System.Boolean]
         $OAuthAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $WindowsAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $WSSecurityAuthentication
     )
@@ -166,35 +186,45 @@ function Test-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $BasicAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $DigestAuthentication,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
-        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
+        [Parameter()]
+        [ValidateSet('None','Proxy','NoServiceNameCheck','AllowDotlessSpn','ProxyCohosting')]
         [System.String[]]
         $ExtendedProtectionFlags,
 
+        [Parameter()]
         [System.String[]]
         $ExtendedProtectionSPNList,
 
-        [ValidateSet("None","Allow","Require")]
+        [Parameter()]
+        [ValidateSet('None','Allow','Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
+        [Parameter()]
         [System.Boolean]
         $OAuthAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $WindowsAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $WSSecurityAuthentication
     )
@@ -274,40 +304,50 @@ function Get-AutodiscoverVirtualDirectoryWithCorrectParams
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $BasicAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $DigestAuthentication,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
-        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
+        [Parameter()]
+        [ValidateSet('None','Proxy','NoServiceNameCheck','AllowDotlessSpn','ProxyCohosting')]
         [System.String[]]
         $ExtendedProtectionFlags,
 
+        [Parameter()]
         [System.String[]]
         $ExtendedProtectionSPNList,
 
-        [ValidateSet("None","Allow","Require")]
+        [Parameter()]
+        [ValidateSet('None','Allow','Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
+        [Parameter()]
         [System.Boolean]
         $OAuthAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $WindowsAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $WSSecurityAuthentication
     )
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
+    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
     return (Get-AutodiscoverVirtualDirectory @PSBoundParameters)
 }
