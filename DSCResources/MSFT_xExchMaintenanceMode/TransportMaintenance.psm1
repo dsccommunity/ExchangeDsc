@@ -309,7 +309,7 @@ function Start-HUBEndMaintenance
         Write-EventOfEntry -Event Start -Entry $endMMLog -Reason $reasons
             
         if ($ServiceState -eq 'Online')
-        {        
+        {
             Set-TransportActive
             return
         }

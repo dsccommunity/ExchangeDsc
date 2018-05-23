@@ -77,7 +77,7 @@ function Get-TargetResource
     $vdir = Get-OabVirtualDirectory @PSBoundParameters
 
     if ($null -ne $vdir)
-    {        
+    {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'DomainController'
 
         #Get all OAB's which this VDir distributes for, and add their names to an array

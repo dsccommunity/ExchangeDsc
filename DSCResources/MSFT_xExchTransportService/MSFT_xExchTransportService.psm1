@@ -862,7 +862,6 @@ function Set-TargetResource
 
     try
     {
-
         #if PipelineTracingSenderAddress exists and is $null remove it from $PSBoundParameters and add argument
         if ($PSBoundParameters.ContainsKey('PipelineTracingSenderAddress'))
         {
