@@ -263,15 +263,19 @@ function GetDatabaseAvailabilityGroupNetwork
         [System.String]
         $Ensure,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $IgnoreNetwork,
 
+        [Parameter()]
         [System.Boolean]
         $ReplicationEnabled,
 
+        [Parameter()]
         [System.String[]]
         $Subnets
     )

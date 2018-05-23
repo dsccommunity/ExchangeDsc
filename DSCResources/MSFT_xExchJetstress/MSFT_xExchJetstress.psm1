@@ -102,7 +102,7 @@ function Set-TargetResource
         #Give an additional 60 seconds if ESE counters were just initialized.
         if ($initializingESE -eq $true)
         {
-            Write-Verbose 'Jetstress has never initialized performance counters for ESE. Waiting a full 60 seconds for this to occurr'
+            Write-Verbose -Message 'Jetstress has never initialized performance counters for ESE. Waiting a full 60 seconds for this to occurr'
             
             Start-Sleep -Seconds 5
 
@@ -127,7 +127,7 @@ function Set-TargetResource
             {
                 if ((Test-Path -LiteralPath "$($env:SystemRoot)\Inf\ESE\eseperf.ini") -eq $true)
                 {
-                    Write-Verbose 'ESE performance counters were registered. Need to reboot server.'
+                    Write-Verbose -Message 'ESE performance counters were registered. Need to reboot server.'
 
                     $global:DSCMachineStatus = 1
                     return
@@ -195,7 +195,7 @@ function Set-TargetResource
         }
         else
         {
-            Write-Verbose 'Jetstress finished, and the configured test passed'
+            Write-Verbose -Message 'Jetstress finished, and the configured test passed'
         }
     }
     else
@@ -372,7 +372,7 @@ function JetstressTestSuccessful
                     }
                     else
                     {
-                        Write-Verbose 'Value for 'Achieved Transactional I/O per Second' is empty'
+                        Write-Verbose -Message "Value for 'Achieved Transactional I/O per Second' is empty"
                     }
                 }
             }
@@ -380,17 +380,17 @@ function JetstressTestSuccessful
 
         if ($foundOverallResults -eq $false)
         {
-            Write-Verbose "Unable to find 'Overall Test Result' in file '$($latest.FullName)'"
+            Write-Verbose -Message "Unable to find 'Overall Test Result' in file '$($latest.FullName)'"
         }
 
         if ($foundAchievedIOPS -eq $false)
         {
-            Write-Verbose "Unable to find 'Achieved Transactional I/O per Second' in file '$($latest.FullName)'"
+            Write-Verbose -Message "Unable to find 'Achieved Transactional I/O per Second' in file '$($latest.FullName)'"
         }
     }
     else
     {
-        Write-Verbose "Unable to find any files matching '$($Type)*.html' in folder '$($JetstressPath)'"
+        Write-Verbose -Message "Unable to find any files matching '$($Type)*.html' in folder '$($JetstressPath)'"
     }
 
     return ($overallTestSuccessful -eq $true -and $achievedIOPSTarget -eq $true)

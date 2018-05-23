@@ -133,14 +133,14 @@ function Set-TargetResource
         #Remove existing PS sessions, as we're about to break them
         RemoveExistingRemoteSession -VerbosePreference $VerbosePreference
 
-        Write-Verbose 'Recycling MSExchangePowerShellAppPool and MSExchangePowerShellFrontEndAppPool'
+        Write-Verbose -Message 'Recycling MSExchangePowerShellAppPool and MSExchangePowerShellFrontEndAppPool'
 
         RestartAppPoolIfExists -Name MSExchangePowerShellAppPool
         RestartAppPoolIfExists -Name MSExchangePowerShellFrontEndAppPool
     }
     else
     {
-        Write-Warning 'The configuration will not take effect until MSExchangePowerShellAppPool and MSExchangePowerShellFrontEndAppPool are manually recycled.'
+        Write-Warning -Message 'The configuration will not take effect until MSExchangePowerShellAppPool and MSExchangePowerShellFrontEndAppPool are manually recycled.'
     }
 }
 

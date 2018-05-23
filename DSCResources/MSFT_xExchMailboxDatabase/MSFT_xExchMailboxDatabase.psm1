@@ -355,13 +355,13 @@ function Set-TargetResource
 
             if ($AllowServiceRestart -eq $true)
             {
-                Write-Verbose 'Restarting Information Store'
+                Write-Verbose -Message 'Restarting Information Store'
 
                 Restart-Service MSExchangeIS
             }
             else
             {
-                Write-Warning 'The configuration will not take effect until MSExchangeIS is manually restarted.'
+                Write-Warning -Message 'The configuration will not take effect until MSExchangeIS is manually restarted.'
             }
             
             #If MountAtStartup is not explicitly set to $false, mount the new database
@@ -371,7 +371,7 @@ function Set-TargetResource
             }
             elseif ($PSBoundParameters.ContainsKey('MountAtStartup') -eq $false -or $MountAtStartup -eq $true)
             {                            
-                Write-Verbose 'Attempting to mount database.'
+                Write-Verbose -Message 'Attempting to mount database.'
 
                 MountDatabase @PSBoundParameters
             }
@@ -390,7 +390,7 @@ function Set-TargetResource
         {
             if ($db.DatabaseCopies.Count -le 1)
             {
-                Write-Verbose 'Moving database and/or log path'
+                Write-Verbose -Message 'Moving database and/or log path'
 
                 MoveDatabaseOrLogPath @PSBoundParameters
             }

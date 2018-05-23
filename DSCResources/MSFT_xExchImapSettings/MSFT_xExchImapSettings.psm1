@@ -103,13 +103,13 @@ function Set-TargetResource
 
     if ($AllowServiceRestart -eq $true)
     {
-        Write-Verbose 'Restarting IMAP Services'
+        Write-Verbose -Message 'Restarting IMAP Services'
 
         Get-Service MSExchangeIMAP4* | Restart-Service
     }
     else
     {
-        Write-Warning 'The configuration will not take effect until MSExchangeIMAP4 services are manually restarted.'
+        Write-Warning -Message 'The configuration will not take effect until MSExchangeIMAP4 services are manually restarted.'
     }
 }
 

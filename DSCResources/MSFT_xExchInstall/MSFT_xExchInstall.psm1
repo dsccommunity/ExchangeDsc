@@ -59,7 +59,7 @@ function Set-TargetResource
 
         if ($needReboot -eq $true)
         {
-            Write-Warning 'Server needs a reboot before the installation of Exchange can begin.'
+            Write-Warning -Message 'Server needs a reboot before the installation of Exchange can begin.'
             return
         }
 
@@ -69,7 +69,7 @@ function Set-TargetResource
 
         $detectedExsetup = $false
 
-        Write-Verbose 'Waiting up to 60 seconds before exiting to give time for ExSetup.exe to start'
+        Write-Verbose -Message 'Waiting up to 60 seconds before exiting to give time for ExSetup.exe to start'
 
         for ($i = 0; $i -lt 60; $i++)
         {
@@ -79,7 +79,7 @@ function Set-TargetResource
             }
             else
             {
-                Write-Verbose 'Detected that ExSetup.exe is running'
+                Write-Verbose -Message 'Detected that ExSetup.exe is running'
                 $detectedExsetup = $true
                 break
             }
@@ -101,11 +101,11 @@ function Set-TargetResource
     {
         if ($installStatus.SetupComplete)
         {
-            Write-Verbose 'Exchange setup has already successfully completed.'
+            Write-Verbose -Message 'Exchange setup has already successfully completed.'
         }
         else
         {
-            Write-Verbose 'Exchange setup is already in progress.'
+            Write-Verbose -Message 'Exchange setup is already in progress.'
         }         
     }
 }
@@ -138,22 +138,22 @@ function Test-TargetResource
     {
         if($installStatus.ShouldInstallLanguagePack -eq $true)
         {
-            Write-Verbose 'Language pack will be installed'
+            Write-Verbose -Message 'Language pack will be installed'
         }
         else
         {
-            Write-Verbose 'Exchange is either not installed, or a previous install only partially completed.'
+            Write-Verbose -Message 'Exchange is either not installed, or a previous install only partially completed.'
         }
     }
     else
     {
         if ($installStatus.SetupComplete)
         {
-            Write-Verbose 'Exchange setup has already successfully completed.'
+            Write-Verbose -Message 'Exchange setup has already successfully completed.'
         }
         else
         {
-            Write-Verbose 'Exchange setup is already in progress.'
+            Write-Verbose -Message 'Exchange setup is already in progress.'
         }
     }
 
@@ -240,7 +240,7 @@ function CheckWSManConfig
             Set-Location "$($env:windir)\System32\inetsrv"
             & 'winrm i restore winrm/config' | Out-Null
 
-            Write-Verbose 'Machine needs to be rebooted before Exchange setup can proceed'
+            Write-Verbose -Message 'Machine needs to be rebooted before Exchange setup can proceed'
 
             $global:DSCMachineStatus = 1
         }

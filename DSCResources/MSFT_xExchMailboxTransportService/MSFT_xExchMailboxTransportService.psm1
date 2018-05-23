@@ -269,15 +269,15 @@ function Set-TargetResource
     
     if ($AllowServiceRestart -eq $true)
     {
-        Write-Verbose 'Restart service MSExchangeDelivery'
+        Write-Verbose -Message 'Restart service MSExchangeDelivery'
         Restart-Service -Name MSExchangeDelivery -WarningAction SilentlyContinue
 
-        Write-Verbose 'Restart service MSExchangeSubmission'
+        Write-Verbose -Message 'Restart service MSExchangeSubmission'
         Restart-Service -Name MSExchangeSubmission -WarningAction SilentlyContinue
     }
     else
     {
-        Write-Warning 'The configuration will not take effect until the MSExchangeDelivery and/or MSExchangeSubmission services are manually restarted.'
+        Write-Warning -Message 'The configuration will not take effect until the MSExchangeDelivery and/or MSExchangeSubmission services are manually restarted.'
     }
 }
 

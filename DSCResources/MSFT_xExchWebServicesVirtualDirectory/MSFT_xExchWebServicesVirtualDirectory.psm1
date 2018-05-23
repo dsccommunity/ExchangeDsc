@@ -219,12 +219,12 @@ function Set-TargetResource
     
     if($AllowServiceRestart -eq $true)
     {
-        Write-Verbose 'Recycling MSExchangeServicesAppPool'
+        Write-Verbose -Message 'Recycling MSExchangeServicesAppPool'
         RestartAppPoolIfExists -Name MSExchangeServicesAppPool
     }
     else
     {
-        Write-Warning 'The configuration will not take effect until MSExchangeServicesAppPool is manually recycled.'
+        Write-Warning -Message 'The configuration will not take effect until MSExchangeServicesAppPool is manually recycled.'
     }
 }
 

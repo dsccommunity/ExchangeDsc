@@ -915,9 +915,8 @@ function Set-TargetResource
     }
     Else
     {
-        Write-Warning 'The configuration will not take effect until the MSExchangeTransport service is manually restarted.'
+        Write-Warning -Message 'The configuration will not take effect until the MSExchangeTransport service is manually restarted.'
     }
-
 }
 
 function Test-TargetResource

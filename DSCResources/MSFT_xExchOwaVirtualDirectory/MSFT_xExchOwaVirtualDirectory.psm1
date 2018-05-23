@@ -234,18 +234,20 @@ function Set-TargetResource
 
     if($AllowServiceRestart -eq $true)
     {
-        Write-Verbose 'Recycling MSExchangeOWAAppPool'
+        Write-Verbose -Message 'Recycling MSExchangeOWAAppPool'
         RestartAppPoolIfExists -Name MSExchangeOWAAppPool
     }
     else
     {
-        Write-Warning 'The configuration will not take effect until MSExchangeOWAAppPool is manually recycled.'
+        Write-Warning -Message 'The configuration will not take effect until MSExchangeOWAAppPool is manually recycled.'
     }
 }
 
 function Test-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param
     (
         [Parameter(Mandatory = $true)]
