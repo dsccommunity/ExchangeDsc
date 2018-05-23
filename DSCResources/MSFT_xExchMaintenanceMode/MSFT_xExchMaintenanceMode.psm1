@@ -521,7 +521,7 @@ function GetMaintenanceModeStatus
         Write-Verbose "Waiting up to 5 minutes for the Transport Bootloader to be ready before running Get-Queue. Wait started at $([DateTime]::Now)."
 
         while ($null -eq $queues -and [DateTime]::Now -lt $endTime)
-        {            
+        {
             Wait-BootLoaderReady -Server $env:COMPUTERNAME -TimeOut (New-TimeSpan -Seconds 15) -PollingFrequency (New-TimeSpan -Seconds 1) | Out-Null
             $queues = Get-Queue -Server $env:COMPUTERNAME -ErrorAction SilentlyContinue
         }
