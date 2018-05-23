@@ -110,13 +110,13 @@ function Set-TargetResource
 
     if ($AllowServiceRestart -eq $true)
     {
-        Write-Verbose 'Restarting POP Services'
+        Write-Verbose -Message 'Restarting POP Services'
 
         Get-Service MSExchangePOP4* | Restart-Service
     }
     else
     {
-        Write-Warning 'The configuration will not take effect until MSExchangePOP services are manually restarted.'
+        Write-Warning -Message 'The configuration will not take effect until MSExchangePOP services are manually restarted.'
     }
 }
 

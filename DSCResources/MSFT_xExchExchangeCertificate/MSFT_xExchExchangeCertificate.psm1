@@ -143,13 +143,13 @@ function Set-TargetResource
     #Stop required services before working with the cert
     if ($needUMServiceReset -eq $true)
     {
-        Write-Verbose 'Stopping service MSExchangeUM before enabling the UM service on the certificate'
+        Write-Verbose -Message 'Stopping service MSExchangeUM before enabling the UM service on the certificate'
         Stop-Service -Name MSExchangeUM -Confirm:$false
     }
 
     if ($needUMCallRouterServiceReset -eq $true)
     {
-        Write-Verbose 'Stopping service MSExchangeUMCR before enabling the UMCallRouter service on the certificate'
+        Write-Verbose -Message 'Stopping service MSExchangeUMCR before enabling the UMCallRouter service on the certificate'
         Stop-Service -Name MSExchangeUMCR -Confirm:$false
     }
 
@@ -191,13 +191,13 @@ function Set-TargetResource
     #Start UM services that we started
     if ($needUMServiceReset -eq $true)
     {
-        Write-Verbose 'Starting service MSExchangeUM'
+        Write-Verbose -Message 'Starting service MSExchangeUM'
         Start-Service -Name MSExchangeUM -Confirm:$false
     }
 
     if ($needUMCallRouterServiceReset -eq $true)
     {
-        Write-Verbose 'Starting service MSExchangeUMCR'
+        Write-Verbose -Message 'Starting service MSExchangeUMCR'
         Start-Service -Name MSExchangeUMCR -Confirm:$false
     }
 }

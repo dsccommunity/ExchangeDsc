@@ -53,7 +53,7 @@ function Get-TargetResource
 
     if ($PSBoundParameters.ContainsKey('WorkloadManagementPolicy') -and (CheckForCmdletParameter -CmdletName 'Set-ExchangeServer' -ParameterName 'WorkloadManagementPolicy') -eq $false)
     {
-        Write-Warning 'WorkloadManagementPolicy has been removed from the Set-ExchangeServer cmdlet. This parameter will be ignored.'
+        Write-Warning -Message 'WorkloadManagementPolicy has been removed from the Set-ExchangeServer cmdlet. This parameter will be ignored.'
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'WorkloadManagementPolicy'
     }
 
@@ -137,7 +137,7 @@ function Set-TargetResource
 
     if ($PSBoundParameters.ContainsKey('WorkloadManagementPolicy') -and (CheckForCmdletParameter -CmdletName 'Set-ExchangeServer' -ParameterName 'WorkloadManagementPolicy') -eq $false)
     {
-        Write-Warning 'WorkloadManagementPolicy has been removed from the Set-ExchangeServer cmdlet. This parameter will be ignored.'
+        Write-Warning -Message 'WorkloadManagementPolicy has been removed from the Set-ExchangeServer cmdlet. This parameter will be ignored.'
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'WorkloadManagementPolicy'
     }
 
@@ -163,13 +163,13 @@ function Set-TargetResource
     {
         if ($AllowServiceRestart -eq $true)
         {
-            Write-Verbose 'Restarting Information Store'
+            Write-Verbose -Message 'Restarting Information Store'
 
             Restart-Service MSExchangeIS
         }
         else
         {
-            Write-Warning 'The configuration will not take effect until MSExchangeIS is manually restarted.'
+            Write-Warning -Message 'The configuration will not take effect until MSExchangeIS is manually restarted.'
         }
     }
 }
@@ -229,7 +229,7 @@ function Test-TargetResource
 
     if ($PSBoundParameters.ContainsKey('WorkloadManagementPolicy') -and (CheckForCmdletParameter -CmdletName 'Set-ExchangeServer' -ParameterName 'WorkloadManagementPolicy') -eq $false)
     {
-        Write-Warning 'WorkloadManagementPolicy has been removed from the Set-ExchangeServer cmdlet. This parameter will be ignored.'
+        Write-Warning -Message 'WorkloadManagementPolicy has been removed from the Set-ExchangeServer cmdlet. This parameter will be ignored.'
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'WorkloadManagementPolicy'
     }
 

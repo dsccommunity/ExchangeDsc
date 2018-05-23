@@ -104,6 +104,6 @@ if ($exchangeInstalled)
 }
 else
 {
-    Write-Verbose "Tests in this file require that Exchange is installed to be run."
+    Write-Verbose -Message "Tests in this file require that Exchange is installed to be run."
 }
     

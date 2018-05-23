@@ -1,8 +1,8 @@
 #region Globals from all three scripts
 # Service Names
-$TransportServiceName    = "MsExchangeTransport"
-$MessageTracing          = "MSMessageTracingClient"
-$EdgeSync                = "MsExchangeEdgeSync"
+$TransportServiceName    = 'MsExchangeTransport'
+$MessageTracing          = 'MSMessageTracingClient'
+$EdgeSync                = 'MsExchangeEdgeSync'
 $Script:OriginalPref     = $ErrorActionPreference
 
 $Script:ExchangeServer   = $null
@@ -10,22 +10,22 @@ $Script:TransportService = $null
 $Script:HubTransport     = $null
 $Script:Entered          = $false
 
-$Component = "HubTransport"
-$Requester = "Maintenance"
+$Component = 'HubTransport'
+$Requester = 'Maintenance'
 
 $Target = $env:COMPUTERNAME
 
 $Script:LogFileName = $null
 $Script:TransportMaintenanceLogPrefix = 'TransportMaintenance'
-$Script:TransportMaintenanceLogNameFormat = "{0}\TransportMaintenance-{1}-{2}.log"
-$Script:ServerInMM = "ServerInMM"
-$Script:AllotedTimeExceeded = "AllotedTimeExceeded"
-$Script:NoProgressTimeout = "NoProgressTimeout"
+$Script:TransportMaintenanceLogNameFormat = '{0}\TransportMaintenance-{1}-{2}.log'
+$Script:ServerInMM = 'ServerInMM'
+$Script:AllotedTimeExceeded = 'AllotedTimeExceeded'
+$Script:NoProgressTimeout = 'NoProgressTimeout'
 $Script:UnredirectedMessageEventId = 100
 $Script:UndrainedDiscardEventEventId = 101
 $Script:MaxWaitForOtherWorkflow = New-TimeSpan -Minutes 30
 $Script:TransportMaintenanceSync = $null
-$Script:ExchangeVersion = ""
+$Script:ExchangeVersion = ''
 
 $ServiceState = $null
 #endregion
@@ -52,9 +52,11 @@ function Start-TransportMaintenance
         [Switch]
         $ExcludeLocalSiteFromMessageRedirect,
 
+        [Parameter()]
         [boolean]
         $LoadLocalShell = $false,
         
+        [Parameter()]
         [string[]]
         $MessageRedirectExclusions
     )
@@ -70,7 +72,7 @@ function Start-TransportMaintenance
 
     try
     {
-        Write-Verbose "Starting non-fatal Transport maintenance tasks for '$Target' on $($env:ComputerName)" 
+        Write-Verbose -Message "Starting non-fatal Transport maintenance tasks for '$Target' on $($env:ComputerName)" 
         if(-not (Initialize-TransportMaintenance -Target $Target))
         {
             return
@@ -85,7 +87,7 @@ function Start-TransportMaintenance
     }
     catch
     {
-        Write-Warning "At least one non-fatal tasked failed. Ignoring and continuing deployment. Error was $_"
+        Write-Warning -Message "At least one non-fatal tasked failed. Ignoring and continuing deployment. Error was $_"
     }
     finally
     {
@@ -107,6 +109,7 @@ function Stop-TransportMaintenance
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [boolean]
         $LoadLocalShell = $false
     )
@@ -116,7 +119,7 @@ function Stop-TransportMaintenance
         AddExchangeSnapinIfRequired
     }
 
-    $ServiceState = "Online"
+    $ServiceState = 'Online'
 
     Start-HUBEndMaintenance
 }
@@ -149,7 +152,7 @@ function Initialize-TransportMaintenance
         $Target
     )
         
-    $ErrorActionPreference = "Stop"
+    $ErrorActionPreference = 'Stop'
     $Error.Clear()
         
     Initialize-TransportMaintenanceLog -Server $Target
@@ -157,7 +160,7 @@ function Initialize-TransportMaintenance
     $Script:ExchangeServer = Get-ExchangeServer $Target
     if(-not $Script:ExchangeServer)
     {
-        Write-Verbose "$Target is not an exchange server"
+        Write-Verbose -Message "$Target is not an exchange server"
     
         $Script:LogInfo.Add('ExchangeServer', 'False')
         Write-SkippedEvent -Source $Target -Stage BeginTM -Reason $Script:LogInfo
@@ -172,7 +175,7 @@ function Initialize-TransportMaintenance
     
     if(-not $Script:TransportService)
     {
-        Write-Verbose "MSExchangeTransport service is not found on $Target"
+        Write-Verbose -Message "MSExchangeTransport service is not found on $Target"
         
         $Script:LogInfo.Add($TransportServiceName, 'NotFound')
         Write-SkippedEvent -Source $Target -Stage BeginTM -Reason $Script:LogInfo
@@ -183,7 +186,7 @@ function Initialize-TransportMaintenance
     $Script:HubTransport = Get-ComponentState -Server $Target
     if(-not $Script:HubTransport)
     {
-        Write-Verbose "Unable to find HubTransport's ServerComponentState from $($env:ComputerName) for $Target."
+        Write-Verbose -Message "Unable to find HubTransport's ServerComponentState from $($env:ComputerName) for $Target."
         
         $Script:LogInfo.Add('HubTransport', 'NotFound')
         Write-SkippedEvent -Source $Target -Stage BeginTM -Reason $Script:LogInfo
@@ -211,9 +214,11 @@ function Invoke-FullyDrainTransport
         [string]
         $Target = $env:COMPUTERNAME,
 
+        [Parameter()]
         [switch]
         $ExcludeLocalSiteFromMessageRedirect,
         
+        [Parameter()]
         [string[]]
         $MessageRedirectExclusions
     )
@@ -231,10 +236,10 @@ function Invoke-FullyDrainTransport
     }
     else
     {
-        Write-Verbose "Unable to find other active servers in this DAG. Skip draining of discard event."
+        Write-Verbose -Message 'Unable to find other active servers in this DAG. Skip draining of discard event.'
     }
     
-    Write-Verbose "Setting HubTransport component state to Inactive"
+    Write-Verbose -Message 'Setting HubTransport component state to Inactive'
     Set-ComponentState -Server $Target -State Inactive
     Write-InfoEvent -Source $Target -Stage RestartTransport -Reason  @{ComponentState = 'Inactive'}
 }
@@ -253,15 +258,17 @@ function Invoke-RemoteMaintenance
         [string]
         $Target = $env:COMPUTERNAME,
 
+        [Parameter()]
         [switch]
         $ExcludeLocalSiteFromMessageRedirect,
         
+        [Parameter()]
         [string[]]
         $MessageRedirectExclusions
     )
 
-    if(($Script:TransportService.Status -ne "Running") -or `
-        ($Script:HubTransport.State -ne "Active"))
+    if(($Script:TransportService.Status -ne 'Running') -or `
+        ($Script:HubTransport.State -ne 'Active'))
     {
         $Script:LogInfo.Add('MsExchangeTransport', $Script:TransportService.Status)
         $Script:LogInfo.Add('HubTransport', $Script:HubTransport.State)
@@ -290,7 +297,7 @@ function Start-HUBEndMaintenance
         $TransportService = get-service $TransportServiceName -errorAction silentlyContinue
         if(-not $TransportService)
         {
-            Write-Verbose 'MSExchangeTransport service is not found'
+            Write-Verbose -Message 'MSExchangeTransport service is not found'
             
             $reasons.Add('MsExchangeTransport', 'NotFound')
             Write-SkippedEvent -Source $Target -Stage EndTM -Reason $reasons
@@ -301,7 +308,7 @@ function Start-HUBEndMaintenance
 
         Write-EventOfEntry -Event Start -Entry $endMMLog -Reason $reasons
             
-        if($ServiceState -eq "Online")
+        if($ServiceState -eq 'Online')
         {        
             Set-TransportActive
             return
@@ -336,7 +343,7 @@ function Enable-SubmissionQueue
     )
     
     $endTime = (Get-Date) + $Timeout
-    $submissionQName = $env:COMPUTERNAME + "\Submission"
+    $submissionQName = $env:COMPUTERNAME + '\Submission'
     
     while ($true)
     {
@@ -377,26 +384,26 @@ function Enable-SubmissionQueue
 # Sets the Transport Component State to 'Active' and starts the appropriate services.
 function Set-TransportActive
 {
-    Write-Output "Enter [Set-TransportActive]"
+    Write-Output 'Enter [Set-TransportActive]'
     
     $currentServerComponentState = Get-ServerComponentState -Identity $env:COMPUTERNAME -Component $Component
     $transportService = Get-CimInstance -ClassName win32_service -filter "name = 'MSExchangeTransport'"
 
-    if($currentServerComponentState.State -eq "Active" `
+    if($currentServerComponentState.State -eq 'Active' `
          -and $null -ne $transportService `
-         -and $transportService.StartMode -eq "Auto" `
-         -and $transportService.State -eq "Running")
+         -and $transportService.StartMode -eq 'Auto' `
+         -and $transportService.State -eq 'Running')
     {
         Write-SkippedEvent -Source $env:COMPUTERNAME -Stage StartTransport -Reason @{ComponentState = 'Active'}
     }
     else
     {
         # Set component state to 'Active'
-        Set-ComponentState -Component $Component -State "Active" -Requester $Requester | out-null 
+        Set-ComponentState -Component $Component -State 'Active' -Requester $Requester | out-null 
         
         # Restart transport
-        Set-ServiceState -ServiceName $TransportServiceName -State "Stopped" -LoggingStage StopTransport -StartMode "Auto" -ThrowOnFailure
-        Set-ServiceState -ServiceName $TransportServiceName -State "Running" -LoggingStage StartTransport -ThrowOnFailure
+        Set-ServiceState -ServiceName $TransportServiceName -State 'Stopped' -LoggingStage StopTransport -StartMode 'Auto' -ThrowOnFailure
+        Set-ServiceState -ServiceName $TransportServiceName -State 'Running' -LoggingStage StartTransport -ThrowOnFailure
     }
 
     # Enable the submission queue if needed. In case of failure, we will have to put
@@ -408,40 +415,40 @@ function Set-TransportActive
     }
     
     # Set MSExchangeEdgeSync service start mode to Auto and restart.
-    Set-ServiceState -ServiceName $EdgeSync -State "Stopped" -LoggingStage StopEdgeSync -StartMode "Auto"
-    Set-ServiceState -ServiceName $EdgeSync -State "Running" -LoggingStage StartEdgeSync
+    Set-ServiceState -ServiceName $EdgeSync -State 'Stopped' -LoggingStage StopEdgeSync -StartMode 'Auto'
+    Set-ServiceState -ServiceName $EdgeSync -State 'Running' -LoggingStage StartEdgeSync
     
     # Do not change the start mode for MSMessageTracingClient
     # MSMessageTracingClient service is disabled in some test topologies
     # so only start the service, if it is NOT Disabled.
-    Set-ServiceState -ServiceName $MessageTracing -State "Running" -LoggingStage StartMessageTrace
+    Set-ServiceState -ServiceName $MessageTracing -State 'Running' -LoggingStage StartMessageTrace
 
-    Write-Output "Exit [Set-TransportActive]"
+    Write-Output 'Exit [Set-TransportActive]'
 }
 
 # Sets the Transport Component State to 'Inactive' and starts the appropriate services.
 function Set-TransportInactive
 {
-    Write-Output "Enter [Set-TransportInactive]"
+    Write-Output 'Enter [Set-TransportInactive]'
 
     $currentServerComponentState = Get-ServerComponentState -Identity $env:COMPUTERNAME -Component $Component
     $transportService = Get-CimInstance -ClassName win32_service -filter "name = 'MSExchangeTransport'"
 
-    if($currentServerComponentState.State -eq "Inactive" `
+    if($currentServerComponentState.State -eq 'Inactive' `
         -and $null -ne $transportService `
-        -and $transportService.StartMode -eq "Auto" `
-        -and $transportService.State -eq "Running")
+        -and $transportService.StartMode -eq 'Auto' `
+        -and $transportService.State -eq 'Running')
     {
         Write-SkippedEvent -Source $env:COMPUTERNAME -Stage StartTransport -Reason @{ComponentState = 'Inactive'}
     }
     else
     {  
        # Set component state to 'Inactive'
-       Set-ComponentState -Component $Component -State "Inactive" -Requester $Requester | out-null
-       Set-ServiceState -ServiceName $TransportServiceName -State "Running" -LoggingStage StopTransport -StartMode "Auto" -ThrowOnFailure
+       Set-ComponentState -Component $Component -State 'Inactive' -Requester $Requester | out-null
+       Set-ServiceState -ServiceName $TransportServiceName -State 'Running' -LoggingStage StopTransport -StartMode 'Auto' -ThrowOnFailure
     }
     
-    Write-Output "Exit [Set-TransportInactive]"
+    Write-Output 'Exit [Set-TransportInactive]'
 }
 #endregion
 
@@ -472,32 +479,33 @@ function Get-ServersInDag
         [Switch]
         $ExcludeLocalSite,
         
+        [Parameter()]
         [string[]]
         $AdditionalExclusions
     )
 
-    Write-Verbose "$server - Retrieving the DAG for the target server"
+    Write-Verbose -Message "$server - Retrieving the DAG for the target server"
     $exchangeServer = (Get-ExchangeServer $server)
     if ($null -eq $exchangeServer)
     {
-        Write-Warning "Could not get the exchange server. Skipping redirect."
+        Write-Warning -Message 'Could not get the exchange server. Skipping redirect.'
         return $null
     }
 
     if ($exchangeServer.IsMailboxServer -eq $false)
     {
-        Write-Warning "Could not find the mailbox server. Skipping redirect."
+        Write-Warning -Message 'Could not find the mailbox server. Skipping redirect.'
         return $null
     }
 
     $dag = (Get-MailboxServer $server).DatabaseAvailabilityGroup
     if ($null -eq $dag)
     {
-        Write-Warning "Could not find the DAG for the target server. Skipping redirect."
+        Write-Warning -Message 'Could not find the DAG for the target server. Skipping redirect.'
         return $null
     }
     
-    Write-Verbose "$server - Retrieving other hub transport servers in the DAG - $dag"
+    Write-Verbose -Message "$server - Retrieving other hub transport servers in the DAG - $dag"
 
     $dagServers = @((Get-DatabaseAvailabilityGroup $dag).Servers | ForEach-Object {if($_.Name){$_.Name}else{$_}} | Where-Object {$_ -ne $server})
 
@@ -530,7 +538,7 @@ function Get-ServersInDag
 
     if (-not $dagServers)
     {
-        Write-Warning "Could not find servers in the DAG that do not meeting exclusion criteria."
+        Write-Warning -Message 'Could not find servers in the DAG that do not meeting exclusion criteria.'
     }
 
     return $dagServers
@@ -558,7 +566,7 @@ function Get-ActiveServer
     $activeServers = $Servers | `
         Where-Object{(Get-ServerComponentState -Identity $_ -Component HubTransport).State -eq 'Active' } | `
         ForEach-Object { `
-            $xml = [xml](Get-ExchangeDiagnosticInfo -Process "EdgeTransport" -server $_ -erroraction SilentlyContinue)
+            $xml = [xml](Get-ExchangeDiagnosticInfo -Process 'EdgeTransport' -server $_ -erroraction SilentlyContinue)
             if($xml -and $xml.Diagnostics.ProcessInfo)
             {
                 Write-Output $_
@@ -587,21 +595,21 @@ function Get-ExchangeVersion
         $server
     )
 
-    Write-Verbose "$server - Retrieving version for the target server"
+    Write-Verbose -Message "$server - Retrieving version for the target server"
 
     $serverVersion = (Get-ExchangeServer $server).AdminDisplayVersion
 
     if ($null -eq $serverVersion)
     {
-        Write-Warning "Could not find exchange version."
+        Write-Warning -Message 'Could not find exchange version.'
         return $null
     }
 
-    $versionString = [string]::Format("{0}.{1}.{2}.{3}", `
-                                     $serverVersion.Major.ToString("D2"), `
-                                     $serverVersion.Minor.ToString("D2"), `
-                                     $serverVersion.Build.ToString("D4"), `
-                                     $serverVersion.Revision.ToString("D3"))
+    $versionString = [string]::Format('{0}.{1}.{2}.{3}', `
+                                     $serverVersion.Major.ToString('D2'), `
+                                     $serverVersion.Minor.ToString('D2'), `
+                                     $serverVersion.Build.ToString('D4'), `
+                                     $serverVersion.Revision.ToString('D3'))
     return $versionString
 }
 
@@ -630,7 +638,7 @@ function Get-TransportMaintenanceLogFileList()
         $LogPath
     )
 
-    $logFilesMatch = "{0}\{1}*.log" -f $LogPath, $Script:TransportMaintenanceLogPrefix
+    $logFilesMatch = '{0}\{1}*.log' -f $LogPath, $Script:TransportMaintenanceLogPrefix
     return @(Get-Item $logFilesMatch -ErrorAction SilentlyContinue)
 }
 
@@ -649,10 +657,12 @@ function Register-TransportMaintenanceLog
     param
     (
         [Parameter(Mandatory = $true)]
-        [Object] $TransportService,
+        [Object]
+        $TransportService,
 
         [Parameter(Mandatory = $true)]
-        [string] $LogPath
+        [string]
+        $LogPath
     )
 
     $maxFileSize = $TransportService.TransportMaintenanceLogMaxFileSize.Value.ToBytes()
@@ -683,7 +693,7 @@ function Register-TransportMaintenanceLog
         {
             $newLogFileName = $Script:TransportMaintenanceLogNameFormat -f `
                                 $LogPath, `
-                                [System.DateTime]::Now.ToString("yyyyMMdd"), $instance
+                                [System.DateTime]::Now.ToString('yyyyMMdd'), $instance
 
             $existedLogFile = Get-Item -Path $newLogFileName -ErrorAction SilentlyContinue
             if(-not $existedLogFile)
@@ -808,7 +818,7 @@ function Get-MaintenanceLogPath
     
     if(-not $TransportService.TransportMaintenanceLogPath)
     {
-        $logPath = Join-Path (Split-Path ($TransportService.QueueLogPath) -Parent) "TransportMaintenance"
+        $logPath = Join-Path (Split-Path ($TransportService.QueueLogPath) -Parent) 'TransportMaintenance'
     }
     else
     {
@@ -824,7 +834,7 @@ function Get-MaintenanceLogPath
     $share = Get-CimInstance -ClassName Win32_Share -ComputerName $server -Filter "Path = '$drive\'" -ErrorAction SilentlyContinue
     if($share)
     {
-        $remotePath = "\\{0}\{1}\{2}" -f `
+        $remotePath = '\\{0}\{1}\{2}' -f `
             $server, `
             $share.Name, `
             $logPath.SubString($drive.Length)
@@ -880,7 +890,7 @@ function Initialize-TransportMaintenanceLog()
             }
             catch
             {
-                Write-Verbose $_.Exception.Message
+                Write-Verbose -Message $_.Exception.Message
                 $Script:LogFileName = $null
                 return
             }
@@ -930,14 +940,14 @@ function Set-ServiceState
         $Server = $env:COMPUTERNAME,
 
         [Parameter()]
-        [ValidateSet("NoChange", "Stopped", "Running", "Paused")]
+        [ValidateSet('NoChange', 'Stopped', 'Running', 'Paused')]
         [string]
-        $State = "NoChange",
+        $State = 'NoChange',
         
         [Parameter()]
-        [ValidateSet("NoChange", "Auto", "Automatic", "Manual", "Disabled")]
+        [ValidateSet('NoChange', 'Auto', 'Automatic', 'Manual', 'Disabled')]
         [string]
-        $StartMode = "NoChange",
+        $StartMode = 'NoChange',
         
         [Parameter()]
         [TimeSpan]
@@ -969,23 +979,23 @@ function Set-ServiceState
     }
     
     # Check and change the StartMode if necessary
-    if($StartMode -eq "Auto")
+    if($StartMode -eq 'Auto')
     {
-        $StartMode = "Automatic"
+        $StartMode = 'Automatic'
     }
     
-    if(($StartMode -ne "NoChange") -and ($service.StartMode -ne $StartMode))
+    if(($StartMode -ne 'NoChange') -and ($service.StartMode -ne $StartMode))
     {
         $service.ChangeStartMode($StartMode) | Out-Null
         
-        if($StartMode -eq "Disabled")
+        if($StartMode -eq 'Disabled')
         {
-            $State = "Stopped"
+            $State = 'Stopped'
         }
     }
     
     # Determine if the start/stop/restart action is needed
-    if($State -eq "NoChange" -or $service.State -eq $State)
+    if($State -eq 'NoChange' -or $service.State -eq $State)
     {
         return
     }
@@ -998,14 +1008,14 @@ function Set-ServiceState
     
     switch($State)
     {
-        "Stopped" 
+        'Stopped' 
         {   
             $service.StopService() | Out-Null
         }
         
-        "Running" 
+        'Running' 
         {
-            if($service.State -eq "Paused")
+            if($service.State -eq 'Paused')
             {
                 $service.ResumeService() | Out-Null
             }
@@ -1015,9 +1025,9 @@ function Set-ServiceState
             }
         }
         
-        "Paused"
+        'Paused'
         {
-            if($service.State -eq "Running")
+            if($service.State -eq 'Running')
             {
                 $service.PauseService() | Out-Null
             }
@@ -1038,7 +1048,7 @@ function Set-ServiceState
                 Wait-ServiceState `
                     -ServiceName $ServiceName `
                     -Server $Server `
-                    -State "Running" `
+                    -State 'Running' `
                     -WaitTime $startupWaitTime `
                     -ThrowOnFailure:$ThrowOnFailure
                 
@@ -1142,7 +1152,7 @@ function Write-EventOfEntry
         $Reason
     )
 
-    if($Event -eq "Completed")
+    if($Event -eq 'Completed')
     {
         $duration = (Get-Date) - $Entry.Created
     }
@@ -1156,22 +1166,22 @@ function Write-EventOfEntry
                     $ReasonStr += '; '
                 }
 
-                $ReasonStr += "{0}={1}" -f $_.Name,$_.Value
+                $ReasonStr += '{0}={1}' -f $_.Name,$_.Value
             }
     }
 
-    $msg = [string]::Format("{0},{1},{2},{3},{4},{5:g},{6},{7},{8}", `
+    $msg = [string]::Format('{0},{1},{2},{3},{4},{5:g},{6},{7},{8}', `
                         (Get-Date), `
                         $Entry.Source, `
                         $Entry.Stage, `
                         $Event, `
                         $Entry.Id, `
                         $duration, `
-                        $(if($Entry.Count -ne -1){$Entry.Count} else {""}), `
+                        $(if($Entry.Count -ne -1){$Entry.Count} else {''}), `
                         $ReasonStr, `
                         $Script:ExchangeVersion)
 
-    Write-Verbose $msg
+    Write-Verbose -Message $msg
     
     if(-not $Script:LogFileName)
     {
@@ -1190,7 +1200,7 @@ function Write-EventOfEntry
         {
             # we stop logging if log causes exception
             $Script:LogFileName = $null
-            Write-Verbose $_.Exception.Message
+            Write-Verbose -Message $_.Exception.Message
             return
         }
         catch
@@ -1559,14 +1569,14 @@ function Wait-EmptyEntriesCompletion
 
         if((Get-Date) -gt $endTime)
         {
-            Write-Verbose "$Source - $Stage Time-out occurred. Wait aborted!"
+            Write-Verbose -Message "$Source - $Stage Time-out occurred. Wait aborted!"
             $Reason = $Script:AllotedTimeExceeded
             break;
         }
         elseif($foundCompleted -or $foundUpdate)
         {
             $remaningCount = $activeEntries | Measure-Object -Sum -Property Count | ForEach-Object {$_.Sum}
-            Write-Verbose "$Source - $Stage Progress made. $remaningCount items remain."
+            Write-Verbose -Message "$Source - $Stage Progress made. $remaningCount items remain."
         }
         else
         {
@@ -1574,7 +1584,7 @@ function Wait-EmptyEntriesCompletion
             $recentEntries = $tracker.Values | Where-Object {((Get-Date) - $_.LastUpdated) -lt $NoProgressTimeout}
             if(-not $recentEntries)
             {
-                Write-Verbose "$Source - $Stage NoProgressTimeout occurred. Wait aborted!"
+                Write-Verbose -Message "$Source - $Stage NoProgressTimeout occurred. Wait aborted!"
                 $Reason = $Script:NoProgressTimeout
                 break;
             }
@@ -1606,7 +1616,7 @@ function Wait-EmptyEntriesCompletion
 
     if($ThrowOnTimeout)
     {
-        throw New-Object System.TimeoutException "Time-out reached."
+        throw New-Object System.TimeoutException 'Time-out reached.'
     }
 
     return $remainingCount
@@ -1666,7 +1676,7 @@ function Wait-EmptyQueuesCompletion
         $ActiveMsgOnly = $false,
 
         [Parameter()]
-        [string]$Stage = "QueueDrain",
+        [string]$Stage = 'QueueDrain',
 
         [Parameter()]
         [TimeSpan]
@@ -1728,7 +1738,7 @@ function Wait-EmptyQueuesCompletion
         return $entries
     }
 
-    Write-Verbose "$Server - Start waiting for $Stage..."
+    Write-Verbose -Message "$Server - Start waiting for $Stage..."
 
     $remaining = Wait-EmptyEntriesCompletion `
                 -GetEntries $getQueueEntries `
@@ -1741,7 +1751,7 @@ function Wait-EmptyQueuesCompletion
                 -NoProgressTimeout $NoProgressTimeout `
                 -ThrowOnTimeout:$ThrowOnTimeout
 
-    Write-Verbose "$Server - Wait for $Stage ended with $remaining items remain."
+    Write-Verbose -Message "$Server - Wait for $Stage ended with $remaining items remain."
 
     return $remaining
 }
@@ -1859,7 +1869,7 @@ function Wait-EmptyDiscardsCompletion
         $ThrowOnTimeout
     )
 
-    Write-Verbose "$Server - Start waiting for ShadowDiscardDrain..."
+    Write-Verbose -Message "$Server - Start waiting for ShadowDiscardDrain..."
 
     # log the undrainable entries
     $discardInfo = Get-DiscardInfo -server $Server
@@ -1896,7 +1906,7 @@ function Wait-EmptyDiscardsCompletion
                     -NoProgressTimeout $NoProgressTimeout `
                     -ThrowOnTimeout:$ThrowOnTimeout
 
-    Write-Verbose "$Server - ShadowDiscardDrain ended with $remaining items remain."
+    Write-Verbose -Message "$Server - ShadowDiscardDrain ended with $remaining items remain."
 
     return $remaining
 }
@@ -1978,7 +1988,7 @@ function Wait-BootLoaderCountCheck
         {
             $bootScanningEvent = `
             @{
-                Id = "TransportQueueDatabase"
+                Id = 'TransportQueueDatabase'
                 Count = 1
             }
             New-Object PsObject -Property $bootScanningEvent
@@ -1986,7 +1996,7 @@ function Wait-BootLoaderCountCheck
     }
 
     $server = $ServerFqdn.split('.')[0]
-    $xml = [xml](Get-ExchangeDiagnosticInfo -Process "EdgeTransport" -server $server -erroraction SilentlyContinue)
+    $xml = [xml](Get-ExchangeDiagnosticInfo -Process 'EdgeTransport' -server $server -erroraction SilentlyContinue)
     if($xml)
     {
         $processStartTime = [DateTime]($xml.Diagnostics.ProcessInfo.StartTime)
@@ -2057,14 +2067,14 @@ function Wait-BootLoaderSubmitCheck
         )
 
         $counter = Get-Counter `
-            -Counter "\MSExchangeTransport Database(other*)\BootLoader Outstanding Items" `
+            -Counter '\MSExchangeTransport Database(other*)\BootLoader Outstanding Items' `
             -ComputerName $fqdn `
             -ErrorAction SilentlyContinue
         try
         {
             $counterInfo = `
             @{
-                Id = "BootLoaderOutstandingItems"
+                Id = 'BootLoaderOutstandingItems'
                 Count = $counter.CounterSamples[0].RawValue
             }
         }
@@ -2072,7 +2082,7 @@ function Wait-BootLoaderSubmitCheck
         {
             $counterInfo = `
             @{
-                Id = "BootLoaderOutstandingItems"
+                Id = 'BootLoaderOutstandingItems'
                 Count = 1
             }
         }
@@ -2147,12 +2157,12 @@ function Wait-BootLoaderReady
         $ThrowOnTimeout
     )
 
-    Write-Verbose "$Server - Waiting for BootLoader to be ready..."
+    Write-Verbose -Message "$Server - Waiting for BootLoader to be ready..."
 
     $exchangeServer = Get-ExchangeServer $Server
     if(-not $exchangeServer)
     {
-        Write-Warning "Could not get the exchange server. Skip waiting for BootLoader."
+        Write-Warning -Message 'Could not get the exchange server. Skip waiting for BootLoader.'
         return 0
     }
 
@@ -2161,7 +2171,7 @@ function Wait-BootLoaderReady
     {
         try
         {
-            $xml = [xml](Get-ExchangeDiagnosticInfo -Process "EdgeTransport" -server $Server -erroraction SilentlyContinue)
+            $xml = [xml](Get-ExchangeDiagnosticInfo -Process 'EdgeTransport' -server $Server -erroraction SilentlyContinue)
             $processLifeTime = [TimeSpan]($xml.Diagnostics.ProcessInfo.LifeTime)
             $processStartTime = [DateTime]($xml.Diagnostics.ProcessInfo.StartTime)
             break
@@ -2170,7 +2180,7 @@ function Wait-BootLoaderReady
         {
             if($retry -gt 0)
             {
-                Write-Verbose "$Server - Can not read the process lifetime. Sleep 20 to retry..."
+                Write-Verbose -Message "$Server - Can not read the process lifetime. Sleep 20 to retry..."
                 Start-Sleep 20
                 $retry--
             }
@@ -2188,7 +2198,7 @@ function Wait-BootLoaderReady
         Write-SkippedEvent -Source $Server -Stage BootLoaderCountCheck -Reason @{Reason = 'EdgeTransportUnreachable'}
         Write-SkippedEvent -Source $Server -Stage BootLoaderSubmitCheck -Reason @{Reason = 'EdgeTransportUnreachable'}
 
-        Write-Warning "$Server - EdgeTransport is not running or server $server is unreachable. Skipping waiting for BootLoader."
+        Write-Warning -Message "$Server - EdgeTransport is not running or server $server is unreachable. Skipping waiting for BootLoader."
         return 0
     }
 
@@ -2197,7 +2207,7 @@ function Wait-BootLoaderReady
         Write-SkippedEvent -Source $Server -Stage BootLoaderCountCheck -Reason @{ProcessLifeTime = $processLifeTime}
         Write-SkippedEvent -Source $Server -Stage BootLoaderSubmitCheck -Reason @{ProcessLifeTime = $processLifeTime}
 
-        Write-Verbose "$Server - EdgeTransport has been running for $processLifeTime. BootLoader is ready"
+        Write-Verbose -Message "$Server - EdgeTransport has been running for $processLifeTime. BootLoader is ready"
         return 0
     }
     elseif ($MaxBootLoaderProcessTimeout - $processLifeTime -gt $Timeout)
@@ -2210,7 +2220,7 @@ function Wait-BootLoaderReady
     }
 
     $msg = "$Server EdgeTransport has been running for $processLifeTime! Let's give BootLoader $waitTime  to complete."
-    Write-Verbose $msg
+    Write-Verbose -Message $msg
 
     $stopWatch = [System.Diagnostics.Stopwatch]::StartNew()
 
@@ -2232,7 +2242,7 @@ function Wait-BootLoaderReady
         -NoProgressTimeout $NoProgressTimeout `
         -ThrowOnTimeout:$ThrowOnTimeout
 
-    Write-Verbose "$Server - BootLoader ended with $remaining items remain"
+    Write-Verbose -Message "$Server - BootLoader ended with $remaining items remain"
     return $remaining
 }
 
@@ -2264,7 +2274,7 @@ function Clear-ActiveMessage
     if(-not $TransportService)
     {
         $exServer = Get-ExchangeServer $Server
-        Write-Verbose "$Server - Pausing the MsExchangeTransport service to stop accepting new traffic"
+        Write-Verbose -Message "$Server - Pausing the MsExchangeTransport service to stop accepting new traffic"
         $TransportService = get-service -ComputerName $exServer.Fqdn -Name MSExchangeTransport -errorAction silentlyContinue
     }
 
@@ -2273,7 +2283,7 @@ function Clear-ActiveMessage
         $TransportService.Pause() | Out-Null
     }
 
-    $queueTypes = @("SmtpDeliveryToMailbox", "SmtpRelayToRemoteAdSite", "SmtpRelayToDag", "SmtpRelayToServers", "Undefined")
+    $queueTypes = @('SmtpDeliveryToMailbox', 'SmtpRelayToRemoteAdSite', 'SmtpRelayToDag', 'SmtpRelayToServers', 'Undefined')
     Wait-EmptyQueuesCompletion -Server $server -QueueTypes $queueTypes -ActiveMsgOnly $true -Stage QueueDrain -Timeout 00:01:30
 }
 
@@ -2316,21 +2326,21 @@ function Send-MessagesToNewServer
 
     # get domain name of the server
     $fqdn = Get-ExchangeServer $Server | ForEach-Object {$_.Fqdn}
-    $domainIndex = $fqdn.Indexof(".")
+    $domainIndex = $fqdn.Indexof('.')
     $domain = $fqdn.SubString($domainIndex)
 
     $serversInDag = Get-ServersInDag -server $Server -ExcludeLocalSite:$ExcludeLocalSite -AdditionalExclusions $MessageRedirectExclusions
     if (-not $serversInDag -or $serversInDag.count -eq 0)
     {
-        Write-Warning "$Server - Could not find servers in the DAG to redirect messages to that do not meeting exclusion criteria. Skipping redirect."
+        Write-Warning -Message "$Server - Could not find servers in the DAG to redirect messages to that do not meeting exclusion criteria. Skipping redirect."
         return $null
     }
 
     $serversInDag = Get-ActiveServer $serversInDag
     $hubFqdns = $serversInDag | Where-Object { $_ -ne $Server } | ForEach-Object { $_ + $domain }
 
-    $verboseMessage = "$Server - Redirecting messages to " + [string]::Join(", ", $hubFqdns)
-    Write-Verbose $verboseMessage
+    $verboseMessage = "$Server - Redirecting messages to " + [string]::Join(', ', $hubFqdns)
+    Write-Verbose -Message $verboseMessage
 
     Redirect-Message -Target $hubFqdns -Server $Server -Confirm:$false -ErrorAction SilentlyContinue
 
@@ -2383,11 +2393,11 @@ function Clear-DiscardEvent
 
     $filter = "{DeliveryType -eq 'ShadowRedundancy' -and NextHopDomain -like '$Primary*'}"
     $ShadowServers | ForEach-Object {
-        Write-Verbose "$Primary - Forcing heart-beat on server $_"
+        Write-Verbose -Message "$Primary - Forcing heart-beat on server $_"
         Retry-Queue -server $_ -Filter $filter -ErrorAction SilentlyContinue
     }
 
-    Write-Verbose "$Primary - Waiting for the heartbeats to complete processing"
+    Write-Verbose -Message "$Primary - Waiting for the heartbeats to complete processing"
     $remaining = Wait-EmptyDiscardsCompletion -Server $Primary -ActiveServers $ShadowServers -NoProgressTimeout (New-TimeSpan -Minutes 2)
 
     if($remaining -and $LogIfRemain)
@@ -2399,56 +2409,56 @@ function Clear-DiscardEvent
 
 function Unblock-SubmissionQueue
 {
-    Write-Verbose "Getting handles for Transport worker process and service"
+    Write-Verbose -Message 'Getting handles for Transport worker process and service'
     $TransportWorkerProcess=(get-process EdgeTransport)
     $TransportServiceProcess=(get-process MSExchangeTransport)
     $TransportService=(get-service MSExchangeTransport)
 
     ## Create the dump
-    Write-Output "Sending trouble signal (204) to Transport Service"
+    Write-Output 'Sending trouble signal (204) to Transport Service'
     try { $TransportService.ExecuteCommand(204) } ## This could fail and its ok.
-    catch { Write-Verbose ("Sending trouble signal (204) to Transport Service issued an error:"+$Error[0].ToString()) }
+    catch { Write-Verbose -Message ('Sending trouble signal (204) to Transport Service issued an error:'+$Error[0].ToString()) }
 
-    Write-Verbose "Waiting 90s for the worker process to exit(Watson dump being created)"
+    Write-Verbose -Message 'Waiting 90s for the worker process to exit(Watson dump being created)'
     if ($TransportWorkerProcess.WaitForExit(90000))
     {
-        Write-Output "Worker process exited"
+        Write-Output 'Worker process exited'
     }
     else
     {
-        Write-Warning "Worker process hasn't exited."
+        Write-Warning -Message "Worker process hasn't exited."
     }
 
     ##Stop transport, one way or another
-    Write-Output "Stopping Transport."
+    Write-Output 'Stopping Transport.'
     try { $TransportService.Stop() } ## This could timeout and it's ok.
-    catch { Write-Verbose ("Stopping Transport issued an error:"+$Error[0].ToString()) }
+    catch { Write-Verbose -Message ('Stopping Transport issued an error:'+$Error[0].ToString()) }
 
-    Write-Verbose "Waiting for Transport to stop completely"
+    Write-Verbose -Message 'Waiting for Transport to stop completely'
     while (-not $TransportServiceProcess.WaitForExit(30000))
     {
         if(-not $TransportWorkerProcess.HasExited)
         {
-            Write-Warning "Transport worker process didn't stop yet. Killing the process"
+            Write-Warning -Message "Transport worker process didn't stop yet. Killing the process"
             $TransportWorkerProcess.Kill()
         }
         else
         {
-            Write-Warning "Transport service didnt stop yet. Killing the process"
+            Write-Warning -Message 'Transport service didnt stop yet. Killing the process'
             $TransportServiceProcess.Kill()
         }
     }
-    $TransportService.WaitForStatus("Stopped") ## If it never stops the workflow will timeout and we should wake some people up.
-    Write-Output "Transport is stopped."
+    $TransportService.WaitForStatus('Stopped') ## If it never stops the workflow will timeout and we should wake some people up.
+    Write-Output 'Transport is stopped.'
 
     ## Starting transport will cause the dependencies to start.
-    Write-Output "Starting Transport"
+    Write-Output 'Starting Transport'
     try { $TransportService.Start() } ## This could timeout and its ok.
-    catch { Write-Verbose ("Starting Transport issued an error:"+$Error[0].ToString()) }
+    catch { Write-Verbose -Message ('Starting Transport issued an error:'+$Error[0].ToString()) }
 
-    $TransportService.WaitForStatus("Running") ## If it never starts the workflow will timeout and we should wake some people up.
+    $TransportService.WaitForStatus('Running') ## If it never starts the workflow will timeout and we should wake some people up.
 
-    Write-Output "Transport restarted."
+    Write-Output 'Transport restarted.'
 }
 
 # .DESCRIPTION
@@ -2471,20 +2481,20 @@ function Set-ComponentState
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateSet("Active", "Inactive")]
+        [ValidateSet('Active', 'Inactive')]
         [string]$State,
 
         [Parameter()]
-        [string]$Component = "HubTransport",
+        [string]$Component = 'HubTransport',
 
         [Parameter()]
-        [string]$Requester = "Maintenance",
+        [string]$Requester = 'Maintenance',
 
         [Parameter()]
         [string]$Server = $env:COMPUTERNAME
     )
 
-    Write-Verbose "Setting $Component state to $State"
+    Write-Verbose -Message "Setting $Component state to $State"
     Set-ServerComponentState `
         -Identity $Server `
         -Component $Component `
@@ -2510,15 +2520,15 @@ function Get-ComponentState
         [string]$Server = $env:COMPUTERNAME,
 
         [Parameter()]
-        [string]$Component = "HubTransport"
+        [string]$Component = 'HubTransport'
     )
 
-    Write-Verbose "Getting $Component state of $Server"
+    Write-Verbose -Message "Getting $Component state of $Server"
     $serverComponentState = Get-ServerComponentState `
         -Identity $Server `
         -Component $Component `
         -ErrorAction SilentlyContinue
-    Write-Verbose "ServerComponentState of $Component is '$($serverComponentState.State)'"
+    Write-Verbose -Message "ServerComponentState of $Component is '$($serverComponentState.State)'"
 
     return $serverComponentState
 }
@@ -2562,14 +2572,14 @@ function Set-ServiceState
         $Server = $env:COMPUTERNAME,
 
         [Parameter()]
-        [ValidateSet("NoChange", "Stopped", "Running", "Paused")]
+        [ValidateSet('NoChange', 'Stopped', 'Running', 'Paused')]
         [string]
-        $State = "NoChange",
+        $State = 'NoChange',
         
         [Parameter()]
-        [ValidateSet("NoChange", "Auto", "Automatic", "Manual", "Disabled")]
+        [ValidateSet('NoChange', 'Auto', 'Automatic', 'Manual', 'Disabled')]
         [string]
-        $StartMode = "NoChange",
+        $StartMode = 'NoChange',
         
         [Parameter()]
         [TimeSpan]
@@ -2601,23 +2611,23 @@ function Set-ServiceState
     }
     
     # Check and change the StartMode if necessary
-    if($StartMode -eq "Auto")
+    if($StartMode -eq 'Auto')
     {
-        $StartMode = "Automatic"
+        $StartMode = 'Automatic'
     }
     
-    if(($StartMode -ne "NoChange") -and ($service.StartMode -ne $StartMode))
+    if(($StartMode -ne 'NoChange') -and ($service.StartMode -ne $StartMode))
     {
         $service.ChangeStartMode($StartMode) | Out-Null
         
-        if($StartMode -eq "Disabled")
+        if($StartMode -eq 'Disabled')
         {
-            $State = "Stopped"
+            $State = 'Stopped'
         }
     }
     
     # Determine if the start/stop/restart action is needed
-    if($State -eq "NoChange" -or $service.State -eq $State)
+    if($State -eq 'NoChange' -or $service.State -eq $State)
     {
         return
     }
@@ -2630,14 +2640,14 @@ function Set-ServiceState
     
     switch($State)
     {
-        "Stopped" 
+        'Stopped' 
         {   
             $service.StopService() | Out-Null
         }
         
-        "Running" 
+        'Running' 
         {
-            if($service.State -eq "Paused")
+            if($service.State -eq 'Paused')
             {
                 $service.ResumeService() | Out-Null
             }
@@ -2647,9 +2657,9 @@ function Set-ServiceState
             }
         }
         
-        "Paused"
+        'Paused'
         {
-            if($service.State -eq "Running")
+            if($service.State -eq 'Running')
             {
                 $service.PauseService() | Out-Null
             }
@@ -2670,7 +2680,7 @@ function Set-ServiceState
                 Wait-ServiceState `
                     -ServiceName $ServiceName `
                     -Server $Server `
-                    -State "Running" `
+                    -State 'Running' `
                     -WaitTime $startupWaitTime `
                     -ThrowOnFailure:$ThrowOnFailure
                 
@@ -2729,7 +2739,7 @@ function Wait-ServiceState
         $Server = $env:COMPUTERNAME,
         
         [Parameter(Mandatory = $True)]
-        [ValidateSet("Stopped", "Running", "Paused")]
+        [ValidateSet('Stopped', 'Running', 'Paused')]
         [string]
         $State,
         
@@ -2778,14 +2788,18 @@ function Stop-ServiceForcefully
 {
     param
     (
+        [Parameter()]
         [ValidateNotNullOrEmpty()]
-        [string]$ServiceName = $(throw "ServiceName required."),
+        [string]
+        $ServiceName = $(throw 'ServiceName required.'),
 
-        [ValidateSet("Auto", "Manual", "Disabled")]
-        [string]$StartMode = "Auto"
+        [Parameter()]
+        [ValidateSet('Auto', 'Manual', 'Disabled')]
+        [string]
+        $StartMode = 'Auto'
     )
 
-    Write-Verbose "Stopping $ServiceName Service"
+    Write-Verbose -Message "Stopping $ServiceName Service"
     Set-ServiceState -ServiceName $ServiceName -StartMode Disabled -WaitTime ([TimeSpan]::Zero)
     # Wait in case it needs time to take effect
     Wait-Event -Timeout 5
@@ -2803,7 +2817,7 @@ function Stop-ServiceForcefully
     }
     else
     {
-        Write-Verbose 'The service process was not running'
+        Write-Verbose -Message 'The service process was not running'
     }
     
     Set-ServiceState -ServiceName $ServiceName -StartMode $StartMode -WaitTime ([TimeSpan]::Zero)

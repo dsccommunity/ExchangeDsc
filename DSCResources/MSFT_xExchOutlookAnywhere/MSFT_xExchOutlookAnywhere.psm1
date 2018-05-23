@@ -188,14 +188,14 @@ function Set-TargetResource
 
     if($AllowServiceRestart -eq $true)
     {
-        Write-Verbose 'Recycling MSExchangeRpcProxyAppPool and MSExchangeRpcProxyFrontEndAppPool'
+        Write-Verbose -Message 'Recycling MSExchangeRpcProxyAppPool and MSExchangeRpcProxyFrontEndAppPool'
 
         RestartAppPoolIfExists -Name MSExchangeRpcProxyAppPool
         RestartAppPoolIfExists -Name MSExchangeRpcProxyFrontEndAppPool
     }
     else
     {
-        Write-Warning 'The configuration will not take effect until MSExchangeRpcProxyAppPool and MSExchangeRpcProxyFrontEndAppPool are manually recycled.'
+        Write-Warning -Message 'The configuration will not take effect until MSExchangeRpcProxyAppPool and MSExchangeRpcProxyFrontEndAppPool are manually recycled.'
     }
 }
 

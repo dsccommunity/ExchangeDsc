@@ -240,13 +240,13 @@ function Set-TargetResource
 
             if ($AllowServiceRestart -eq $true)
             {
-                Write-Verbose 'Restarting Information Store'
+                Write-Verbose -Message 'Restarting Information Store'
 
                 Restart-Service MSExchangeIS
             }
             else
             {
-                Write-Warning 'The configuration will not take effect until MSExchangeIS is manually restarted.'
+                Write-Warning -Message 'The configuration will not take effect until MSExchangeIS is manually restarted.'
             }
         }
         else

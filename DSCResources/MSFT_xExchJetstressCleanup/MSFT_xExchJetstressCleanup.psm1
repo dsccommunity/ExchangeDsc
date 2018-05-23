@@ -48,7 +48,16 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
+    <#
+        Suppressing this rule because $global:DSCMachineStatus is used to trigger
+        a reboot, either by force or when there are pending changes.
+    #>
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
+    <#
+        Suppressing this rule because $global:DSCMachineStatus is only set,
+        never used (by design of Desired State Configuration).
+    #>
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function', Target='DSCMachineStatus')]
     [CmdletBinding()]
     param
     (
@@ -193,7 +202,7 @@ function Set-TargetResource
 
     if ($cleanedUp -eq $true)
     {
-        Write-Verbose 'Jetstress was successfully cleaned up. A reboot must occur to finish the cleanup.'
+        Write-Verbose -Message 'Jetstress was successfully cleaned up. A reboot must occur to finish the cleanup.'
 
         $global:DSCMachineStatus = 1
     }
@@ -246,7 +255,7 @@ function Test-TargetResource
 
     if ($jetstressInstalled)
     {
-        Write-Verbose 'Jetstress is still installed'
+        Write-Verbose -Message 'Jetstress is still installed'
         return $false
     }
     else
@@ -275,7 +284,7 @@ function Test-TargetResource
 
                 if ((MountPointExists -Path "$($parent)") -ge 0)
                 {
-                    Write-Verbose "Folder '$($parent)' still has a mount point associated with it."
+                    Write-Verbose -Message "Folder '$($parent)' still has a mount point associated with it."
                     return $false
                 }
             }
@@ -283,7 +292,7 @@ function Test-TargetResource
             #Now check the folder itself
             if ((Test-Path -LiteralPath "$($folder)") -eq $true)
             {
-                Write-Verbose "Folder '$($folder)' still exists."
+                Write-Verbose -Message "Folder '$($folder)' still exists."
                 return $false
             }
         }
@@ -297,19 +306,19 @@ function Test-TargetResource
 
                 if ($null -ne $items -or $items.Count -gt 0)
                 {
-                    Write-Verbose "Folder '$($JetstressPath)' still exists and contains items that are not the config file."
+                    Write-Verbose -Message "Folder '$($JetstressPath)' still exists and contains items that are not the config file."
                     return $false
                 }
             }
             else
             {
-                Write-Verbose "Folder '$($JetstressPath)' still exists."
+                Write-Verbose -Message "Folder '$($JetstressPath)' still exists."
                 return $false
             }  
         }
     }
 
-    Write-Verbose 'Jetstress has been successfully cleaned up.'
+    Write-Verbose -Message 'Jetstress has been successfully cleaned up.'
 
     return $true
 }
@@ -425,12 +434,12 @@ function RemoveFolder
 
     if ((Test-Path -LiteralPath "$($Path)") -eq $true)
     {
-        Write-Verbose "Attempting to remove folder '$($Path)' and all subfolders"
+        Write-Verbose -Message "Attempting to remove folder '$($Path)' and all subfolders"
         Remove-Item -LiteralPath "$($Path)" -Recurse -Confirm:$false -Force
     }
     else
     {
-        Write-Verbose "Folder '$($Path)' does not exist. Skipping."
+        Write-Verbose -Message "Folder '$($Path)' does not exist. Skipping."
     }
 }
 

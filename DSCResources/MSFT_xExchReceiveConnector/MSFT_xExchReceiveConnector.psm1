@@ -1419,7 +1419,7 @@ function ExtendedRightExists
                 $returnvalue = $true
                 if (!($ShouldbeTrue))
                 {
-                    Write-Verbose 'Should report exist!'
+                    Write-Verbose -Message 'Should report exist!'
                     ReportBadSetting -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$($Value)" -ActualValue 'Present' -VerbosePreference $VerbosePreference
                     return $returnvalue
                     exit;
