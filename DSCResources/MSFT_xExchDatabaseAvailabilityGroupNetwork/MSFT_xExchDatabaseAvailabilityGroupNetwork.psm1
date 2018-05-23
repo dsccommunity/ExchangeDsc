@@ -300,7 +300,11 @@ function GetDatabaseAvailabilityGroupNetwork
 #Takes an array of Microsoft.Exchange.Data.DatabaseAvailabilityGroupNetworkSubnet objects and converts the SubnetId props to a string[]
 function SubnetsToArray
 {
-    param ($Subnets)
+    param
+    (
+        [Parameter()]
+        $Subnets
+    )
 
     if ($null -ne $Subnets -and $Subnets.Count -gt 0)
     {

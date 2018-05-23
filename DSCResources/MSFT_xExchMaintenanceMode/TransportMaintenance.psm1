@@ -308,7 +308,7 @@ function Start-HUBEndMaintenance
 
         Write-EventOfEntry -Event Start -Entry $endMMLog -Reason $reasons
             
-        if($ServiceState -eq 'Online')
+        if ($ServiceState -eq 'Online')
         {        
             Set-TransportActive
             return
@@ -319,7 +319,7 @@ function Start-HUBEndMaintenance
     }
     finally
     {
-        if($endMMLog)
+        if ($endMMLog)
         {
             Write-EventOfEntry -Event Completed -Entry $endMMLog -Reason $reasons
         }
@@ -2416,8 +2416,15 @@ function Unblock-SubmissionQueue
 
     ## Create the dump
     Write-Output 'Sending trouble signal (204) to Transport Service'
-    try { $TransportService.ExecuteCommand(204) } ## This could fail and its ok.
-    catch { Write-Verbose -Message ('Sending trouble signal (204) to Transport Service issued an error:'+$Error[0].ToString()) }
+    try
+    {
+        $TransportService.ExecuteCommand(204)
+    } 
+    ## This could fail and its ok.
+    catch
+    {
+        Write-Verbose -Message ('Sending trouble signal (204) to Transport Service issued an error:'+$Error[0].ToString())
+    }
 
     Write-Verbose -Message 'Waiting 90s for the worker process to exit(Watson dump being created)'
     if ($TransportWorkerProcess.WaitForExit(90000))
@@ -2431,8 +2438,15 @@ function Unblock-SubmissionQueue
 
     ##Stop transport, one way or another
     Write-Output 'Stopping Transport.'
-    try { $TransportService.Stop() } ## This could timeout and it's ok.
-    catch { Write-Verbose -Message ('Stopping Transport issued an error:'+$Error[0].ToString()) }
+    try
+    {
+        $TransportService.Stop()
+    }
+    ## This could timeout and it's ok.
+    catch
+    {
+        Write-Verbose -Message ('Stopping Transport issued an error:'+$Error[0].ToString())
+    }
 
     Write-Verbose -Message 'Waiting for Transport to stop completely'
     while (-not $TransportServiceProcess.WaitForExit(30000))
@@ -2453,8 +2467,15 @@ function Unblock-SubmissionQueue
 
     ## Starting transport will cause the dependencies to start.
     Write-Output 'Starting Transport'
-    try { $TransportService.Start() } ## This could timeout and its ok.
-    catch { Write-Verbose -Message ('Starting Transport issued an error:'+$Error[0].ToString()) }
+    try
+    {
+        $TransportService.Start()
+    }
+    ## This could timeout and its ok.
+    catch
+    {
+        Write-Verbose -Message ('Starting Transport issued an error:'+$Error[0].ToString())
+    }
 
     $TransportService.WaitForStatus('Running') ## If it never starts the workflow will timeout and we should wake some people up.
 
@@ -2733,15 +2754,15 @@ function Wait-ServiceState
         [Parameter(Mandatory = $true)]
         [string]
         $ServiceName,
-        
-        [Parameter()]
-        [string]
-        $Server = $env:COMPUTERNAME,
-        
+
         [Parameter(Mandatory = $True)]
         [ValidateSet('Stopped', 'Running', 'Paused')]
         [string]
         $State,
+
+        [Parameter()]
+        [string]
+        $Server = $env:COMPUTERNAME,
         
         [Parameter()]
         [TimeSpan]

@@ -605,8 +605,10 @@ function Set-TargetResource
             #set AD permissions
             if ($ExtendedRightAllowEntries)
             {
-                foreach ($ExtendedRightAllowEntry in $ExtendedRightAllowEntries) {
-                    foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(','))) {
+                foreach ($ExtendedRightAllowEntry in $ExtendedRightAllowEntries)
+                {
+                    foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(',')))
+                    {
                         $connector | Add-ADPermission -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
                     }
                 }
@@ -614,8 +616,10 @@ function Set-TargetResource
             
             if ($ExtendedRightDenyEntries)
             {
-                foreach ($ExtendedRightDenyEntry in $ExtendedRightDenyEntries) {
-                    foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(','))) {
+                foreach ($ExtendedRightDenyEntry in $ExtendedRightDenyEntries)
+                {
+                    foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(',')))
+                    {
                         $connector | Remove-ADPermission -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Confirm:$false
                     }
                 }
@@ -1390,7 +1394,12 @@ function GetReceiveConnector
 #Ensure that a connector Identity is in the proper form
 function ValidateIdentity
 {
-    param([string]$Identity)
+    param
+    (
+        [Parameter()]
+        [string]
+        $Identity
+    )
 
     if ([string]::IsNullOrEmpty($Identity) -or !($Identity.Contains('\')))
     {
@@ -1403,11 +1412,21 @@ function ExtendedRightExists
 {
     [cmdletbinding()]
     [OutputType([System.Boolean])]
-    param(
-    $ADPermissions,
-    [Microsoft.Management.Infrastructure.CimInstance[]]$ExtendedRights,
-    [boolean]$ShouldbeTrue,
-    $VerbosePreference
+    param
+    (
+        [Parameter()]
+        $ADPermissions,
+
+        [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance[]]
+        $ExtendedRights,
+
+        [Parameter()]
+        [boolean]
+        $ShouldbeTrue,
+        
+        [Parameter()]
+        $VerbosePreference
     )
     $returnvalue = $false
     foreach ($Right in $ExtendedRights)

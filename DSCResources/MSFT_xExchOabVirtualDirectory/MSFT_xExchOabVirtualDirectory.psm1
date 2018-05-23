@@ -39,7 +39,7 @@ function Get-TargetResource
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet("None","Allow","Require")]
+        [ValidateSet('None','Allow','Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
@@ -67,18 +67,18 @@ function Get-TargetResource
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-OabVirtualDirectory","Set-OabVirtualDirectory","Get-OfflineAddressBook","Set-OfflineAddressBook" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OabVirtualDirectory','Set-OabVirtualDirectory','Get-OfflineAddressBook','Set-OfflineAddressBook' -VerbosePreference $VerbosePreference
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
+    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
     $vdir = Get-OabVirtualDirectory @PSBoundParameters
 
     if ($null -ne $vdir)
     {        
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "DomainController"
+        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'DomainController'
 
         #Get all OAB's which this VDir distributes for, and add their names to an array
         $oabs = Get-OfflineAddressBook @PSBoundParameters | Where-Object {$_.VirtualDirectories -like "*$($Identity)*"}
@@ -150,7 +150,7 @@ function Set-TargetResource
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet("None","Allow","Require")]
+        [ValidateSet('None','Allow','Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
@@ -178,9 +178,9 @@ function Set-TargetResource
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
-    if ($PSBoundParameters.ContainsKey("OABsToDistribute"))
+    if ($PSBoundParameters.ContainsKey('OABsToDistribute'))
     {
         #Get existing Vdir props so we can tell if we need to add OAB distribution points
         $vdir = Get-TargetResource @PSBoundParameters
@@ -197,10 +197,10 @@ function Set-TargetResource
     else
     {
         #Need to establish a remote Powershell session since it wasn't done in Get-TargetResource above
-        GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Set-OabVirtualDirectory"
+        GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-OabVirtualDirectory'
     }
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential","AllowServiceRestart","OABsToDistribute"
+    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart','OABsToDistribute'
 
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
@@ -208,13 +208,13 @@ function Set-TargetResource
 
     if ($AllowServiceRestart -eq $true)
     {
-        Write-Verbose "Recycling MSExchangeOABAppPool"
+        Write-Verbose -Message 'Recycling MSExchangeOABAppPool'
 
         RestartAppPoolIfExists -Name MSExchangeOABAppPool
     }
     else
     {
-        Write-Warning "The configuration will not take effect until MSExchangeOABAppPool is manually recycled."
+        Write-Warning -Message 'The configuration will not take effect until MSExchangeOABAppPool is manually recycled.'
     }
 }
 
@@ -259,7 +259,7 @@ function Test-TargetResource
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet("None","Allow","Require")]
+        [ValidateSet('None','Allow','Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
@@ -287,7 +287,7 @@ function Test-TargetResource
     #Load helper module
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
     $vdir = Get-TargetResource @PSBoundParameters
 
@@ -297,52 +297,52 @@ function Test-TargetResource
     }
     else
     {
-        if ($PSBoundParameters.ContainsKey("OABsToDistribute") -and (Array2ContainsArray1Contents -Array1 $OABsToDistribute -Array2 $vdir.OABsToDistribute -IgnoreCase) -eq $false)
+        if ($PSBoundParameters.ContainsKey('OABsToDistribute') -and (Array2ContainsArray1Contents -Array1 $OABsToDistribute -Array2 $vdir.OABsToDistribute -IgnoreCase) -eq $false)
         {
-            ReportBadSetting -SettingName "OABsToDistribute" -ExpectedValue $OABsToDistribute -ActualValue $vdir.OABsToDistribute -VerbosePreference $VerbosePreference
+            ReportBadSetting -SettingName 'OABsToDistribute' -ExpectedValue $OABsToDistribute -ActualValue $vdir.OABsToDistribute -VerbosePreference $VerbosePreference
         }
 
-        if (!(VerifySetting -Name "BasicAuthentication" -Type "Boolean" -ExpectedValue $BasicAuthentication -ActualValue $vdir.BasicAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
-        {
-            return $false
-        }
-
-        if (!(VerifySetting -Name "ExtendedProtectionFlags" -Type "Array" -ExpectedValue $ExtendedProtectionFlags -ActualValue $vdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'BasicAuthentication' -Type 'Boolean' -ExpectedValue $BasicAuthentication -ActualValue $vdir.BasicAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "ExtendedProtectionSPNList" -Type "Array" -ExpectedValue $ExtendedProtectionSPNList -ActualValue $vdir.ExtendedProtectionSPNList -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ExtendedProtectionFlags' -Type 'Array' -ExpectedValue $ExtendedProtectionFlags -ActualValue $vdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "ExtendedProtectionTokenChecking" -Type "String" -ExpectedValue $ExtendedProtectionTokenChecking -ActualValue $vdir.ExtendedProtectionTokenChecking -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ExtendedProtectionSPNList' -Type 'Array' -ExpectedValue $ExtendedProtectionSPNList -ActualValue $vdir.ExtendedProtectionSPNList -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "ExternalUrl" -Type "String" -ExpectedValue $ExternalUrl -ActualValue $vdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ExtendedProtectionTokenChecking' -Type 'String' -ExpectedValue $ExtendedProtectionTokenChecking -ActualValue $vdir.ExtendedProtectionTokenChecking -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "InternalUrl" -Type "String" -ExpectedValue $InternalUrl -ActualValue $vdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ExternalUrl' -Type 'String' -ExpectedValue $ExternalUrl -ActualValue $vdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "PollInterval" -Type "Int" -ExpectedValue $PollInterval -ActualValue $vdir.PollInterval -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'InternalUrl' -Type 'String' -ExpectedValue $InternalUrl -ActualValue $vdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "RequireSSL" -Type "Boolean" -ExpectedValue $RequireSSL -ActualValue $vdir.RequireSSL -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'PollInterval' -Type 'Int' -ExpectedValue $PollInterval -ActualValue $vdir.PollInterval -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "WindowsAuthentication" -Type "Boolean" -ExpectedValue $WindowsAuthentication -ActualValue $vdir.WindowsAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'RequireSSL' -Type 'Boolean' -ExpectedValue $RequireSSL -ActualValue $vdir.RequireSSL -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        {
+            return $false
+        }
+
+        if (!(VerifySetting -Name 'WindowsAuthentication' -Type 'Boolean' -ExpectedValue $WindowsAuthentication -ActualValue $vdir.WindowsAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }       
@@ -391,7 +391,7 @@ function AddOabDistributionPoint
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet("None","Allow","Require")]
+        [ValidateSet('None','Allow','Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
@@ -424,8 +424,8 @@ function AddOabDistributionPoint
     $vdirIdentity = $Identity
 
     #Setup params for Get-OfflineAddressBook
-    AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = $TargetOabName}
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
+    AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $TargetOabName}
+    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
     $oab = Get-OfflineAddressBook @PSBoundParameters
 
@@ -439,7 +439,7 @@ function AddOabDistributionPoint
         {
             $oabServer = ServerFromOABVdirDN -OabVdirDN $vdir.DistinguishedName
             
-            [string]$entry = $oabServer + "\" + $vdir.Name    
+            [string]$entry = $oabServer + '\' + $vdir.Name    
         
             $allVdirs += $entry
         }
@@ -457,10 +457,16 @@ function AddOabDistributionPoint
 }
 
 #Gets just the server netbios name from an OAB virtual directory distinguishedName
-function ServerFromOABVdirDN($OabVdirDN)
+function ServerFromOABVdirDN
 {
-    $startString = "CN=Protocols,CN="
-    $endString = ",CN=Servers"
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        $OabVdirDN
+    )    
+    $startString = 'CN=Protocols,CN='
+    $endString = ',CN=Servers'
 
     $startIndex = $OabVdirDN.IndexOf($startString) + $startString.Length
     $length = $OabVdirDN.IndexOf($endString) - $startIndex
