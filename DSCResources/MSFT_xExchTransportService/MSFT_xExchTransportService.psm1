@@ -1302,7 +1302,6 @@ function Test-TargetResource
 
     if ($null -ne $TransportService)
     {
-
         if (!(VerifySetting -Name 'ActiveUserStatisticsLogMaxAge' -Type 'Timespan' -ExpectedValue $ActiveUserStatisticsLogMaxAge -ActualValue $TransportService.ActiveUserStatisticsLogMaxAge -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
@@ -1745,7 +1744,17 @@ function CompareIPAddressewithString
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param([System.Net.IPAddress]$IPAddress, [String]$String)
+    param
+    (
+        [Parameter()]
+        [System.Net.IPAddress]
+        $IPAddress,
+        
+        [Parameter()]
+        [String]
+        $String
+    )
+
     if (($null -eq $IPAddress -and !([string]::IsNullOrEmpty($String))) -or ($null -ne $IPAddress -and [string]::IsNullOrEmpty($String)))
     {
         $returnValue = $false
@@ -1770,7 +1779,16 @@ function CompareSmtpAdresswithString
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param($SmtpAddress,[String]$String)
+    param
+    (
+        [Parameter()]
+        $SmtpAddress,
+        
+        [Parameter()]
+        [String]
+        $String
+    )
+    
     if (($null -eq $SmtpAddress) -and ([string]::IsNullOrEmpty($String)))
     {
         Write-Verbose -Message 'Expected and actual value is empty, therefore equal!'

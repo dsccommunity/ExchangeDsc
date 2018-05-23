@@ -171,24 +171,28 @@ function GetMailboxDatabase
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.UInt32]
         $RetryIntervalSec = 60,
 
+        [Parameter()]
         [System.UInt32]
         $RetryCount = 5,
 
+        [Parameter()]
         [System.String]
         $AdServerSettingsPreferredServer
     )
