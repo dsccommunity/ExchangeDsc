@@ -27,14 +27,7 @@ function Get-TargetResource
         $RetryCount = 5
     )
 
-<<<<<<< HEAD
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
-=======
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
->>>>>>> Fixed PSSA custom rules in xExchMailboxServer.psm1
 
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -VerbosePreference $VerbosePreference
@@ -80,14 +73,7 @@ function Set-TargetResource
         $RetryCount = 5
     )
 
-<<<<<<< HEAD
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
-=======
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
->>>>>>> Fixed PSSA custom rules in xExchMailboxServer.psm1
 
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -VerbosePreference $VerbosePreference
@@ -144,14 +130,7 @@ function Test-TargetResource
         $RetryCount = 5
     )
 
-<<<<<<< HEAD
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
-=======
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
->>>>>>> Fixed PSSA custom rules in xExchMailboxServer.psm1
 
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -VerbosePreference $VerbosePreference
