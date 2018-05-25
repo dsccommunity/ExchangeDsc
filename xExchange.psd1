@@ -20,6 +20,9 @@
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion = '4.0'
 
+    # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
+    NestedModules = @("Modules\xExchangeHelper.psm1")
+
     # Functions to export from this module
     FunctionsToExport = '*'
 

@@ -2,7 +2,7 @@
 ###This module also requires that this server is a member of a DAG"
 
 Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchMaintenanceMode\MSFT_xExchMaintenanceMode.psm1
-Import-Module $PSScriptRoot\..\Misc\xExchangeCommon.psm1 -Verbose:0
+Import-Module $PSScriptRoot\..\Modules\xExchangeHelper.psm1 -Verbose:0
 Import-Module $PSScriptRoot\xExchange.Tests.Common.psm1 -Verbose:0
 
 function Test-ServerIsOutOfMaintenanceMode

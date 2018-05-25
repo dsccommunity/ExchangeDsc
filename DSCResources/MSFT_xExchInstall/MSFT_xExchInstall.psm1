@@ -18,9 +18,6 @@ function Get-TargetResource
         [System.Management.Automation.Credential()]
         $Credential
     )
-    
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -VerbosePreference $VerbosePreference
 
@@ -50,8 +47,6 @@ function Set-TargetResource
         [System.Management.Automation.Credential()]
         $Credential
     )
-
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -VerbosePreference $VerbosePreference
 
@@ -134,8 +129,6 @@ function Test-TargetResource
         [System.Management.Automation.Credential()]
         $Credential
     )
-
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -VerbosePreference $VerbosePreference
 

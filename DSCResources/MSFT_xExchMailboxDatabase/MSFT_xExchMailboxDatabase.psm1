@@ -107,9 +107,6 @@ function Get-TargetResource
         $SkipInitialDatabaseMount
     )
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{"Name" = $Name} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
@@ -270,9 +267,6 @@ function Set-TargetResource
         [System.Boolean]
         $SkipInitialDatabaseMount
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Name" = $Name} -VerbosePreference $VerbosePreference
 
@@ -474,9 +468,6 @@ function Test-TargetResource
         [System.Boolean]
         $SkipInitialDatabaseMount
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Name" = $Name} -VerbosePreference $VerbosePreference
 

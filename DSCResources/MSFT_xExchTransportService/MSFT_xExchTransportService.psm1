@@ -372,9 +372,6 @@ function Get-TargetResource
         $UseDowngradedExchangeServerAuth
     )
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
@@ -851,9 +848,6 @@ function Set-TargetResource
         $UseDowngradedExchangeServerAuth
     )
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-TransportService' -VerbosePreference $VerbosePreference
 
@@ -1299,9 +1293,6 @@ function Test-TargetResource
         [System.Boolean]
         $UseDowngradedExchangeServerAuth
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 

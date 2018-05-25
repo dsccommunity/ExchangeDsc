@@ -32,9 +32,6 @@ function Get-TargetResource
         $RetryCount = 30
     )
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -VerbosePreference $VerbosePreference
 
     $dse = GetADRootDSE -Credential $Credential
@@ -172,9 +169,6 @@ function Set-TargetResource
         $RetryCount = 30
     )
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -VerbosePreference $VerbosePreference
 
     $testResults = Test-TargetResource @PSBoundParameters
@@ -199,7 +193,6 @@ function Set-TargetResource
         throw "AD has still not been prepped after the maximum amount of retries."
     }
 }
-
 
 function Test-TargetResource
 {
@@ -234,9 +227,6 @@ function Test-TargetResource
         [System.UInt32]
         $RetryCount = 30
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -VerbosePreference $VerbosePreference
 

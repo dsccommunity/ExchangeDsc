@@ -25,9 +25,6 @@ function Get-TargetResource
         $MinAchievedIOPS = 0
     )
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath; "JetstressParams" = $JetstressParams} -VerbosePreference $VerbosePreference
 
     $returnValue = @{
@@ -65,9 +62,6 @@ function Set-TargetResource
         [System.UInt32]
         $MinAchievedIOPS = 0
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath; "JetstressParams" = $JetstressParams} -VerbosePreference $VerbosePreference
 
@@ -197,7 +191,6 @@ function Set-TargetResource
     }
 }
 
-
 function Test-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -224,9 +217,6 @@ function Test-TargetResource
         [System.UInt32]
         $MinAchievedIOPS = 0
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath; "JetstressParams" = $JetstressParams} -VerbosePreference $VerbosePreference
 
@@ -277,8 +267,6 @@ function StartJetstress
         [System.UInt32]
         $MinAchievedIOPS = 0
     )
-
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     $fullPath = Join-Path -Path "$($JetstressPath)" -ChildPath "JetstressCmd.exe"
 

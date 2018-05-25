@@ -23,9 +23,6 @@ function Get-TargetResource
         $DomainController
     )
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{"Server" = $Server} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
@@ -45,7 +42,6 @@ function Get-TargetResource
 
     $returnValue
 }
-
 
 function Set-TargetResource
 {
@@ -71,9 +67,6 @@ function Set-TargetResource
         $DomainController
     )
 
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
     LogFunctionEntry -Parameters @{"Server" = $Server} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
@@ -83,7 +76,6 @@ function Set-TargetResource
 
     Set-UMCallRouterSettings @PSBoundParameters
 }
-
 
 function Test-TargetResource
 {
@@ -109,10 +101,7 @@ function Test-TargetResource
         [System.String]
         $DomainController
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
-
+    
     LogFunctionEntry -Parameters @{"Server" = $Server} -VerbosePreference $VerbosePreference
 
     $umService = Get-TargetResource @PSBoundParameters
