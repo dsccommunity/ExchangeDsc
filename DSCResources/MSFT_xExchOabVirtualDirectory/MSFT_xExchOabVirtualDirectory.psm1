@@ -451,6 +451,7 @@ function AddOabDistributionPoint
 function ServerFromOABVdirDN
 {
     [CmdletBinding()]
+    [OutputType([System.String])]
     param
     (
         [Parameter(Mandatory = $true)]
