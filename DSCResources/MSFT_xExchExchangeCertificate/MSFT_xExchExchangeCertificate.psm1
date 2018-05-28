@@ -325,15 +325,15 @@ function CompareCertServices
     param
     (
         [Parameter()]
-        [string]
+        [System.String]
         $ServicesActual, 
         
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ServicesDesired, 
         
         [Parameter()]
-        [boolean]
+        [System.Boolean]
         $AllowExtraServices
     )
     
@@ -341,7 +341,7 @@ function CompareCertServices
 
     if ($AllowExtraServices -eq $true)
     {
-        if (!([string]::IsNullOrEmpty($ServicesDesired)) -and $ServicesDesired.Contains('NONE'))
+        if (!([System.String]::IsNullOrEmpty($ServicesDesired)) -and $ServicesDesired.Contains('NONE'))
         {
             $result = $true
         }

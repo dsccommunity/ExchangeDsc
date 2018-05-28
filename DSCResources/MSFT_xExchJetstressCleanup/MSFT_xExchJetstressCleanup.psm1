@@ -47,10 +47,7 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
-    <#
-        Suppressing this rule because $global:DSCMachineStatus is used to trigger
-        a reboot, either by force or when there are pending changes.
-    #>
+    # Suppressing this rule because $global:DSCMachineStatus is used to trigger a reboot.
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
     <#
         Suppressing this rule because $global:DSCMachineStatus is only set,
@@ -105,11 +102,11 @@ function Set-TargetResource
     {
         [xml]$configFile = LoadConfigXml -ConfigFilePath "$($ConfigFilePath)"
 
-        [string[]]$DatabasePaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path
-        [string[]]$LogPaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
+        [System.String[]]$DatabasePaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path
+        [System.String[]]$LogPaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
     }
 
-    [string[]]$FoldersToRemove = $DatabasePaths + $LogPaths
+    [System.String[]]$FoldersToRemove = $DatabasePaths + $LogPaths
 
     #Now delete the specified directories
     [Hashtable]$ParentFoldersToRemove = @{} #Only used if $DeleteAssociatedMountPoints is $true
@@ -119,7 +116,7 @@ function Set-TargetResource
         #Get the parent folder for the specified path
         $parent = GetParentFolderFromString -Folder "$($path)"
 
-        if (([string]::IsNullOrEmpty($parent) -eq $false -and $ParentFoldersToRemove.ContainsKey($parent) -eq $false))
+        if (([System.String]::IsNullOrEmpty($parent) -eq $false -and $ParentFoldersToRemove.ContainsKey($parent) -eq $false))
         {
             $ParentFoldersToRemove.Add($parent, $null)
         }
@@ -160,7 +157,7 @@ function Set-TargetResource
     if ($RemoveBinaries -eq $true -and (Test-Path -LiteralPath "$($JetstressPath)") -eq $true)
     {
         #Move output files if requested
-        if ([string]::IsNullOrEmpty($OutputSaveLocation) -eq $false)
+        if ([System.String]::IsNullOrEmpty($OutputSaveLocation) -eq $false)
         {
             if ((Test-Path -LiteralPath "$($OutputSaveLocation)") -eq $false)
             {
@@ -256,11 +253,11 @@ function Test-TargetResource
         {
             [xml]$configFile = LoadConfigXml -ConfigFilePath "$($ConfigFilePath)"
 
-            [string[]]$FoldersToRemove = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path + $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
+            [System.String[]]$FoldersToRemove = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path + $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
         }
         else
         {
-            [string[]]$FoldersToRemove = $DatabasePaths + $LogPaths
+            [System.String[]]$FoldersToRemove = $DatabasePaths + $LogPaths
         }
 
         #First make sure DB and log folders were cleaned up
@@ -358,7 +355,7 @@ function VerifyParameters
 
     if ($PSBoundParameters.ContainsKey('ConfigFilePath') -eq $true)
     {
-        if ([string]::IsNullOrEmpty($ConfigFilePath) -or ((Test-Path -LiteralPath "$($ConfigFilePath)") -eq $false))
+        if ([System.String]::IsNullOrEmpty($ConfigFilePath) -or ((Test-Path -LiteralPath "$($ConfigFilePath)") -eq $false))
         {
             throw "The path specified for ConfigFilePath, '$($ConfigFilePath)', is either invalid or inaccessible"
         }
@@ -383,7 +380,7 @@ function GetFolderNoTrailingSlash
     param
     (
         [Parameter()]
-        [string]
+        [System.String]
         $Folder
     )
 
@@ -401,7 +398,7 @@ function GetParentFolderFromString
     param
     (
         [Parameter()]
-        [string]
+        [System.String]
         $Folder
     )
 
@@ -419,7 +416,7 @@ function RemoveFolder
     param
     (
         [Parameter()]
-        [string]
+        [System.String]
         $Path
     )
 
@@ -450,8 +447,8 @@ function LoadConfigXml
 
     if ($null -ne $configFile)
     {
-        [string[]]$DatabasePaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path
-        [string[]]$LogPaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
+        [System.String[]]$DatabasePaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path
+        [System.String[]]$LogPaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
 
         if ($null -eq $DatabasePaths -or $DatabasePaths.Count -eq 0)
         {

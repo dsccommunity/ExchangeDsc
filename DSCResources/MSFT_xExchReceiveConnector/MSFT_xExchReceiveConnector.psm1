@@ -568,7 +568,10 @@ function Set-TargetResource
             $connectorName = $Identity.Substring($Identity.IndexOf('\') + 1)
 
             #Add in server and name parameters
-            AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Server' = $serverName; 'Name' = $connectorName}
+            AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
+                'Server' = $serverName
+                'Name' = $connectorName
+            }
 
             #Create the connector
             $connector = New-ReceiveConnector @PSBoundParameters
@@ -1387,11 +1390,11 @@ function ValidateIdentity
     param
     (
         [Parameter()]
-        [string]
+        [System.String]
         $Identity
     )
 
-    if ([string]::IsNullOrEmpty($Identity) -or !($Identity.Contains('\')))
+    if ([System.String]::IsNullOrEmpty($Identity) -or !($Identity.Contains('\')))
     {
         throw "Identity must be in the format: 'SERVERNAME\Connector Name' (No quotes)"
     }
@@ -1412,7 +1415,7 @@ function ExtendedRightExists
         $ExtendedRights,
 
         [Parameter()]
-        [boolean]
+        [System.Boolean]
         $ShouldbeTrue,
         
         [Parameter()]

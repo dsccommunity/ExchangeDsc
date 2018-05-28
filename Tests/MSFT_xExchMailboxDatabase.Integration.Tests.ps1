@@ -10,7 +10,7 @@ function PrepTestDB
     [CmdletBinding()]
     param
     (
-        [string]
+        [System.String]
         $TestDBName
     )
     

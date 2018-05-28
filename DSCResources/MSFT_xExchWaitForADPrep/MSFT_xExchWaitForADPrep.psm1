@@ -84,10 +84,10 @@ function Get-TargetResource
     if ($PSBoundParameters.ContainsKey('DomainVersion'))
     {
         #Get this server's domain
-        [string]$machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
+        [System.String]$machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
 
         #Figure out all domains we need to inspect
-        [string[]]$targetDomains = @()
+        [System.String[]]$targetDomains = @()
         $targetDomains += $machineDomain
 
         if ($null -ne $ExchangeDomains)
@@ -273,10 +273,10 @@ function Test-TargetResource
         if ($PSBoundParameters.ContainsKey('DomainVersion'))
         {
             #Get this server's domain
-            [string]$machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
+            [System.String]$machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
 
             #Figure out all domains we need to inspect
-            [string[]]$targetDomains = @()
+            [System.String[]]$targetDomains = @()
             $targetDomains += $machineDomain
 
             if ($null -ne $ExchangeDomains)
@@ -338,23 +338,23 @@ function GetADObject
         $Credential,
 
         [Parameter()]
-        [boolean]
+        [System.Boolean]
         $Searching = $false,
 
         [Parameter()]
-        [string]
+        [System.String]
         $DistinguishedName,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $Properties,
 
         [Parameter()]
-        [string]
+        [System.String]
         $Filter,
 
         [Parameter()]
-        [string]
+        [System.String]
         $SearchScope
     )
 
@@ -366,12 +366,12 @@ function GetADObject
     {
         $getAdObjParams = @{'SearchBase' = $DistinguishedName}
 
-        if ([string]::IsNullOrEmpty($Filter) -eq $false)
+        if ([System.String]::IsNullOrEmpty($Filter) -eq $false)
         {
             $getAdObjParams.Add('Filter', $Filter)
         }
 
-        if ([string]::IsNullOrEmpty($SearchScope) -eq $false)
+        if ([System.String]::IsNullOrEmpty($SearchScope) -eq $false)
         {
             $getAdObjParams.Add('SearchScope', $SearchScope)
         }
@@ -382,7 +382,7 @@ function GetADObject
         $getAdObjParams.Add('Credential', $Credential)
     }
 
-    if ([string]::IsNullOrEmpty($Properties) -eq $false)
+    if ([System.String]::IsNullOrEmpty($Properties) -eq $false)
     {
         $getAdObjParams.Add('Properties', $Properties)
     }
@@ -405,7 +405,7 @@ function DomainDNFromFQDN
     param
     (
         [Parameter()]
-        [string]
+        [System.String]
         $Fqdn
     )
 

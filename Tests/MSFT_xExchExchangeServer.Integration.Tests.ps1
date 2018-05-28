@@ -41,11 +41,11 @@ function VerifyServerPrepped
         #}
 
         It "InternetWebProxy should be empty" {
-            [string]::IsNullOrEmpty($getResult.InternetWebProxy) | Should Be $true
+            [System.String]::IsNullOrEmpty($getResult.InternetWebProxy) | Should Be $true
         }
 
         It "ProductKey should be empty" {
-            [string]::IsNullOrEmpty($getResult.ProductKey) | Should Be $true
+            [System.String]::IsNullOrEmpty($getResult.ProductKey) | Should Be $true
         }
     }
 }

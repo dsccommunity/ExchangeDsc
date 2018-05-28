@@ -36,7 +36,7 @@ function Get-TargetResource
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase','Set-AdServerSettings' -VerbosePreference $VerbosePreference
 
-    if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
+    if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
         Set-ADServerSettings -PreferredServer "$($AdServerSettingsPreferredServer)"
     }
@@ -90,7 +90,7 @@ function Set-TargetResource
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase','Set-AdServerSettings' -VerbosePreference $VerbosePreference
 
-    if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
+    if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
         Set-ADServerSettings -PreferredServer "$($AdServerSettingsPreferredServer)"
     }
@@ -156,7 +156,7 @@ function Test-TargetResource
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase','Set-AdServerSettings' -VerbosePreference $VerbosePreference
 
-    if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
+    if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
         Set-ADServerSettings -PreferredServer "$($AdServerSettingsPreferredServer)"
     }

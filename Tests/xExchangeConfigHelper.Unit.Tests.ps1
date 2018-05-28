@@ -5,7 +5,7 @@ Import-Module $PSScriptRoot\xExchange.Tests.Common.psm1 -Verbose:0
 function Test-MailboxDatabasesCsv
 {
     [CmdletBinding()]
-    param([string]$MailboxDatabasesCsvPath, [string]$ServerNameInCsv, [Hashtable]$DbNameReplacements, [string]$ContextLabel)
+    param([System.String]$MailboxDatabasesCsvPath, [System.String]$ServerNameInCsv, [Hashtable]$DbNameReplacements, [System.String]$ContextLabel)
 
     Context $ContextLabel {
 
@@ -23,15 +23,15 @@ function Test-MailboxDatabasesCsv
             }
 
             It "DBFilePath Should Not Be Null Or Empty" {
-                ([string]::IsNullOrEmpty($dbList[0].DBFilePath)) | Should Be $false
+                ([System.String]::IsNullOrEmpty($dbList[0].DBFilePath)) | Should Be $false
             }
         }
     }
 }
 
-[string]$mailboxDatabasesCsv66 = "$($PSScriptRoot)\Data\MailboxDatabases v6.6.csv"
-[string]$mailboxDatabasesCsv = "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.FullName)\Examples\ConfigureDatabases-FromCalculator\CalculatorAndScripts\MailboxDatabases.csv"
-[string]$serverNameInCsv = 'SRV-nn-01'
+[System.String]$mailboxDatabasesCsv66 = "$($PSScriptRoot)\Data\MailboxDatabases v6.6.csv"
+[System.String]$mailboxDatabasesCsv = "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.FullName)\Examples\ConfigureDatabases-FromCalculator\CalculatorAndScripts\MailboxDatabases.csv"
+[System.String]$serverNameInCsv = 'SRV-nn-01'
 [Hashtable]$dbNameReplacements = @{"-nn-" = "-01-"}
 
 Describe "Test DBListFromMailboxDatabasesCsv" {

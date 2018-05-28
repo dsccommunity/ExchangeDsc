@@ -431,9 +431,9 @@ function CreateMissingExDatabases
             GetDiskInfo
         }
 
-        [string[]]$dbsNeedingMountPoints = @()
+        [System.String[]]$dbsNeedingMountPoints = @()
 
-        [string[]]$allDBsRequestedForDisk = $DiskToDBMap[$i].Split(',')
+        [System.String[]]$allDBsRequestedForDisk = $DiskToDBMap[$i].Split(',')
 
         for ($j = 0; $j -lt $allDBsRequestedForDisk.Count; $j++)
         {
@@ -524,7 +524,7 @@ function GetDiskToDBMap
     param
     (
         [Parameter()]
-        [string]
+        [System.String]
         $AutoDagDatabasesRootFolderPath
     )
 
@@ -532,12 +532,12 @@ function GetDiskToDBMap
     $dbpath = Join-Path -Path "$($AutoDagDatabasesRootFolderPath)" -ChildPath ""
 
     #Will be the return value for DiskToDBMap
-    [string[]]$dbMap = @()
+    [System.String[]]$dbMap = @()
 
     #Loop through all existing mount points and figure out which ones are for DB's
     foreach ($key in $global:VolumeToMountPointMap.Keys)
     {
-        [string]$mountPoints = ''
+        [System.String]$mountPoints = ''
 
         foreach ($mountPoint in $global:VolumeToMountPointMap[$key])
         {
@@ -576,15 +576,15 @@ function GetExchangeVolume
     param
     (
         [Parameter()]
-        [string]
+        [System.String]
         $AutoDagDatabasesRootFolderPath, 
         
         [Parameter()]
-        [string]
+        [System.String]
         $AutoDagVolumesRootFolderPath, 
         
         [Parameter()]
-        [string]
+        [System.String]
         $ExistingDB = '', 
         
         [Parameter()]
@@ -596,7 +596,7 @@ function GetExchangeVolume
         $DBsToCreate, 
         
         [Parameter()]
-        [string]
+        [System.String]
         $VolumePrefix = 'EXVOL')
 
     $targetVol = -1 #Our return variable
@@ -609,7 +609,7 @@ function GetExchangeVolume
         [int]$intKey = $key
 
         #Get mount points for this volume
-        [string[]]$mountPoints = $global:VolumeToMountPointMap[$intKey]
+        [System.String[]]$mountPoints = $global:VolumeToMountPointMap[$intKey]
 
         $hasExVol = $false #Whether any ExVol mount points exist on this disk
         $hasExDb = $false #Whether any ExDB mount points exist on this disk
@@ -665,20 +665,20 @@ function GetSortedExchangeVolumeKeys
     param
     (
         [Parameter()]
-        [string]
+        [System.String]
         $AutoDagDatabasesRootFolderPath, 
         
         [Parameter()]
-        [string]
+        [System.String]
         $AutoDagVolumesRootFolderPath, 
         
         [Parameter()]
-        [string]
+        [System.String]
         $VolumePrefix = 'EXVOL')
 
-    [string[]]$sortedKeys = @() #The return value
+    [System.String[]]$sortedKeys = @() #The return value
 
-    [string]$pathBeforeVolumeNumber = Join-Path -Path $AutoDagVolumesRootFolderPath -ChildPath $VolumePrefix
+    [System.String]$pathBeforeVolumeNumber = Join-Path -Path $AutoDagVolumesRootFolderPath -ChildPath $VolumePrefix
 
     #First extract the actual volume number as an Int from the volume path, then add it to a new hashtable with the same key value
     [Hashtable]$tempVolumeToMountPointMap = @{}
@@ -701,11 +701,11 @@ function GetSortedExchangeVolumeKeys
         {
             if ($volPath.EndsWith('\') -or $volPath.EndsWith('/'))
             {
-                [string]$exVolNumberStr = $volPath.Substring($pathBeforeVolumeNumber.Length, ($volPath.Length - $pathBeforeVolumeNumber.Length - 1))
+                [System.String]$exVolNumberStr = $volPath.Substring($pathBeforeVolumeNumber.Length, ($volPath.Length - $pathBeforeVolumeNumber.Length - 1))
             }
             else
             {
-                [string]$exVolNumberStr = $volPath.Substring($pathBeforeVolumeNumber.Length, ($volPath.Length - $pathBeforeVolumeNumber.Length))
+                [System.String]$exVolNumberStr = $volPath.Substring($pathBeforeVolumeNumber.Length, ($volPath.Length - $pathBeforeVolumeNumber.Length))
             }
             
             [int]$exVolNumber = [int]::Parse($exVolNumberStr)
@@ -744,7 +744,7 @@ function FindFirstAvailableDisk
     param
     (
         [Parameter()]
-        [string]
+        [System.String]
         $MinDiskSize = ''
     )
 
@@ -781,11 +781,11 @@ function FindFirstAvailableVolumeNumber
     param
     (
         [Parameter()]
-        [string]
+        [System.String]
         $AutoDagVolumesRootFolderPath, 
         
         [Parameter()]
-        [string]
+        [System.String]
         $VolumePrefix
     )
 
@@ -816,7 +816,7 @@ function GetDesiredDatabaseCount
     param
     (
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $DiskToDBMap
     )
 
@@ -836,11 +836,11 @@ function DBHasMountPoint
     param
     (
         [Parameter()]
-        [string]
+        [System.String]
         $AutoDagDatabasesRootFolderPath, 
         
         [Parameter()]
-        [string]
+        [System.String]
         $DB
     )
 
@@ -866,7 +866,7 @@ function GetInUseMountPointCount
     param
     (
         [Parameter()]
-        [string]
+        [System.String]
         $RootFolder
     )
 
@@ -893,7 +893,7 @@ function VolumeMountPointNotLastInList
     param
     (
         [Parameter()]
-        [string]
+        [System.String]
         $AutoDagVolumesRootFolderPath
     )
 
@@ -924,11 +924,11 @@ function SendVolumeMountPointToEndOfList
     param
     (
         [Parameter()]
-        [string]
+        [System.String]
         $AutoDagVolumesRootFolderPath, 
         
         [Parameter()]
-        [Int32]
+        [System.Int32]
         $VolumeNumber
     )
 
@@ -960,24 +960,24 @@ function PrepareVolume
         $DiskNumber, 
         
         [Parameter()]
-        [string]
+        [System.String]
         $Folder, 
         
         [Parameter()]
         [ValidateSet('NTFS','REFS')]
-        [string]
+        [System.String]
         $FileSystem = 'NTFS', 
         
         [Parameter()]
-        [string]
+        [System.String]
         $UnitSize, 
         
         [Parameter()]
-        [string]
+        [System.String]
         $PartitioningScheme, 
         
         [Parameter()]
-        [string]
+        [System.String]
         $Label
     )
     
@@ -1042,7 +1042,7 @@ function AddMountPoint
         $VolumeNumber, 
         
         [Parameter()]
-        [string]
+        [System.String]
         $Folder
     )
 

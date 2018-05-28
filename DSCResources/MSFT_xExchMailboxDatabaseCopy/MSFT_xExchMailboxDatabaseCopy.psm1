@@ -54,9 +54,9 @@ function Get-TargetResource
                              -CommandsToLoad 'Get-MailboxDatabase','*DatabaseCopy*','Set-AdServerSettings' `
                              -VerbosePreference $VerbosePreference
 
-    if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![string]::IsNullOrEmpty($AdServerSettingsPreferredServer))
+    if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
-        Set-ADServerSettings �PreferredServer "$($AdServerSettingsPreferredServer)"
+        Set-ADServerSettings -PreferredServer "$($AdServerSettingsPreferredServer)"
     }
 
     $db = GetMailboxDatabase @PSBoundParameters

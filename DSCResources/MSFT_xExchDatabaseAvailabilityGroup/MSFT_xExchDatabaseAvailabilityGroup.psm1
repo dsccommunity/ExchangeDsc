@@ -741,7 +741,10 @@ function GetDatabaseAvailabilityGroup
         $WitnessServer
     )
 
-    AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $PSBoundParameters['Name']; 'ErrorAction' = 'SilentlyContinue'}
+    AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
+        'Identity' = $PSBoundParameters['Name']
+        'ErrorAction' = 'SilentlyContinue'
+    }
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','ErrorAction','DomainController'
 
     return (Get-DatabaseAvailabilityGroup @PSBoundParameters -Status)

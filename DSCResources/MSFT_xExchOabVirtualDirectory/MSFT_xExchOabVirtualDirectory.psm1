@@ -80,7 +80,7 @@ function Get-TargetResource
         #Get all OAB's which this VDir distributes for, and add their names to an array
         $oabs = Get-OfflineAddressBook @PSBoundParameters | Where-Object {$_.VirtualDirectories -like "*$($Identity)*"}
 
-        [string[]]$oabNames = @()
+        [System.String[]]$oabNames = @()
 
         if ($null -ne $oabs)
         {
@@ -423,14 +423,14 @@ function AddOabDistributionPoint
     if ($null -ne $oab)
     {
         #Assemble the list of existing Virtual Directories
-        [string[]]$allVdirs = @()
+        [System.String[]]$allVdirs = @()
 
       
         foreach ($vdir in $oab.VirtualDirectories)
         {
             $oabServer = ServerFromOABVdirDN -OabVdirDN $vdir.DistinguishedName
             
-            [string]$entry = $oabServer + '\' + $vdir.Name    
+            [System.String]$entry = $oabServer + '\' + $vdir.Name    
         
             $allVdirs += $entry
         }
@@ -454,6 +454,7 @@ function ServerFromOABVdirDN
     param
     (
         [Parameter(Mandatory = $true)]
+        [System.String]
         $OabVdirDN
     )    
     $startString = 'CN=Protocols,CN='

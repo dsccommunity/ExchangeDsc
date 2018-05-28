@@ -14,7 +14,7 @@ function GetRemoteExchangeSession
         [System.Management.Automation.Credential()]
         $Credential,
         
-        [string[]]
+        [System.String[]]
         $CommandsToLoad,
         
         $VerbosePreference,
@@ -235,7 +235,7 @@ function IsSetupPartiallyCompleted
     $isPartiallyCompleted = $false
 
     #Now check if setup actually completed successfully
-    [string[]]$roleKeys = "CafeRole","ClientAccessRole","FrontendTransportRole","HubTransportRole","MailboxRole","UnifiedMessagingRole"
+    [System.String[]]$roleKeys = "CafeRole","ClientAccessRole","FrontendTransportRole","HubTransportRole","MailboxRole","UnifiedMessagingRole"
 
     foreach ($key in $roleKeys)
     {
@@ -262,7 +262,7 @@ function IsSetupPartiallyCompleted
 #Checks whether setup is running by looking for if the ExSetup.exe process currently exists
 function IsSetupRunning
 {
-    param([string]$SetupProcessName = "ExSetup*")
+    param([System.String]$SetupProcessName = "ExSetup*")
 
     return ($null -ne (Get-Process -Name $SetupProcessName -ErrorAction SilentlyContinue))
 }
@@ -270,9 +270,9 @@ function IsSetupRunning
 #Checks if two strings are equal, or are both either null or empty
 function CompareStrings
 {
-    param([string]$String1, [string]$String2, [switch]$IgnoreCase)
+    param([System.String]$String1, [System.String]$String2, [switch]$IgnoreCase)
 
-    if (([string]::IsNullOrEmpty($String1) -and [string]::IsNullOrEmpty($String2)))
+    if (([System.String]::IsNullOrEmpty($String1) -and [System.String]::IsNullOrEmpty($String2)))
     {
         return $true
     }
@@ -306,7 +306,7 @@ function CompareBools($Bool1, $Bool2)
 #Takes a string which should be in timespan format, and compares it to an actual EnhancedTimeSpan object. Returns true if they are equal
 function CompareTimespanWithString
 {
-    param([Microsoft.Exchange.Data.EnhancedTimeSpan]$TimeSpan, [string]$String)
+    param([Microsoft.Exchange.Data.EnhancedTimeSpan]$TimeSpan, [System.String]$String)
 
     try
     {
@@ -325,7 +325,7 @@ function CompareTimespanWithString
 #Takes a string which should be in ByteQuantifiedSize format, and compares it to an actual ByteQuantifiedSize object. Returns true if they are equal
 function CompareByteQuantifiedSizeWithString
 {
-    param([Microsoft.Exchange.Data.ByteQuantifiedSize]$ByteQuantifiedSize, [string]$String)
+    param([Microsoft.Exchange.Data.ByteQuantifiedSize]$ByteQuantifiedSize, [System.String]$String)
 
     try
     {
@@ -342,7 +342,7 @@ function CompareByteQuantifiedSizeWithString
 #Takes a string which should be in Microsoft.Exchange.Data.Unlimited format, and compares with an actual Unlimited object. Returns true if they are equal.
 function CompareUnlimitedWithString
 {
-    param($Unlimited, [string]$String)
+    param($Unlimited, [System.String]$String)
 
     if ($Unlimited.IsUnlimited)
     {
@@ -366,7 +366,7 @@ function CompareUnlimitedWithString
 #The Get-Mailbox cmdlet must be loaded for this function to succeed.
 function CompareADObjectIdWithEmailAddressString
 {
-    param([Microsoft.Exchange.Data.Directory.ADObjectId]$ADObjectId, [string]$String)
+    param([Microsoft.Exchange.Data.Directory.ADObjectId]$ADObjectId, [System.String]$String)
 
     if ($null -ne (Get-Command Get-Mailbox -ErrorAction SilentlyContinue))
     {
@@ -385,9 +385,9 @@ function CompareADObjectIdWithEmailAddressString
 #Takes a string containing a given separator, and breaks it into a string array
 function StringToArray
 {
-    param([string]$StringIn, [char]$Separator)
+    param([System.String]$StringIn, [char]$Separator)
 
-    [string[]]$array = $StringIn.Split($Separator)
+    [System.String[]]$array = $StringIn.Split($Separator)
 
     for ($i = 0; $i -lt $array.Length; $i++)
     {
@@ -400,11 +400,11 @@ function StringToArray
 #Takes an array of strings and converts all elements to lowercase
 function StringArrayToLower
 {
-    param([string[]]$Array)
+    param([System.String[]]$Array)
     
     for ($i = 0; $i -lt $Array.Count; $i++)
     {
-        if (!([string]::IsNullOrEmpty($Array[$i])))
+        if (!([System.String]::IsNullOrEmpty($Array[$i])))
         {
             $Array[$i] = $Array[$i].ToLower()
         }
@@ -416,7 +416,7 @@ function StringArrayToLower
 #Checks whether two arrays have the same contents, where element order doesn't matter
 function CompareArrayContents
 {
-    param([string[]]$Array1, [string[]]$Array2, [switch]$IgnoreCase)
+    param([System.String[]]$Array1, [System.String[]]$Array2, [switch]$IgnoreCase)
 
     $hasSameContents = $true
 
@@ -448,7 +448,7 @@ function CompareArrayContents
 #Checks whether Array2 contains all elements of Array1 (Array2 may be larger than Array1)
 function Array2ContainsArray1Contents
 {
-    param([string[]]$Array1, [string[]]$Array2, [switch]$IgnoreCase)
+    param([System.String[]]$Array1, [System.String[]]$Array2, [switch]$IgnoreCase)
 
     $hasContents = $true
 
@@ -502,11 +502,11 @@ function AddParameters
 #are specified, only ParamsToKeep will be used.
 function RemoveParameters
 {
-    param($PSBoundParametersIn, [string[]]$ParamsToKeep, [string[]]$ParamsToRemove)
+    param($PSBoundParametersIn, [System.String[]]$ParamsToKeep, [System.String[]]$ParamsToRemove)
 
     if ($ParamsToKeep.Count -gt 0)
     {
-        [string[]]$ParamsToRemove = @()
+        [System.String[]]$ParamsToRemove = @()
 
         $lowerParamsToKeep = StringArrayToLower -Array $ParamsToKeep
 
@@ -530,7 +530,7 @@ function RemoveParameters
 
 function RemoveVersionSpecificParameters
 {
-    param($PSBoundParametersIn, [string]$ParamName, [string]$ResourceName, [ValidateSet("2013","2016")][string]$ParamExistsInVersion)
+    param($PSBoundParametersIn, [System.String]$ParamName, [System.String]$ResourceName, [ValidateSet("2013","2016")][System.String]$ParamExistsInVersion)
 
     if ($PSBoundParametersIn.ContainsKey($ParamName))
     {
@@ -548,7 +548,7 @@ function SetEmptyStringParamsToNull
 {
     param($PSBoundParametersIn)
 
-    [string[]] $emptyStringKeys = @()
+    [System.String[]] $emptyStringKeys = @()
 
     #First find all parameters that are a string, and are an empty string ("")
     foreach ($key in $PSBoundParametersIn.Keys)
@@ -570,7 +570,7 @@ function VerifySetting
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param([string]$Name, [string]$Type, $ExpectedValue, $ActualValue, $PSBoundParametersIn, $VerbosePreference)
+    param([System.String]$Name, [System.String]$Type, $ExpectedValue, $ActualValue, $PSBoundParametersIn, $VerbosePreference)
 
     $returnValue = $true
 
@@ -813,7 +813,7 @@ function CheckForCmdletParameter
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param([string]$CmdletName, [string]$ParameterName)
+    param([System.String]$CmdletName, [System.String]$ParameterName)
 
     [bool]$hasParameter = $false
 
@@ -843,12 +843,12 @@ function NotePreviousError
 function ThrowIfNewErrorsEncountered
 {
     [CmdletBinding()]
-    param([string]$CmdletBeingRun, $VerbosePreference)
+    param([System.String]$CmdletBeingRun, $VerbosePreference)
 
     #Throw an exception if errors were encountered
     if ($Global:error.Count -gt 0 -and $Global:previousError -ne $Global:error[0])
     {
-        [string]$errorMsg = "Failed to run $($CmdletBeingRun) with: " + $Global:error[0]
+        [System.String]$errorMsg = "Failed to run $($CmdletBeingRun) with: " + $Global:error[0]
         Write-Error $errorMsg
         throw $errorMsg
     }
@@ -857,7 +857,7 @@ function ThrowIfNewErrorsEncountered
 function RestartAppPoolIfExists
 {
     [CmdletBinding()]
-    param([string]$Name)
+    param([System.String]$Name)
 
     $state = Get-WebAppPoolState -Name $Name -ErrorAction SilentlyContinue
 
@@ -889,12 +889,12 @@ function CompareIPAddresseWithString
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param([System.Net.IPAddress]$IPAddress, [String]$String)
-    if (($null -eq $IPAddress -and !([string]::IsNullOrEmpty($String))) -or ($null -ne $IPAddress -and [string]::IsNullOrEmpty($String)))
+    param([System.Net.IPAddress]$IPAddress, [System.String]$String)
+    if (($null -eq $IPAddress -and !([System.String]::IsNullOrEmpty($String))) -or ($null -ne $IPAddress -and [System.String]::IsNullOrEmpty($String)))
     {
         $returnValue = $false
     }
-    elseif ($null -eq $IPAddress -and [string]::IsNullOrEmpty($String))
+    elseif ($null -eq $IPAddress -and [System.String]::IsNullOrEmpty($String))
     {
         $returnValue = $true
     }
@@ -915,19 +915,19 @@ function CompareSmtpAdressWithString
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param($SmtpAddress,[String]$String)
-    if (($null -eq $SmtpAddress) -and ([string]::IsNullOrEmpty($String)))
+    param($SmtpAddress,[System.String]$String)
+    if (($null -eq $SmtpAddress) -and ([System.String]::IsNullOrEmpty($String)))
     {
         Write-Verbose "Expected and actual value is empty, therefore equal!"
         return $true
     }
-    elseif (($null -eq $SmtpAddress) -and -not ([string]::IsNullOrEmpty($String)))
+    elseif (($null -eq $SmtpAddress) -and -not ([System.String]::IsNullOrEmpty($String)))
     {
         return $false
     }
     elseif ($SmtpAddress.Gettype() -eq [Microsoft.Exchange.Data.SmtpAddress])
     {
-        if ([string]::IsNullOrEmpty($String))
+        if ([System.String]::IsNullOrEmpty($String))
         {
             return $false
         }
@@ -949,11 +949,11 @@ function CompareIPAddressesWithArray
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param($IPAddresses, [Array]$Array)
-    if (([string]::IsNullOrEmpty($IPAddresses)) -and ([string]::IsNullOrEmpty($Array)))
+    if (([System.String]::IsNullOrEmpty($IPAddresses)) -and ([System.String]::IsNullOrEmpty($Array)))
     {
         $returnValue = $true
     }
-    elseif ((([string]::IsNullOrEmpty($IPAddresses)) -and !(([string]::IsNullOrEmpty($Array)))) -or (!(([string]::IsNullOrEmpty($IPAddresses))) -and ([string]::IsNullOrEmpty($Array))))
+    elseif ((([System.String]::IsNullOrEmpty($IPAddresses)) -and !(([System.String]::IsNullOrEmpty($Array)))) -or (!(([System.String]::IsNullOrEmpty($IPAddresses))) -and ([System.String]::IsNullOrEmpty($Array))))
     {
         $returnValue = $false
     }

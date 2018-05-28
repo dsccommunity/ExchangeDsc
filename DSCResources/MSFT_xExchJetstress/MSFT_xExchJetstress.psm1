@@ -41,10 +41,7 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
-    <#
-        Suppressing this rule because $global:DSCMachineStatus is used to trigger
-        a reboot, either by force or when there are pending changes.
-    #>
+    # Suppressing this rule because $global:DSCMachineStatus is used to trigger a reboot.
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
     <#
         Suppressing this rule because $global:DSCMachineStatus is only set,
@@ -120,9 +117,11 @@ function Set-TargetResource
                 }
             }
 
-            #I've found that Jetstress doesn't always restart after loading ESE when running as local system in a scheduled task in the background
-            #If Jetstress isn't running at this point, but the perf counters were registered, we probably need to reboot the server
-            #If Jetstress isn't running and ESE is not registered, something failed.
+            <#
+                I've found that Jetstress doesn't always restart after loading ESE when running as local system in a scheduled task in the background
+                If Jetstress isn't running at this point, but the perf counters were registered, we probably need to reboot the server
+                If Jetstress isn't running and ESE is not registered, something failed.
+            #>
             if ($jetstressRunning -eq $false)
             {
                 if ((Test-Path -LiteralPath "$($env:SystemRoot)\Inf\ESE\eseperf.ini") -eq $true)
@@ -359,7 +358,7 @@ function JetstressTestSuccessful
                 {
                     $foundAchievedIOPS = $true
 
-                    if ([string]::IsNullOrEmpty($result) -eq $false)
+                    if ([System.String]::IsNullOrEmpty($result) -eq $false)
                     {
                         Write-Verbose "File $($latest.FullName)'' has an 'Achieved Transactional I/O per Second' value of '$($result)'"
 

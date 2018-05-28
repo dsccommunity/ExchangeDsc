@@ -10,7 +10,7 @@ Import-Module $PSScriptRoot\xExchange.Tests.Common.psm1 -Verbose:0
 function Test-ServicesInCertificate
 {
     [CmdletBinding()]
-    param([Hashtable]$TestParams, [string]$ContextLabel)
+    param([Hashtable]$TestParams, [System.String]$ContextLabel)
 
     Context $ContextLabel {
         [Hashtable]$getResult = Get-TargetResource @TestParams
@@ -36,10 +36,10 @@ if ($exchangeInstalled)
     $certPassword = ConvertTo-SecureString "Password1" -AsPlainText -Force
     $certCredentials = New-Object System.Management.Automation.PSCredential ("admin", $certPassword)
 
-    [string]$testCertThumbprint1 = "766358855A7361C6D99D4FB58903AB0833296B2A"
-    [string]$testCertThumbprint2 = "4C14890860F4126A18560779B8AF8B818B900F5A"
-    [string]$testCertPath1 = "$($PSScriptRoot)\Data\TestCert1.pfx"
-    [string]$testCertPath2 = "$($PSScriptRoot)\Data\TestCert2.pfx"
+    [System.String]$testCertThumbprint1 = "766358855A7361C6D99D4FB58903AB0833296B2A"
+    [System.String]$testCertThumbprint2 = "4C14890860F4126A18560779B8AF8B818B900F5A"
+    [System.String]$testCertPath1 = "$($PSScriptRoot)\Data\TestCert1.pfx"
+    [System.String]$testCertPath2 = "$($PSScriptRoot)\Data\TestCert2.pfx"
 
     Describe "Test Installing, Enabling, and Removing Exchange Certificates" {
         #Test installing and enabling test cert 1

@@ -45,7 +45,7 @@ function Start-TransportMaintenance
     param
     (
         [Parameter()]
-        [string]
+        [System.String]
         $Target = $env:COMPUTERNAME,
 
         [Parameter()]
@@ -53,11 +53,11 @@ function Start-TransportMaintenance
         $ExcludeLocalSiteFromMessageRedirect,
 
         [Parameter()]
-        [boolean]
+        [System.Boolean]
         $LoadLocalShell = $false,
         
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $MessageRedirectExclusions
     )
 
@@ -110,7 +110,7 @@ function Stop-TransportMaintenance
     param
     (
         [Parameter()]
-        [boolean]
+        [System.Boolean]
         $LoadLocalShell = $false
     )
 
@@ -148,7 +148,7 @@ function Initialize-TransportMaintenance
     param
     (
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $Target
     )
         
@@ -211,7 +211,7 @@ function Invoke-FullyDrainTransport
     param
     (
         [Parameter()]
-        [string]
+        [System.String]
         $Target = $env:COMPUTERNAME,
 
         [Parameter()]
@@ -219,7 +219,7 @@ function Invoke-FullyDrainTransport
         $ExcludeLocalSiteFromMessageRedirect,
         
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $MessageRedirectExclusions
     )
 
@@ -255,7 +255,7 @@ function Invoke-RemoteMaintenance
     param
     (
         [Parameter()]
-        [string]
+        [System.String]
         $Target = $env:COMPUTERNAME,
 
         [Parameter()]
@@ -263,7 +263,7 @@ function Invoke-RemoteMaintenance
         $ExcludeLocalSiteFromMessageRedirect,
         
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $MessageRedirectExclusions
     )
 
@@ -472,7 +472,7 @@ function Get-ServersInDag
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String]
+        [System.String]
         $server,
 
         [Parameter(Mandatory = $true)]
@@ -480,7 +480,7 @@ function Get-ServersInDag
         $ExcludeLocalSite,
         
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $AdditionalExclusions
     )
 
@@ -559,7 +559,7 @@ function Get-ActiveServer
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String[]]
+        [System.String[]]
         $Servers
     )
 
@@ -591,7 +591,7 @@ function Get-ExchangeVersion
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String]
+        [System.String]
         $server
     )
 
@@ -605,7 +605,7 @@ function Get-ExchangeVersion
         return $null
     }
 
-    $versionString = [string]::Format('{0}.{1}.{2}.{3}', `
+    $versionString = [System.String]::Format('{0}.{1}.{2}.{3}', `
                                      $serverVersion.Major.ToString('D2'), `
                                      $serverVersion.Minor.ToString('D2'), `
                                      $serverVersion.Build.ToString('D4'), `
@@ -634,7 +634,7 @@ function Get-TransportMaintenanceLogFileList()
         $TransportService,
 
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $LogPath
     )
 
@@ -661,7 +661,7 @@ function Register-TransportMaintenanceLog
         $TransportService,
 
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $LogPath
     )
 
@@ -730,7 +730,7 @@ function Remove-TransportMaintenanceLogsOverMaxAge
         $TransportService,
 
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $LogPath
     )
 
@@ -761,7 +761,7 @@ function Remove-TransportMaintenanceLogsOverMaxDirectorySize
         $TransportService,
 
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $LogPath
     )
 
@@ -812,7 +812,7 @@ function Get-MaintenanceLogPath
         $TransportService,
 
         [Parameter()]
-        [String]
+        [System.String]
         $Server = $env:ComputerName
     )
     
@@ -858,7 +858,7 @@ function Initialize-TransportMaintenanceLog()
     param
     (
         [Parameter()]
-        [String]
+        [System.String]
         $Server = $env:ComputerName
     )
 
@@ -932,21 +932,21 @@ function Set-ServiceState
     param
     (
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $ServiceName,
         
         [Parameter()]
-        [string]
+        [System.String]
         $Server = $env:COMPUTERNAME,
 
         [Parameter()]
         [ValidateSet('NoChange', 'Stopped', 'Running', 'Paused')]
-        [string]
+        [System.String]
         $State = 'NoChange',
         
         [Parameter()]
         [ValidateSet('NoChange', 'Auto', 'Automatic', 'Manual', 'Disabled')]
-        [string]
+        [System.String]
         $StartMode = 'NoChange',
         
         [Parameter()]
@@ -954,7 +954,7 @@ function Set-ServiceState
         $WaitTime = (New-TimeSpan -Minutes 5),
         
         [Parameter()]
-        [string]
+        [System.String]
         $LoggingStage,
         
         [Parameter()]
@@ -1096,15 +1096,15 @@ function New-LogEntry
     param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Source,
 
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $Stage,
 
         [Parameter()]
-        [string]
+        [System.String]
         $Id,
 
         [Parameter()]
@@ -1140,7 +1140,7 @@ function Write-EventOfEntry
     param
     (
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $Event,
 
         [Parameter(Mandatory = $true)]
@@ -1170,7 +1170,7 @@ function Write-EventOfEntry
             }
     }
 
-    $msg = [string]::Format('{0},{1},{2},{3},{4},{5:g},{6},{7},{8}', `
+    $msg = [System.String]::Format('{0},{1},{2},{3},{4},{5:g},{6},{7},{8}', `
                         (Get-Date), `
                         $Entry.Source, `
                         $Entry.Stage, `
@@ -1236,15 +1236,15 @@ function Write-SkippedEvent
     param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Source,
 
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $Stage,
 
         [Parameter()]
-        [string]
+        [System.String]
         $Id,
 
         [Parameter()]
@@ -1283,15 +1283,15 @@ function Write-InfoEvent
     param
     (
         [Parameter(Mandatory = $true)]
-        [String]
+        [System.String]
         $Source,
 
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $Stage,
 
         [Parameter()]
-        [string]
+        [System.String]
         $Id,
 
         [Parameter()]
@@ -1392,11 +1392,11 @@ function Update-EntriesTracker
         $Tracker,
 
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $Source,
 
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $Stage,
 
         [Parameter()]
@@ -1491,7 +1491,7 @@ function Wait-EmptyEntriesCompletion
         $GetEntries,
 
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $Stage,
 
         [Parameter()]
@@ -1503,7 +1503,7 @@ function Wait-EmptyEntriesCompletion
         $GetEntriesArgs = @(),
 
         [Parameter()]
-        [string]
+        [System.String]
         $Source = $env:COMPUTERNAME,
 
         [Parameter()]
@@ -1664,11 +1664,11 @@ function Wait-EmptyQueuesCompletion
     param
     (
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $Server = $null,
 
         [Parameter()]
-        [String[]]
+        [System.String[]]
         $QueueTypes = $null,
 
         [Parameter()]
@@ -1676,7 +1676,8 @@ function Wait-EmptyQueuesCompletion
         $ActiveMsgOnly = $false,
 
         [Parameter()]
-        [string]$Stage = 'QueueDrain',
+        [System.String]
+        $Stage = 'QueueDrain',
 
         [Parameter()]
         [TimeSpan]
@@ -1700,11 +1701,11 @@ function Wait-EmptyQueuesCompletion
         param
         (
             [Parameter(Mandatory = $true)]
-            [string]
+            [System.String]
             $Server = $null,
 
             [Parameter(Mandatory = $true)]
-            [string[]]
+            [System.String[]]
             $QueueTypes,
 
             [Parameter(Mandatory = $true)]
@@ -1773,7 +1774,7 @@ function Get-DiscardInfo
     param
     (
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $Server,
 
         [Parameter()]
@@ -1845,11 +1846,11 @@ function Wait-EmptyDiscardsCompletion
     param
     (
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $Server = $null,
 
         [Parameter(Mandatory = $true)]
-        [string[]]
+        [System.String[]]
         $ActiveServers = $null,
 
         [Parameter()]
@@ -1884,11 +1885,11 @@ function Wait-EmptyDiscardsCompletion
         param
         (
             [Parameter(Mandatory = $true)]
-            [string]
+            [System.String]
             $Server = $null,
 
             [Parameter(Mandatory = $true)]
-            [string[]]
+            [System.String[]]
             $ActiveServers = $null
         )
 
@@ -1937,7 +1938,7 @@ function Wait-BootLoaderCountCheck
     param
     (
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $ServerFqdn,
 
         [Parameter()]
@@ -1962,7 +1963,7 @@ function Wait-BootLoaderCountCheck
         param
         (
             [Parameter(Mandatory = $true)]
-            [string]
+            [System.String]
             $fqdn = $null,
 
             [Parameter(Mandatory = $true)]
@@ -2037,7 +2038,7 @@ function Wait-BootLoaderSubmitCheck
     param
     (
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $ServerFqdn,
 
         [Parameter()]
@@ -2062,7 +2063,7 @@ function Wait-BootLoaderSubmitCheck
         param
         (
             [Parameter(Mandatory = $true)]
-            [string]
+            [System.String]
             $fqdn = $null
         )
 
@@ -2133,7 +2134,7 @@ function Wait-BootLoaderReady
     param
     (
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $Server = $null,
 
         [Parameter()]
@@ -2261,7 +2262,7 @@ function Clear-ActiveMessage
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String]
+        [System.String]
         $Server = $env:COMPUTERNAME,
 
         [Parameter()]
@@ -2308,7 +2309,7 @@ function Send-MessagesToNewServer
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String]
+        [System.String]
         $Server,
 
         [Parameter()]
@@ -2320,7 +2321,7 @@ function Send-MessagesToNewServer
         $LogIfRemain,
         
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $MessageRedirectExclusions
     )
 
@@ -2339,7 +2340,7 @@ function Send-MessagesToNewServer
     $serversInDag = Get-ActiveServer $serversInDag
     $hubFqdns = $serversInDag | Where-Object { $_ -ne $Server } | ForEach-Object { $_ + $domain }
 
-    $verboseMessage = "$Server - Redirecting messages to " + [string]::Join(', ', $hubFqdns)
+    $verboseMessage = "$Server - Redirecting messages to " + [System.String]::Join(', ', $hubFqdns)
     Write-Verbose -Message $verboseMessage
 
     Redirect-Message -Target $hubFqdns -Server $Server -Confirm:$false -ErrorAction SilentlyContinue
@@ -2378,12 +2379,12 @@ function Clear-DiscardEvent
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String]
+        [System.String]
         $Primary,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [String[]]
+        [System.String[]]
         $ShadowServers,
 
         [Parameter()]
@@ -2503,16 +2504,16 @@ function Set-ComponentState
     (
         [Parameter(Mandatory = $true)]
         [ValidateSet('Active', 'Inactive')]
-        [string]$State,
+        [System.String]$State,
 
         [Parameter()]
-        [string]$Component = 'HubTransport',
+        [System.String]$Component = 'HubTransport',
 
         [Parameter()]
-        [string]$Requester = 'Maintenance',
+        [System.String]$Requester = 'Maintenance',
 
         [Parameter()]
-        [string]$Server = $env:COMPUTERNAME
+        [System.String]$Server = $env:COMPUTERNAME
     )
 
     Write-Verbose -Message "Setting $Component state to $State"
@@ -2538,10 +2539,12 @@ function Get-ComponentState
     param
     (
         [Parameter()]
-        [string]$Server = $env:COMPUTERNAME,
+        [System.String]
+        $Server = $env:COMPUTERNAME,
 
         [Parameter()]
-        [string]$Component = 'HubTransport'
+        [System.String]
+        $Component = 'HubTransport'
     )
 
     Write-Verbose -Message "Getting $Component state of $Server"
@@ -2585,21 +2588,21 @@ function Set-ServiceState
     param
     (
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $ServiceName,
         
         [Parameter()]
-        [string]
+        [System.String]
         $Server = $env:COMPUTERNAME,
 
         [Parameter()]
         [ValidateSet('NoChange', 'Stopped', 'Running', 'Paused')]
-        [string]
+        [System.String]
         $State = 'NoChange',
         
         [Parameter()]
         [ValidateSet('NoChange', 'Auto', 'Automatic', 'Manual', 'Disabled')]
-        [string]
+        [System.String]
         $StartMode = 'NoChange',
         
         [Parameter()]
@@ -2607,7 +2610,7 @@ function Set-ServiceState
         $WaitTime = (New-TimeSpan -Minutes 5),
         
         [Parameter()]
-        [string]
+        [System.String]
         $LoggingStage,
         
         [Parameter()]
@@ -2752,16 +2755,16 @@ function Wait-ServiceState
     param
     (
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $ServiceName,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('Stopped', 'Running', 'Paused')]
-        [string]
+        [System.String]
         $State,
 
         [Parameter()]
-        [string]
+        [System.String]
         $Server = $env:COMPUTERNAME,
         
         [Parameter()]
@@ -2811,12 +2814,12 @@ function Stop-ServiceForcefully
     (
         [Parameter()]
         [ValidateNotNullOrEmpty()]
-        [string]
+        [System.String]
         $ServiceName = $(throw 'ServiceName required.'),
 
         [Parameter()]
         [ValidateSet('Auto', 'Manual', 'Disabled')]
-        [string]
+        [System.String]
         $StartMode = 'Auto'
     )
 

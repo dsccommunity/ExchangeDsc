@@ -3,7 +3,7 @@ function StartDiskpart
 {
     [CmdletBinding()]
     [OutputType([System.String])]
-    Param ([Array]$Commands, [Boolean]$ShowOutput = $true, $VerbosePreference)
+    Param ([Array]$Commands, [System.Boolean]$ShowOutput = $true, $VerbosePreference)
 
     $Tempfile = [System.IO.Path]::GetTempFileName()
 
@@ -133,7 +133,7 @@ function GetDiskInfo
             }
             elseif ($line.Contains("There are no volumes."))
             {
-                [string[]]$emptyArray = @()
+                [System.String[]]$emptyArray = @()
                 $DiskToVolumeMap[$diskNum] = $emptyArray
 
                 break
@@ -148,7 +148,7 @@ function GetDiskInfo
 
 function StringArrayToCommaSeparatedString
 {
-    param([string[]]$Array)
+    param([System.String[]]$Array)
 
     $string = ""
 
@@ -185,7 +185,7 @@ function AddObjectToMapOfObjectArrays
 #Returns the volume number if it does exist, else -1
 function MountPointExists
 {
-    param([string]$Path)
+    param([System.String]$Path)
 
     foreach ($key in $global:VolumeToMountPointMap.Keys)
     {

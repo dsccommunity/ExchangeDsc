@@ -140,7 +140,7 @@ function Set-TargetResource
 
     $needRestart = $false
 
-    if ($PSBoundParameters.ContainsKey('ProductKey') -and !([string]::IsNullOrEmpty($ProductKey)) -and $null -ne $server -and $server.IsExchangeTrialEdition -eq $true)
+    if ($PSBoundParameters.ContainsKey('ProductKey') -and !([System.String]::IsNullOrEmpty($ProductKey)) -and $null -ne $server -and $server.IsExchangeTrialEdition -eq $true)
     {
         $needRestart = $true
     }
@@ -252,7 +252,7 @@ function Test-TargetResource
             return $false
         }
 
-        if ($PSBoundParameters.ContainsKey('ProductKey') -and !([string]::IsNullOrEmpty($ProductKey)) -and $server.IsExchangeTrialEdition -eq $true)
+        if ($PSBoundParameters.ContainsKey('ProductKey') -and !([System.String]::IsNullOrEmpty($ProductKey)) -and $server.IsExchangeTrialEdition -eq $true)
         {
             ReportBadSetting -SettingName 'ProductKey' -ExpectedValue $ProductKey -ActualValue $server.ProductKey -VerbosePreference $VerbosePreference
             return $false

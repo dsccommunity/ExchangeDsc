@@ -1,9 +1,9 @@
 function DBMapFromServersCsv
 {
-    param([string]$ServersCsvPath, [string]$ServerNameInCsv, [Hashtable]$DbNameReplacements = @{})
+    param([System.String]$ServersCsvPath, [System.String]$ServerNameInCsv, [Hashtable]$DbNameReplacements = @{})
 
     #Output variable for the function
-    [string[]]$dbMapOut = @()
+    [System.String[]]$dbMapOut = @()
 
     if ((Test-Path -LiteralPath "$($ServersCsvPath)") -eq $true)
     {
@@ -34,7 +34,7 @@ function DBMapFromServersCsv
                     #Loop through the DbMap in increments of dbPerVolume and figure out which DB's will go on a single disk
                     for ($j = 0; $j -lt $dbMapIn.Count; $j += $dbPerVolume)
                     {
-                        [string]$currentDisk = ""
+                        [System.String]$currentDisk = ""
 
                         #Loop through the individual DB's for this disk
                         for ($k = $j; $k -lt $j + $dbPerVolume; $k++)
@@ -78,7 +78,7 @@ function DBMapFromServersCsv
 
 function DBListFromMailboxDatabasesCsv
 {
-    param([string]$MailboxDatabasesCsvPath, [string]$ServerNameInCsv, [Hashtable]$DbNameReplacements = @{})
+    param([System.String]$MailboxDatabasesCsvPath, [System.String]$ServerNameInCsv, [Hashtable]$DbNameReplacements = @{})
 
     #Output variable for the function
     [Array]$dbList = @()
@@ -150,7 +150,7 @@ function DBListFromMailboxDatabasesCsv
 
 function DBListFromMailboxDatabaseCopiesCsv
 {
-    param([string]$MailboxDatabaseCopiesCsvPath, [string]$ServerNameInCsv, [Hashtable]$DbNameReplacements = @{})
+    param([System.String]$MailboxDatabaseCopiesCsvPath, [System.String]$ServerNameInCsv, [Hashtable]$DbNameReplacements = @{})
 
     #Output variable for the function
     [Array]$dbList = @()
@@ -194,7 +194,7 @@ function DBListFromMailboxDatabaseCopiesCsv
 
 function StringReplaceFromHashtable
 {
-    param([string]$StringIn, $Replacements = @{})
+    param([System.String]$StringIn, $Replacements = @{})
 
     if ($Replacements.Count -gt 0)
     {

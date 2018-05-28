@@ -307,7 +307,7 @@ function Test-TargetResource
         }
 
         #ExternalClientsRequireSsl will only actually return as $true if ExternalHostname was also set
-        if (![string]::IsNullOrEmpty($ExternalHostname) -and !(VerifySetting -Name 'ExternalClientsRequireSsl' -Type 'Boolean' -ExpectedValue $ExternalClientsRequireSsl -ActualValue $RpcVdir.ExternalClientsRequireSsl -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (![System.String]::IsNullOrEmpty($ExternalHostname) -and !(VerifySetting -Name 'ExternalClientsRequireSsl' -Type 'Boolean' -ExpectedValue $ExternalClientsRequireSsl -ActualValue $RpcVdir.ExternalClientsRequireSsl -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }

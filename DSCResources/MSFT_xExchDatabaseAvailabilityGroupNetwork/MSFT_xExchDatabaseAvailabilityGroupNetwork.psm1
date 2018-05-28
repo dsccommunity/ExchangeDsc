@@ -280,7 +280,10 @@ function GetDatabaseAvailabilityGroupNetwork
         $Subnets
     )
 
-    AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = "$($DatabaseAvailabilityGroup)\$($Name)"; 'ErrorAction' = 'SilentlyContinue'}
+    AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
+        'Identity' = "$($DatabaseAvailabilityGroup)\$($Name)"
+        'ErrorAction' = 'SilentlyContinue'
+    }
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','ErrorAction','DomainController'
 
     return (Get-DatabaseAvailabilityGroupNetwork @PSBoundParameters)
@@ -297,7 +300,7 @@ function SubnetsToArray
 
     if ($null -ne $Subnets -and $Subnets.Count -gt 0)
     {
-        [string[]]$SubnetsOut = $Subnets[0].SubnetId
+        [System.String[]]$SubnetsOut = $Subnets[0].SubnetId
 
         for ($i = 1; $i -lt $Subnets.Count; $i++)
         {

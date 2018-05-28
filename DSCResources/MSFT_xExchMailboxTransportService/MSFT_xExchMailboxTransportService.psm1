@@ -260,7 +260,7 @@ function Set-TargetResource
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
 
     #if PipelineTracingSenderAddress exists and is empty, set it to $null so Set-MailboxTransportService nulls out the stored value
-    if ($PSBoundParameters.ContainsKey('PipelineTracingSenderAddress') -and [string]::IsNullOrEmpty($PipelineTracingSenderAddress))
+    if ($PSBoundParameters.ContainsKey('PipelineTracingSenderAddress') -and [System.String]::IsNullOrEmpty($PipelineTracingSenderAddress))
     {
         $PSBoundParameters['PipelineTracingSenderAddress'] = $null
     }

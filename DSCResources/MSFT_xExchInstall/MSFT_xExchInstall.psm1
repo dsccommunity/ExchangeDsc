@@ -19,7 +19,10 @@ function Get-TargetResource
         $Credential
     )
 
-    LogFunctionEntry -Parameters @{'Path' = $Path; 'Arguments' = $Arguments} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{
+        'Path' = $Path
+        'Arguments' = $Arguments
+    } -VerbosePreference $VerbosePreference
 
     $returnValue = @{
         Path = $Path
@@ -210,10 +213,7 @@ function GetInstallStatus
 #If any required keys are missing, configure WinRM, then force a reboot
 function CheckWSManConfig
 {
-    <#
-        Suppressing this rule because $global:DSCMachineStatus is used to trigger
-        a reboot, either by force or when there are pending changes.
-    #>
+    # Suppressing this rule because $global:DSCMachineStatus is used to trigger a reboot.
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
     <#
         Suppressing this rule because $global:DSCMachineStatus is only set,
