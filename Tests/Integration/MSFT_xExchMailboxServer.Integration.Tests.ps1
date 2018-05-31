@@ -1,21 +1,34 @@
-###NOTE: This test module requires use of credentials. The first run through of the tests will prompt for credentials from the logged on user.
+<#
+    .SYNOPSIS
+        Automated integration test for MSFT_xExchMailboxServer DSC Resource.
+        This test module requires use of credentials.
+        The first run through of the tests will prompt for credentials from the logged on user.
+#>
 
-Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchMailboxServer\MSFT_xExchMailboxServer.psm1
-Import-Module $PSScriptRoot\..\Modules\xExchangeHelper.psm1 -Verbose:0
-Import-Module $PSScriptRoot\xExchange.Tests.Common.psm1 -Verbose:0
+#region HEADER
+[System.String]$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[System.String]$script:DSCModuleName = 'xExchange'
+[System.String]$script:DSCResourceFriendlyName = 'xExchMailboxServer'
+[System.String]$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[bool]$exchangeInstalled = IsSetupComplete
+[System.Boolean]$exchangeInstalled = IsSetupComplete
+
+#endregion HEADER
 
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
     if ($null -eq $Global:ShellCredentials)
     {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message "Enter credentials for connecting a Remote PowerShell session to Exchange"
+        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
     }
 
-    Describe "Test Setting Properties with xExchMailboxServer" {
+    Describe 'Test Setting Properties with xExchMailboxServer' {
         $serverVersion = GetExchangeVersion
 
         #Make sure DB activation is not blocked
@@ -78,13 +91,13 @@ if ($exchangeInstalled)
             SubjectLogForManagedFoldersEnabled = $true
         }
 
-        if ($serverVersion -eq "2016")
+        if ($serverVersion -eq '2016')
         {
-            $testParams.Add("WacDiscoveryEndpoint", "")
-            $expectedGetResults.Add("WacDiscoveryEndpoint", "")
+            $testParams.Add('WacDiscoveryEndpoint', '')
+            $expectedGetResults.Add('WacDiscoveryEndpoint', '')
         }
 
-        if ($serverVersion -eq "2013")
+        if ($serverVersion -eq '2013')
         {
             $testParams.Add('CalendarRepairWorkCycle', '2.00:00:00')
             $expectedGetResults.Add('CalendarRepairWorkCycle', '2.00:00:00')
@@ -128,26 +141,30 @@ if ($exchangeInstalled)
             $expectedGetResults.Add('UMReportingWorkCycleCheckpoint', '2.00:00:00')
         }
 
-        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set non-default values for all properties" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams `
+                                         -ContextLabel 'Set non-default values for all properties' `
+                                         -ExpectedGetResults $expectedGetResults
 
         #Block DB activation
         $testParams.DatabaseCopyActivationDisabledAndMoveNow = $true
-        $testParams.DatabaseCopyAutoActivationPolicy = "Blocked"
-        $testParams.MaximumActiveDatabases = "24"
-        $testParams.MaximumPreferredActiveDatabases = "12"
+        $testParams.DatabaseCopyAutoActivationPolicy = 'Blocked'
+        $testParams.MaximumActiveDatabases = '24'
+        $testParams.MaximumPreferredActiveDatabases = '12'
 
         $expectedGetResults.DatabaseCopyActivationDisabledAndMoveNow = $true
-        $expectedGetResults.DatabaseCopyAutoActivationPolicy = "Blocked"
-        $expectedGetResults.MaximumActiveDatabases = "24"
-        $expectedGetResults.MaximumPreferredActiveDatabases = "12"
+        $expectedGetResults.DatabaseCopyAutoActivationPolicy = 'Blocked'
+        $expectedGetResults.MaximumActiveDatabases = '24'
+        $expectedGetResults.MaximumPreferredActiveDatabases = '12'
 
-        if ($serverVersion -eq "2016")
+        if ($serverVersion -eq '2016')
         {
-            $testParams["WacDiscoveryEndpoint"] = "https://localhost/hosting/discovery"
-            $expectedGetResults["WacDiscoveryEndpoint"] = "https://localhost/hosting/discovery"
+            $testParams['WacDiscoveryEndpoint'] = 'https://localhost/hosting/discovery'
+            $expectedGetResults['WacDiscoveryEndpoint'] = 'https://localhost/hosting/discovery'
         }
 
-        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Block DB Activation, Set WacDiscoveryEndpoint, and modify MaxDBValues" -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -Params $testParams `
+                                         -ContextLabel 'Block DB Activation, Set WacDiscoveryEndpoint, and modify MaxDBValues' `
+                                         -ExpectedGetResults $expectedGetResults
 
         #Make sure DB activation is not blocked
         $testParams = @{
@@ -206,61 +223,68 @@ if ($exchangeInstalled)
             SubjectLogForManagedFoldersEnabled = $false
         }
 
-        if ($serverVersion -eq "2016")
+        if ($serverVersion -eq '2016')
         {
-            $testParams["CalendarRepairIntervalEndWindow"] = '7'
-            $expectedGetResults["CalendarRepairIntervalEndWindow"] = '7'
-            $testParams["WacDiscoveryEndpoint"] = ""
-            $expectedGetResults["WacDiscoveryEndpoint"] = ""
+            $testParams['CalendarRepairIntervalEndWindow'] = '7'
+            $expectedGetResults['CalendarRepairIntervalEndWindow'] = '7'
+            $testParams['WacDiscoveryEndpoint'] = ''
+            $expectedGetResults['WacDiscoveryEndpoint'] = ''
         }
 
-        if ($serverVersion -eq "2013")
+        if ($serverVersion -eq '2013')
         {
-            $testParams["CalendarRepairIntervalEndWindow"] = '30'
-            $expectedGetResults["CalendarRepairIntervalEndWindow"] = '30'
-            $testParams["CalendarRepairWorkCycle"] = '1.00:00:00'
-            $expectedGetResults["CalendarRepairWorkCycle"] = '1.00:00:00'
-            $testParams["CalendarRepairWorkCycleCheckpoint"] = '1.00:00:00'
-            $expectedGetResults["CalendarRepairWorkCycleCheckpoint"] = '1.00:00:00'
-            $testParams["MailboxProcessorWorkCycle"] = '1.00:00:00'
-            $expectedGetResults["MailboxProcessorWorkCycle"] = '1.00:00:00'
-            $testParams["ManagedFolderAssistantSchedule"] = $null
-            $expectedGetResults["ManagedFolderAssistantSchedule"] = $null
-            $testParams["ManagedFolderWorkCycle"] = '1.00:00:00'
-            $expectedGetResults["ManagedFolderWorkCycle"] = '1.00:00:00'
-            $testParams["ManagedFolderWorkCycleCheckpoint"] = '1.00:00:00'
-            $expectedGetResults["ManagedFolderWorkCycleCheckpoint"] = '1.00:00:00'
-            $testParams["OABGeneratorWorkCycle"] = '08:00:00'
-            $expectedGetResults["OABGeneratorWorkCycle"] = '08:00:00'
-            $testParams["OABGeneratorWorkCycleCheckpoint"] = '01:00:00'
-            $expectedGetResults["OABGeneratorWorkCycleCheckpoint"] = '01:00:00'
-            $testParams["PublicFolderWorkCycle"] = '1.00:00:00'
-            $expectedGetResults["PublicFolderWorkCycle"] = '1.00:00:00'
-            $testParams["PublicFolderWorkCycleCheckpoint"] = '1.00:00:00'
-            $expectedGetResults["PublicFolderWorkCycleCheckpoint"] = '1.00:00:00'
-            $testParams["SharingPolicyWorkCycle"] = '1.00:00:00'
-            $expectedGetResults["SharingPolicyWorkCycle"] = '1.00:00:00'
-            $testParams["SharingSyncWorkCycleCheckpoint"] = '1.00:00:00'
-            $expectedGetResults["SharingSyncWorkCycleCheckpoint"] = '1.00:00:00'
-            $testParams["SiteMailboxWorkCycle"] = '06:00:00'
-            $expectedGetResults["SiteMailboxWorkCycle"] = '06:00:00'
-            $testParams["SiteMailboxWorkCycleCheckpoint"] = '06:00:00'
-            $expectedGetResults["SiteMailboxWorkCycleCheckpoint"] = '06:00:00'
-            $testParams["TopNWorkCycle"] = '7.00:00:00'
-            $expectedGetResults["TopNWorkCycle"] = '7.00:00:00'
-            $testParams["TopNWorkCycleCheckpoint"] = '1.00:00:00'
-            $expectedGetResults["TopNWorkCycleCheckpoint"] = '1.00:00:00'
-            $testParams["UMReportingWorkCycle"] = '1.00:00:00'
-            $expectedGetResults["UMReportingWorkCycle"] = '1.00:00:00'
-            $testParams["UMReportingWorkCycleCheckpoint"] = '1.00:00:00'
-            $expectedGetResults["UMReportingWorkCycleCheckpoint"] = '1.00:00:00'
+            $testParams['CalendarRepairIntervalEndWindow'] = '30'
+            $expectedGetResults['CalendarRepairIntervalEndWindow'] = '30'
+            $testParams['CalendarRepairWorkCycle'] = '1.00:00:00'
+            $expectedGetResults['CalendarRepairWorkCycle'] = '1.00:00:00'
+            $testParams['CalendarRepairWorkCycleCheckpoint'] = '1.00:00:00'
+            $expectedGetResults['CalendarRepairWorkCycleCheckpoint'] = '1.00:00:00'
+            $testParams['MailboxProcessorWorkCycle'] = '1.00:00:00'
+            $expectedGetResults['MailboxProcessorWorkCycle'] = '1.00:00:00'
+            $testParams['ManagedFolderAssistantSchedule'] = $null
+            $expectedGetResults['ManagedFolderAssistantSchedule'] = $null
+            $testParams['ManagedFolderWorkCycle'] = '1.00:00:00'
+            $expectedGetResults['ManagedFolderWorkCycle'] = '1.00:00:00'
+            $testParams['ManagedFolderWorkCycleCheckpoint'] = '1.00:00:00'
+            $expectedGetResults['ManagedFolderWorkCycleCheckpoint'] = '1.00:00:00'
+            $testParams['OABGeneratorWorkCycle'] = '08:00:00'
+            $expectedGetResults['OABGeneratorWorkCycle'] = '08:00:00'
+            $testParams['OABGeneratorWorkCycleCheckpoint'] = '01:00:00'
+            $expectedGetResults['OABGeneratorWorkCycleCheckpoint'] = '01:00:00'
+            $testParams['PublicFolderWorkCycle'] = '1.00:00:00'
+            $expectedGetResults['PublicFolderWorkCycle'] = '1.00:00:00'
+            $testParams['PublicFolderWorkCycleCheckpoint'] = '1.00:00:00'
+            $expectedGetResults['PublicFolderWorkCycleCheckpoint'] = '1.00:00:00'
+            $testParams['SharingPolicyWorkCycle'] = '1.00:00:00'
+            $expectedGetResults['SharingPolicyWorkCycle'] = '1.00:00:00'
+            $testParams['SharingSyncWorkCycleCheckpoint'] = '1.00:00:00'
+            $expectedGetResults['SharingSyncWorkCycleCheckpoint'] = '1.00:00:00'
+            $testParams['SiteMailboxWorkCycle'] = '06:00:00'
+            $expectedGetResults['SiteMailboxWorkCycle'] = '06:00:00'
+            $testParams['SiteMailboxWorkCycleCheckpoint'] = '06:00:00'
+            $expectedGetResults['SiteMailboxWorkCycleCheckpoint'] = '06:00:00'
+            $testParams['TopNWorkCycle'] = '7.00:00:00'
+            $expectedGetResults['TopNWorkCycle'] = '7.00:00:00'
+            $testParams['TopNWorkCycleCheckpoint'] = '1.00:00:00'
+            $expectedGetResults['TopNWorkCycleCheckpoint'] = '1.00:00:00'
+            $testParams['UMReportingWorkCycle'] = '1.00:00:00'
+            $expectedGetResults['UMReportingWorkCycle'] = '1.00:00:00'
+            $testParams['UMReportingWorkCycleCheckpoint'] = '1.00:00:00'
+            $expectedGetResults['UMReportingWorkCycleCheckpoint'] = '1.00:00:00'
         }
 
-        Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Reset values to default" -ExpectedGetResults $expectedGetResults
-        Test-ArrayContentsEqual -TestParams $testParams -DesiredArrayContents $testParams.SharingPolicySchedule -GetResultParameterName "SharingPolicySchedule" -ContextLabel "Verify SharingPolicySchedule" -ItLabel "SharingPolicySchedule should be empty"
+        Test-TargetResourceFunctionality -Params $testParams `
+                                         -ContextLabel 'Reset values to default' `
+                                         -ExpectedGetResults $expectedGetResults
+        
+        Test-ArrayContentsEqual -TestParams $testParams `
+                                -DesiredArrayContents $testParams.SharingPolicySchedule `
+                                -GetResultParameterName 'SharingPolicySchedule' `
+                                -ContextLabel 'Verify SharingPolicySchedule' `
+                                -ItLabel 'SharingPolicySchedule should be empty'
     }
 }
 else
 {
-    Write-Verbose "Tests in this file require that Exchange is installed to be run."
+    Write-Verbose -Message 'Tests in this file require that Exchange is installed to be run.'
 }

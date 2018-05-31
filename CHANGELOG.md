@@ -83,6 +83,14 @@
 - Added xExchangeHelper.psm1 in xExchange.psd1 (section NestedModules)
 - Removed all lines with Import-Module xExchangeCommon.psm1
 - Updated .MetaTestOptIn.json file with Custom Script Analyzer Rules
+- Added Integration, TestHelpers and Unit folder
+- Moved Data folder in Tests
+- Moved Integration tests to Integration folder
+- Moved Unit test to Unit folder
+- Renamed xEchange.Tests.Common.psm1 to xExchangeTestHelper.psm1
+- Renamed xEchangeCommon.Unit.Tests.ps1 to xExchangeCommon.Tests.ps1
+- Renamed function PrepTestDAG to Initialize-TestForDAG
+- Moved function Initialize-TestForDAG to xExchangeTestHelper.psm1
 
 ## 1.20.0.0
 
