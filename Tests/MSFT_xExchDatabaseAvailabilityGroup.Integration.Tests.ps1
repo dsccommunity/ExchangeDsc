@@ -15,22 +15,22 @@ function PrepTestDAG
     [CmdletBinding()]
     param
     (
-        [string]
+        [System.String]
         $TestServerName1,
 
-        [string]
+        [System.String]
         $TestServerName2,
 
-        [string]
+        [System.String]
         $TestDAGName,
 
-        [string]
+        [System.String]
         $TestDBName
     )
     
     Write-Verbose "Cleaning up test DAG and related resources"
 
-    $secondServerSpecified = (([String]::IsNullOrEmpty($TestServerName2)) -eq $false)
+    $secondServerSpecified = (([System.String]::IsNullOrEmpty($TestServerName2)) -eq $false)
 
     GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad "*-MailboxDatabase","*-DatabaseAvailabilityGroup","Remove-DatabaseAvailabilityGroupServer","Get-MailboxDatabaseCopyStatus","Remove-MailboxDatabaseCopy"
 
@@ -100,7 +100,7 @@ if ($null -ne $adModule)
         #Check if Exchange is installed on this machine. If not, we can't run tests
         [bool]$exchangeInstalled = IsSetupComplete
 
-        [string]$Global:TestDBName = "TestDAGDB1"
+        [System.String]$Global:TestDBName = "TestDAGDB1"
 
         if ($exchangeInstalled)
         {
@@ -136,7 +136,7 @@ if ($null -ne $adModule)
                 return
             }
 
-            if (!([String]::IsNullOrEmpty($Global:SecondDAGMember)))
+            if (!([System.String]::IsNullOrEmpty($Global:SecondDAGMember)))
             {
                 $fcNode2 = Get-WindowsFeature -Name Failover-Clustering -ComputerName $Global:SecondDAGMember -ErrorAction SilentlyContinue
 
@@ -147,7 +147,7 @@ if ($null -ne $adModule)
                 }
             }
 
-            while (([String]::IsNullOrEmpty($Global:Witness1)))
+            while (([System.String]::IsNullOrEmpty($Global:Witness1)))
             {
                 $Global:Witness1 = Read-Host -Prompt "Enter the FQDN of the first File Share Witness for testing"
             }
@@ -210,7 +210,7 @@ if ($null -ne $adModule)
                     WitnessServer = $Global:Witness1
                 }
 
-                if (!([String]::IsNullOrEmpty($Global:Witness2)))
+                if (!([System.String]::IsNullOrEmpty($Global:Witness2)))
                 {
                     $dagTestParams.Add("AlternateWitnessServer", $Global:Witness2)
                     $dagTestParams.Add("AlternateWitnessDirectory", "C:\FSW")
@@ -253,7 +253,7 @@ if ($null -ne $adModule)
                 Test-TargetResourceFunctionality -Params $dagMemberTestParams -ContextLabel "Add first member to the test DAG" -ExpectedGetResults $dagMemberExpectedGetResults
 
                 #Do second DAG member tests if a second member was specified
-                if (([String]::IsNullOrEmpty($Global:SecondDAGMember)) -eq $false)
+                if (([System.String]::IsNullOrEmpty($Global:SecondDAGMember)) -eq $false)
                 {               
                     #Add second DAG member
                     $dagMemberTestParams = @{

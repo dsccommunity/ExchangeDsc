@@ -14,40 +14,50 @@ function Get-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $BasicAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $DigestAuthentication,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
-        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
+        [Parameter()]
+        [ValidateSet('None','Proxy','NoServiceNameCheck','AllowDotlessSpn','ProxyCohosting')]
         [System.String[]]
         $ExtendedProtectionFlags,
 
+        [Parameter()]
         [System.String[]]
         $ExtendedProtectionSPNList,
 
-        [ValidateSet("None","Allow","Require")]
+        [Parameter()]
+        [ValidateSet('None','Allow','Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
+        [Parameter()]
         [System.Boolean]
         $OAuthAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $WindowsAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $WSSecurityAuthentication
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-AutodiscoverVirtualDirectory' -VerbosePreference $VerbosePreference
@@ -87,40 +97,50 @@ function Set-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $BasicAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $DigestAuthentication,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
-        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
+        [Parameter()]
+        [ValidateSet('None','Proxy','NoServiceNameCheck','AllowDotlessSpn','ProxyCohosting')]
         [System.String[]]
         $ExtendedProtectionFlags,
 
+        [Parameter()]
         [System.String[]]
         $ExtendedProtectionSPNList,
 
-        [ValidateSet("None","Allow","Require")]
+        [Parameter()]
+        [ValidateSet('None','Allow','Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
+        [Parameter()]
         [System.Boolean]
         $OAuthAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $WindowsAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $WSSecurityAuthentication
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-AutodiscoverVirtualDirectory' -VerbosePreference $VerbosePreference
@@ -134,19 +154,19 @@ function Set-TargetResource
     #verify SPNs depending on AllowDotlesSPN
     if ( -not (Test-ExtendedProtectionSPNList -SPNList $ExtendedProtectionSPNList -Flags $ExtendedProtectionFlags))
     {
-        throw "SPN list contains DotlesSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags or invalid combination was used!"
+        throw 'SPN list contains DotlesSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags or invalid combination was used!'
     }
 
     Set-AutodiscoverVirtualDirectory @PSBoundParameters
 
     if ($AllowServiceRestart)
     {
-        Write-Verbose "Recycling MSExchangeAutodiscoverAppPool"
+        Write-Verbose -Message 'Recycling MSExchangeAutodiscoverAppPool'
         RestartAppPoolIfExists -Name MSExchangeAutodiscoverAppPool
     }
     else
     {
-        Write-Warning "The configuration will not take effect until MSExchangeAutodiscoverAppPool is manually recycled."
+        Write-Warning -Message 'The configuration will not take effect until MSExchangeAutodiscoverAppPool is manually recycled.'
     }
 }
 
@@ -166,40 +186,50 @@ function Test-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $BasicAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $DigestAuthentication,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
-        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
+        [Parameter()]
+        [ValidateSet('None','Proxy','NoServiceNameCheck','AllowDotlessSpn','ProxyCohosting')]
         [System.String[]]
         $ExtendedProtectionFlags,
 
+        [Parameter()]
         [System.String[]]
         $ExtendedProtectionSPNList,
 
-        [ValidateSet("None","Allow","Require")]
+        [Parameter()]
+        [ValidateSet('None','Allow','Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
+        [Parameter()]
         [System.Boolean]
         $OAuthAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $WindowsAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $WSSecurityAuthentication
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-AutodiscoverVirtualDirectory' -VerbosePreference $VerbosePreference
@@ -215,42 +245,42 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name "BasicAuthentication" -Type "Boolean" -ExpectedValue $BasicAuthentication -ActualValue $autoDVdir.BasicAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'BasicAuthentication' -Type 'Boolean' -ExpectedValue $BasicAuthentication -ActualValue $autoDVdir.BasicAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "DigestAuthentication" -Type "Boolean" -ExpectedValue $DigestAuthentication -ActualValue $autoDVdir.DigestAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'DigestAuthentication' -Type 'Boolean' -ExpectedValue $DigestAuthentication -ActualValue $autoDVdir.DigestAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (-not (VerifySetting -Name "ExtendedProtectionFlags" -Type "ExtendedProtection" -ExpectedValue $ExtendedProtectionFlags -ActualValue $autoDVdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'ExtendedProtectionFlags' -Type 'ExtendedProtection' -ExpectedValue $ExtendedProtectionFlags -ActualValue $autoDVdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (-not (VerifySetting -Name "ExtendedProtectionSPNList" -Type "Array" -ExpectedValue $ExtendedProtectionSPNList -ActualValue $autoDVdir.ExtendedProtectionSPNList -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'ExtendedProtectionSPNList' -Type 'Array' -ExpectedValue $ExtendedProtectionSPNList -ActualValue $autoDVdir.ExtendedProtectionSPNList -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (-not (VerifySetting -Name "ExtendedProtectionTokenChecking" -Type "String" -ExpectedValue $ExtendedProtectionTokenChecking -ActualValue $autoDVdir.ExtendedProtectionTokenChecking -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'ExtendedProtectionTokenChecking' -Type 'String' -ExpectedValue $ExtendedProtectionTokenChecking -ActualValue $autoDVdir.ExtendedProtectionTokenChecking -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "OAuthAuthentication" -Type "Boolean" -ExpectedValue $OAuthAuthentication -ActualValue $autoDVdir.OAuthAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'OAuthAuthentication' -Type 'Boolean' -ExpectedValue $OAuthAuthentication -ActualValue $autoDVdir.OAuthAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "WindowsAuthentication" -Type "Boolean" -ExpectedValue $WindowsAuthentication -ActualValue $autoDVdir.WindowsAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'WindowsAuthentication' -Type 'Boolean' -ExpectedValue $WindowsAuthentication -ActualValue $autoDVdir.WindowsAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "WSSecurityAuthentication" -Type "Boolean" -ExpectedValue $WSSecurityAuthentication -ActualValue $autoDVdir.WSSecurityAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'WSSecurityAuthentication' -Type 'Boolean' -ExpectedValue $WSSecurityAuthentication -ActualValue $autoDVdir.WSSecurityAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -274,40 +304,50 @@ function Get-AutodiscoverVirtualDirectoryWithCorrectParams
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $BasicAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $DigestAuthentication,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
-        [ValidateSet("None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting")]
+        [Parameter()]
+        [ValidateSet('None','Proxy','NoServiceNameCheck','AllowDotlessSpn','ProxyCohosting')]
         [System.String[]]
         $ExtendedProtectionFlags,
 
+        [Parameter()]
         [System.String[]]
         $ExtendedProtectionSPNList,
 
-        [ValidateSet("None","Allow","Require")]
+        [Parameter()]
+        [ValidateSet('None','Allow','Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
+        [Parameter()]
         [System.Boolean]
         $OAuthAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $WindowsAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $WSSecurityAuthentication
     )
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
+    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
     return (Get-AutodiscoverVirtualDirectory @PSBoundParameters)
 }

@@ -4,7 +4,7 @@
 function Test-TargetResourceFunctionality
 {
     [CmdletBinding()]
-    param([Hashtable]$Params, [string]$ContextLabel, [Hashtable]$ExpectedGetResults, [bool]$ExpectedTestResult = $true)
+    param([Hashtable]$Params, [System.String]$ContextLabel, [Hashtable]$ExpectedGetResults, [bool]$ExpectedTestResult = $true)
 
     Context $ContextLabel {
         Set-TargetResource @Params -Verbose
@@ -47,7 +47,7 @@ function Test-TargetResourceFunctionality
 function Test-ArrayContentsEqual
 {
     [CmdletBinding()]
-    param([Hashtable]$TestParams, [string[]]$DesiredArrayContents, [string]$GetResultParameterName, [string]$ContextLabel, [string]$ItLabel)
+    param([Hashtable]$TestParams, [System.String[]]$DesiredArrayContents, [System.String]$GetResultParameterName, [System.String]$ContextLabel, [System.String]$ItLabel)
 
     Context $ContextLabel {
         [Hashtable]$getResult = Get-TargetResource @TestParams
@@ -61,7 +61,7 @@ function Test-ArrayContentsEqual
 function Test-Array2ContainsArray1
 {
     [CmdletBinding()]
-    param([Hashtable]$TestParams, [string[]]$DesiredArrayContents, [string]$GetResultParameterName, [string]$ContextLabel, [string]$ItLabel)
+    param([Hashtable]$TestParams, [System.String[]]$DesiredArrayContents, [System.String]$GetResultParameterName, [System.String]$ContextLabel, [System.String]$ItLabel)
 
     Context $ContextLabel {
         [Hashtable]$getResult = Get-TargetResource @TestParams

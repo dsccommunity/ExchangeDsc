@@ -41,6 +41,39 @@
   - Remove-CompletedEntriesFromHashtable
 - Fixed PSSA custom rules in:
   - xExchActiveSyncVirtualDirectory.psm1
+  - xExchAntiMalwareScanning.psm1
+  - xExchAutodiscoverVirtualDirectory.psm1
+  - xExchAutoMountPoint.psm1
+  - xExchClientAccessServer.psm1
+  - xExchDatabaseAvailabilityGroup.psm1
+  - xExchDatabaseAvailabilityGroupMember.psm1
+  - xExchDatabaseAvailabilityGroupNetwork.psm1
+  - xExchEcpVirtualDirectory.psm1
+  - xExchEventLogLevel.psm1
+  - xExchExchangeCertificate.psm1
+  - xExchExchangeServer.psm1
+  - xExchImapSettings.psm1
+  - xExchInstall.psm1
+  - xExchJetstress.psm1
+  - xExchJetstressCleanup.psm1
+  - xExchMailboxDatabase.psm1
+  - xExchMailboxDatabaseCopy.psm1
+  - xExchMailboxServer.psm1
+  - xExchMailboxTransportService.psm1
+  - xExchMaintenanceMode.psm1
+  - xExchMapiVirtualDirectory.psm1
+  - xExchOabVirtualDirectory.psm1
+  - xExchOutlookAnywhere.psm1
+  - xExchOwaVirtualDirectory.psm1
+  - xExchPopSettings.psm1
+  - xExchPowerShellVirtualDirectory.psm1
+  - xExchReceiveConnector.psm1
+  - xExchUMCallRouterSettings.psm1
+  - xExchUMService.psm1
+  - xExchWaitForADPrep.psm1
+  - xExchWaitForDAG.psm1
+  - xExchWaitForMailboxDatabase.psm1
+  - xExchWebServicesVirtualDirectory.psm1
 - Updated xExchange.psd1
 - Added issue template file (ISSUE\_TEMPLATE.md) for 'New Issue' and pull request
   template file (PULL\_REQUEST\_TEMPLATE.md) for 'New Pull Request'.
@@ -49,6 +82,7 @@
 - Renamed the folder MISC (that contains the helper) to Modules
 - Added xExchangeHelper.psm1 in xExchange.psd1 (section NestedModules)
 - Removed all lines with Import-Module xExchangeCommon.psm1
+- Updated .MetaTestOptIn.json file with Custom Script Analyzer Rules
 
 ## 1.20.0.0
 

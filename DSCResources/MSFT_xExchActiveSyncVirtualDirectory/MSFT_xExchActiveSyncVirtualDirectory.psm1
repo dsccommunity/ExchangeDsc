@@ -329,7 +329,7 @@ function Set-TargetResource
     {
         Test-PreReqsForCertBasedAuth
 
-        if (-not ([string]::IsNullOrEmpty($AutoCertBasedAuthThumbprint)))
+        if (-not ([System.String]::IsNullOrEmpty($AutoCertBasedAuthThumbprint)))
         {
             Enable-CertBasedAuth -AutoCertBasedAuthThumbprint $AutoCertBasedAuthThumbprint -AutoCertBasedAuthHttpsBindings $AutoCertBasedAuthHttpsBindings
         }
@@ -643,7 +643,7 @@ function Test-TargetResource
         {
             Test-PreReqsForCertBasedAuth
 
-            if ([string]::IsNullOrEmpty($AutoCertBasedAuthThumbprint))
+            if ([System.String]::IsNullOrEmpty($AutoCertBasedAuthThumbprint))
             {
                 ReportBadSetting -SettingName 'AutoCertBasedAuthThumbprint' `
                                  -ExpectedValue 'Not null or empty' `
@@ -1084,15 +1084,15 @@ function Test-PreReqsForCertBasedAuth
 function Test-ISAPIFilter
 {
     [CmdletBinding()]
-    [OutputType([Boolean])]
+    [OutputType([System.Boolean])]
     param
     (
         [Parameter()]    
-        [string]
+        [System.String]
         $WebSite = 'Default Web Site',
 
         [Parameter()]
-        [string]
+        [System.String]
         $ISAPIFilterName = 'Exchange ActiveSync ISAPI Filter'
     )
 
@@ -1102,7 +1102,7 @@ function Test-ISAPIFilter
                                                      -Location $WebSite `
                                                      -Filter 'system.webServer/isapiFilters' `
                                                      -Name '.'
-        [boolean]$ReturnValue = $false
+        [System.Boolean]$ReturnValue = $false
     }
     Process
     {

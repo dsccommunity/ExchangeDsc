@@ -856,11 +856,10 @@ function Set-TargetResource
 
     try
     {
-
         #if PipelineTracingSenderAddress exists and is $null remove it from $PSBoundParameters and add argument
         if ($PSBoundParameters.ContainsKey('PipelineTracingSenderAddress'))
         {
-            if ([string]::IsNullOrEmpty($PipelineTracingSenderAddress))
+            if ([System.String]::IsNullOrEmpty($PipelineTracingSenderAddress))
             {
                 Write-Verbose -Message 'PipelineTracingSenderAddress is NULL'
                 RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'PipelineTracingSenderAddress'
@@ -871,7 +870,7 @@ function Set-TargetResource
         #if ExternalIPAddress exists and is $null remove it from $PSBoundParameters and add argument
         if ($PSBoundParameters.ContainsKey('ExternalIPAddress'))
         {
-            if ([string]::IsNullOrEmpty($ExternalIPAddress))
+            if ([System.String]::IsNullOrEmpty($ExternalIPAddress))
             {
                 Write-Verbose -Message 'ExternalIPAddress is NULL'
                 RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'ExternalIPAddress'
@@ -882,7 +881,7 @@ function Set-TargetResource
         #if InternalDNSServers exists and is $null remove it from $PSBoundParameters and add argument
         if ($PSBoundParameters.ContainsKey('InternalDNSServers'))
         {
-            if ([string]::IsNullOrEmpty($InternalDNSServers))
+            if ([System.String]::IsNullOrEmpty($InternalDNSServers))
             {
                 Write-Verbose -Message 'InternalDNSServers is NULL'
                 RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'InternalDNSServers'
@@ -893,7 +892,7 @@ function Set-TargetResource
         #if ExternalDNSServers exists and is $null remove it from $PSBoundParameters and add argument
         if ($PSBoundParameters.ContainsKey('ExternalDNSServers'))
         {
-            if ([string]::IsNullOrEmpty($ExternalDNSServers))
+            if ([System.String]::IsNullOrEmpty($ExternalDNSServers))
             {
                 Write-Verbose -Message 'ExternalDNSServers is NULL'
                 RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'ExternalDNSServers'
@@ -915,9 +914,8 @@ function Set-TargetResource
     }
     Else
     {
-        Write-Warning 'The configuration will not take effect until the MSExchangeTransport service is manually restarted.'
+        Write-Warning -Message 'The configuration will not take effect until the MSExchangeTransport service is manually restarted.'
     }
-
 }
 
 function Test-TargetResource
@@ -1303,7 +1301,6 @@ function Test-TargetResource
 
     if ($null -ne $TransportService)
     {
-
         if (!(VerifySetting -Name 'ActiveUserStatisticsLogMaxAge' -Type 'Timespan' -ExpectedValue $ActiveUserStatisticsLogMaxAge -ActualValue $TransportService.ActiveUserStatisticsLogMaxAge -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
@@ -1746,12 +1743,22 @@ function CompareIPAddressewithString
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param([System.Net.IPAddress]$IPAddress, [String]$String)
-    if (($null -eq $IPAddress -and !([string]::IsNullOrEmpty($String))) -or ($null -ne $IPAddress -and [string]::IsNullOrEmpty($String)))
+    param
+    (
+        [Parameter()]
+        [System.Net.IPAddress]
+        $IPAddress,
+        
+        [Parameter()]
+        [System.String]
+        $String
+    )
+
+    if (($null -eq $IPAddress -and !([System.String]::IsNullOrEmpty($String))) -or ($null -ne $IPAddress -and [System.String]::IsNullOrEmpty($String)))
     {
         $returnValue = $false
     }
-    elseif ($null -eq $IPAddress -and [string]::IsNullOrEmpty($String))
+    elseif ($null -eq $IPAddress -and [System.String]::IsNullOrEmpty($String))
     {
         $returnValue = $true
     }
@@ -1771,19 +1778,28 @@ function CompareSmtpAdresswithString
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param($SmtpAddress,[String]$String)
-    if (($null -eq $SmtpAddress) -and ([string]::IsNullOrEmpty($String)))
+    param
+    (
+        [Parameter()]
+        $SmtpAddress,
+        
+        [Parameter()]
+        [System.String]
+        $String
+    )
+    
+    if (($null -eq $SmtpAddress) -and ([System.String]::IsNullOrEmpty($String)))
     {
         Write-Verbose -Message 'Expected and actual value is empty, therefore equal!'
         return $true
     }
-    elseif (($null -eq $SmtpAddress) -and -not ([string]::IsNullOrEmpty($String)))
+    elseif (($null -eq $SmtpAddress) -and -not ([System.String]::IsNullOrEmpty($String)))
     {
         return $false
     }
     elseif ($SmtpAddress.Gettype() -eq [Microsoft.Exchange.Data.SmtpAddress])
     {
-        if ([string]::IsNullOrEmpty($String))
+        if ([System.String]::IsNullOrEmpty($String))
         {
             return $false
         }

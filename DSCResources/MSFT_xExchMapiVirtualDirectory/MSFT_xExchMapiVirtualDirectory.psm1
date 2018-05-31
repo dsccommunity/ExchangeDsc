@@ -5,28 +5,32 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String]
         $ExternalUrl,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String[]]
         $IISAuthenticationMethods,
 
+        [Parameter()]
         [System.String]
         $InternalUrl
     )
@@ -56,28 +60,32 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String]
         $ExternalUrl,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String[]]
         $IISAuthenticationMethods,
 
+        [Parameter()]
         [System.String]
         $InternalUrl
     )
@@ -113,28 +121,32 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String]
         $ExternalUrl,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String[]]
         $IISAuthenticationMethods,
 
+        [Parameter()]
         [System.String]
         $InternalUrl
     )
@@ -177,28 +189,32 @@ function GetMapiVirtualDirectory
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String]
         $ExternalUrl,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String[]]
         $IISAuthenticationMethods,
 
+        [Parameter()]
         [System.String]
         $InternalUrl
     )

@@ -5,27 +5,32 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Boolean]
         $Enabled,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.String[]]
         $AdditionalComponentsToActivate,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $MovePreferredDatabasesBack = $false,
 
+        [Parameter()]
         [System.Boolean]
         $SetInactiveComponentsFromAnyRequesterToActive = $false,
 
+        [Parameter()]
         [System.String]
         $UpgradedServerVersion
     )
@@ -46,7 +51,7 @@ function Get-TargetResource
         #Determine which components are Active
         $activeComponents = $MaintenanceModeStatus.ServerComponentState | Where-Object {$_.State -eq "Active"}
 
-        [string[]]$activeComponentsList = @()
+        [System.String[]]$activeComponentsList = @()
 
         if ($null -ne $activeComponents)
         {
@@ -87,27 +92,32 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Boolean]
         $Enabled,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.String[]]
         $AdditionalComponentsToActivate,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $MovePreferredDatabasesBack = $false,
 
+        [Parameter()]
         [System.Boolean]
         $SetInactiveComponentsFromAnyRequesterToActive = $false,
 
+        [Parameter()]
         [System.String]
         $UpgradedServerVersion
     )
@@ -172,7 +182,7 @@ function Set-TargetResource
             if ($htStatus.State -ne "Inactive")
             {
                 Write-Verbose "Entering Transport Maintenance"
-                [string[]]$transportExclusions = GetMessageRedirectionExclusions -DomainController $DomainController
+                [System.String[]]$transportExclusions = GetMessageRedirectionExclusions -DomainController $DomainController
                 Start-TransportMaintenance -LoadLocalShell $false -MessageRedirectExclusions $transportExclusions -Verbose
             }            
 
@@ -284,27 +294,32 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Boolean]
         $Enabled,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.String[]]
         $AdditionalComponentsToActivate,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $MovePreferredDatabasesBack = $false,
 
+        [Parameter()]
         [System.Boolean]
         $SetInactiveComponentsFromAnyRequesterToActive = $false,
 
+        [Parameter()]
         [System.String]
         $UpgradedServerVersion
     )
@@ -480,9 +495,11 @@ function GetMaintenanceModeStatus
     [OutputType([System.Collections.Hashtable])]
     param
     (
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $EnteringMaintenanceMode = $true
     )
@@ -504,7 +521,7 @@ function GetMaintenanceModeStatus
         Write-Verbose "Waiting up to 5 minutes for the Transport Bootloader to be ready before running Get-Queue. Wait started at $([DateTime]::Now)."
 
         while ($null -eq $queues -and [DateTime]::Now -lt $endTime)
-        {            
+        {
             Wait-BootLoaderReady -Server $env:COMPUTERNAME -TimeOut (New-TimeSpan -Seconds 15) -PollingFrequency (New-TimeSpan -Seconds 1) | Out-Null
             $queues = Get-Queue -Server $env:COMPUTERNAME -ErrorAction SilentlyContinue
         }
@@ -529,7 +546,7 @@ function GetQueueMessageCount
     [OutputType([System.UInt32])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Collections.Hashtable]
         $MaintenanceModeStatus
     )
@@ -559,10 +576,11 @@ function GetActiveDBCount
     [OutputType([System.UInt32])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Collections.Hashtable]
         $MaintenanceModeStatus,
 
+        [Parameter()]
         [System.String]
         $DomainController
     )
@@ -594,10 +612,11 @@ function GetUMCallCount
     [OutputType([System.UInt32])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Collections.Hashtable]
         $MaintenanceModeStatus,
 
+        [Parameter()]
         [System.String]
         $DomainController
     )
@@ -628,11 +647,12 @@ function GetMessageRedirectionExclusions
     [OutputType([System.String[]])]
     param
     (
+        [Parameter()]
         [System.String]
         $DomainController
     )
 
-    [string[]]$exclusions = @()
+    [System.String[]]$exclusions = @()
 
     $mbxServer = GetMailboxServer -Identity $env:COMPUTERNAME -DomainController $DomainController
 
@@ -678,7 +698,7 @@ function GetMessageRedirectionExclusions
         }
     }
 
-    return [string[]] $exclusions
+    return [System.String[]] $exclusions
 }
 
 #If UpgradedServerVersion was specified, checks to see whether the server is already at the desired version
@@ -688,16 +708,18 @@ function IsExchangeAtDesiredVersion
     [OutputType([System.Boolean])]
     param
     (
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String]
         $UpgradedServerVersion
     )
 
     $atDesiredVersion = $false
 
-    if (!([string]::IsNullOrEmpty($UpgradedServerVersion)))
+    if (!([System.String]::IsNullOrEmpty($UpgradedServerVersion)))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'DomainController'
 
@@ -705,7 +727,7 @@ function IsExchangeAtDesiredVersion
 
         if ($null -ne $server)
         {
-            [string[]]$versionParts = $UpgradedServerVersion.Split('.')
+            [System.String[]]$versionParts = $UpgradedServerVersion.Split('.')
 
             if ($null -ne $versionParts -and $versionParts.Length -eq 4)
             {
@@ -738,12 +760,12 @@ function IsComponentCheckedByDefault
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
-        [string]
+        [Parameter(Mandatory = $true)]
+        [System.String]
         $ComponentName
     )
 
-    [boolean]$checkedByDefault = $false
+    [System.Boolean]$checkedByDefault = $false
 
     if ($ComponentName -like "ServerWideOffline" -or $ComponentName -like "UMCallRouter" -or $ComponentName -like "HubTransport" -or $ComponentName -like "Monitoring" -or $ComponentName -like "RecoveryActionsEnabled")
     {
@@ -758,7 +780,9 @@ function GetDAGMemberCount
 {
     [CmdletBinding()]
     [OutputType([System.Int32])]
-    param(
+    param
+    (
+        [Parameter()]
         [System.String]
         $DomainController
     )
@@ -767,7 +791,7 @@ function GetDAGMemberCount
 
     $server = GetMailboxServer -Identity $env:COMPUTERNAME -DomainController $DomainController
 
-    if ($null -ne $server -and ![string]::IsNullOrEmpty($server.DatabaseAvailabilityGroup))
+    if ($null -ne $server -and ![System.String]::IsNullOrEmpty($server.DatabaseAvailabilityGroup))
     {
         $dag = GetDatabaseAvailabilityGroup -Identity "$($server.DatabaseAvailabilityGroup)" -DomainController $DomainController
 
@@ -784,7 +808,9 @@ function IsServerPAM
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param(
+    param
+    (
+        [Parameter()]
         [System.String]
         $DomainController
     )
@@ -793,7 +819,7 @@ function IsServerPAM
 
     $server = GetMailboxServer -Identity $env:COMPUTERNAME -DomainController $DomainController
 
-    if ($null -ne $server -and ![string]::IsNullOrEmpty($server.DatabaseAvailabilityGroup))
+    if ($null -ne $server -and ![System.String]::IsNullOrEmpty($server.DatabaseAvailabilityGroup))
     {
         $dag = GetDatabaseAvailabilityGroup -Identity "$($server.DatabaseAvailabilityGroup)" -DomainController $DomainController
 
@@ -813,17 +839,20 @@ function WaitForUMToDrain
     [OutputType([System.Boolean])]
     param
     (
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.UInt32]
         $SleepSeconds = 15,
 
+        [Parameter()]
         [System.UInt32]
         $WaitMinutes = 5
     )
 
-    [boolean]$umDrained = $false
+    [System.Boolean]$umDrained = $false
     
     $endTime = [DateTime]::Now.AddMinutes($WaitMinutes)
 
@@ -859,29 +888,31 @@ function ChangeComponentState
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Component,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Requester,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         $ServerComponentState,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $State,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $SetInactiveComponentsFromAnyRequesterToActive = $false
     )
 
-    [boolean]$madeChange = $false
+    [System.Boolean]$madeChange = $false
 
     $componentState = $MaintenanceModeStatus.ServerComponentState | Where-Object {$_.Component -like "$($Component)"}
 
@@ -927,13 +958,14 @@ function MovePrimaryDatabasesBack
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [System.String]
         $DomainController
     )
     
     $databases = GetMailboxDatabase -Server $env:COMPUTERNAME -Status -DomainController $DomainController
 
-    [string[]]$databasesWithActivationPrefOneNotOnThisServer = @()
+    [System.String[]]$databasesWithActivationPrefOneNotOnThisServer = @()
 
     if ($null -ne $databases)
     {
@@ -987,16 +1019,18 @@ function MovePrimaryDatabasesBack
 function GetExchangeServer
 {
     [CmdletBinding()]
-    param(
-        [parameter(Mandatory = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.String]
         $DomainController
     )
 
-    if ([string]::IsNullOrEmpty($DomainController))
+    if ([System.String]::IsNullOrEmpty($DomainController))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
@@ -1007,16 +1041,18 @@ function GetExchangeServer
 function GetDatabaseAvailabilityGroup
 {
     [CmdletBinding()]
-    param(
-        [parameter(Mandatory = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.String]
         $DomainController
     )
 
-    if ([string]::IsNullOrEmpty($DomainController))
+    if ([System.String]::IsNullOrEmpty($DomainController))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
@@ -1029,23 +1065,25 @@ function GetServerComponentState
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.String]
         $Component,
 
+        [Parameter()]
         [System.String]
         $DomainController
     )
 
-    if ([string]::IsNullOrEmpty($Component))
+    if ([System.String]::IsNullOrEmpty($Component))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Component'
     }
 
-    if ([string]::IsNullOrEmpty($DomainController))
+    if ([System.String]::IsNullOrEmpty($DomainController))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
@@ -1058,23 +1096,24 @@ function SetServerComponentState
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Component,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Requester,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $State,
 
+        [Parameter()]
         [System.String]
         $DomainController
     )
 
-    if ([string]::IsNullOrEmpty($DomainController))
+    if ([System.String]::IsNullOrEmpty($DomainController))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
@@ -1087,30 +1126,34 @@ function GetMailboxDatabase
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String]
         $Server,
 
+        [Parameter()]
         [switch]
         $Status
     )
 
-    if ([string]::IsNullOrEmpty($Identity))
+    if ([System.String]::IsNullOrEmpty($Identity))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Identity'
     }
 
-    if ([string]::IsNullOrEmpty($DomainController))
+    if ([System.String]::IsNullOrEmpty($DomainController))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
 
-    if ([string]::IsNullOrEmpty($Server))
+    if ([System.String]::IsNullOrEmpty($Server))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server'
     }
@@ -1123,27 +1166,30 @@ function GetMailboxDatabaseCopyStatus
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String]
         $Server
     )
 
-    if ([string]::IsNullOrEmpty($Identity))
+    if ([System.String]::IsNullOrEmpty($Identity))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Identity'
     }
 
-    if ([string]::IsNullOrEmpty($DomainController))
+    if ([System.String]::IsNullOrEmpty($DomainController))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
 
-    if ([string]::IsNullOrEmpty($Server))
+    if ([System.String]::IsNullOrEmpty($Server))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server'
     }
@@ -1154,16 +1200,18 @@ function GetMailboxDatabaseCopyStatus
 function GetMailboxServer
 {
     [CmdletBinding()]
-    param(
-        [parameter(Mandatory = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.String]
         $DomainController
     )
 
-    if ([string]::IsNullOrEmpty($DomainController))
+    if ([System.String]::IsNullOrEmpty($DomainController))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
@@ -1174,19 +1222,22 @@ function GetMailboxServer
 function SetMailboxServer
 {
     [CmdletBinding()]
-    param(
-        [parameter(Mandatory = $true)]
+    param
+    (
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Collections.Hashtable]
         $AdditionalParams
     )
 
-    if ([string]::IsNullOrEmpty($DomainController))
+    if ([System.String]::IsNullOrEmpty($DomainController))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
@@ -1202,15 +1253,16 @@ function GetUMActiveCalls
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Server,
 
+        [Parameter()]
         [System.String]
         $DomainController
     )
 
-    if ([string]::IsNullOrEmpty($DomainController))
+    if ([System.String]::IsNullOrEmpty($DomainController))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
@@ -1223,43 +1275,48 @@ function MoveActiveMailboxDatabase
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [System.String]
         $ActivateOnServer,
 
+        [Parameter()]
         [System.String]
         $Identity,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String]
         $MoveComment,
 
+        [Parameter()]
         [System.String]
         $Server = $env:COMPUTERNAME
     )
 
-    if ([string]::IsNullOrEmpty($ActivateOnServer))
+    if ([System.String]::IsNullOrEmpty($ActivateOnServer))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'ActivateOnServer'
     }
 
-    if ([string]::IsNullOrEmpty($DomainController))
+    if ([System.String]::IsNullOrEmpty($DomainController))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
 
-    if ([string]::IsNullOrEmpty($Identity))
+    if ([System.String]::IsNullOrEmpty($Identity))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Identity'
     }
 
-    if ([string]::IsNullOrEmpty($MoveComment))
+    if ([System.String]::IsNullOrEmpty($MoveComment))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'MoveComment'
     }
 
-    if ([string]::IsNullOrEmpty($Server))
+    if ([System.String]::IsNullOrEmpty($Server))
     {
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server'
     }

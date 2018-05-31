@@ -18,7 +18,7 @@ function Test-ServerIsOutOfMaintenanceMode
         }
 
         #Verify that all components in the following list are Active. This list comes from an Exchange 2013 CU9 machine with both the CAS and MBX roles.
-        [string[]]$expectedActiveComponentsList = "ServerWideOffline","HubTransport","FrontendTransport","Monitoring","RecoveryActionsEnabled","AutoDiscoverProxy","ActiveSyncProxy","EcpProxy","EwsProxy","ImapProxy","OabProxy","OwaProxy","PopProxy","PushNotificationsProxy","RpsProxy","RwsProxy","RpcProxy","UMCallRouter","XropProxy","HttpProxyAvailabilityGroup","MapiProxy","EdgeTransport","HighAvailability","SharedCache"
+        [System.String[]]$expectedActiveComponentsList = "ServerWideOffline","HubTransport","FrontendTransport","Monitoring","RecoveryActionsEnabled","AutoDiscoverProxy","ActiveSyncProxy","EcpProxy","EwsProxy","ImapProxy","OabProxy","OwaProxy","PopProxy","PushNotificationsProxy","RpsProxy","RwsProxy","RpcProxy","UMCallRouter","XropProxy","HttpProxyAvailabilityGroup","MapiProxy","EdgeTransport","HighAvailability","SharedCache"
 
         foreach ($expectedActiveComponent in $expectedActiveComponentsList)
         {
@@ -95,7 +95,7 @@ if ($exchangeInstalled)
 
         $mbxServer = Get-MailboxServer $env:COMPUTERNAME
 
-        [boolean]$Global:IsDagMember = !([string]::IsNullOrEmpty($mbxServer.DatabaseAvailabilityGroup))
+        [System.Boolean]$Global:IsDagMember = !([System.String]::IsNullOrEmpty($mbxServer.DatabaseAvailabilityGroup))
     }
 
     if ($Global:IsDagMember -eq $false)
@@ -124,7 +124,7 @@ if ($exchangeInstalled)
     #Get Domain Controller
     if ($null -eq $Global:DomainController)
     {
-        [string]$Global:DomainController = Read-Host -Prompt "Enter Domain Controller to use for DC tests"
+        [System.String]$Global:DomainController = Read-Host -Prompt "Enter Domain Controller to use for DC tests"
     }
 
     Write-Verbose "Ensuring server is out of maintenance mode before beginning tests"
