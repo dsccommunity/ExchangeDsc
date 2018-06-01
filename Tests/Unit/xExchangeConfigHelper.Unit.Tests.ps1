@@ -38,7 +38,7 @@ function Test-MailboxDatabasesCsv
 [System.String]$mailboxDatabasesCsv66 = Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'Data' -ChildPath 'MailboxDatabasesV6.6.csv'))
 [System.String]$mailboxDatabasesCsv = Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'Data' -ChildPath 'MailboxDatabases.csv'))
 [System.String]$serverNameInCsv = 'SRV-nn-01'
-[System.Hashtable]$dbNameReplacements = @{'-nn-' = '-01-'}
+[System.Collections.Hashtable]$dbNameReplacements = @{'-nn-' = '-01-'}
 
 Describe 'Test DBListFromMailboxDatabasesCsv' {
     Test-MailboxDatabasesCsv -MailboxDatabasesCsvPath $mailboxDatabasesCsv66 `

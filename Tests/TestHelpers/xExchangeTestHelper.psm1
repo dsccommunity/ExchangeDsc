@@ -9,7 +9,7 @@ function Test-TargetResourceFunctionality
     param
     (
         [Parameter()]    
-        [System.Hashtable]
+        [System.Collections.Hashtable]
         $Params,
         
         [Parameter()]
@@ -17,7 +17,7 @@ function Test-TargetResourceFunctionality
         $ContextLabel, 
         
         [Parameter()]
-        [System.Hashtable]
+        [System.Collections.Hashtable]
         $ExpectedGetResults, 
         
         [Parameter()]
@@ -28,7 +28,7 @@ function Test-TargetResourceFunctionality
     Context $ContextLabel {
         Set-TargetResource @Params -Verbose
 
-        [System.Hashtable]$getResult = Get-TargetResource @Params -Verbose
+        [System.Collections.Hashtable]$getResult = Get-TargetResource @Params -Verbose
         [System.Boolean]$testResult = Test-TargetResource @Params -Verbose
 
         #The ExpectedGetResults are $null, so let's check that what we got back is $null
@@ -69,7 +69,7 @@ function Test-ArrayContentsEqual
     param
     (
         [Parameter()]
-        [System.Hashtable]
+        [System.Collections.Hashtable]
         $TestParams, 
         
         [Parameter()]
@@ -90,7 +90,7 @@ function Test-ArrayContentsEqual
     )
 
     Context $ContextLabel {
-        [System.Hashtable]$getResult = Get-TargetResource @TestParams
+        [System.Collections.Hashtable]$getResult = Get-TargetResource @TestParams
 
         It $ItLabel {
             CompareArrayContents -Array1 $DesiredArrayContents -Array2 $getResult."$($GetResultParameterName)" -IgnoreCase | Should Be $true
@@ -104,7 +104,7 @@ function Test-Array2ContainsArray1
     param
     (
         [Parameter()]
-        [System.Hashtable]
+        [System.Collections.Hashtable]
         $TestParams, 
         
         [Parameter()]
@@ -125,7 +125,7 @@ function Test-Array2ContainsArray1
     )
 
     Context $ContextLabel {
-        [System.Hashtable]$getResult = Get-TargetResource @TestParams
+        [System.Collections.Hashtable]$getResult = Get-TargetResource @TestParams
 
         It $ItLabel {
             Array2ContainsArray1Contents -Array1 $DesiredArrayContents -Array2 $getResult."$($GetResultParameterName)" -IgnoreCase | Should Be $true

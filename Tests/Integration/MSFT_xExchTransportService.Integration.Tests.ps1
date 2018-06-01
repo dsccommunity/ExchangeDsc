@@ -8,7 +8,7 @@
 #region HEADER
 [System.String]$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 [System.String]$script:DSCModuleName = 'xExchange'
-[System.String]$script:DSCResourceFriendlyName = 'xExchReceiveConnector'
+[System.String]$script:DSCResourceFriendlyName = 'xExchTransportService'
 [System.String]$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
@@ -19,15 +19,6 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 [System.Boolean]$exchangeInstalled = IsSetupComplete
 
 #endregion HEADER
-
-###NOTE: This test module requires use of credentials. The first run through of the tests will prompt for credentials from the logged on user.
-
-Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchTransportService\MSFT_xExchTransportService.psm1
-Import-Module $PSScriptRoot\..\Modules\xExchangeHelper.psm1 -Verbose:0
-Import-Module $PSScriptRoot\xExchange.Tests.Common.psm1 -Verbose:0
-
-#Check if Exchange is installed on this machine. If not, we can't run tests
-[bool]$exchangeInstalled = IsSetupComplete
 
 if ($exchangeInstalled)
 {

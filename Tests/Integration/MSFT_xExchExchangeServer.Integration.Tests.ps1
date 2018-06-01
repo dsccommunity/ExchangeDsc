@@ -56,7 +56,7 @@ function Test-ExchDscServerPrepped
     param()
 
     Context 'Server has had relevant properties nulled out for xExchExchangeServer tests' {
-        [System.Hashtable]$getResult = Get-TargetResource @testParams -Verbose
+        [System.Collections.Hashtable]$getResult = Get-TargetResource @testParams -Verbose
 
         It 'InternetWebProxy should be empty' {
             [System.String]::IsNullOrEmpty($getResult.InternetWebProxy) | Should Be $true

@@ -30,7 +30,7 @@ function Test-ServicesInCertificate
     param
     (
         [Parameter()]
-        [System.Hashtable]
+        [System.Collections.Hashtable]
         $TestParams, 
         
         [Parameter()]
@@ -39,7 +39,7 @@ function Test-ServicesInCertificate
     )
 
     Context $ContextLabel {
-        [System.Hashtable]$getResult = Get-TargetResource @TestParams
+        [System.Collections.Hashtable]$getResult = Get-TargetResource @TestParams
 
         It 'Certificate Services Check' {
             CompareCertServices -ServicesActual $getResult.Services `

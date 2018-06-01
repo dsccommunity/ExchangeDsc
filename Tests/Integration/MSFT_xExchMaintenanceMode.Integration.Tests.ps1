@@ -25,7 +25,7 @@ function Test-ServerIsOutOfMaintenanceMode
     param()
 
     Context 'Do additional Get-TargetResource verification after taking server out of maintenance mode' {
-        [System.Hashtable]$getResult = Get-TargetResource @testParams -Verbose
+        [System.Collections.Hashtable]$getResult = Get-TargetResource @testParams -Verbose
 
         It 'ActiveComponentCount is greater than 0' {
             $getResult.ActiveComponentCount -gt 0 | Should Be $true
