@@ -1,21 +1,34 @@
-###NOTE: This test module requires use of credentials. The first run through of the tests will prompt for credentials from the logged on user.
+<#
+    .SYNOPSIS
+        Automated integration test for MSFT_xExchReceiveConnector DSC Resource.
+        This test module requires use of credentials.
+        The first run through of the tests will prompt for credentials from the logged on user.
+#>
 
-Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchReceiveConnector\MSFT_xExchReceiveConnector.psm1
-Import-Module $PSScriptRoot\..\Modules\xExchangeHelper.psm1 -Verbose:0
-Import-Module $PSScriptRoot\xExchange.Tests.Common.psm1 -Verbose:0
+#region HEADER
+[System.String]$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[System.String]$script:DSCModuleName = 'xExchange'
+[System.String]$script:DSCResourceFriendlyName = 'xExchReceiveConnector'
+[System.String]$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[bool]$exchangeInstalled = IsSetupComplete
+[System.Boolean]$exchangeInstalled = IsSetupComplete
+
+#endregion HEADER
 
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
     if ($null -eq $Global:ShellCredentials)
     {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message "Enter credentials for connecting a Remote PowerShell session to Exchange"
+        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
     }
 
-    Describe "Set and modify a Receive Connector" {
+    Describe 'Set and modify a Receive Connector' {
     #Set configuration with default values
     $testParams = @{
          Identity                                = "$($env:computername)\AnonymousRelay $($env:computername)"
@@ -28,7 +41,7 @@ if ($exchangeInstalled)
          Banner                                  = '220 Pester'
          BareLinefeedRejectionEnabled            = $false
          BinaryMimeEnabled                       = $true
-         Bindings                                = "192.168.0.100:25"
+         Bindings                                = '192.168.0.100:25'
          ChunkingEnabled                         = $true
          Comment                                 = 'Connector for relaying'
          ConnectionInactivityTimeout             = '00:05:00'
@@ -75,13 +88,13 @@ if ($exchangeInstalled)
     }
 
     $expectedGetResults = @{
-         ExtendedRightAllowEntries               = "NT AUTHORITY\ANONYMOUS LOGON=Ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-Bypass-Anti-Spam"
+         ExtendedRightAllowEntries               = 'NT AUTHORITY\ANONYMOUS LOGON=Ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-Bypass-Anti-Spam'
          AdvertiseClientSettings                 = $false
          AuthMechanism                           = 'Tls', 'ExternalAuthoritative'
          Banner                                  = '220 Pester'
          BareLinefeedRejectionEnabled            = $false
          BinaryMimeEnabled                       = $true
-         Bindings                                = "192.168.0.100:25"
+         Bindings                                = '192.168.0.100:25'
          ChunkingEnabled                         = $true
          Comment                                 = 'Connector for relaying'
          ConnectionInactivityTimeout             = '00:05:00'
@@ -126,23 +139,23 @@ if ($exchangeInstalled)
          TransportRole                           = 'FrontendTransport'
     }
 
-     Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Create Receive Connector" -ExpectedGetResults $expectedGetResults
+     Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Create Receive Connector' -ExpectedGetResults $expectedGetResults
      
      #modify configuration
      $testParams.ExtendedRightDenyEntries = $(New-CimInstance -ClassName MSFT_KeyValuePair -Namespace root/microsoft/Windows/DesiredStateConfiguration `
                                             -Property @{Key = 'Domain Users'; Value = 'ms-Exch-Bypass-Anti-Spam'} -ClientOnly)
-     $expectedGetResults.ExtendedRightDenyEntries = "Domain Users=ms-Exch-Bypass-Anti-Spam"
+     $expectedGetResults.ExtendedRightDenyEntries = 'Domain Users=ms-Exch-Bypass-Anti-Spam'
 
-     Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Modify Receive Connector" -ExpectedGetResults $expectedGetResults
+     Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Modify Receive Connector' -ExpectedGetResults $expectedGetResults
      
      #modify configuration
      $testParams.Ensure = 'Absent'
      $expectedGetResults = $null
 
-     Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Remove Receive Connector" -ExpectedGetResults $expectedGetResults
+     Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Remove Receive Connector' -ExpectedGetResults $expectedGetResults
      }
 }
 else
 {
-    Write-Verbose "Tests in this file require that Exchange is installed to be run."
+    Write-Verbose -Message 'Tests in this file require that Exchange is installed to be run.'
 }

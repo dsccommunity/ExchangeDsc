@@ -1,21 +1,34 @@
-###NOTE: This test module requires use of credentials. The first run through of the tests will prompt for credentials from the logged on user.
+<#
+    .SYNOPSIS
+        Automated integration test for MSFT_xExchTransportService DSC Resource.
+        This test module requires use of credentials.
+        The first run through of the tests will prompt for credentials from the logged on user.
+#>
 
-Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchTransportService\MSFT_xExchTransportService.psm1
-Import-Module $PSScriptRoot\..\Modules\xExchangeHelper.psm1 -Verbose:0
-Import-Module $PSScriptRoot\xExchange.Tests.Common.psm1 -Verbose:0
+#region HEADER
+[System.String]$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[System.String]$script:DSCModuleName = 'xExchange'
+[System.String]$script:DSCResourceFriendlyName = 'xExchTransportService'
+[System.String]$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[bool]$exchangeInstalled = IsSetupComplete
+[System.Boolean]$exchangeInstalled = IsSetupComplete
+
+#endregion HEADER
 
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
     if ($null -eq $Global:ShellCredentials)
     {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message "Enter credentials for connecting a Remote PowerShell session to Exchange"
+        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
     }
 
-    Describe "Set and modify Transport Service configuration" {
+    Describe 'Set and modify Transport Service configuration' {
     #Set configuration with default values
     $testParams = @{
          Identity                                = $env:computername
@@ -198,7 +211,7 @@ if ($exchangeInstalled)
          UseDowngradedExchangeServerAuth         = $false
     }
 
-     Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Set default Transport Service configuration" -ExpectedGetResults $expectedGetResults
+     Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Set default Transport Service configuration' -ExpectedGetResults $expectedGetResults
      
      #modify configuration
      $testParams.InternalDNSServers = '192.168.1.10'
@@ -209,7 +222,7 @@ if ($exchangeInstalled)
      $expectedGetResults.ExternalDNSServers = '10.1.1.10'
      $expectedGetResults.PipelineTracingSenderAddress = 'john.doe@contoso.com'
 
-     Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Modify Transport Service configuration" -ExpectedGetResults $expectedGetResults
+     Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Modify Transport Service configuration' -ExpectedGetResults $expectedGetResults
      
      #modify configuration
      $testParams.InternalDNSServers = ''
@@ -220,10 +233,10 @@ if ($exchangeInstalled)
      $expectedGetResults.ExternalDNSServers = $null
      $expectedGetResults.PipelineTracingSenderAddress = $null
      
-     Test-TargetResourceFunctionality -Params $testParams -ContextLabel "Revert Transport Service configuration" -ExpectedGetResults $expectedGetResults
+     Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Revert Transport Service configuration' -ExpectedGetResults $expectedGetResults
      }
 }
 else
 {
-    Write-Verbose "Tests in this file require that Exchange is installed to be run."
+    Write-Verbose -Message 'Tests in this file require that Exchange is installed to be run.'
 }
