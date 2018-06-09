@@ -1665,7 +1665,7 @@ function Wait-EmptyQueuesCompletion
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Server = $null,
+        $Server,
 
         [Parameter()]
         [System.String[]]
@@ -1847,11 +1847,11 @@ function Wait-EmptyDiscardsCompletion
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Server = $null,
+        $Server,
 
         [Parameter(Mandatory = $true)]
         [System.String[]]
-        $ActiveServers = $null,
+        $ActiveServers,
 
         [Parameter()]
         [TimeSpan]
@@ -2135,7 +2135,7 @@ function Wait-BootLoaderReady
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Server = $null,
+        $Server,
 
         [Parameter()]
         [TimeSpan]
@@ -2263,7 +2263,7 @@ function Clear-ActiveMessage
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]
-        $Server = $env:COMPUTERNAME,
+        $Server,
 
         [Parameter()]
         [object]
