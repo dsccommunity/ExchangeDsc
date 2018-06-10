@@ -8,6 +8,10 @@ function Get-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
+        $Identity,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
         $AutoDagDatabasesRootFolderPath,
 
         [Parameter(Mandatory = $true)]
@@ -73,10 +77,13 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Identity,
+
         [Parameter(Mandatory = $true)]
         [System.String]
         $AutoDagDatabasesRootFolderPath,
@@ -178,6 +185,10 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Identity,
+        
         [Parameter(Mandatory = $true)]
         [System.String]
         $AutoDagDatabasesRootFolderPath,

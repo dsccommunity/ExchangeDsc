@@ -1,6 +1,7 @@
 [ClassVersion("1.0.0.0"), FriendlyName("xExchAutoMountPoint")]
 class MSFT_xExchAutoMountPoint : OMI_BaseResource
 {
+    [Key] String Identity; //The name of the server. Not actually used for anything
     [Required] String AutoDagDatabasesRootFolderPath; //The parent folder for Exchange database mount point folders
     [Required] String AutoDagVolumesRootFolderPath; //The parent folder for Exchange volume mount point folders
     [Required] String DiskToDBMap[]; //An array of strings containing the databases for each disk. Databases on the same disk should be in the same string, and comma separated. Example: "DB1,DB2","DB3,DB4". This puts DB1 and DB2 on one disk, and DB3 and DB4 on another.
