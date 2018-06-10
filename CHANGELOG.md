@@ -92,6 +92,9 @@
 - Renamed function PrepTestDAG to Initialize-TestForDAG
 - Moved function Initialize-TestForDAG to xExchangeTestHelper.psm1
 - Updated .MetaTestOptIn.json file with Flagged Script Analyzer Rules
+- BREAKING CHANGE Removed Identity parameter from MSFT_xExchAutoMountPoint.psm1
+- Added Test-ExchDscParameterState and Test-ExchDscObjectHasProperty functions
+- xExchangeDiskPart.psm1: Renamed function with approved verbs
 
 ## 1.20.0.0
 

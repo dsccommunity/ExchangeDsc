@@ -137,7 +137,7 @@ function Set-TargetResource
 
                 if ($volNum -ge 0)
                 {
-                    StartDiskpart -Commands "select volume $($volNum)","remove mount=`"$($parent)`"" -VerbosePreference $VerbosePreference | Out-Null
+                    Start-ExchDscDiskpart -Commands "select volume $($volNum)","remove mount=`"$($parent)`"" -VerbosePreference $VerbosePreference | Out-Null
 
                     RemoveFolder -Path "$($parent)"
                 }

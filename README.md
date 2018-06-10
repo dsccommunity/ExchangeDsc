@@ -206,7 +206,6 @@ parameters.
   automatically detect it and format and assign an Exchange volume mount point
   so that AutoReseed can detect it as a spare disk.
 
-* **Identity**: The name of the server. This is not actually used for anything.
 * **AutoDagDatabasesRootFolderPath**: The parent folder for Exchange database
   mount point folders.
 * **AutoDagVolumesRootFolderPath**: The parent folder for Exchange volume mount
