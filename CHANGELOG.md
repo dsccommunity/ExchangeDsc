@@ -91,6 +91,7 @@
 - Renamed xEchangeCommon.Unit.Tests.ps1 to xExchangeCommon.Tests.ps1
 - Renamed function PrepTestDAG to Initialize-TestForDAG
 - Moved function Initialize-TestForDAG to xExchangeTestHelper.psm1
+- Fix error-level PS Script Analyzer rules for TransportMaintenance.psm1
 
 ## 1.20.0.0
 
