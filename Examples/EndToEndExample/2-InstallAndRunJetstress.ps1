@@ -1,12 +1,73 @@
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingCmdletAliases", "")]
-[CmdletBinding()]
-param()
+<#
+.EXAMPLE
+    This example shows how to install and run jet stress.
+#>
 
-Configuration InstallAndRunJetstress
+$ConfigurationData = @{
+    AllNodes = @(
+        @{
+            #region Common Settings for All Nodes
+            NodeName        = '*'
+
+            <#
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                This is added so that AppVeyor automatic tests can pass, otherwise
+                the tests will fail on passwords being in plain text and not being
+                encrypted. Because it is not possible to have a certificate in
+                AppVeyor to encrypt the passwords we need to add the parameter
+                'PSDscAllowPlainTextPassword'.
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                See:
+                http://blogs.msdn.com/b/powershell/archive/2014/01/31/want-to-secure-credentials-in-windows-powershell-desired-state-configuration.aspx
+            #>
+            PSDscAllowPlainTextPassword = $true
+
+            <#
+                The location of the exported public certifcate which will be used to encrypt
+                credentials during compilation.
+                CertificateFile = 'C:\public-certificate.cer' 
+            #>
+            
+            #Thumbprint of the certificate being used for decrypting credentials
+            Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673' 
+
+            #DiskToDBMap used by xExchAutoMountPoint specifically for Jetstress purposes
+            JetstressDiskToDBMap = 'DB1,DB2,DB3,DB4','DB5,DB6,DB7,DB8'
+
+            #The base file server UNC path that will be used for copying things like certificates, Exchange binaries, and Jetstress binaries
+            FileServerBase = '\\rras-1.mikelab.local\Binaries'
+
+            #endregion
+        }
+
+        #region Individual Node Settings
+        #region DAG01 Nodes
+        @{
+            NodeName        = 'e15-1'        
+        }
+
+        @{
+            NodeName        = 'e15-2'
+        }
+
+        @{
+            NodeName        = 'e15-3'   
+        }
+
+        @{
+            NodeName        = 'e15-4'
+        }
+        #endregion
+    )
+}
+
+Configuration Example
 {   
     param
     (
-        [PSCredential]$FileCopyCreds
+        [Parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $ExchangeAdminCredential
     )
 
     Import-DscResource -Module xExchange
@@ -17,7 +78,12 @@ Configuration InstallAndRunJetstress
         #that way I can use the same JetstressConfig.xml for all of them.
         xExchAutoMountPoint AMPForJetstress
         {
-            Identity                       = $Node.NodeName            AutoDagDatabasesRootFolderPath = 'C:\ExchangeDatabases'            AutoDagVolumesRootFolderPath   = 'C:\ExchangeVolumes'            DiskToDBMap                    = $Node.JetstressDiskToDBMap            SpareVolumeCount               = 0            VolumePrefix                   = 'EXVOL'
+            Identity                       = $Node.NodeName
+            AutoDagDatabasesRootFolderPath = 'C:\ExchangeDatabases'
+            AutoDagVolumesRootFolderPath   = 'C:\ExchangeVolumes'
+            DiskToDBMap                    = $Node.JetstressDiskToDBMap
+            SpareVolumeCount               = 0
+            VolumePrefix                   = 'EXVOL'
             CreateSubfolders               = $true
         }
 
@@ -27,7 +93,7 @@ Configuration InstallAndRunJetstress
             Ensure          = 'Present'
             SourcePath      = "$($Node.FileServerBase)\Jetstress\Jetstress.msi"
             DestinationPath = 'C:\Binaries\Jetstress\Jetstress.msi'
-            Credential      = $FileCopyCreds
+            Credential      = $ExchangeAdminCredential
         }
 
         #Install Jetstress
@@ -37,7 +103,6 @@ Configuration InstallAndRunJetstress
             Path      = 'C:\Binaries\Jetstress\Jetstress.msi'
             Name      = 'Microsoft Exchange Jetstress 2013'
             ProductId = '75189587-0D84-4404-8F02-79C39728FA64'
-
             DependsOn = '[xExchAutoMountPoint]AMPForJetstress','[File]CopyJetstress'
         }
 
@@ -49,8 +114,7 @@ Configuration InstallAndRunJetstress
             Recurse         = $true
             SourcePath      = "$($Node.FileServerBase)\Jetstress\ESEDlls"
             DestinationPath = 'C:\Program Files\Exchange Jetstress'
-            Credential      = $FileCopyCreds
-
+            Credential      = $ExchangeAdminCredential
             DependsOn       = '[Package]InstallJetstress'
         }
 
@@ -60,8 +124,7 @@ Configuration InstallAndRunJetstress
             Ensure          = 'Present'
             SourcePath      = "$($Node.FileServerBase)\Jetstress\JetstressConfig.xml"
             DestinationPath = 'C:\Program Files\Exchange Jetstress\JetstressConfig.xml'
-            Credential      = $FileCopyCreds
-
+            Credential      = $ExchangeAdminCredential
             DependsOn       = '[Package]InstallJetstress'
         }
 
@@ -72,19 +135,7 @@ Configuration InstallAndRunJetstress
             JetstressPath   = 'C:\Program Files\Exchange Jetstress'
             JetstressParams = '/c "C:\Program Files\Exchange Jetstress\JetstressConfig.xml"'
             MinAchievedIOPS = 100
-
             DependsOn       = '[File]CopyESEDlls','[File]CopyJetstressConfig'
         }
     }
 }
-
-if ($null -eq $FileCopyCreds)
-{
-    $FileCopyCreds = Get-Credential -Message "Enter the credentials to copy Jetstress files from the file server"
-}
-
-###Compiles the example
-InstallAndRunJetstress -ConfigurationData $PSScriptRoot\ExchangeSettings-Lab.psd1 -FileCopyCreds $FileCopyCreds
-
-###Pushes configuration and waits for execution
-#Start-DscConfiguration -Path .\InstallAndRunJetstress -Verbose -Wait -ComputerName XXX

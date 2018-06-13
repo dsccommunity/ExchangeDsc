@@ -1,5 +1,43 @@
-Configuration CleanupJetstress
+<#
+.EXAMPLE
+    This example shows how to cleanup jet stress.
+#>
+
+$ConfigurationData = @{
+    AllNodes = @(
+        @{
+            #region Common Settings for All Nodes
+            NodeName        = '*'
+            
+            #The base file server UNC path that will be used for copying things like certificates, Exchange binaries, and Jetstress binaries
+            FileServerBase = '\\rras-1.mikelab.local\Binaries'
+
+            #endregion
+        }
+
+        #region Individual Node Settings
+        @{
+            NodeName        = 'e15-1'
+        }
+
+        @{
+            NodeName        = 'e15-2'
+        }
+
+        @{
+            NodeName        = 'e15-3'     
+        }
+
+        @{
+            NodeName        = 'e15-4'
+        }
+        #endregion
+    )
+}
+
+Configuration Example
 {
+
     Import-DscResource -Module xExchange
 
     Node $AllNodes.NodeName
@@ -16,19 +54,12 @@ Configuration CleanupJetstress
         #Clean up Jetstress databases, mount points, and binaries
         xExchJetstressCleanup CleanupJetstress
         {
-            JetstressPath               = "C:\Program Files\Exchange Jetstress"
-            ConfigFilePath              = "C:\Program Files\Exchange Jetstress\JetstressConfig.xml"
+            JetstressPath               = 'C:\Program Files\Exchange Jetstress'
+            ConfigFilePath              = 'C:\Program Files\Exchange Jetstress\JetstressConfig.xml'
             DeleteAssociatedMountPoints = $true
             OutputSaveLocation          = "$($Node.FileServerBase)\JetstressOutput\$($Node.NodeName)"
             RemoveBinaries              = $true
-
             DependsOn                   = '[Package]UninstallJetstress'
         }
     }
 }
-
-###Compiles the example
-CleanupJetstress -ConfigurationData $PSScriptRoot\ExchangeSettings-Lab.psd1
-
-###Pushes configuration and waits for execution
-#Start-DscConfiguration -Path .\CleanupJetstress -Verbose -Wait -ComputerName XXX

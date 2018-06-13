@@ -1,8 +1,3 @@
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscTestsPresent", "")]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscExamplesPresent", "")]
-[CmdletBinding()]
-param()
-
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -10,77 +5,93 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $AdfsAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $BasicAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $ChangePasswordEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $DigestAuthentication,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String[]]
         $ExternalAuthenticationMethods,
 
+        [Parameter()]
         [System.String]
         $ExternalUrl,
 
+        [Parameter()]
         [System.Boolean]
         $FormsAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $InstantMessagingEnabled,
 
+        [Parameter()]
         [System.String]
         $InstantMessagingCertificateThumbprint,
 
+        [Parameter()]
         [System.String]
         $InstantMessagingServerName,
 
-        [ValidateSet("None","Ocs")]
+        [Parameter()]
+        [ValidateSet('None','Ocs')]
         [System.String]
         $InstantMessagingType,
 
+        [Parameter()]
         [System.String]
         $InternalUrl,
 
+        [Parameter()]
         [System.Boolean]
         $LogonPagePublicPrivateSelectionEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $LogonPageLightSelectionEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $WindowsAuthentication,
 
-        [ValidateSet("FullDomain","UserName","PrincipalName")]
+        [Parameter()]
+        [ValidateSet('FullDomain','UserName','PrincipalName')]
         [System.String]
         $LogonFormat,
 
+        [Parameter()]
         [System.String]
         $DefaultDomain
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
@@ -115,83 +126,98 @@ function Get-TargetResource
 
     $returnValue
 }
-
 function Set-TargetResource
 {
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $AdfsAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $BasicAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $ChangePasswordEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $DigestAuthentication,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String[]]
         $ExternalAuthenticationMethods,
 
+        [Parameter()]
         [System.String]
         $ExternalUrl,
 
+        [Parameter()]
         [System.Boolean]
         $FormsAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $InstantMessagingEnabled,
 
+        [Parameter()]
         [System.String]
         $InstantMessagingCertificateThumbprint,
 
+        [Parameter()]
         [System.String]
         $InstantMessagingServerName,
 
-        [ValidateSet("None","Ocs")]
+        [Parameter()]
+        [ValidateSet('None','Ocs')]
         [System.String]
         $InstantMessagingType,
 
+        [Parameter()]
         [System.String]
         $InternalUrl,
 
+        [Parameter()]
         [System.Boolean]
         $LogonPagePublicPrivateSelectionEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $LogonPageLightSelectionEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $WindowsAuthentication,
 
-        [ValidateSet("FullDomain","UserName","PrincipalName")]
+        [Parameter()]
+        [ValidateSet('FullDomain','UserName','PrincipalName')]
         [System.String]
         $LogonFormat,
 
+        [Parameter()]
         [System.String]
         $DefaultDomain
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
@@ -208,15 +234,14 @@ function Set-TargetResource
 
     if($AllowServiceRestart -eq $true)
     {
-        Write-Verbose "Recycling MSExchangeOWAAppPool"
+        Write-Verbose -Message 'Recycling MSExchangeOWAAppPool'
         RestartAppPoolIfExists -Name MSExchangeOWAAppPool
     }
     else
     {
-        Write-Warning "The configuration will not take effect until MSExchangeOWAAppPool is manually recycled."
+        Write-Warning -Message 'The configuration will not take effect until MSExchangeOWAAppPool is manually recycled.'
     }
 }
-
 
 function Test-TargetResource
 {
@@ -225,79 +250,95 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $AdfsAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $BasicAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $ChangePasswordEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $DigestAuthentication,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String[]]
         $ExternalAuthenticationMethods,
 
+        [Parameter()]
         [System.String]
         $ExternalUrl,
 
+        [Parameter()]
         [System.Boolean]
         $FormsAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $InstantMessagingEnabled,
 
+        [Parameter()]
         [System.String]
         $InstantMessagingCertificateThumbprint,
 
+        [Parameter()]
         [System.String]
         $InstantMessagingServerName,
 
-        [ValidateSet("None","Ocs")]
+        [Parameter()]
+        [ValidateSet('None','Ocs')]
         [System.String]
         $InstantMessagingType,
 
+        [Parameter()]
         [System.String]
         $InternalUrl,
 
+        [Parameter()]
         [System.Boolean]
         $LogonPagePublicPrivateSelectionEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $LogonPageLightSelectionEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $WindowsAuthentication,
 
-        [ValidateSet("FullDomain","UserName","PrincipalName")]
+        [Parameter()]
+        [ValidateSet('FullDomain','UserName','PrincipalName')]
         [System.String]
         $LogonFormat,
 
+        [Parameter()]
         [System.String]
         $DefaultDomain
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
         
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
     #Establish remote Powershell session    
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OwaVirtualDirectory' -VerbosePreference $VerbosePreference
@@ -313,87 +354,87 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name "InternalUrl" -Type "String" -ExpectedValue $InternalUrl -ActualValue $OwaVdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'InternalUrl' -Type 'String' -ExpectedValue $InternalUrl -ActualValue $OwaVdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "ExternalUrl" -Type "String" -ExpectedValue $ExternalUrl -ActualValue $OwaVdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ExternalUrl' -Type 'String' -ExpectedValue $ExternalUrl -ActualValue $OwaVdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "FormsAuthentication" -Type "Boolean" -ExpectedValue $FormsAuthentication -ActualValue $OwaVdir.FormsAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'FormsAuthentication' -Type 'Boolean' -ExpectedValue $FormsAuthentication -ActualValue $OwaVdir.FormsAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "WindowsAuthentication" -Type "Boolean" -ExpectedValue $WindowsAuthentication -ActualValue $OwaVdir.WindowsAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'WindowsAuthentication' -Type 'Boolean' -ExpectedValue $WindowsAuthentication -ActualValue $OwaVdir.WindowsAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "BasicAuthentication" -Type "Boolean" -ExpectedValue $BasicAuthentication -ActualValue $OwaVdir.BasicAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'BasicAuthentication' -Type 'Boolean' -ExpectedValue $BasicAuthentication -ActualValue $OwaVdir.BasicAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "ChangePasswordEnabled" -Type "Boolean" -ExpectedValue $ChangePasswordEnabled -ActualValue $OwaVdir.ChangePasswordEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ChangePasswordEnabled' -Type 'Boolean' -ExpectedValue $ChangePasswordEnabled -ActualValue $OwaVdir.ChangePasswordEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "DigestAuthentication" -Type "Boolean" -ExpectedValue $DigestAuthentication -ActualValue $OwaVdir.DigestAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'DigestAuthentication' -Type 'Boolean' -ExpectedValue $DigestAuthentication -ActualValue $OwaVdir.DigestAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "AdfsAuthentication" -Type "Boolean" -ExpectedValue $AdfsAuthentication -ActualValue $OwaVdir.AdfsAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'AdfsAuthentication' -Type 'Boolean' -ExpectedValue $AdfsAuthentication -ActualValue $OwaVdir.AdfsAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "InstantMessagingType" -Type "String" -ExpectedValue $InstantMessagingType -ActualValue $OwaVdir.InstantMessagingType -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'InstantMessagingType' -Type 'String' -ExpectedValue $InstantMessagingType -ActualValue $OwaVdir.InstantMessagingType -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "InstantMessagingEnabled" -Type "Boolean" -ExpectedValue $InstantMessagingEnabled -ActualValue $OwaVdir.InstantMessagingEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'InstantMessagingEnabled' -Type 'Boolean' -ExpectedValue $InstantMessagingEnabled -ActualValue $OwaVdir.InstantMessagingEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "InstantMessagingCertificateThumbprint" -Type "String" -ExpectedValue $InstantMessagingCertificateThumbprint -ActualValue $OwaVdir.InstantMessagingCertificateThumbprint -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'InstantMessagingCertificateThumbprint' -Type 'String' -ExpectedValue $InstantMessagingCertificateThumbprint -ActualValue $OwaVdir.InstantMessagingCertificateThumbprint -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "InstantMessagingServerName" -Type "String" -ExpectedValue $InstantMessagingServerName -ActualValue $OwaVdir.InstantMessagingServerName -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'InstantMessagingServerName' -Type 'String' -ExpectedValue $InstantMessagingServerName -ActualValue $OwaVdir.InstantMessagingServerName -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "LogonPagePublicPrivateSelectionEnabled" -Type "Boolean" -ExpectedValue $LogonPagePublicPrivateSelectionEnabled -ActualValue $OwaVdir.LogonPagePublicPrivateSelectionEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'LogonPagePublicPrivateSelectionEnabled' -Type 'Boolean' -ExpectedValue $LogonPagePublicPrivateSelectionEnabled -ActualValue $OwaVdir.LogonPagePublicPrivateSelectionEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "LogonPageLightSelectionEnabled" -Type "Boolean" -ExpectedValue $LogonPageLightSelectionEnabled -ActualValue $OwaVdir.LogonPageLightSelectionEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'LogonPageLightSelectionEnabled' -Type 'Boolean' -ExpectedValue $LogonPageLightSelectionEnabled -ActualValue $OwaVdir.LogonPageLightSelectionEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "ExternalAuthenticationMethods" -Type "Array" -ExpectedValue $ExternalAuthenticationMethods -ActualValue $OwaVdir.ExternalAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ExternalAuthenticationMethods' -Type 'Array' -ExpectedValue $ExternalAuthenticationMethods -ActualValue $OwaVdir.ExternalAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "LogonFormat" -Type "String" -ExpectedValue $LogonFormat -ActualValue $OwaVdir.LogonFormat -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'LogonFormat' -Type 'String' -ExpectedValue $LogonFormat -ActualValue $OwaVdir.LogonFormat -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
 
-        if (!(VerifySetting -Name "DefaultDomain" -Type "String" -ExpectedValue $DefaultDomain -ActualValue $OwaVdir.DefaultDomain -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'DefaultDomain' -Type 'String' -ExpectedValue $DefaultDomain -ActualValue $OwaVdir.DefaultDomain -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -408,81 +449,97 @@ function GetOwaVirtualDirectory
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
+        [Parameter()]
         [System.Boolean]
         $AdfsAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $BasicAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $ChangePasswordEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $DigestAuthentication,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.String[]]
         $ExternalAuthenticationMethods,
 
+        [Parameter()]
         [System.String]
         $ExternalUrl,
 
+        [Parameter()]
         [System.Boolean]
         $FormsAuthentication,
 
+        [Parameter()]
         [System.Boolean]
         $InstantMessagingEnabled,
 
+        [Parameter()]
         [System.String]
         $InstantMessagingCertificateThumbprint,
 
+        [Parameter()]
         [System.String]
         $InstantMessagingServerName,
 
-        [ValidateSet("None","Ocs")]
+        [Parameter()]
+        [ValidateSet('None','Ocs')]
         [System.String]
         $InstantMessagingType,
 
+        [Parameter()]
         [System.String]
         $InternalUrl,
 
+        [Parameter()]
         [System.Boolean]
         $LogonPagePublicPrivateSelectionEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $LogonPageLightSelectionEnabled,
 
+        [Parameter()]
         [System.Boolean]
         $WindowsAuthentication,
 
-        [ValidateSet("FullDomain","UserName","PrincipalName")]
+        [Parameter()]
+        [ValidateSet('FullDomain','UserName','PrincipalName')]
         [System.String]
         $LogonFormat,
 
+        [Parameter()]
         [System.String]
         $DefaultDomain
     )
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
+    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
     return (Get-OwaVirtualDirectory @PSBoundParameters)
 }
 
-
 Export-ModuleMember -Function *-TargetResource
-
-

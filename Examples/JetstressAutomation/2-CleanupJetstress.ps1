@@ -1,8 +1,13 @@
-Configuration CleanupJetstress
+<#
+.EXAMPLE
+    This example shows how to cleanup Jet Stress.
+#>
+
+Configuration Example
 {
     Import-DscResource -Module xExchange
 
-    Node $AllNodes.NodeName
+    node localhost
     {
         LocalConfigurationManager
         {
@@ -21,22 +26,12 @@ Configuration CleanupJetstress
         #Clean up Jetstress databases, mount points, and binaries
         xExchJetstressCleanup CleanupJetstress
         {
-            JetstressPath               = "C:\Program Files\Exchange Jetstress"
-            ConfigFilePath              = "C:\Program Files\Exchange Jetstress\JetstressConfig.xml"
+            JetstressPath               = 'C:\Program Files\Exchange Jetstress'
+            ConfigFilePath              = 'C:\Program Files\Exchange Jetstress\JetstressConfig.xml'
             DeleteAssociatedMountPoints = $true
-            OutputSaveLocation          = "C:\JetstressOutput"
+            OutputSaveLocation          = 'C:\JetstressOutput'
             RemoveBinaries              = $true
-
             DependsOn                   = '[Package]UninstallJetstress'
         }
     }
 }
-
-###Compiles the example
-CleanupJetstress -ConfigurationData $PSScriptRoot\Jetstress-Config.psd1
-
-###Sets up LCM on target computers to allow reboot during resource execution
-Set-DscLocalConfigurationManager -Path .\CleanupJetstress -Verbose
-
-###Pushes configuration and waits for execution
-Start-DscConfiguration -Path .\CleanupJetstress -Verbose -Wait

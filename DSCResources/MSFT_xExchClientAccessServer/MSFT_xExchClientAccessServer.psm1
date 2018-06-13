@@ -1,8 +1,3 @@
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscTestsPresent", "")]
-[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCDscExamplesPresent", "")]
-[CmdletBinding()]
-param()
-
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -10,38 +5,41 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         [ValidateNotNullOrEmpty()]
         $AlternateServiceAccountCredential,
 
+        [Parameter()]
         [System.String]
         $AutoDiscoverServiceInternalUri,
 
+        [Parameter()]
         [System.String[]]
         $AutoDiscoverSiteScope,
 
+        [Parameter()]
         [System.Boolean]
         $CleanUpInvalidAlternateServiceAccountCredentials,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $RemoveAlternateServiceAccountCredentials
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
@@ -66,8 +64,8 @@ function Get-TargetResource
         }
         if ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials.Count -gt 0)
         {
-            $UserName = ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | sort WhenAddedUTC | select -Last 1).Credential.UserName
-            $PassWord = ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | sort WhenAddedUTC | select -Last 1).Credential.GetNetworkCredential().Password
+            $UserName = ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | Sort-Object WhenAddedUTC | Select-Object -Last 1).Credential.UserName
+            $PassWord = ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | Sort-Object WhenAddedUTC | Select-Object -Last 1).Credential.GetNetworkCredential().Password
             $returnValue.Add("AlternateServiceAccountCredential","UserName:$UserName Password:$PassWord")
         }
     }
@@ -82,32 +80,38 @@ function Set-TargetResource
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         [ValidateNotNullOrEmpty()]
         $AlternateServiceAccountCredential,
 
+        [Parameter()]
         [System.String]
         $AutoDiscoverServiceInternalUri,
 
+        [Parameter()]
         [System.String[]]
         $AutoDiscoverSiteScope,
 
+        [Parameter()]
         [System.Boolean]
         $CleanUpInvalidAlternateServiceAccountCredentials,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $RemoveAlternateServiceAccountCredentials
     )
@@ -126,8 +130,6 @@ function Set-TargetResource
             throw "The username must be fully qualified!"
         }
     }
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
@@ -158,38 +160,41 @@ function Test-TargetResource
     [OutputType([System.Boolean])]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         [ValidateNotNullOrEmpty()]
         $AlternateServiceAccountCredential,
 
+        [Parameter()]
         [System.String]
         $AutoDiscoverServiceInternalUri,
 
+        [Parameter()]
         [System.String[]]
         $AutoDiscoverSiteScope,
 
+        [Parameter()]
         [System.Boolean]
         $CleanUpInvalidAlternateServiceAccountCredentials,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $RemoveAlternateServiceAccountCredentials
     )
-
-    #Load helper module
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Misc\xExchangeCommon.psm1" -Verbose:0
 
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
 
@@ -216,7 +221,7 @@ function Test-TargetResource
             return $false
         }
 
-        if (!(VerifySetting -Name "AlternateServiceAccountCredential" -Type "PSCredential" -ExpectedValue $AlternateServiceAccountCredential -ActualValue ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | sort WhenAddedUTC | select -Last 1).Credential $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "AlternateServiceAccountCredential" -Type "PSCredential" -ExpectedValue $AlternateServiceAccountCredential -ActualValue ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | Sort-Object WhenAddedUTC | Select-Object -Last 1).Credential $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             return $false
         }
@@ -239,38 +244,44 @@ function GetClientAccessServer
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
 
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         [ValidateNotNullOrEmpty()]
         $AlternateServiceAccountCredential,
 
+        [Parameter()]
         [System.String]
         $AutoDiscoverServiceInternalUri,
 
+        [Parameter()]
         [System.String[]]
         $AutoDiscoverSiteScope,
 
+        [Parameter()]
         [System.Boolean]
         $CleanUpInvalidAlternateServiceAccountCredentials,
 
+        [Parameter()]
         [System.String]
         $DomainController,
 
+        [Parameter()]
         [System.Boolean]
         $RemoveAlternateServiceAccountCredentials
     )
 
     #Remove params we don't want to pass into the next command
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
+    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
     $serverVersion = GetExchangeVersion -ThrowIfUnknownVersion $true
     if (($null -ne $AlternateServiceAccountCredential) -or ($RemoveAlternateServiceAccountCredentials))
@@ -278,17 +289,14 @@ function GetClientAccessServer
         $PSBoundParameters.Add('IncludeAlternateServiceAccountCredentialPassword',$true)
     }
 
-    if ($serverVersion -eq "2016")
+    if ($serverVersion -eq '2016')
     {
         return (Get-ClientAccessService @PSBoundParameters)
     }
-    elseif ($serverVersion -eq "2013")
+    elseif ($serverVersion -eq '2013')
     {
         return (Get-ClientAccessServer @PSBoundParameters)
     } 
 }
 
-
 Export-ModuleMember -Function *-TargetResource
-
-

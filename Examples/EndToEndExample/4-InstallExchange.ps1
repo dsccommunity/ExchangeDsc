@@ -1,9 +1,80 @@
-Configuration InstallExchange
+<#
+.EXAMPLE
+    This example shows how to install Exchange.
+#>
+
+$ConfigurationData = @{
+    AllNodes = @(
+        @{
+            #region Common Settings for All Nodes
+            NodeName        = '*'
+
+            <#
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                This is added so that AppVeyor automatic tests can pass, otherwise
+                the tests will fail on passwords being in plain text and not being
+                encrypted. Because it is not possible to have a certificate in
+                AppVeyor to encrypt the passwords we need to add the parameter
+                'PSDscAllowPlainTextPassword'.
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                See:
+                http://blogs.msdn.com/b/powershell/archive/2014/01/31/want-to-secure-credentials-in-windows-powershell-desired-state-configuration.aspx
+            #>
+            PSDscAllowPlainTextPassword = $true
+
+            <#
+                The location of the exported public certifcate which will be used to encrypt
+                credentials during compilation.
+                CertificateFile = 'C:\public-certificate.cer' 
+            #>
+            
+            #Thumbprint of the certificate being used for decrypting credentials
+            Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673' 
+
+            #The product key to license Exchange 2013
+            ProductKey = '12345-12345-12345-12345-12345'
+
+            #The base file server UNC path that will be used for copying things like certificates, Exchange binaries, and Jetstress binaries
+            FileServerBase = '\\rras-1.mikelab.local\Binaries'
+
+            #endregion
+        }
+
+        #region Individual Node Settings
+        #region DAG01 Nodes
+        @{
+            NodeName        = 'e15-1'      
+        }
+
+        @{
+            NodeName        = 'e15-2'
+        }
+
+        @{
+            NodeName        = 'e15-3'    
+        }
+
+        @{
+            NodeName        = 'e15-4'
+        }
+        #endregion
+    )
+}
+
+Configuration Example
 {
+
     param
     (
-        [PSCredential]$InstallCreds,
-        [PSCredential]$FileCopyCreds
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullorEmpty()]
+        [System.Management.Automation.PSCredential]    
+        $ExchangeInstallCredential,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullorEmpty()]
+        [System.Management.Automation.PSCredential]
+        $ExchangeAdminCredential
     )
 
     Import-DscResource -Module xExchange
@@ -19,14 +90,13 @@ Configuration InstallExchange
             Recurse         = $true
             SourcePath      = "$($Node.FileServerBase)\E2K13CU8"
             DestinationPath = 'C:\Binaries\E2K13CU8'
-            Credential      = $FileCopyCreds
+            Credential      = $ExchangeAdminCredential
         }
 
         #Check if a reboot is needed before installing Exchange
         xPendingReboot BeforeExchangeInstall
         {
             Name      = "BeforeExchangeInstall"
-
             DependsOn = '[File]ExchangeBinaries'
         }
 
@@ -35,8 +105,7 @@ Configuration InstallExchange
         {
             Path       = "C:\Binaries\E2K13CU8\Setup.exe"
             Arguments  = "/mode:Install /role:Mailbox,ClientAccess /IAcceptExchangeServerLicenseTerms"
-            Credential = $InstallCreds
-
+            Credential = $ExchangeInstallCredential
             DependsOn  = '[xPendingReboot]BeforeExchangeInstall'
         }
 
@@ -44,10 +113,9 @@ Configuration InstallExchange
         xExchExchangeServer EXServer
         {
             Identity            = $Node.NodeName
-            Credential          = $InstallCreds
+            Credential          = $ExchangeInstallCredential
             ProductKey          = $Node.ProductKey
             AllowServiceRestart = $true
-
             DependsOn           = '[xExchInstall]InstallExchange'
         }
 
@@ -55,24 +123,7 @@ Configuration InstallExchange
         xPendingReboot AfterExchangeInstall
         {
             Name      = "AfterExchangeInstall"
-
             DependsOn = '[xExchInstall]InstallExchange'
         }
     }
 }
-
-if ($null -eq $InstallCreds)
-{
-    $InstallCreds = Get-Credential -Message "Enter credentials for Installing Exchange"
-}
-
-if ($null -eq $FileCopyCreds)
-{
-    $FileCopyCreds = Get-Credential -Message "Enter credentials for copying Exchange setup files from the file server"
-}
-
-###Compiles the example
-InstallExchange -ConfigurationData $PSScriptRoot\ExchangeSettings-Lab.psd1 -InstallCreds $InstallCreds -FileCopyCreds $FileCopyCreds
-
-###Pushes configuration and waits for execution
-#Start-DscConfiguration -Path .\InstallExchange -Verbose -Wait -ComputerName XXX

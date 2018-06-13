@@ -1,8 +1,131 @@
-Configuration ConfigureDAG
+<#
+.EXAMPLE
+    This example shows how to configure DAG.
+#>
+
+$ConfigurationData = @{
+    AllNodes = @(
+        @{
+            #region Common Settings for All Nodes
+            NodeName        = '*'
+
+            <#
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                This is added so that AppVeyor automatic tests can pass, otherwise
+                the tests will fail on passwords being in plain text and not being
+                encrypted. Because it is not possible to have a certificate in
+                AppVeyor to encrypt the passwords we need to add the parameter
+                'PSDscAllowPlainTextPassword'.
+                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
+                See:
+                http://blogs.msdn.com/b/powershell/archive/2014/01/31/want-to-secure-credentials-in-windows-powershell-desired-state-configuration.aspx
+            #>
+            PSDscAllowPlainTextPassword = $true
+
+            <#
+                The location of the exported public certifcate which will be used to encrypt
+                credentials during compilation.
+                CertificateFile = 'C:\public-certificate.cer' 
+            #>
+            
+            #Thumbprint of the certificate being used for decrypting credentials
+            Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673' 
+
+            #endregion
+        }
+
+        #region Individual Node Settings
+        #region DAG01 Nodes
+        @{
+            NodeName        = 'e15-1'
+            Fqdn            = 'e15-1.mikelab.local'
+            Role            = 'AdditionalDAGMember'
+            DAGId           = 'DAG01'
+            CASId           = 'Site1CAS'
+            ServerNameInCsv = 'e15-1'          
+        }
+
+        @{
+            NodeName        = 'e15-2'
+            Fqdn            = 'e15-2.mikelab.local'
+            Role            = 'AdditionalDAGMember'
+            DAGId           = 'DAG01'
+            CASId           = 'Site1CAS'
+            ServerNameInCsv = 'e15-2'
+        }
+
+        @{
+            NodeName        = 'e15-3'
+            Fqdn            = 'e15-3.mikelab.local'
+            Role            = 'FirstDAGMember'
+            DAGId           = 'DAG01'
+            CASId           = 'Site2CAS'
+            ServerNameInCsv = 'e15-3'       
+        }
+
+        @{
+            NodeName        = 'e15-4'
+            Fqdn            = 'e15-4.mikelab.local'
+            Role            = 'AdditionalDAGMember'
+            DAGId           = 'DAG01'
+            CASId           = 'Site2CAS'
+            ServerNameInCsv = 'e15-4'
+        }
+        #endregion
+    );
+
+    #region DAG Settings
+    DAG01 = @(
+        @{
+            DAGName                              = 'DAG01'           
+            AutoDagTotalNumberOfServers          = 12
+            AutoDagDatabaseCopiesPerVolume       = 4
+            DatabaseAvailabilityGroupIPAddresses = '192.168.1.31','192.168.2.31'
+            WitnessServer                        = 'e14-1.mikelab.local'
+            DbNameReplacements                   = @{"nn" = "01"}
+            Thumbprint                           = "0079D0F68F44C7DA5252B4779F872F46DFAF0CBC"
+        }
+    )
+    #endregion
+
+    #region CAS Settings
+    #Settings that will apply to all CAS
+    AllCAS = @(
+        @{
+            ExternalNamespace = 'mail.mikelab.local'
+        }
+    )
+
+    #Settings that will apply only to Quincy CAS
+    Site1CAS = @(
+        @{
+            InternalNamespace          = 'mail-site1.mikelab.local'
+            AutoDiscoverSiteScope      = 'Site1'
+            InstantMessagingServerName = 'l15-1.mikelab.local'
+            DefaultOAB                 = "Default Offline Address Book (Site1)"
+        }
+    );
+
+    #Settings that will apply only to Phoenix CAS
+    Site2CAS = @(
+        @{
+            InternalNamespace          = 'mail-site2.mikelab.local'
+            AutoDiscoverSiteScope      = 'Site2'
+            InstantMessagingServerName = 'l15-2.mikelab.local'
+            DefaultOAB                 = "Default Offline Address Book (Site2)"
+        }
+    );
+    #endregion
+}
+
+Configuration Example
 {
     param
     (
-        [PSCredential]$ShellCreds
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullorEmpty()]
+        [System.Management.Automation.PSCredential]    
+        $ExchangeAdminCredential
     )
 
     #Import required DSC Modules
@@ -18,10 +141,11 @@ Configuration ConfigureDAG
         xExchDatabaseAvailabilityGroup DAG
         {
             Name                                 = $dagSettings.DAGName
-            Credential                           = $ShellCreds
+            Credential                           = $ExchangeAdminCredential
             AutoDagTotalNumberOfServers          = $dagSettings.AutoDagTotalNumberOfServers
             AutoDagDatabaseCopiesPerVolume       = $dagSettings.AutoDagDatabaseCopiesPerVolume
-            AutoDagDatabasesRootFolderPath       = 'C:\ExchangeDatabases'            AutoDagVolumesRootFolderPath         = 'C:\ExchangeVolumes'
+            AutoDagDatabasesRootFolderPath       = 'C:\ExchangeDatabases'
+            AutoDagVolumesRootFolderPath         = 'C:\ExchangeVolumes'
             DatacenterActivationMode             = "DagOnly"
             DatabaseAvailabilityGroupIPAddresses = $dagSettings.DatabaseAvailabilityGroupIPAddresses 
             ManualDagNetworkConfiguration        = $false
@@ -35,14 +159,12 @@ Configuration ConfigureDAG
         xExchDatabaseAvailabilityGroupMember DAGMember
         {
             MailboxServer     = $Node.NodeName
-            Credential        = $ShellCreds
+            Credential        = $ExchangeAdminCredential
             DAGName           = $dagSettings.DAGName
             SkipDagValidation = $true
-
             DependsOn         = '[xExchDatabaseAvailabilityGroup]DAG'
         }
     }
-
 
     #Next we'll add the remaining nodes to the DAG
     Node $AllNodes.Where{$_.Role -eq 'AdditionalDAGMember'}.NodeName
@@ -53,28 +175,16 @@ Configuration ConfigureDAG
         xExchWaitForDAG WaitForDAG
         {
             Identity         = $dagSettings.DAGName
-            Credential       = $ShellCreds
+            Credential       = $ExchangeAdminCredential
         }
 
         xExchDatabaseAvailabilityGroupMember DAGMember
         {
             MailboxServer     = $Node.NodeName
-            Credential        = $ShellCreds
+            Credential        = $ExchangeAdminCredential
             DAGName           = $dagSettings.DAGName
             SkipDagValidation = $true
-
             DependsOn         = '[xExchWaitForDAG]WaitForDAG'
         }
     }
 }
-
-if ($null -eq $ShellCreds)
-{
-    $ShellCreds = Get-Credential -Message 'Enter credentials for establishing Remote Powershell sessions to Exchange'
-}
-
-###Compiles the example
-ConfigureDAG -ConfigurationData $PSScriptRoot\ExchangeSettings-Lab.psd1 -ShellCreds $ShellCreds
-
-###Pushes configuration to specified computer
-#Start-DscConfiguration -Path .\ConfigureDAG -Verbose -Wait -ComputerName XXX
