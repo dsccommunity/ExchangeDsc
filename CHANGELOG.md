@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.21.0.0
+
 - Added CHANGELOG.md file
 - Added .markdownlint.json file
 - Updated README.md and CHANGELOG.md files to respect MD009, MD0013 and MD032 rules
