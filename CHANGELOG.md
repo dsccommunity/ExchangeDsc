@@ -3,7 +3,8 @@
 ## Unreleased
 
 - Fixed issue in xExchInstall where winrm config command fails to execute
-- Fixed issue in xExchInstall where a failed Exchange setup run is not reported, and subsequent DSC resources are allowed to run
+- Fixed issue in xExchInstall where a failed Exchange setup run is not
+  reported, and subsequent DSC resources are allowed to run
 
 ## 1.21.0.0
 
