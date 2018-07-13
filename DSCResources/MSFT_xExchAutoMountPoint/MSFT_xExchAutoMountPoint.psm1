@@ -260,7 +260,7 @@ function Test-TargetResource
         {
             foreach ($db in $value.Split(','))
             {
-                if ((DBHasMountPoint -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -DB $db) -eq $false)
+                if ((DBHasMountPoint -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -Database $db) -eq $false)
                 {
                     ReportBadSetting -SettingName "DB '$($db)' Has Mount Point" -ExpectedValue $true -ActualValue $false -VerbosePreference $VerbosePreference
                     return $false
@@ -304,6 +304,10 @@ function CreateMissingExVolumes
         [Parameter(Mandatory = $true)]
         [System.UInt32]
         $SpareVolumeCount,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnsureExchangeVolumeMountPointIsLast = $false,
 
         [Parameter()]
         [System.Boolean]
@@ -396,6 +400,10 @@ function CreateMissingExDatabases
         [Parameter(Mandatory = $true)]
         [System.UInt32]
         $SpareVolumeCount,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnsureExchangeVolumeMountPointIsLast = $false,
 
         [Parameter()]
         [System.Boolean]
@@ -841,10 +849,10 @@ function DBHasMountPoint
         
         [Parameter()]
         [System.String]
-        $DB
+        $Database
     )
 
-    $dbPath = Join-Path -Path "$($AutoDagDatabasesRootFolderPath)" -ChildPath "$($DB)"
+    $dbPath = Join-Path -Path "$($AutoDagDatabasesRootFolderPath)" -ChildPath "$($Database)"
 
     foreach ($key in $global:VolumeToMountPointMap.Keys)
     {
