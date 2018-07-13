@@ -259,12 +259,12 @@ function Remove-MountPointAndFolderSetup
     #Remove any folders in the ExchangeDatabases and ExchangeVolumes directories.
     #Do so using Directory.Delete(), as Remove-Item doesn't seem to work against
     #current or former mount points, even with -Force.
-    foreach($folder in Get-ChildItem -Path $AutoDagDatabasesRootFolderPath | Where-Object {$_.GetType().Name -like 'DirectoryInfo'})
+    foreach($folder in Get-ChildItem -Path $AutoDagDatabasesRootFolderPath -ErrorAction SilentlyContinue | Where-Object {$_.GetType().Name -like 'DirectoryInfo'})
     {
         [System.IO.Directory]::Delete($folder.FullName,$true)
     }
 
-    foreach($folder in Get-ChildItem -Path $AutoDagVolumesRootFolderPath | Where-Object {$_.GetType().Name -like 'DirectoryInfo'})
+    foreach($folder in Get-ChildItem -Path $AutoDagVolumesRootFolderPath -ErrorAction SilentlyContinue | Where-Object {$_.GetType().Name -like 'DirectoryInfo'})
     {
         [System.IO.Directory]::Delete($folder.FullName,$true)
     }
@@ -282,7 +282,7 @@ $unpartitionedDisks = Get-Disk | ForEach-Object {if (($_ | Get-Partition).Count 
 
 if ($unpartitionedDisks.Count -lt 2)
 {
-    Write-Error -Message 'Testing xExchAutoMountPoint requires at least 2 available disks with no partitions configured'
+    Write-Verbose -Message 'Testing xExchAutoMountPoint requires at least 2 available disks with no partitions configured'
     return
 }
 
@@ -290,7 +290,7 @@ $existingExMountPoints = Get-Partition | Where-Object {$_.AccessPaths -like "*$a
 
 if ($existingExMountPoints.Count -gt 0)
 {
-    Write-Error -Message "$($existingExMountPoints.Count) mount points already exist in the Exchange Databases or Exchange Volumes folder. Clean these up before running tests."
+    Write-Verbose -Message "$($existingExMountPoints.Count) mount points already exist in the Exchange Databases or Exchange Volumes folder. Clean these up before running tests."
     return
 }
 
