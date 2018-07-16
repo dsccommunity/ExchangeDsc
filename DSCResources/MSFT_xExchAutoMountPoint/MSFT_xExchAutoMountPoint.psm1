@@ -60,9 +60,9 @@ function Get-TargetResource
 
     LogFunctionEntry -VerbosePreference $VerbosePreference
 
-    GetDiskInfo
+    $diskInfo = GetDiskInfo
 
-    $dbMap = GetDiskToDBMap -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath
+    $dbMap = GetDiskToDBMap -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -DiskInfo $diskInfo
 
     $returnValue = @{
         Identity = $Identity
@@ -140,42 +140,42 @@ function Set-TargetResource
     LogFunctionEntry -VerbosePreference $VerbosePreference
 
     #First see if we need to assign any disks to ExVol's
-    GetDiskInfo
-    
-    $exVolCount = GetInUseMountPointCount -RootFolder $AutoDagVolumesRootFolderPath
+    $diskInfo = GetDiskInfo
+
+    $exVolCount = GetInUseMountPointCount -RootFolder $AutoDagVolumesRootFolderPath -DiskInfo $diskInfo
     $requiredVolCount = $DiskToDBMap.Count + $SpareVolumeCount
-   
+
     if ($exVolCount -lt $requiredVolCount)
     {
         CreateMissingExVolumes @PSBoundParameters -CurrentVolCount $exVolCount -RequiredVolCount $requiredVolCount
     }
 
     #Now see if we need any DB mount points
-    GetDiskInfo
+    $diskInfo = GetDiskInfo
 
-    $exDbCount = GetInUseMountPointCount -RootFolder $AutoDagDatabasesRootFolderPath
+    $exDbCount = GetInUseMountPointCount -RootFolder $AutoDagDatabasesRootFolderPath -DiskInfo $diskInfo
     $requiredDbCount = GetDesiredDatabaseCount -DiskToDBMap $DiskToDBMap
-    
+
     if ($exDbCount -lt $requiredDbCount)
     {
         CreateMissingExDatabases @PSBoundParameters
     }
 
     #Now see if any Mount Points are ordered incorrectly. Jetstress wants ExchangeDatabase mount points to be listed before ExchangeVolume mount points
-    GetDiskInfo
+    $diskInfo = GetDiskInfo
 
     if ($EnsureExchangeVolumeMountPointIsLast -eq $true)
     {
         while($true)
         {
-            $volNum = VolumeMountPointNotLastInList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath
+            $volNum = VolumeMountPointNotLastInList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -DiskInfo $diskInfo
 
             if ($volNum -ne -1)
             {
-                SendVolumeMountPointToEndOfList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -VolumeNumber $volNum
+                SendVolumeMountPointToEndOfList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -VolumeNumber $volNum -DiskInfo $diskInfo
 
                 #Update DiskInfo for next iteration
-                GetDiskInfo
+                $diskInfo = GetDiskInfo
             }
             else
             {
@@ -244,10 +244,10 @@ function Test-TargetResource
 
     LogFunctionEntry -VerbosePreference $VerbosePreference
 
-    GetDiskInfo
+    $diskInfo = GetDiskInfo
 
     #Check if the number of assigned EXVOL's is less than the requested number of DB disks plus spares
-    $mountPointCount = GetInUseMountPointCount -RootFolder $AutoDagVolumesRootFolderPath
+    $mountPointCount = GetInUseMountPointCount -RootFolder $AutoDagVolumesRootFolderPath -DiskInfo $diskInfo
 
     if ($mountPointCount -lt ($DiskToDBMap.Count + $SpareVolumeCount))
     {
@@ -260,7 +260,7 @@ function Test-TargetResource
         {
             foreach ($db in $value.Split(','))
             {
-                if ((DBHasMountPoint -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -Database $db) -eq $false)
+                if ((DBHasMountPoint -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -Database $db -DiskInfo $diskInfo) -eq $false)
                 {
                     ReportBadSetting -SettingName "DB '$($db)' Has Mount Point" -ExpectedValue $true -ActualValue $false -VerbosePreference $VerbosePreference
                     return $false
@@ -270,7 +270,7 @@ function Test-TargetResource
     }
 
     #Now check if any ExchangeVolume mount points are higher ordered than ExchangeDatabase mount points. ExchangeDatabase MP's must be listed first for logical disk counters to function properly
-    if ($EnsureExchangeVolumeMountPointIsLast -eq $true -and (VolumeMountPointNotLastInList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath) -ne -1)
+    if ($EnsureExchangeVolumeMountPointIsLast -eq $true -and (VolumeMountPointNotLastInList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -DiskInfo $diskInfo) -ne -1)
     {
         Write-Verbose -Message "One or more volumes have an $($AutoDagVolumesRootFolderPath) mount point ordered before a $($AutoDagDatabasesRootFolderPath) mount point"
         return $false
@@ -348,10 +348,10 @@ function CreateMissingExVolumes
     {
         if ($i -ne $CurrentVolCount) #Need to update disk info if we've gone through the loop already
         {
-            GetDiskInfo
+            $diskInfo = GetDiskInfo
         }
 
-        $firstDisk = FindFirstAvailableDisk -MinDiskSize $MinDiskSize
+        $firstDisk = FindFirstAvailableDisk -MinDiskSize $MinDiskSize -DiskInfo $diskInfo
 
         if ($firstDisk -ne -1)
         {
@@ -436,7 +436,7 @@ function CreateMissingExDatabases
     {
         if ($i -gt 0) #Need to refresh current disk info
         {
-            GetDiskInfo
+            $diskInfo = GetDiskInfo
         }
 
         [System.String[]]$dbsNeedingMountPoints = @()
@@ -465,7 +465,7 @@ function CreateMissingExDatabases
 
         if ($dbsNeedingMountPoints.Count -eq $allDBsRequestedForDisk.Count) #No DB mount points for this disk have been created yet
         {
-            $targetVolume = GetExchangeVolume -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -DBsPerDisk $allDBsRequestedForDisk.Count -VolumePrefix $VolumePrefix
+            $targetVolume = GetExchangeVolume -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -DBsPerDisk $allDBsRequestedForDisk.Count -VolumePrefix $VolumePrefix -DiskInfo $diskInfo
         }
         elseif ($dbsNeedingMountPoints.Count -gt 0) #We just need to create some mount points
         {
@@ -483,7 +483,7 @@ function CreateMissingExDatabases
 
             if ($existingDB -ne '')
             {
-                $targetVolume = GetExchangeVolume -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -ExistingDB $existingDB -DBsPerDisk $allDBsRequestedForDisk.Count -DBsToCreate $dbsNeedingMountPoints.Count -VolumePrefix $VolumePrefix
+                $targetVolume = GetExchangeVolume -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -ExistingDB $existingDB -DBsPerDisk $allDBsRequestedForDisk.Count -DBsToCreate $dbsNeedingMountPoints.Count -VolumePrefix $VolumePrefix -DiskInfo $diskInfo
             }
         }
         else #All DB's requested for this disk are good. Just continue on in the loop
@@ -533,7 +533,11 @@ function GetDiskToDBMap
     (
         [Parameter()]
         [System.String]
-        $AutoDagDatabasesRootFolderPath
+        $AutoDagDatabasesRootFolderPath,
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $DiskInfo
     )
 
     #Get the DB path to a point where we know there will be a trailing \
@@ -543,11 +547,11 @@ function GetDiskToDBMap
     [System.String[]]$dbMap = @()
 
     #Loop through all existing mount points and figure out which ones are for DB's
-    foreach ($key in $global:VolumeToMountPointMap.Keys)
+    foreach ($key in $DiskInfo.VolumeToMountPointMap.Keys)
     {
         [System.String]$mountPoints = ''
 
-        foreach ($mountPoint in $global:VolumeToMountPointMap[$key])
+        foreach ($mountPoint in $DiskInfo.VolumeToMountPointMap[$key])
         {
             if ($mountPoint.StartsWith($dbpath))
             {
@@ -585,39 +589,44 @@ function GetExchangeVolume
     (
         [Parameter()]
         [System.String]
-        $AutoDagDatabasesRootFolderPath, 
-        
+        $AutoDagDatabasesRootFolderPath,
+
         [Parameter()]
         [System.String]
-        $AutoDagVolumesRootFolderPath, 
-        
+        $AutoDagVolumesRootFolderPath,
+
         [Parameter()]
         [System.String]
-        $ExistingDB = '', 
-        
-        [Parameter()]
-        [Uint32]
-        $DBsPerDisk, 
+        $ExistingDB = '',
 
         [Parameter()]
         [Uint32]
-        $DBsToCreate, 
-        
+        $DBsPerDisk,
+
+        [Parameter()]
+        [Uint32]
+        $DBsToCreate,
+
         [Parameter()]
         [System.String]
-        $VolumePrefix = 'EXVOL')
+        $VolumePrefix = 'EXVOL',
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $DiskInfo
+    )
 
     $targetVol = -1 #Our return variable
 
-    [object[]]$keysSorted = GetSortedExchangeVolumeKeys -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -VolumePrefix $VolumePrefix
-    
+    [object[]]$keysSorted = GetSortedExchangeVolumeKeys -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -VolumePrefix $VolumePrefix -DiskInfo $DiskInfo
+
     #Loop through every volume
     foreach ($key in $keysSorted)
     {
         [int]$intKey = $key
 
         #Get mount points for this volume
-        [System.String[]]$mountPoints = $global:VolumeToMountPointMap[$intKey]
+        [System.String[]]$mountPoints = $DiskInfo.VolumeToMountPointMap[$intKey]
 
         $hasExVol = $false #Whether any ExVol mount points exist on this disk
         $hasExDb = $false #Whether any ExDB mount points exist on this disk
@@ -674,15 +683,20 @@ function GetSortedExchangeVolumeKeys
     (
         [Parameter()]
         [System.String]
-        $AutoDagDatabasesRootFolderPath, 
-        
+        $AutoDagDatabasesRootFolderPath,
+
         [Parameter()]
         [System.String]
-        $AutoDagVolumesRootFolderPath, 
-        
+        $AutoDagVolumesRootFolderPath,
+
         [Parameter()]
         [System.String]
-        $VolumePrefix = 'EXVOL')
+        $VolumePrefix = 'EXVOL',
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $DiskInfo
+    )
 
     [System.String[]]$sortedKeys = @() #The return value
 
@@ -691,12 +705,12 @@ function GetSortedExchangeVolumeKeys
     #First extract the actual volume number as an Int from the volume path, then add it to a new hashtable with the same key value
     [Hashtable]$tempVolumeToMountPointMap = @{}
 
-    foreach ($key in $global:VolumeToMountPointMap.Keys)
+    foreach ($key in $DiskInfo.VolumeToMountPointMap.Keys)
     {
         $volPath = ''
 
         #Loop through each mount point on this volume and find the EXVOL mount point
-        foreach ($value in $VolumeToMountPointMap[$key])
+        foreach ($value in $DiskInfo.VolumeToMountPointMap[$key])
         {
             if ($value.StartsWith($pathBeforeVolumeNumber))
             {
@@ -715,7 +729,7 @@ function GetSortedExchangeVolumeKeys
             {
                 [System.String]$exVolNumberStr = $volPath.Substring($pathBeforeVolumeNumber.Length, ($volPath.Length - $pathBeforeVolumeNumber.Length))
             }
-            
+
             [int]$exVolNumber = [int]::Parse($exVolNumberStr)
             $tempVolumeToMountPointMap.Add($key, $exVolNumber)
         }
@@ -753,19 +767,23 @@ function FindFirstAvailableDisk
     (
         [Parameter()]
         [System.String]
-        $MinDiskSize = ''
+        $MinDiskSize = '',
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $DiskInfo
     )
 
     $diskNum = -1
 
-    foreach ($key in $global:DiskToVolumeMap.Keys)
+    foreach ($key in $DiskInfo.DiskToVolumeMap.Keys)
     {
-        if ($global:DiskToVolumeMap[$key].Count -eq 0 -and ($key -lt $diskNum -or $diskNum -eq -1))
+        if ($DiskInfo.DiskToVolumeMap[$key].Count -eq 0 -and ($key -lt $diskNum -or $diskNum -eq -1))
         {
             if ($MinDiskSize -ne '')
             {
                 [Uint64]$minSize = 0 + $MinDiskSize.Replace(' ', '')
-                [Uint64]$actualSize = 0 + $global:DiskSizeMap[$key].Replace(' ', '')
+                [Uint64]$actualSize = 0 + $DiskInfo.DiskSizeMap[$key].Replace(' ', '')
 
                 if ($actualSize -gt $minSize)
                 {
@@ -790,8 +808,8 @@ function FindFirstAvailableVolumeNumber
     (
         [Parameter()]
         [System.String]
-        $AutoDagVolumesRootFolderPath, 
-        
+        $AutoDagVolumesRootFolderPath,
+
         [Parameter()]
         [System.String]
         $VolumePrefix
@@ -845,18 +863,22 @@ function DBHasMountPoint
     (
         [Parameter()]
         [System.String]
-        $AutoDagDatabasesRootFolderPath, 
-        
+        $AutoDagDatabasesRootFolderPath,
+
         [Parameter()]
         [System.String]
-        $Database
+        $Database,
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $DiskInfo
     )
 
     $dbPath = Join-Path -Path "$($AutoDagDatabasesRootFolderPath)" -ChildPath "$($Database)"
 
-    foreach ($key in $global:VolumeToMountPointMap.Keys)
+    foreach ($key in $DiskInfo.VolumeToMountPointMap.Keys)
     {
-        foreach ($mountPoint in $global:VolumeToMountPointMap[$key])
+        foreach ($mountPoint in $DiskInfo.VolumeToMountPointMap[$key])
         {
             if ($mountPoint.StartsWith($dbPath))
             {
@@ -875,14 +897,18 @@ function GetInUseMountPointCount
     (
         [Parameter()]
         [System.String]
-        $RootFolder
+        $RootFolder,
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $DiskInfo
     )
 
     $count = 0
 
-    foreach ($key in $global:VolumeToMountPointMap.Keys)
+    foreach ($key in $DiskInfo.VolumeToMountPointMap.Keys)
     {
-        foreach ($mountPoint in $global:VolumeToMountPointMap[$key])
+        foreach ($mountPoint in $DiskInfo.VolumeToMountPointMap[$key])
         {
             if ($mountPoint.StartsWith($RootFolder))
             {
@@ -902,12 +928,16 @@ function VolumeMountPointNotLastInList
     (
         [Parameter()]
         [System.String]
-        $AutoDagVolumesRootFolderPath
+        $AutoDagVolumesRootFolderPath,
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $DiskInfo
     )
 
-    foreach ($key in $global:VolumeToMountPointMap.Keys)
+    foreach ($key in $DiskInfo.VolumeToMountPointMap.Keys)
     {
-        $values = $global:VolumeToMountPointMap[$key]
+        $values = $DiskInfo.VolumeToMountPointMap[$key]
 
         if ($null -ne $values)
         {
@@ -933,14 +963,18 @@ function SendVolumeMountPointToEndOfList
     (
         [Parameter()]
         [System.String]
-        $AutoDagVolumesRootFolderPath, 
-        
+        $AutoDagVolumesRootFolderPath,
+
         [Parameter()]
         [System.Int32]
-        $VolumeNumber
+        $VolumeNumber,
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $DiskInfo
     )
 
-    $values = $global:VolumeToMountPointMap[$VolumeNumber]
+    $values = $DiskInfo.VolumeToMountPointMap[$VolumeNumber]
 
     foreach ($folderName in $values)
     {
@@ -965,36 +999,36 @@ function PrepareVolume
     (
         [Parameter()]
         [int]
-        $DiskNumber, 
-        
+        $DiskNumber,
+
         [Parameter()]
         [System.String]
-        $Folder, 
-        
+        $Folder,
+
         [Parameter()]
         [ValidateSet('NTFS','REFS')]
         [System.String]
-        $FileSystem = 'NTFS', 
-        
+        $FileSystem = 'NTFS',
+
         [Parameter()]
         [System.String]
-        $UnitSize, 
-        
+        $UnitSize,
+
         [Parameter()]
         [System.String]
-        $PartitioningScheme, 
-        
+        $PartitioningScheme,
+
         [Parameter()]
         [System.String]
         $Label
     )
-    
+
     #Initialize the disk and put in MBR format
     StartDiskpart -Commands "select disk $($DiskNumber)",'clean' -VerbosePreference $VerbosePreference | Out-Null
     StartDiskpart -Commands "select disk $($DiskNumber)",'online disk' -VerbosePreference $VerbosePreference | Out-Null
     StartDiskpart -Commands "select disk $($DiskNumber)",'attributes disk clear readonly','convert MBR' -VerbosePreference $VerbosePreference | Out-Null
     StartDiskpart -Commands "select disk $($DiskNumber)",'offline disk' -VerbosePreference $VerbosePreference | Out-Null
- 
+
     #Online the disk
     StartDiskpart -Commands "select disk $($DiskNumber)",'attributes disk clear readonly','online disk' -VerbosePreference $VerbosePreference | Out-Null
 
@@ -1008,7 +1042,7 @@ function PrepareVolume
     if ((Test-Path $Folder) -eq $False)
     {
         mkdir -Path "$($Folder)" | Out-Null
-    }    
+    }
 
     #Create the partition and format the drive
     if ($FileSystem -eq 'NTFS')
@@ -1020,7 +1054,7 @@ function PrepareVolume
     else #if ($FileSystem -eq "REFS")
     {
         StartDiskpart -Commands "select disk $($DiskNumber)","create partition primary" -VerbosePreference $VerbosePreference | Out-Null
-        
+
         if ($UnitSize.ToLower().EndsWith('k'))
         {
             $UnitSizeBytes = [UInt64]::Parse($UnitSize.Substring(0, $UnitSize.Length - 1)) * 1024
@@ -1047,8 +1081,8 @@ function AddMountPoint
     (
         [Parameter()]
         [int]
-        $VolumeNumber, 
-        
+        $VolumeNumber,
+
         [Parameter()]
         [System.String]
         $Folder
