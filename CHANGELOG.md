@@ -5,6 +5,10 @@
 - Fixed issue in xExchInstall where winrm config command fails to execute
 - Fixed issue in xExchInstall where a failed Exchange setup run is not
   reported, and subsequent DSC resources are allowed to run
+- Fixed issue in xExchAutoMountPoint where Test-TargetResource fails
+  after mount points have been successfully configured.
+- Fixed issue in xExchAutoMountPoint where Set-TargetResource fails
+  if EnsureExchangeVolumeMountPointIsLast parameter is specified.
 
 ## 1.21.0.0
 
