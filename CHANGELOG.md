@@ -9,6 +9,8 @@
   after mount points have been successfully configured.
 - Fixed issue in xExchAutoMountPoint where Set-TargetResource fails
   if EnsureExchangeVolumeMountPointIsLast parameter is specified.
+- Updated xExchAutoMountPoint, xExchJetstressCleanup, and related DiskPart
+  functions to not use global variables.
 
 ## 1.21.0.0
 
