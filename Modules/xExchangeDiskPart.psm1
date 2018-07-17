@@ -29,9 +29,16 @@ function StartDiskpart
 #Uses diskpart to obtain information on the disks and volumes that already exist on the system
 function GetDiskInfo
 {
-    [Hashtable]$global:DiskToVolumeMap = @{}
-    [Hashtable]$global:VolumeToMountPointMap = @{}
-    [Hashtable]$global:DiskSizeMap = @{}
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param()
+
+    [Hashtable]$diskInfo = @{
+        DiskToVolumeMap = @{}
+        VolumeToMountPointMap = @{}
+        DiskSizeMap = @{}
+    }
+
     [int[]]$diskNums = @()
 
     $diskList = StartDiskpart -Commands "List Disk" -ShowOutput $false
@@ -63,7 +70,7 @@ function GetDiskInfo
 
                 if ($diskSize.Length -gt 0 -and $null -ne $diskNum)
                 {
-                    $DiskSizeMap.Add($diskNum, $diskSize)
+                    $diskInfo.DiskSizeMap.Add($diskNum, $diskSize)
                 }
             }
         }
@@ -97,7 +104,7 @@ function GetDiskInfo
                     {
                         $volNum = [int]::Parse($volStr)
 
-                        AddObjectToMapOfObjectArrays -Map $DiskToVolumeMap -Key $diskNum -Value $volNum
+                        AddObjectToMapOfObjectArrays -Map $diskInfo.DiskToVolumeMap -Key $diskNum -Value $volNum
 
                         #Now parse out the drive letter if it's set
                         $letterStart = "  ----------  ".Length
@@ -106,7 +113,7 @@ function GetDiskInfo
 
                         if ($letter.Length -eq 1)
                         {
-                            AddObjectToMapOfObjectArrays -Map $VolumeToMountPointMap -Key $volNum -Value $letter
+                            AddObjectToMapOfObjectArrays -Map $diskInfo.VolumeToMountPointMap -Key $volNum -Value $letter
                         }
 
                         #Now find all the mount points
@@ -123,7 +130,7 @@ function GetDiskInfo
                             {
                                 $mountPoint = $line.Trim()
 
-                                AddObjectToMapOfObjectArrays -Map $VolumeToMountPointMap -Key $volNum -Value $mountPoint
+                                AddObjectToMapOfObjectArrays -Map $diskInfo.VolumeToMountPointMap -Key $volNum -Value $mountPoint
                             }
 
                         } while ($i -lt $diskDetails.Count)
@@ -134,7 +141,7 @@ function GetDiskInfo
             elseif ($line.Contains("There are no volumes."))
             {
                 [System.String[]]$emptyArray = @()
-                $DiskToVolumeMap[$diskNum] = $emptyArray
+                $diskInfo.DiskToVolumeMap[$diskNum] = $emptyArray
 
                 break
             }
@@ -144,6 +151,8 @@ function GetDiskInfo
             }
         }
     }
+
+    return $diskInfo
 }
 
 function StringArrayToCommaSeparatedString
@@ -185,11 +194,22 @@ function AddObjectToMapOfObjectArrays
 #Returns the volume number if it does exist, else -1
 function MountPointExists
 {
-    param([System.String]$Path)
+    [CmdletBinding()]
+    [OutputType([System.Int32])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Path,
 
-    foreach ($key in $global:VolumeToMountPointMap.Keys)
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $DiskInfo
+    )
+
+    foreach ($key in $DiskInfo.VolumeToMountPointMap.Keys)
     {
-        foreach ($value in $global:VolumeToMountPointMap[$key])
+        foreach ($value in $DiskInfo.VolumeToMountPointMap[$key])
         {
             #Make sure both paths end with the same character
             if (($value.EndsWith("\")) -eq $false)
