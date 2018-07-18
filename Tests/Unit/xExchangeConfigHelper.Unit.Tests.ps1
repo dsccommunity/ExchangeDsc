@@ -3,7 +3,7 @@
 ###NOTE: This test module requires use of credentials. The first run through of the tests will prompt for credentials from the logged on user.
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Examples' -ChildPath (Join-Path -Path 'HelperScripts' -ChildPath 'ExchangeConfigHelper.psm1'))) -Force
 
 #Performs common tests against the specified MailboxDatabases.csv file
 function Test-MailboxDatabasesCsv

@@ -11,6 +11,11 @@
   if EnsureExchangeVolumeMountPointIsLast parameter is specified.
 - Updated xExchAutoMountPoint, xExchJetstressCleanup, and related DiskPart
   functions to not use global variables.
+- Fixes broken tests in:
+  MSFT_xExchExchangeCertificate.Integration.Tests.ps1,
+  MSFT_xExchOutlookAnywhere.Integration.Tests.ps1,
+  MSFT_xExchPopSettings.Integration.Tests.ps1,
+  xExchangeConfigHelper.Unit.Tests.ps1
 
 ## 1.21.0.0
 
