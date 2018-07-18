@@ -66,7 +66,7 @@ PowerShell, the Microsoft Exchange Product Group does not support running
 Microsoft Exchange Server with versions of PowerShell newer than the one that
 shipped with the Windows Server version that Exchange is installed on. See the
 **Windows PowerShell** section of the [Exchange Server Supportability Matrix](https://technet.microsoft.com/en-us/library/ff728623(v=exchg.160).aspx)
-for more information. .
+for more information.
 
 ## Examples
 
