@@ -39,13 +39,13 @@ if ($exchangeInstalled)
             Server =  $env:COMPUTERNAME
             Credential = $Global:ShellCredentials
             LoginType = 'PlainTextLogin'
-            ExternalConnectionSettings = @('$($Global:ServerFqdn):143:TLS')
-            X509CertificateName = '$($Global:ServerFqdn)'     
+            ExternalConnectionSettings = @("$($Global:ServerFqdn):143:TLS")
+            X509CertificateName = "$($Global:ServerFqdn)"
         }
 
         $expectedGetResults = @{
             LoginType = 'PlainTextLogin'
-            X509CertificateName = '$($Global:ServerFqdn)'    
+            X509CertificateName = "$($Global:ServerFqdn)"
         }
 
         Test-TargetResourceFunctionality -Params $testParams `
