@@ -56,10 +56,17 @@ Get-DscResource -Module xExchange
 
 ## Requirements
 
-The minimum Windows Management Framework (PowerShell) version required is 5.0
-or higher, which ships with Windows 10 or Windows Server 2016,
-but can also be installed on Windows 7 SP1, Windows 8.1,
-Windows Server 2008 R2 SP1, Windows Server 2012 and Windows Server 2012 R2.
+The minimum Windows Management Framework (PowerShell) version required is 4.0,
+which ships with Windows Server 2012 and Windows Server 2012 R2, but can also
+be installed on Windows 2008 R2 (the minimum supported OS version for Exchange
+Server 2013).
+
+Note that while the xExchange module may work with newer releases of
+PowerShell, the Microsoft Exchange Product Group does not support running
+Microsoft Exchange Server with versions of PowerShell newer than the one that
+shipped with the Windows Server version that Exchange is installed on. See the
+**Windows PowerShell** section of the [Exchange Server Supportability Matrix](https://technet.microsoft.com/en-us/library/ff728623(v=exchg.160).aspx)
+for more information.
 
 ## Examples
 
