@@ -249,10 +249,12 @@ function Test-TargetResource
     #Check if the number of assigned EXVOL's is less than the requested number of DB disks plus spares
     $mountPointCount = GetInUseMountPointCount -RootFolder $AutoDagVolumesRootFolderPath -DiskInfo $diskInfo
 
+    $testResults = $true
+
     if ($mountPointCount -lt ($DiskToDBMap.Count + $SpareVolumeCount))
     {
         ReportBadSetting -SettingName 'MountPointCount' -ExpectedValue ($DiskToDBMap.Count + $SpareVolumeCount) -ActualValue $mountPointCount -VerbosePreference $VerbosePreference
-        return $false
+        $testResults = $false
     }
     else #Loop through all requested DB's and see if they have a mount point yet
     {
@@ -263,7 +265,7 @@ function Test-TargetResource
                 if ((DBHasMountPoint -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -Database $db -DiskInfo $diskInfo) -eq $false)
                 {
                     ReportBadSetting -SettingName "DB '$($db)' Has Mount Point" -ExpectedValue $true -ActualValue $false -VerbosePreference $VerbosePreference
-                    return $false
+                    $testResults = $false
                 }
             }
         }
@@ -273,10 +275,10 @@ function Test-TargetResource
     if ($EnsureExchangeVolumeMountPointIsLast -eq $true -and (VolumeMountPointNotLastInList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -DiskInfo $diskInfo) -ne -1)
     {
         Write-Verbose -Message "One or more volumes have an $($AutoDagVolumesRootFolderPath) mount point ordered before a $($AutoDagDatabasesRootFolderPath) mount point"
-        return $false
+        $testResults = $false
     }
 
-    return $true
+    return $testResults
 }
 
 #Creates mount points for any Exchange Volumes we are missing

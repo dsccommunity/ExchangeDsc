@@ -110,19 +110,23 @@ function Test-TargetResource
 
     $umService = Get-TargetResource @PSBoundParameters
 
+    $testResults = $true
+
     if ($null -eq $umService)
     {
-        return $false
+        Write-Error -Message 'Unable to retrieve UM Call Router settings for server'
+
+        $testResults = $false
     }
     else
     {
         if (!(VerifySetting -Name 'UMStartupMode' -Type 'String' -ExpectedValue $UMStartupMode -ActualValue $umService.UMStartupMode -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }        
     }
 
-    return $true
+    return $testResults
 }
 
 Export-ModuleMember -Function *-TargetResource

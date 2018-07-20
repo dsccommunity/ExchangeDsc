@@ -197,16 +197,14 @@ function Test-TargetResource
 
     $dagNet = GetDatabaseAvailabilityGroupNetwork @PSBoundParameters
 
+    $testResults = $true
+
     if ($null -eq $dagNet)
     {
         if ($Ensure -eq 'Present')
         {
             ReportBadSetting -SettingName 'Ensure' -ExpectedValue 'Present' -ActualValue 'Absent' -VerbosePreference $VerbosePreference
-            return $false
-        }
-        else
-        {
-            return $true
+            $testResults = $false
         }
     }
     else
@@ -214,29 +212,28 @@ function Test-TargetResource
         if ($Ensure -eq 'Absent')
         {
             ReportBadSetting -SettingName 'Ensure' -ExpectedValue 'Absent' -ActualValue 'Present' -VerbosePreference $VerbosePreference
-            return $false
+            $testResults = $false
         }
         else
         {
             if (!(VerifySetting -Name 'IgnoreNetwork' -Type 'Boolean' -ExpectedValue $IgnoreNetwork -ActualValue $dagNet.IgnoreNetwork -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'ReplicationEnabled' -Type 'Boolean' -ExpectedValue $ReplicationEnabled -ActualValue $dagNet.ReplicationEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'Subnets' -Type 'Array' -ExpectedValue $Subnets -ActualValue (SubnetsToArray -Subnets $dagNet.Subnets) -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
         }     
     }
 
-    #If we made it here, all tests passed
-    return $true
+    return $testResults
 }
 
 #Runs Get-DatabaseAvailabilityGroupNetwork, only specifying Identity, and optionally DomainController

@@ -26,6 +26,10 @@ function Test-TargetResourceFunctionality
     )
 
     Context $ContextLabel {
+        [System.Boolean]$testResult = Test-TargetResource @Params -Verbose
+
+        Write-Verbose -Message "Test-TargetResource results before running Set-TargetResource: $testResult"
+
         Set-TargetResource @Params -Verbose
 
         [System.Collections.Hashtable]$getResult = Get-TargetResource @Params -Verbose

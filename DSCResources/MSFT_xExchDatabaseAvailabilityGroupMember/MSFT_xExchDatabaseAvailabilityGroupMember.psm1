@@ -158,14 +158,25 @@ function Test-TargetResource
 
     $dag = Get-DatabaseAvailabilityGroup @PSBoundParameters -Status -ErrorAction SilentlyContinue
 
-    if ($null -ne $dag -and $dag.Name -like "$($DAGName)")
-    {
-        $server = $dag.Servers | Where-Object {$_.Name -eq "$($MailboxServer)"}
+    $testResults = $true
 
-        return ($null -ne $server)
+    if ($null -eq $dag -or $dag.Name -notlike "$($DAGName)")
+    {
+        Write-Error -Message 'Unable to retrieve Database Availability Group settings'
+
+        $testResults = $false
+    }
+    else
+    {
+        if ($null -eq ($dag.Servers | Where-Object {$_.Name -eq "$($MailboxServer)"}))
+        {
+            Write-Verbose -Message 'Server is not a member of the Database Availability Group'
+
+            $testResults = $false
+        }
     }
 
-    return $false
+    return $testResults
 }
 
 Export-ModuleMember -Function *-TargetResource

@@ -184,7 +184,7 @@ if ($null -ne $adModule)
 
                 #Add this server as a DAG member
                 Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
-                Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchDatabaseAvailabilityGroupMember\MSFT_xExchDatabaseAvailabilityGroupMember.psm1
+                Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "MSFT_xExchDatabaseAvailabilityGroupMember" -ChildPath "MSFT_xExchDatabaseAvailabilityGroupMember.psm1")))
         
                 $dagMemberTestParams = @{
                     MailboxServer = $env:COMPUTERNAME
@@ -224,7 +224,7 @@ if ($null -ne $adModule)
 
                     #Test the DAG again, with props that only take effect once there are members
                     Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
-                    Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchDatabaseAvailabilityGroup\MSFT_xExchDatabaseAvailabilityGroup.psm1
+                    Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
                     $dagExpectedGetResults.DatacenterActivationMode = 'DagOnly'
 
@@ -240,7 +240,7 @@ if ($null -ne $adModule)
 
                     #Create a new DAG database
                     Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
-                    Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchMailboxDatabase\MSFT_xExchMailboxDatabase.psm1
+                    Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "MSFT_xExchMailboxDatabase" -ChildPath "MSFT_xExchMailboxDatabase.psm1")))
 
                     $dagDBTestParams = @{
                         Name = $Global:TestDBName
@@ -265,7 +265,7 @@ if ($null -ne $adModule)
 
                     #Add DB Copy
                     Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
-                    Import-Module $PSScriptRoot\..\DSCResources\MSFT_xExchMailboxDatabaseCopy\MSFT_xExchMailboxDatabaseCopy.psm1
+                    Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "MSFT_xExchMailboxDatabaseCopy" -ChildPath "MSFT_xExchMailboxDatabaseCopy.psm1")))
 
                     $dagDBCopyTestParams = @{
                         Identity = $Global:TestDBName

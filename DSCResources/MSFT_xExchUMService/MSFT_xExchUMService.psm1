@@ -120,26 +120,29 @@ function Test-TargetResource
 
     LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
 
-
     $umService = Get-TargetResource @PSBoundParameters
+
+    $testResults = $true
 
     if ($null -eq $umService)
     {
-        return $false
+        Write-Error -Message 'Unable to retrieve UM settings for server'
+
+        $testResults = $false
     }
     else
     {
         if (!(VerifySetting -Name 'UMStartupMode' -Type 'String' -ExpectedValue $UMStartupMode -ActualValue $umService.UMStartupMode -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
         if (!(VerifySetting -Name 'DialPlans' -Type 'Array' -ExpectedValue $DialPlans -ActualValue $umService.DialPlans -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
     }
 
-    return $true
+    return $testResults
 }
 
 Export-ModuleMember -Function *-TargetResource

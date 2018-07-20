@@ -241,10 +241,12 @@ function Test-TargetResource
     
     $jetstressInstalled = IsJetstressInstalled
 
+    $testResults = $true
+
     if ($jetstressInstalled)
     {
         Write-Verbose -Message 'Jetstress is still installed'
-        return $false
+        $testResults = $false
     }
     else
     {
@@ -273,7 +275,7 @@ function Test-TargetResource
                 if ((MountPointExists -Path "$($parent)" -DiskInfo $diskInfo) -ge 0)
                 {
                     Write-Verbose -Message "Folder '$($parent)' still has a mount point associated with it."
-                    return $false
+                    $testResults = $false
                 }
             }
 
@@ -281,7 +283,7 @@ function Test-TargetResource
             if ((Test-Path -LiteralPath "$($folder)") -eq $true)
             {
                 Write-Verbose -Message "Folder '$($folder)' still exists."
-                return $false
+                $testResults = $false
             }
         }
 
@@ -295,20 +297,23 @@ function Test-TargetResource
                 if ($null -ne $items -or $items.Count -gt 0)
                 {
                     Write-Verbose -Message "Folder '$($JetstressPath)' still exists and contains items that are not the config file."
-                    return $false
+                    $testResults = $false
                 }
             }
             else
             {
                 Write-Verbose -Message "Folder '$($JetstressPath)' still exists."
-                return $false
+                $testResults = $false
             }  
         }
     }
 
-    Write-Verbose -Message 'Jetstress has been successfully cleaned up.'
+    if ($testResults)
+    {
+        Write-Verbose -Message 'Jetstress has been successfully cleaned up.'
+    }
 
-    return $true
+    return $testResults
 }
 
 #Verifies that parameters for Jetstress were passed in correctly. Throws an exception if not.

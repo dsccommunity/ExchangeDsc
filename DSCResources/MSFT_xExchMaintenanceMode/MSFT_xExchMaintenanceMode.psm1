@@ -342,7 +342,15 @@ function Test-TargetResource
 
     $maintenanceModeStatus = GetMaintenanceModeStatus -EnteringMaintenanceMode $Enabled -DomainController $DomainController
 
-    if ($null -ne $maintenanceModeStatus)
+    $testResults = $true
+
+    if ($null -eq $maintenanceModeStatus)
+    {
+        Write-Error -Message "Failed to retrieve maintenance mode status for server."
+
+        $testResults = $false
+    }
+    else
     {
         #Make sure server is fully in maintenance mode
         if ($Enabled -eq $true)
@@ -359,25 +367,25 @@ function Test-TargetResource
                 if ($maintenanceModeStatus.MailboxServer.DatabaseCopyAutoActivationPolicy -ne "Blocked")
                 {
                     Write-Verbose "DatabaseCopyAutoActivationPolicy is not set to Blocked"
-                    return $false
+                    $testResults = $false
                 }
 
                 if ($null -ne ($MaintenanceModeStatus.ServerComponentState | Where-Object {$_.State -ne "Inactive" -and $_.Component -ne "Monitoring" -and $_.Component -ne "RecoveryActionsEnabled"}))
                 {
                     Write-Verbose "One or more components have a status other than Inactive"
-                    return $false
+                    $testResults = $false
                 }
 
                 if ($maintenanceModeStatus.ClusterNode.State -eq "Up")
                 {
                     Write-Verbose "Cluster node has a status of Up"
-                    return $false
+                    $testResults = $false
                 }
 
                 if ((IsServerPAM -DomainController $DomainController) -eq $true)
                 {
                     Write-Verbose "Server still has the Primary Active Manager role"
-                    return $false
+                    $testResults = $false
                 }
 
 
@@ -386,7 +394,7 @@ function Test-TargetResource
                 if ($messagesQueued -gt 0)
                 {
                     Write-Verbose "Found $($messagesQueued) messages still in queue"
-                    return $false               
+                    $testResults = $false               
                 }
 
 
@@ -395,7 +403,7 @@ function Test-TargetResource
                 if ($activeDBCount -gt 0)
                 {
                     Write-Verbose "Found $($activeDBCount) replicated databases still activated on this server"
-                    return $false 
+                    $testResults = $false 
                 }
 
 
@@ -404,7 +412,7 @@ function Test-TargetResource
                 if ($umCallCount -gt 0)
                 {
                     Write-Verbose "Found $($umCallCount) active UM calls on this server"
-                    return $false 
+                    $testResults = $false 
                 }
             }
         }
@@ -416,49 +424,49 @@ function Test-TargetResource
             if ($null -eq $activeComponents)
             {
                 Write-Verbose "No Components found with a status of Active"
-                return $false
+                $testResults = $false
             }
 
             if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "ServerWideOffline"}))
             {
                 Write-Verbose "Component ServerWideOffline is not Active"
-                return $false
+                $testResults = $false
             }
 
             if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "UMCallRouter"}))
             {
                 Write-Verbose "Component UMCallRouter is not Active"
-                return $false
+                $testResults = $false
             }
 
             if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "HubTransport"}))
             {
                 Write-Verbose "Component HubTransport is not Active"
-                return $false
+                $testResults = $false
             }
 
             if ($maintenanceModeStatus.ClusterNode.State -ne "Up")
             {
                 Write-Verbose "Cluster node has a status of $($maintenanceModeStatus.ClusterNode.State)"
-                return $false
+                $testResults = $false
             }
 
             if ($maintenanceModeStatus.MailboxServer.DatabaseCopyAutoActivationPolicy -ne "Unrestricted")
             {
                 Write-Verbose "DatabaseCopyAutoActivationPolicy is set to $($maintenanceModeStatus.MailboxServer.DatabaseCopyAutoActivationPolicy)"
-                return $false
+                $testResults = $false
             }
 
             if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "Monitoring"}))
             {
                 Write-Verbose "Component Monitoring is not Active"
-                return $false
+                $testResults = $false
             }
 
             if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "RecoveryActionsEnabled"}))
             {
                 Write-Verbose "Component RecoveryActionsEnabled is not Active"
-                return $false
+                $testResults = $false
             }
 
             if ($null -ne $AdditionalComponentsToActivate)
@@ -473,16 +481,12 @@ function Test-TargetResource
                         if ($null -ne $status -and $Status.State -ne "Active")
                         {
                             Write-Verbose "Component $($component) is not set to Active"
-                            return $false
+                            $testResults = $false
                         }
                     }
                 }
             }
         }
-    }
-    else
-    {
-        throw "Failed to retrieve maintenance mode status for server."
     }
 
     return $true
