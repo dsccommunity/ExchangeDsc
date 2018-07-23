@@ -108,7 +108,7 @@ function Test-TargetResource
     {
         if (!(VerifySetting -Name 'Level' -Type 'String' -ExpectedValue $Level -ActualValue $eventLogLevel.EventLevel -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
     }
 

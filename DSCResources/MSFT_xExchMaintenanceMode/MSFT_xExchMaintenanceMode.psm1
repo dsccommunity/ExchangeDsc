@@ -489,7 +489,7 @@ function Test-TargetResource
         }
     }
 
-    return $true
+    return $testResults
 }
 
 #Gets a Hashtable containing various objects from Exchange that will be used to determine maintenance mode status
