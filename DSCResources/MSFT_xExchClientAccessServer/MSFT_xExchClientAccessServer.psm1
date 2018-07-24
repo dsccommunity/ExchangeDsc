@@ -205,37 +205,43 @@ function Test-TargetResource
 
     $serverVersion = GetExchangeVersion -ThrowIfUnknownVersion $true
 
+    $testResults = $true
+
     if ($null -eq $cas)
     {
-        return $false
+        Write-Error -Message 'Unable to retrieve Client Access Server settings for server'
+
+        $testResults = $false
     }
     else
     {
         if (!(VerifySetting -Name "AutoDiscoverServiceInternalUri" -Type "String" -ExpectedValue $AutoDiscoverServiceInternalUri -ActualValue $cas.AutoDiscoverServiceInternalUri.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name "AutoDiscoverSiteScope" -Type "Array" -ExpectedValue $AutoDiscoverSiteScope -ActualValue $cas.AutoDiscoverSiteScope -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name "AlternateServiceAccountCredential" -Type "PSCredential" -ExpectedValue $AlternateServiceAccountCredential -ActualValue ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | Sort-Object WhenAddedUTC | Select-Object -Last 1).Credential $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
         if ($CleanUpInvalidAlternateServiceAccountCredentials)
         {
-            return $false
+            Write-Verbose -Message 'CleanUpInvalidAlternateServiceAccountCredentials is set to $true. Forcing Test-TargetResource to return $false.'
+            $testResults = $false
         }
         if ($RemoveAlternateServiceAccountCredentials -and ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials.Count -gt 0))
         {
-            return $false
+            Write-Verbose -Message 'RemoveAlternateServiceAccountCredentials is set to $true, and AlternateServiceAccountConfiguration currently has credentials configured. Returning $false.'
+            $testResults = $false
         }
     }
 
-    return $true
+    return $testResults
 }
 
 #Runs Get-ClientAcccessServer, only specifying Identity, and optionally DomainController

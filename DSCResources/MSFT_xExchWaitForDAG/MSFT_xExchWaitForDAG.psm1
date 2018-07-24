@@ -137,7 +137,15 @@ function Test-TargetResource
 
     $dag = GetDatabaseAvailabilityGroup @PSBoundParameters
 
-    return ($null -ne $dag)
+    $testResults = $true
+
+    if ($null -eq $dag)
+    {
+        Write-Verbose -Message "Database Availability Group does not yet exist"
+        $testResults = $false
+    }
+
+    return $testResults
 }
 
 function GetDatabaseAvailabilityGroup

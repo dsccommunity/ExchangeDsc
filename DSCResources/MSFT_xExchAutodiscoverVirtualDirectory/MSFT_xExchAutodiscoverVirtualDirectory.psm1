@@ -239,55 +239,58 @@ function Test-TargetResource
 
     $autoDVdir = Get-AutodiscoverVirtualDirectoryWithCorrectParams @PSBoundParameters
 
+    $testResults = $true
+
     if ($null -eq $autoDVdir)
     {
-        return $false
+        Write-Error -Message 'Unable to retrieve AutoDiscover Virtual Directory for server'
+
+        $testResults = $false
     }
     else
     {
         if (!(VerifySetting -Name 'BasicAuthentication' -Type 'Boolean' -ExpectedValue $BasicAuthentication -ActualValue $autoDVdir.BasicAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name 'DigestAuthentication' -Type 'Boolean' -ExpectedValue $DigestAuthentication -ActualValue $autoDVdir.DigestAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (-not (VerifySetting -Name 'ExtendedProtectionFlags' -Type 'ExtendedProtection' -ExpectedValue $ExtendedProtectionFlags -ActualValue $autoDVdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (-not (VerifySetting -Name 'ExtendedProtectionSPNList' -Type 'Array' -ExpectedValue $ExtendedProtectionSPNList -ActualValue $autoDVdir.ExtendedProtectionSPNList -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (-not (VerifySetting -Name 'ExtendedProtectionTokenChecking' -Type 'String' -ExpectedValue $ExtendedProtectionTokenChecking -ActualValue $autoDVdir.ExtendedProtectionTokenChecking -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name 'OAuthAuthentication' -Type 'Boolean' -ExpectedValue $OAuthAuthentication -ActualValue $autoDVdir.OAuthAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name 'WindowsAuthentication' -Type 'Boolean' -ExpectedValue $WindowsAuthentication -ActualValue $autoDVdir.WindowsAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name 'WSSecurityAuthentication' -Type 'Boolean' -ExpectedValue $WSSecurityAuthentication -ActualValue $autoDVdir.WSSecurityAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
     }
 
-    #If the code made it this far all properties are in a desired state
-    return $true
+    return $testResults
 }
 
 function Get-AutodiscoverVirtualDirectoryWithCorrectParams

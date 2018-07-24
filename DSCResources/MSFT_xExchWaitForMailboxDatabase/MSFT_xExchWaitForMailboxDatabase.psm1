@@ -163,7 +163,15 @@ function Test-TargetResource
 
     $db = GetMailboxDatabase @PSBoundParameters
 
-    return ($null -ne $db)
+    $testResults = $true
+
+    if ($null -eq $db)
+    {
+        Write-Verbose -Message "Mailbox Database does not yet exist"
+        $testResults = $false
+    }
+
+    return $testResults
 }
 
 function GetMailboxDatabase

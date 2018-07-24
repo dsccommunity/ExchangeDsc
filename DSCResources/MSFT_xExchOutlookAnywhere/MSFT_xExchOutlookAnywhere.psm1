@@ -275,71 +275,75 @@ function Test-TargetResource
 
     $RpcVdir = GetOutlookAnywhere @PSBoundParameters
 
+    $testResults = $true
+
     if ($null -eq $RpcVdir)
     {
-        return $false
+        Write-Error -Message 'Unable to retrieve Outlook Anywhere Virtual Directory for server'
+
+        $testResults = $false
     }
     else
     {
         if (!(VerifySetting -Name 'InternalHostname' -Type 'String' -ExpectedValue $InternalHostname -ActualValue $RpcVdir.InternalHostname.HostnameString -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name 'ExternalHostname' -Type 'String' -ExpectedValue $ExternalHostname -ActualValue $RpcVdir.ExternalHostname.HostnameString -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name 'InternalClientAuthenticationMethod' -Type 'String' -ExpectedValue $InternalClientAuthenticationMethod -ActualValue $RpcVdir.InternalClientAuthenticationMethod -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name 'ExternalClientAuthenticationMethod' -Type 'String' -ExpectedValue $ExternalClientAuthenticationMethod -ActualValue $RpcVdir.ExternalClientAuthenticationMethod -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name 'ExtendedProtectionTokenChecking' -Type 'String' -ExpectedValue $ExtendedProtectionTokenChecking -ActualValue $RpcVdir.ExtendedProtectionTokenChecking -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         #ExternalClientsRequireSsl will only actually return as $true if ExternalHostname was also set
         if (![System.String]::IsNullOrEmpty($ExternalHostname) -and !(VerifySetting -Name 'ExternalClientsRequireSsl' -Type 'Boolean' -ExpectedValue $ExternalClientsRequireSsl -ActualValue $RpcVdir.ExternalClientsRequireSsl -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name 'InternalClientsRequireSsl' -Type 'Boolean' -ExpectedValue $InternalClientsRequireSsl -ActualValue $RpcVdir.InternalClientsRequireSsl -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name 'SSLOffloading' -Type 'Boolean' -ExpectedValue $SSLOffloading -ActualValue $RpcVdir.SSLOffloading -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name 'IISAuthenticationMethods' -Type 'Array' -ExpectedValue $IISAuthenticationMethods -ActualValue $RpcVdir.IISAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name 'ExtendedProtectionFlags' -Type 'Array' -ExpectedValue $ExtendedProtectionFlags -ActualValue $RpcVdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name 'ExtendedProtectionSPNList' -Type 'Array' -ExpectedValue $ExtendedProtectionSPNList -ActualValue $RpcVdir.ExtendedProtectionSPNList -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
     }
 
     #If the code made it this far all properties are in a desired state
-    return $true
+    return $testResults
 }
 
 function GetOutlookAnywhere

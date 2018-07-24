@@ -96,21 +96,23 @@ function Test-TargetResource
 
     $eventLogLevel = Get-EventLogLevel -Identity "$($env:COMPUTERNAME)\$($Identity)"
 
+    $testResults = $true
+
     if ($null -eq $eventLogLevel)
     {
-        Write-Error 'Failed to retrieve any objects with specified Identity.'
+        Write-Error -Message 'Failed to retrieve any objects with specified Identity.'
 
-        return $false
+        $testResults = $false
     }
     else
     {
         if (!(VerifySetting -Name 'Level' -Type 'String' -ExpectedValue $Level -ActualValue $eventLogLevel.EventLevel -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
     }
 
-    return $true
+    return $testResults
 }
 
 Export-ModuleMember -Function *-TargetResource

@@ -12,10 +12,13 @@
 - Updated xExchAutoMountPoint, xExchJetstressCleanup, and related DiskPart
   functions to not use global variables.
 - Fixes broken tests in:
+  MSFT_xExchDatabaseAvailabilityGroup.Integration.Tests.ps1,
   MSFT_xExchExchangeCertificate.Integration.Tests.ps1,
   MSFT_xExchOutlookAnywhere.Integration.Tests.ps1,
   MSFT_xExchPopSettings.Integration.Tests.ps1,
   xExchangeConfigHelper.Unit.Tests.ps1
+- Update most Test-TargetResource functions to output all invalid settings,
+  instead of just the first detected invalid setting
 
 ## 1.21.0.0
 

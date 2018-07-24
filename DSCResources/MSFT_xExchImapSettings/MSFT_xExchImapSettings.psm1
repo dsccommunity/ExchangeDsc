@@ -160,29 +160,33 @@ function Test-TargetResource
 
     $imap = GetImapSettings @PSBoundParameters
 
+    $testResults = $true
+
     if ($null -eq $imap)
     {
-        return $false
+        Write-Error -Message 'Unable to retrieve IMAP Settings for server'
+
+        $testResults = $false
     }
     else
     {
         if (!(VerifySetting -Name 'LoginType' -Type 'String' -ExpectedValue $LoginType -ActualValue $imap.LoginType -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }  
         
         if (!(VerifySetting -Name 'ExternalConnectionSettings' -Type 'Array' -ExpectedValue $ExternalConnectionSettings -ActualValue $imap.ExternalConnectionSettings -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         } 
         
         if (!(VerifySetting -Name 'X509CertificateName' -Type 'String' -ExpectedValue $X509CertificateName -ActualValue $imap.X509CertificateName -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }  
     }
 
-    return $true
+    return $testResults
 }
 
 function GetImapSettings

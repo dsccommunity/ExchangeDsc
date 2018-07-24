@@ -226,15 +226,19 @@ function Test-TargetResource
 
     $server = GetExchangeServer @PSBoundParameters
 
+    $testResults = $true
+
     if ($null -eq $server) #Couldn't find the server, which is bad
     {
-        return $false
+        Write-Error -Message 'Unable to retrieve Exchange Server settings for server'
+
+        $testResults = $false
     }
     else #Validate server params
     {
         if (!(VerifySetting -Name 'CustomerFeedbackEnabled' -Type 'Boolean' -ExpectedValue $CustomerFeedbackEnabled -ActualValue $server.CustomerFeedbackEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if ($PSBoundParameters.ContainsKey('InternetWebProxy') -and !(CompareStrings -String1 $InternetWebProxy -String2 $server.InternetWebProxy.AbsoluteUri -IgnoreCase))
@@ -243,28 +247,28 @@ function Test-TargetResource
             if (($null -ne $server.InternetWebProxy -and $null -ne $server.InternetWebProxy.AbsoluteUri -and $server.InternetWebProxy.AbsoluteUri.Contains($InternetWebProxy)) -eq $false)
             {
                 ReportBadSetting -SettingName 'InternetWebProxy' -ExpectedValue $InternetWebProxy -ActualValue $server.InternetWebProxy -VerbosePreference $VerbosePreference
-                return $false
+                $testResults = $false
             }
         }
 
         if (!(VerifySetting -Name 'MonitoringGroup' -Type 'String' -ExpectedValue $MonitoringGroup -ActualValue $server.MonitoringGroup -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if ($PSBoundParameters.ContainsKey('ProductKey') -and !([System.String]::IsNullOrEmpty($ProductKey)) -and $server.IsExchangeTrialEdition -eq $true)
         {
             ReportBadSetting -SettingName 'ProductKey' -ExpectedValue $ProductKey -ActualValue $server.ProductKey -VerbosePreference $VerbosePreference
-            return $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name 'WorkloadManagementPolicy' -Type 'String' -ExpectedValue $WorkloadManagementPolicy -ActualValue $server.WorkloadManagementPolicy -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
     }
 
-    return $true
+    return $testResults
 }
 
 #Runs Get-ExchangeServer, only specifying Identity, and optionally DomainController

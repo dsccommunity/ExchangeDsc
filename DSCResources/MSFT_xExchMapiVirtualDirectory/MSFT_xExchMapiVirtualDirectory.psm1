@@ -158,29 +158,33 @@ function Test-TargetResource
 
     $vdir = GetMapiVirtualDirectory @PSBoundParameters
 
+    $testResults = $true
+
     if ($null -eq $vdir)
     {
-        return $false
+        Write-Error -Message 'Unable to retrieve MAPI Virtual Directory for server'
+
+        $testResults = $false
     }
     else
     {
         if (!(VerifySetting -Name "IISAuthenticationMethods" -Type "Array" -ExpectedValue $IISAuthenticationMethods -ActualValue $vdir.IISAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name "ExternalUrl" -Type "String" -ExpectedValue $ExternalUrl -ActualValue $vdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name "InternalUrl" -Type "String" -ExpectedValue $InternalUrl -ActualValue $vdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            return $false
+            $testResults = $false
         }    
     }
     
-    return $true
+    return $testResults
 }
 
 function GetMapiVirtualDirectory

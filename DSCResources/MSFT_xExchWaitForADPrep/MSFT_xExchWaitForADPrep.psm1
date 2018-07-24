@@ -252,22 +252,22 @@ function Test-TargetResource
 
     $adStatus = Get-TargetResource @PSBoundParameters
 
-    $returnValue = $true
+    $testResults = $true
 
     if ($null -eq $adStatus)
     {
-        $returnValue = $false
+        $testResults = $false
     }
     else
     {
         if (!(VerifySetting -Name 'SchemaVersion' -Type 'Int' -ExpectedValue $SchemaVersion -ActualValue $adStatus.SchemaVersion -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            $returnValue = $false
+            $testResults = $false
         }
 
         if (!(VerifySetting -Name 'OrganizationVersion' -Type 'Int' -ExpectedValue $OrganizationVersion -ActualValue $adStatus.OrganizationVersion -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
-            $returnValue = $false
+            $testResults = $false
         }
 
         if ($PSBoundParameters.ContainsKey('DomainVersion'))
@@ -297,13 +297,13 @@ function Test-TargetResource
             {
                 if (!(VerifySetting -Name 'DomainVersion' -Type 'Int' -ExpectedValue $DomainVersion -ActualValue $adStatus.DomainVersion[$domain] -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
                 {
-                    $returnValue = $false
+                    $testResults = $false
                 }
             }       
         }
     }
 
-    return $returnValue
+    return $testResults
 }
 
 function GetADRootDSE
