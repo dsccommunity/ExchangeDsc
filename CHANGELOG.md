@@ -21,6 +21,9 @@
   xExchangeConfigHelper.Unit.Tests.ps1
 - Update most Test-TargetResource functions to output all invalid settings,
   instead of just the first detected invalid setting
+- Fixes issue with xExchMaintenanceMode on Exchange 2016 where the cluster
+  does not get paused when going into maintenance mode. Also fixes issue
+  where services fail to stop, start, pause, or resume.
 
 ## 1.21.0.0
 
