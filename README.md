@@ -825,37 +825,37 @@ the Client Access and Mailbox Server roles.
 * **SetInactiveComponentsFromAnyRequesterToActive**: Whether components that were
   set to Inactive by outside Requesters should also be set to Active
   when exiting Maintenance Mode. Defaults to False.
-* **SkipActiveCopyChecks*: Used when moving databases back to the server after
+* **SkipActiveCopyChecks**: Used when moving databases back to the server after
   taking the server out of maintenance mode. The SkipActiveCopyChecks switch
   specifies whether to skip checking the current active copy to see if it's
   currently a seeding source for any passive databases. Defaults to False.
-* **SkipAllChecks*: Exchange 2016 Only. Used when moving databases back to the
+* **SkipAllChecks**: Exchange 2016 Only. Used when moving databases back to the
   server after taking the server out of maintenance mode. The SkipAllChecks
   switch specifies whether to skip all checks. This switch is equivalent to
   specifying all of the individual skip parameters that are available on this
   cmdlet. Defaults to False.
-* **SkipClientExperienceChecks*: Used when moving databases back to the server
+* **SkipClientExperienceChecks**: Used when moving databases back to the server
   after taking the server out of maintenance mode. The
   SkipClientExperienceChecks switch specifies whether to skip the search
   catalog (content index) state check to see if the search catalog is healthy
   and up to date. Defaults to False.
-* **SkipCpuChecks*: Exchange 2016 Only. Used when moving databases back to the
+* **SkipCpuChecks**: Exchange 2016 Only. Used when moving databases back to the
   server after taking the server out of maintenance mode. The SkipCpuChecks
   switch specifies whether to skip the high CPU utilization checks. Defaults to
   False.
-* **SkipHealthChecks*: Used when moving databases back to the server after
+* **SkipHealthChecks**: Used when moving databases back to the server after
   taking the server out of maintenance mode. The SkipHealthChecks switch
   specifies whether to bypass passive copy health checks. Defaults to False.
-* **SkipLagChecks*: Used when moving databases back to the server after taking
+* **SkipLagChecks**: Used when moving databases back to the server after taking
   the server out of maintenance mode. The SkipLagChecks switch specifies
   whether to allow a copy to be activated that has replay and copy queues
   outside of the configured criteria. Defaults to False.
-* **SkipMaximumActiveDatabasesChecks*: Used when moving databases back to the
+* **SkipMaximumActiveDatabasesChecks**: Used when moving databases back to the
   server after taking the server out of maintenance mode. The
   SkipMaximumActiveDatabasesChecks switch specifies whether to skip checking
   the value of MaximumPreferredActiveDatabases during the best copy and server
   selection (BCSS) process. Defaults to False.
-* **SkipMoveSuppressionChecks*: Exchange 2016 Only. Used when moving databases
+* **SkipMoveSuppressionChecks**: Exchange 2016 Only. Used when moving databases
   back to the server after taking the server out of maintenance mode. The
   SkipMoveSuppressionChecks switch specifies whether to skip the move
   suppression checks. Defaults to False.
