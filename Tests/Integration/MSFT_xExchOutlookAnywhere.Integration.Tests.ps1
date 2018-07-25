@@ -36,7 +36,7 @@ if ($exchangeInstalled)
 
     Describe 'Test Setting Properties with xExchOutlookAnywhere' {
         $testParams = @{
-            Identity =  '$($env:COMPUTERNAME)\Rpc (Default Web Site)'
+            Identity =  "$($env:COMPUTERNAME)\Rpc (Default Web Site)"
             Credential = $Global:ShellCredentials
             ExtendedProtectionFlags = 'Proxy','ProxyCoHosting'
             ExtendedProtectionSPNList = @()
@@ -52,7 +52,7 @@ if ($exchangeInstalled)
         }
 
         $expectedGetResults = @{
-            Identity =  '$($env:COMPUTERNAME)\Rpc (Default Web Site)'
+            Identity =  "$($env:COMPUTERNAME)\Rpc (Default Web Site)"
             ExtendedProtectionTokenChecking = 'Allow'
             ExternalClientAuthenticationMethod = 'Ntlm'
             ExternalClientsRequireSsl = $true

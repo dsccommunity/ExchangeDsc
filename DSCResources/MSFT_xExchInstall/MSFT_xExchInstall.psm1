@@ -55,6 +55,8 @@ function Set-TargetResource
 
     $installStatus = GetInstallStatus -Arguments $Arguments
 
+    $waitingForSetup = $false
+
     if ($installStatus.ShouldStartInstall -eq $true)
     {
         #Check if WSMan needs to be configured, as it will require an immediate reboot
@@ -93,6 +95,25 @@ function Set-TargetResource
             throw 'Waited 60 seconds, but was unable to detect that ExSetup.exe was started'
         }
 
+        $waitingForSetup = $true
+    }
+    else
+    {
+        if ($installStatus.SetupComplete)
+        {
+            Write-Verbose -Message 'Exchange setup has already successfully completed.'
+            return
+        }
+        else
+        {
+            Write-Verbose -Message 'Exchange setup is already in progress.'
+
+            $waitingForSetup = $true
+        }         
+    }
+
+    if ($waitingForSetup)
+    {
         #Now wait for setup to finish
         while ($null -ne (Get-Process -Name ExSetup -ErrorAction SilentlyContinue))
         {
@@ -100,16 +121,17 @@ function Set-TargetResource
             Start-Sleep -Seconds 60
         }
     }
+
+    #Check install status one more time and see if setup was successful
+    $installStatus = GetInstallStatus -Arguments $Arguments
+
+    if ($installStatus.SetupComplete)
+    {
+        Write-Verbose -Message 'Exchange setup completed successfully'
+    }
     else
     {
-        if ($installStatus.SetupComplete)
-        {
-            Write-Verbose -Message 'Exchange setup has already successfully completed.'
-        }
-        else
-        {
-            Write-Verbose -Message 'Exchange setup is already in progress.'
-        }         
+        throw 'Exchange setup did not complete successfully. See "<system drive>\ExchangeSetupLogs\ExchangeSetup.log" for details.'
     }
 }
 
@@ -238,7 +260,7 @@ function CheckWSManConfig
             Write-Verbose "Value 'UpdatedConfig' missing from registry key HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN. Running: winrm i restore winrm/config"
 
             Set-Location "$($env:windir)\System32\inetsrv"
-            & 'winrm i restore winrm/config' | Out-Null
+            winrm i restore winrm/config | Out-Null
 
             Write-Verbose -Message 'Machine needs to be rebooted before Exchange setup can proceed'
 

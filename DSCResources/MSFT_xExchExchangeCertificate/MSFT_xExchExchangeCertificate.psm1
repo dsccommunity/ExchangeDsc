@@ -247,21 +247,34 @@ function Test-TargetResource
 
     $cert = GetExchangeCertificate @PSBoundParameters
 
-    $result = $false
+    $testResults = $true
 
     if ($null -ne $cert)
     {
         if ($Ensure -eq 'Present')
         {
-            $result = CompareCertServices -ServicesActual $cert.Services -ServicesDesired $Services -AllowExtraServices $AllowExtraServices
+            if (!(CompareCertServices -ServicesActual $cert.Services -ServicesDesired $Services -AllowExtraServices $AllowExtraServices))
+            {
+                ReportBadSetting -SettingName 'Services' -ExpectedValue $Services -ActualValue $cert.Services -VerbosePreference $VerbosePreference
+                $testResults = $false
+            }
+        }
+        else
+        {
+            Write-Verbose -Message "Certificate with thumbprint $Thumbprint still exists"
+            $testResults = $false
         }
     }
-    elseif ($Ensure -eq 'Absent')
+    else
     {
-        $result = $true
+        if ($Ensure -ne 'Absent')
+        {
+            Write-Verbose -Message "Certificate with thumbprint $Thumbprint does not exist"
+            $testResults = $false
+        }
     }
 
-    $result
+    return $testResults
 }
 
 #Runs Get-ExchangeCertificate, only specifying Thumbprint, ErrorAction, and optionally DomainController

@@ -871,23 +871,23 @@ function Test-TargetResource
     {
         $ADPermissions = $connector | Get-ADPermission | Where-Object {$_.IsInherited -eq $false}
     }
-    
+
+    $testResults = $true
+        
     if ($null -eq $connector)
     {
         if ($Ensure -eq 'Present')
         {
-            return $false
-        }
-        else
-        {
-            return $true
+            Write-Verbose -Message 'Receive Connector should exist, but does not.'
+            $testResults = $false
         }
     }
     else
     {
         if ($Ensure -eq 'Absent')
         {
-            return $false
+            Write-Verbose -Message 'Receive Connector should not exist, but does.'
+            $testResults = $false
         }
         else
         {
@@ -896,237 +896,237 @@ function Test-TargetResource
 
             if (!(VerifySetting -Name 'AdvertiseClientSettings' -Type 'Boolean' -ExpectedValue $AdvertiseClientSettings -ActualValue $connector.AdvertiseClientSettings -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'AuthMechanism' -Type 'Array' -ExpectedValue $AuthMechanism -ActualValue (StringToArray -StringIn "$($connector.AuthMechanism)" -Separator ',') -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'Banner' -Type 'String' -ExpectedValue $Banner -ActualValue $connector.Banner -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'BareLinefeedRejectionEnabled' -Type 'Boolean' -ExpectedValue $BareLinefeedRejectionEnabled -ActualValue $connector.BareLinefeedRejectionEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'BinaryMimeEnabled' -Type 'Boolean' -ExpectedValue $BinaryMimeEnabled -ActualValue $connector.BinaryMimeEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'Bindings' -Type 'Array' -ExpectedValue $Bindings -ActualValue $connector.Bindings -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'ChunkingEnabled' -Type 'Boolean' -ExpectedValue $ChunkingEnabled -ActualValue $connector.ChunkingEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'Comment' -Type 'String' -ExpectedValue $Comment -ActualValue $connector.Comment -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'ConnectionInactivityTimeout' -Type 'Timespan' -ExpectedValue $ConnectionInactivityTimeout -ActualValue $connector.ConnectionInactivityTimeout -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'ConnectionTimeout' -Type 'Timespan' -ExpectedValue $ConnectionTimeout -ActualValue $connector.ConnectionTimeout -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'DefaultDomain' -Type 'String' -ExpectedValue $DefaultDomain -ActualValue $connector.DefaultDomain -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'DeliveryStatusNotificationEnabled' -Type 'Boolean' -ExpectedValue $DeliveryStatusNotificationEnabled -ActualValue $connector.DeliveryStatusNotificationEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'DomainSecureEnabled' -Type 'Boolean' -ExpectedValue $DomainSecureEnabled -ActualValue $connector.DomainSecureEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'EightBitMimeEnabled' -Type 'Boolean' -ExpectedValue $EightBitMimeEnabled -ActualValue $connector.EightBitMimeEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'EnableAuthGSSAPI' -Type 'Boolean' -ExpectedValue $EnableAuthGSSAPI -ActualValue $connector.EnableAuthGSSAPI -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'Enabled' -Type 'Boolean' -ExpectedValue $Enabled -ActualValue $connector.Enabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'EnhancedStatusCodesEnabled' -Type 'Boolean' -ExpectedValue $EnhancedStatusCodesEnabled -ActualValue $connector.EnhancedStatusCodesEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'ExtendedProtectionPolicy' -Type 'String' -ExpectedValue $ExtendedProtectionPolicy -ActualValue $connector.ExtendedProtectionPolicy -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'Fqdn' -Type 'String' -ExpectedValue $Fqdn -ActualValue $connector.Fqdn -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'LongAddressesEnabled' -Type 'Boolean' -ExpectedValue $LongAddressesEnabled -ActualValue $connector.LongAddressesEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'MaxHopCount' -Type 'Int' -ExpectedValue $MaxHopCount -ActualValue $connector.MaxHopCount -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'MaxAcknowledgementDelay' -Type 'Timespan' -ExpectedValue $MaxAcknowledgementDelay -ActualValue $connector.MaxAcknowledgementDelay -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'MaxInboundConnection' -Type 'String' -ExpectedValue $MaxInboundConnection -ActualValue $connector.MaxInboundConnection -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'MaxInboundConnectionPercentagePerSource' -Type 'Int' -ExpectedValue $MaxInboundConnectionPercentagePerSource -ActualValue $connector.MaxInboundConnectionPercentagePerSource -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'MaxInboundConnectionPerSource' -Type 'String' -ExpectedValue $MaxInboundConnectionPerSource -ActualValue $connector.MaxInboundConnectionPerSource -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'MaxHeaderSize' -Type 'ByteQuantifiedSize' -ExpectedValue $MaxHeaderSize -ActualValue $connector.MaxHeaderSize -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'MaxLocalHopCount' -Type 'Int' -ExpectedValue $MaxLocalHopCount -ActualValue $connector.MaxLocalHopCount -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'MaxLogonFailures' -Type 'Int' -ExpectedValue $MaxLogonFailures -ActualValue $connector.MaxLogonFailures -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'MaxMessageSize' -Type 'ByteQuantifiedSize' -ExpectedValue $MaxMessageSize -ActualValue $connector.MaxMessageSize -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'MaxProtocolErrors' -Type 'String' -ExpectedValue $MaxProtocolErrors -ActualValue $connector.MaxProtocolErrors -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'MaxRecipientsPerMessage' -Type 'Int' -ExpectedValue $MaxRecipientsPerMessage -ActualValue $connector.MaxRecipientsPerMessage -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'MessageRateLimit' -Type 'String' -ExpectedValue $MessageRateLimit -ActualValue $connector.MessageRateLimit -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'MessageRateSource' -Type 'String' -ExpectedValue $MessageRateSource -ActualValue $connector.MessageRateSource -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'OrarEnabled' -Type 'Boolean' -ExpectedValue $OrarEnabled -ActualValue $connector.OrarEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'PermissionGroups' -Type 'Array' -ExpectedValue $PermissionGroups -ActualValue (StringToArray -StringIn $connector.PermissionGroups -Separator ',') -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'PipeliningEnabled' -Type 'Boolean' -ExpectedValue $PipeliningEnabled -ActualValue $connector.PipeliningEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'ProtocolLoggingLevel' -Type 'String' -ExpectedValue $ProtocolLoggingLevel -ActualValue $connector.ProtocolLoggingLevel -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'RemoteIPRanges' -Type 'Array' -ExpectedValue $RemoteIPRanges -ActualValue $connector.RemoteIPRanges -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'RequireEHLODomain' -Type 'Boolean' -ExpectedValue $RequireEHLODomain -ActualValue $connector.RequireEHLODomain -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'RequireTLS' -Type 'Boolean' -ExpectedValue $RequireTLS -ActualValue $connector.RequireTLS -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'ServiceDiscoveryFqdn' -Type 'String' -ExpectedValue $ServiceDiscoveryFqdn -ActualValue $connector.ServiceDiscoveryFqdn -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'SizeEnabled' -Type 'String' -ExpectedValue $SizeEnabled -ActualValue $connector.SizeEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'SuppressXAnonymousTls' -Type 'Boolean' -ExpectedValue $SuppressXAnonymousTls -ActualValue $connector.SuppressXAnonymousTls -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'TarpitInterval' -Type 'Timespan' -ExpectedValue $TarpitInterval -ActualValue $connector.TarpitInterval -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'TlsCertificateName' -Type 'String' -ExpectedValue $TlsCertificateName -ActualValue $connector.TlsCertificateName -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'TlsDomainCapabilities' -Type 'Array' -ExpectedValue $TlsDomainCapabilities -ActualValue $connector.TlsDomainCapabilities -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
 
             if (!(VerifySetting -Name 'TransportRole' -Type 'String' -ExpectedValue $TransportRole -ActualValue $connector.TransportRole -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
             {
-                return $false
+                $testResults = $false
             }
             
             #check AD permissions if necessary
@@ -1134,7 +1134,7 @@ function Test-TargetResource
             {
                 if (!(ExtendedRightExists -ADPermissions $ADPermissions -ExtendedRights $ExtendedRightAllowEntries -ShouldbeTrue:$True -VerbosePreference $VerbosePreference))
                 {
-                    return $false
+                    $testResults = $false
                 }
             }
             
@@ -1142,14 +1142,13 @@ function Test-TargetResource
             {
                 if (ExtendedRightExists -ADPermissions $ADPermissions -ExtendedRights $ExtendedRightDenyEntries -ShouldbeTrue:$false -VerbosePreference $VerbosePreference)
                 {
-                    return $false
+                    $testResults = $false
                 }
             }
         }
     }
 
-    #If we made it here, all tests passed
-    return $true
+    return $testResults
 }
 
 #Runs Get-ReceiveConnector, only specifying Identity, ErrorAction, and optionally DomainController
