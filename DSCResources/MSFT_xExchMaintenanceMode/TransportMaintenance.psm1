@@ -41,7 +41,8 @@ $ServiceState = $null
 #>
 function Start-TransportMaintenance
 {
-    [CmdletBinding(SupportsShouldProcess=$True)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
+    [CmdletBinding()]
     param
     (
         [Parameter()]
@@ -106,7 +107,8 @@ Performs End Maintenance of HubTransport
 function Stop-TransportMaintenance
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
-    [CmdletBinding(SupportsShouldProcess=$True)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
+    [CmdletBinding()]
     param
     (
         [Parameter()]
@@ -287,7 +289,7 @@ function Invoke-RemoteMaintenance
 # Main entry point for the script.
 function Start-HUBEndMaintenance
 {
-    [CmdletBinding(SupportsShouldProcess=$True)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
     param()
 
     $reasons = @{
@@ -387,7 +389,7 @@ function Enable-SubmissionQueue
 # Sets the Transport Component State to 'Active' and starts the appropriate services.
 function Set-TransportActive
 {
-    [CmdletBinding(SupportsShouldProcess=$True)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
     param()
 
     Write-Output 'Enter [Set-TransportActive]'
@@ -435,7 +437,7 @@ function Set-TransportActive
 # Sets the Transport Component State to 'Inactive' and starts the appropriate services.
 function Set-TransportInactive
 {
-    [CmdletBinding(SupportsShouldProcess=$True)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
     param()
 
     Write-Output 'Enter [Set-TransportInactive]'
@@ -732,7 +734,7 @@ function Register-TransportMaintenanceLog
 #   This object holds configuration and size limits of the Maintenance Log folder
 function Remove-TransportMaintenanceLogsOverMaxAge
 {
-    [CmdletBinding(SupportsShouldProcess=$True)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -764,7 +766,7 @@ function Remove-TransportMaintenanceLogsOverMaxAge
 #   This object holds configuration and size limits of the Maintenance Log folder
 function Remove-TransportMaintenanceLogsOverMaxDirectorySize
 {
-    [CmdletBinding(SupportsShouldProcess=$True)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -940,7 +942,7 @@ function Initialize-TransportMaintenanceLog()
 #  True if successful, false otherwise.
 function Set-ServiceState
 {
-    [CmdletBinding(SupportsShouldProcess=$True)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -1086,7 +1088,6 @@ function Set-ServiceState
     }
 }
 
-#>
 # .DESCRIPTION
 #   Create a log entry object to be used in logging with various events and reasons
 #
@@ -1106,7 +1107,7 @@ function Set-ServiceState
 #   Log Entry object which can be use Write-EventOfEntry & Write-SkippedEvent
 function New-LogEntry
 {
-    [CmdletBinding(SupportsShouldProcess=$True)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -1126,22 +1127,15 @@ function New-LogEntry
         $Count = -1
     )
 
-    $logEntryObject = $null
-
-    if ($PSCmdlet.ShouldProcess("Create Log Entry Object"))
-    {
-        $logProps = @{
-            Source = $Source
-            Stage = $Stage
-            Id = $Id
-            Count = $Count
-            Created = Get-Date
-        }
+    $logProps = @{
+        Source = $Source
+        Stage = $Stage
+        Id = $Id
+        Count = $Count
+        Created = Get-Date
     }
 
-    $logEntryObject = New-Object PsObject -Property $logProps
-
-    return $logEntryObject
+    return New-Object PsObject -Property $logProps
 }
 
 # .DESCRIPTION
@@ -1346,7 +1340,7 @@ function Write-InfoEvent
 function Remove-CompletedEntriesFromHashtable
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
-    [CmdletBinding(SupportsShouldProcess=$True)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -1407,7 +1401,7 @@ function Remove-CompletedEntriesFromHashtable
 #  Returns True if at least an entry is updated or created. Otherwise returns False.
 function Update-EntriesTracker
 {
-    [CmdletBinding(SupportsShouldProcess=$True)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -2523,7 +2517,7 @@ function Unblock-SubmissionQueue
 #
 function Set-ComponentState
 {
-    [CmdletBinding(SupportsShouldProcess=$True)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -2541,16 +2535,12 @@ function Set-ComponentState
     )
 
     Write-Verbose -Message "Setting $Component state to $State"
-
-    if ($PSCmdlet.ShouldProcess("Set Server Component State"))
-    {
-        Set-ServerComponentState `
-            -Identity $Server `
-            -Component $Component `
-            -Requester $Requester `
-            -State $State `
-            -ErrorAction SilentlyContinue
-    }
+    Set-ServerComponentState `
+        -Identity $Server `
+        -Component $Component `
+        -Requester $Requester `
+        -State $State `
+        -ErrorAction SilentlyContinue
 }
 
 # .DESCRIPTION
@@ -2564,7 +2554,6 @@ function Set-ComponentState
 #
 function Get-ComponentState
 {
-    [CmdletBinding(SupportsShouldProcess=$True)]
     param
     (
         [Parameter()]
@@ -2577,17 +2566,10 @@ function Get-ComponentState
     )
 
     Write-Verbose -Message "Getting $Component state of $Server"
-
-    $serverComponentState = $null
-
-    if ($PSCmdlet.ShouldProcess("Get Server Component State"))
-    {
-        $serverComponentState = Get-ServerComponentState `
-            -Identity $Server `
-            -Component $Component `
-            -ErrorAction SilentlyContinue
-    }
-
+    $serverComponentState = Get-ServerComponentState `
+        -Identity $Server `
+        -Component $Component `
+        -ErrorAction SilentlyContinue
     Write-Verbose -Message "ServerComponentState of $Component is '$($serverComponentState.State)'"
 
     return $serverComponentState
@@ -2673,7 +2655,7 @@ function Wait-ServiceState
 #   Service startup mode to set after killing the service, default to 'Auto'
 function Stop-ServiceForcefully
 {
-    [CmdletBinding(SupportsShouldProcess=$True)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
     param
     (
         [Parameter()]

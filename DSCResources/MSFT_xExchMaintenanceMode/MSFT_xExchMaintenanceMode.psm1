@@ -126,7 +126,8 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
-    [CmdletBinding(SupportsShouldProcess=$True)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
+    [CmdletBinding()]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -283,12 +284,12 @@ function Set-TargetResource
 
                 if ((GetExchangeVersion) -eq '2016')
                 {
-                    $startDagScriptParams.Add("pauseClusterNode", $true)
+                    $startDagScriptParams.Add('pauseClusterNode', $true)
                 }
 
                 if ($dagMemberCount -ne 0 -and $dagMemberCount -le 2)
                 {
-                    $startDagScriptParams.Add("overrideMinimumTwoCopies", $true)
+                    $startDagScriptParams.Add('overrideMinimumTwoCopies', $true)
                 }
 
                 if ($SkipAllChecks -or $SkipMoveSuppressionChecks)
