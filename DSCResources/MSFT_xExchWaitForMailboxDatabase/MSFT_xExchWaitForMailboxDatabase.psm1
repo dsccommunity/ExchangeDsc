@@ -46,7 +46,7 @@ function Get-TargetResource
     if ($null -ne $db)
     {
         $returnValue = @{
-            Identity = $Identity
+            Identity = [System.String]$Identity
         }    
     }
 

@@ -30,10 +30,10 @@ function Get-TargetResource
     LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath; "JetstressParams" = $JetstressParams} -VerbosePreference $VerbosePreference
 
     $returnValue = @{
-        Type = $Type
-        JetstressPath = $JetstressPath
-        JetstressParams = $JetstressParams
-        MaxWaitMinutes = $MaxWaitMinutes        
+        Type            = [System.String]$Type
+        JetstressPath   = [System.String]$JetstressPath
+        JetstressParams = [System.String]$JetstressParams
+        MaxWaitMinutes  = [System.UInt32]$MaxWaitMinutes        
     }
 
     $returnValue

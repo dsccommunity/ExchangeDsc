@@ -65,16 +65,16 @@ function Get-TargetResource
     $dbMap = GetDiskToDBMap -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -DiskInfo $diskInfo
 
     $returnValue = @{
-        Identity = $Identity
-        DiskToDBMap = $dbMap
-        SpareVolumeCount = $SpareVolumeCount
-        AutoDagDatabasesRootFolderPath = $AutoDagDatabasesRootFolderPath
-        AutoDagVolumesRootFolderPath = $AutoDagVolumesRootFolderPath
-        VolumePrefix = $VolumePrefix
-        MinDiskSize = $MinDiskSize
-        UnitSize = $UnitSize
-        PartitioningScheme = $PartitioningScheme
-        FileSystem = $FileSystem
+        Identity                       = [System.String]$Identity
+        DiskToDBMap                    = [System.String[]]$dbMap
+        SpareVolumeCount               = [System.UInt32]$SpareVolumeCount
+        AutoDagDatabasesRootFolderPath = [System.String]$AutoDagDatabasesRootFolderPath
+        AutoDagVolumesRootFolderPath   = [System.String]$AutoDagVolumesRootFolderPath
+        VolumePrefix                   = [System.String]$VolumePrefix
+        MinDiskSize                    = [System.String]$MinDiskSize
+        UnitSize                       = [System.String]$UnitSize
+        PartitioningScheme             = [System.String]$PartitioningScheme
+        FileSystem                     = [System.String]$FileSystem
     }
 
     $returnValue

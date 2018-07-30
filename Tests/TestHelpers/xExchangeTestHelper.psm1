@@ -8,18 +8,18 @@ function Test-TargetResourceFunctionality
     [CmdletBinding()]
     param
     (
-        [Parameter()]    
+        [Parameter()]
         [System.Collections.Hashtable]
         $Params,
-        
+
         [Parameter()]
         [System.String]
-        $ContextLabel, 
-        
+        $ContextLabel,
+
         [Parameter()]
         [System.Collections.Hashtable]
-        $ExpectedGetResults, 
-        
+        $ExpectedGetResults,
+
         [Parameter()]
         [System.Boolean]
         $ExpectedTestResult = $true
@@ -68,11 +68,6 @@ function Test-TargetResourceFunctionality
                         It "Get-TargetResource: Parameter '$getTargetResourceParam' expects return type: '$($getTargetResourceCommand.Parameters[$getTargetResourceParam].ParameterType.ToString())'. Actual return type: '$getResultMemberType'" {
                             ($getTargetResourceCommand.Parameters[$getTargetResourceParam].ParameterType.ToString()) -eq $getResultMemberType | Should Be $true
                         }
-
-                        if (!(($getTargetResourceCommand.Parameters[$getTargetResourceParam].ParameterType.ToString()) -eq $getResultMemberType))
-                        {
-                            $bbsdfdsf = 0
-                        }
                     }
                 }
             }
@@ -114,11 +109,6 @@ function Test-TargetResourceFunctionality
                     It "Get-TargetResource: Value Matches for Key: $($key)" {
                         $getValueMatchesForKey | Should Be $true
                     }
-
-                    if (!$getValueMatchesForKey)
-                    {
-                        $bbreak = 0
-                    }
                 }
             }
         }
@@ -137,20 +127,20 @@ function Test-ArrayContentsEqual
     (
         [Parameter()]
         [System.Collections.Hashtable]
-        $TestParams, 
-        
+        $TestParams,
+
         [Parameter()]
         [System.String[]]
-        $DesiredArrayContents, 
-        
+        $DesiredArrayContents,
+
         [Parameter()]
         [System.String]
-        $GetResultParameterName, 
-        
+        $GetResultParameterName,
+
         [Parameter()]
         [System.String]
-        $ContextLabel, 
-        
+        $ContextLabel,
+
         [Parameter()]
         [System.String]
         $ItLabel
@@ -172,20 +162,20 @@ function Test-Array2ContainsArray1
     (
         [Parameter()]
         [System.Collections.Hashtable]
-        $TestParams, 
-        
+        $TestParams,
+
         [Parameter()]
         [System.String[]]
-        $DesiredArrayContents, 
-        
+        $DesiredArrayContents,
+
         [Parameter()]
         [System.String]
-        $GetResultParameterName, 
-        
+        $GetResultParameterName,
+
         [Parameter()]
         [System.String]
-        $ContextLabel, 
-        
+        $ContextLabel,
+
         [Parameter()]
         [System.String]
         $ItLabel
@@ -250,7 +240,7 @@ function Initialize-TestForDAG
         [System.String]
         $DatabaseName
     )
-    
+
     Write-Verbose -Message 'Cleaning up test DAG and related resources'
 
     GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad '*-MailboxDatabase',`

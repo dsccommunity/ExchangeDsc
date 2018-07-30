@@ -1009,28 +1009,6 @@ End {
 }
 }
 
-#helper function to convert Microsoft.Exchange.Data.MultiValuedPropertyBase to System.Array
-function ConvertTo-Array
-{
-    [CmdletBinding()]
-    [OutputType([System.Array])]
-    param(
-        [Object[]]$InputObject
-    )
-    Begin
-    {
-        $output = @()
-    }
-    Process
-    {
-        $InputObject | ForEach-Object -Process {$output += $_}
-    }
-    End
-    {
-        return ,$output 
-    }
-}
-
 #helper function to check SPN for Dotless name
 function Test-ExtendedProtectionSPNList
 {

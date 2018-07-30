@@ -111,13 +111,13 @@ function Get-TargetResource
 
 
         $returnValue = @{
-            Enabled = $isEnabled
-            ActiveComponentCount = $activeComponentCount
-            ActiveComponentsList = $activeComponentsList
-            ActiveDBCount = GetActiveDBCount -MaintenanceModeStatus $maintenanceModeStatus -DomainController $DomainController
-            ActiveUMCallCount = GetUMCallCount -MaintenanceModeStatus $maintenanceModeStatus -DomainController $DomainController
-            ClusterState = $maintenanceModeStatus.ClusterNode.State
-            QueuedMessageCount = GetQueueMessageCount -MaintenanceModeStatus $maintenanceModeStatus
+            Enabled              = [System.Boolean]$isEnabled
+            ActiveComponentCount = [System.Int32]$activeComponentCount
+            ActiveComponentsList = [System.String[]]$activeComponentsList
+            ActiveDBCount        = [System.Int32](GetActiveDBCount -MaintenanceModeStatus $maintenanceModeStatus -DomainController $DomainController)
+            ActiveUMCallCount    = [System.Int32](GetUMCallCount -MaintenanceModeStatus $maintenanceModeStatus -DomainController $DomainController)
+            ClusterState         = [System.String]$maintenanceModeStatus.ClusterNode.State
+            QueuedMessageCount   = [System.Int32](GetQueueMessageCount -MaintenanceModeStatus $maintenanceModeStatus)
         }
     }
 

@@ -46,8 +46,8 @@ function Get-TargetResource
         if ($null -ne $server)
         {
             $returnValue = @{
-                MailboxServer = $MailboxServer
-                DAGName = $dag.Name
+                MailboxServer = [System.String]$MailboxServer
+                DAGName       = [System.String]$dag.Name
             }
         }
     }
