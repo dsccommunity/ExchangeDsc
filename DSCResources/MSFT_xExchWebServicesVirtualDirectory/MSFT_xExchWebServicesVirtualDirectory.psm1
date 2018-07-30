@@ -94,21 +94,21 @@ function Get-TargetResource
     if ($null -ne $EwsVdir)
     {
         $returnValue = @{
-            Identity = $Identity
-            BasicAuthentication = $EwsVdir.BasicAuthentication
-            CertificateAuthentication = $EwsVdir.CertificateAuthentication
-            DigestAuthentication = $EwsVdir.DigestAuthentication
-            ExtendedProtectionFlags = [System.Array]$(ConvertTo-Array -InputObject $EwsVdir.ExtendedProtectionFlags)
-            ExtendedProtectionSPNList = [System.Array]$(ConvertTo-Array -InputObject $EwsVdir.ExtendedProtectionSPNList)
-            ExtendedProtectionTokenChecking = $EwsVdir.ExtendedProtectionTokenChecking
-            ExternalUrl = $EwsVdir.InternalUrl.AbsoluteUri
-            GzipLevel = $EwsVdir.GzipLevel
-            InternalNLBBypassUrl = $EwsVdir.InternalNLBBypassUrl
-            InternalUrl = $EwsVdir.InternalUrl.AbsoluteUri
-            MRSProxyEnabled = $EwsVdir.MRSProxyEnabled
-            OAuthAuthentication = $EwsVdir.OAuthAuthentication
-            WSSecurityAuthentication = $EwsVdir.WSSecurityAuthentication
-            WindowsAuthentication = $EwsVdir.WindowsAuthentication
+            Identity                        = [System.String]$Identity
+            BasicAuthentication             = [System.Boolean]$EwsVdir.BasicAuthentication
+            CertificateAuthentication       = [System.Boolean]$EwsVdir.CertificateAuthentication
+            DigestAuthentication            = [System.Boolean]$EwsVdir.DigestAuthentication
+            ExtendedProtectionFlags         = [System.String[]]$EwsVdir.ExtendedProtectionFlags
+            ExtendedProtectionSPNList       = [System.String[]]$EwsVdir.ExtendedProtectionSPNList
+            ExtendedProtectionTokenChecking = [System.String]$EwsVdir.ExtendedProtectionTokenChecking
+            ExternalUrl                     = [System.String]$EwsVdir.InternalUrl.AbsoluteUri
+            GzipLevel                       = [System.String]$EwsVdir.GzipLevel
+            InternalNLBBypassUrl            = [System.String]$EwsVdir.InternalNLBBypassUrl
+            InternalUrl                     = [System.String]$EwsVdir.InternalUrl.AbsoluteUri
+            MRSProxyEnabled                 = [System.Boolean]$EwsVdir.MRSProxyEnabled
+            OAuthAuthentication             = [System.Boolean]$EwsVdir.OAuthAuthentication
+            WSSecurityAuthentication        = [System.Boolean]$EwsVdir.WSSecurityAuthentication
+            WindowsAuthentication           = [System.Boolean]$EwsVdir.WindowsAuthentication
         }
     }
 

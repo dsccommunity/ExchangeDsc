@@ -67,15 +67,15 @@ function Get-TargetResource
     if ($null -ne $autoDVdir)
     {
         $returnValue = @{
-            Identity = $Identity
-            BasicAuthentication = $autoDVdir.BasicAuthentication
-            DigestAuthentication = $autoDVdir.DigestAuthentication
-            ExtendedProtectionFlags = [System.Array]$(ConvertTo-Array -InputObject $autoDVdir.ExtendedProtectionFlags)
-            ExtendedProtectionSPNList = [System.Array]$(ConvertTo-Array -InputObject $autoDVdir.ExtendedProtectionSPNList)
-            ExtendedProtectionTokenChecking = $autoDVdir.ExtendedProtectionTokenChecking
-            OAuthAuthentication = $autoDVdir.OAuthAuthentication
-            WindowsAuthentication = $autoDVdir.WindowsAuthentication
-            WSSecurityAuthentication = $autoDVdir.WSSecurityAuthentication
+            Identity                        = [System.String]$Identity
+            BasicAuthentication             = [System.Boolean]$autoDVdir.BasicAuthentication
+            DigestAuthentication            = [System.Boolean]$autoDVdir.DigestAuthentication
+            ExtendedProtectionFlags         = [System.String[]]$autoDVdir.ExtendedProtectionFlags
+            ExtendedProtectionSPNList       = [System.String[]]$autoDVdir.ExtendedProtectionSPNList
+            ExtendedProtectionTokenChecking = [System.String]$autoDVdir.ExtendedProtectionTokenChecking
+            OAuthAuthentication             = [System.Boolean]$autoDVdir.OAuthAuthentication
+            WindowsAuthentication           = [System.Boolean]$autoDVdir.WindowsAuthentication
+            WSSecurityAuthentication        = [System.Boolean]$autoDVdir.WSSecurityAuthentication
         }
     }
 

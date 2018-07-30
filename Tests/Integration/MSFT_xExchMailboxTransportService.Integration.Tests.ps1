@@ -58,22 +58,22 @@ if ($exchangeInstalled)
         $expectedGetResults = @{
              ConnectivityLogEnabled                  = $true
              ConnectivityLogMaxAge                   = '30.00:00:00'
-             ConnectivityLogMaxDirectorySize         = '1000MB'
-             ConnectivityLogMaxFileSize              = '10MB'
+             ConnectivityLogMaxDirectorySize         = '1000 MB (1,048,576,000 bytes)'
+             ConnectivityLogMaxFileSize              = '10 MB (10,485,760 bytes)'
              ConnectivityLogPath                     = 'C:\Program Files\Microsoft\Exchange Server\V15\TransportRoles\Logs\Hub\Connectivity'
              ContentConversionTracingEnabled         = $false
              MaxConcurrentMailboxDeliveries          = '20'
              MaxConcurrentMailboxSubmissions         = '20'
              PipelineTracingEnabled                  = $false
              PipelineTracingPath                     = 'C:\Program Files\Microsoft\Exchange Server\V15\TransportRoles\Logs\Hub\PipelineTracing'
-             PipelineTracingSenderAddress            = $null
+             PipelineTracingSenderAddress            = ''
              ReceiveProtocolLogMaxAge                = '30.00:00:00'
-             ReceiveProtocolLogMaxDirectorySize      = '250MB'
-             ReceiveProtocolLogMaxFileSize           = '10 MB'
+             ReceiveProtocolLogMaxDirectorySize      = '250 MB (262,144,000 bytes)'
+             ReceiveProtocolLogMaxFileSize           = '10 MB (10,485,760 bytes)'
              ReceiveProtocolLogPath                  = 'C:\Program Files\Microsoft\Exchange Server\V15\TransportRoles\Logs\Hub\ProtocolLog\SmtpReceive'
              SendProtocolLogMaxAge                   = '30.00:00:00'
-             SendProtocolLogMaxDirectorySize         = '250 MB'
-             SendProtocolLogMaxFileSize              = '10MB'
+             SendProtocolLogMaxDirectorySize         = '250 MB (262,144,000 bytes)'
+             SendProtocolLogMaxFileSize              = '10 MB (10,485,760 bytes)'
              SendProtocolLogPath                     = 'C:\Program Files\Microsoft\Exchange Server\V15\TransportRoles\Logs\Hub\ProtocolLog\SmtpSend'
         }
 
@@ -86,7 +86,7 @@ if ($exchangeInstalled)
      
          #modify configuration
          $testParams.PipelineTracingSenderAddress = ''     
-         $expectedGetResults.PipelineTracingSenderAddress = $null     
+         $expectedGetResults.PipelineTracingSenderAddress = ''   
          Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Revert Mailbox Transport Service configuration' -ExpectedGetResults $expectedGetResults
      }
 }

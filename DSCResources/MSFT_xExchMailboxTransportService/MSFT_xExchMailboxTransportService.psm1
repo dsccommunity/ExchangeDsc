@@ -120,26 +120,26 @@ function Get-TargetResource
     if ($null -ne $mbxTransportService)
     {
         $returnValue = @{
-            Identity                                        = $Identity
-            ConnectivityLogEnabled                          = $mbxTransportService.ConnectivityLogEnabled
-            ConnectivityLogMaxAge                           = $mbxTransportService.ConnectivityLogMaxAge
-            ConnectivityLogMaxDirectorySize                 = $mbxTransportService.ConnectivityLogMaxDirectorySize
-            ConnectivityLogMaxFileSize                      = $mbxTransportService.ConnectivityLogMaxFileSize
-            ConnectivityLogPath                             = $mbxTransportService.ConnectivityLogPath
-            ContentConversionTracingEnabled                 = $mbxTransportService.ContentConversionTracingEnabled
-            MaxConcurrentMailboxDeliveries                  = $mbxTransportService.MaxConcurrentMailboxDeliveries
-            MaxConcurrentMailboxSubmissions                 = $mbxTransportService.MaxConcurrentMailboxSubmissions
-            PipelineTracingEnabled                          = $mbxTransportService.PipelineTracingEnabled
-            PipelineTracingPath                             = $mbxTransportService.PipelineTracingPath
-            PipelineTracingSenderAddress                    = $mbxTransportService.PipelineTracingSenderAddress
-            ReceiveProtocolLogMaxAge                        = $mbxTransportService.ReceiveProtocolLogMaxAge
-            ReceiveProtocolLogMaxDirectorySize              = $mbxTransportService.ReceiveProtocolLogMaxDirectorySize
-            ReceiveProtocolLogMaxFileSize                   = $mbxTransportService.ReceiveProtocolLogMaxFileSize
-            ReceiveProtocolLogPath                          = $mbxTransportService.ReceiveProtocolLogPath
-            SendProtocolLogMaxAge                           = $mbxTransportService.SendProtocolLogMaxAge
-            SendProtocolLogMaxDirectorySize                 = $mbxTransportService.SendProtocolLogMaxDirectorySize
-            SendProtocolLogMaxFileSize                      = $mbxTransportService.SendProtocolLogMaxFileSize
-            SendProtocolLogPath                             = $mbxTransportService.SendProtocolLogPath
+            Identity                           = [System.String]$Identity
+            ConnectivityLogEnabled             = [System.Boolean]$mbxTransportService.ConnectivityLogEnabled
+            ConnectivityLogMaxAge              = [System.String]$mbxTransportService.ConnectivityLogMaxAge
+            ConnectivityLogMaxDirectorySize    = [System.String]$mbxTransportService.ConnectivityLogMaxDirectorySize
+            ConnectivityLogMaxFileSize         = [System.String]$mbxTransportService.ConnectivityLogMaxFileSize
+            ConnectivityLogPath                = [System.String]$mbxTransportService.ConnectivityLogPath
+            ContentConversionTracingEnabled    = [System.Boolean]$mbxTransportService.ContentConversionTracingEnabled
+            MaxConcurrentMailboxDeliveries     = [System.Int32]$mbxTransportService.MaxConcurrentMailboxDeliveries
+            MaxConcurrentMailboxSubmissions    = [System.Int32]$mbxTransportService.MaxConcurrentMailboxSubmissions
+            PipelineTracingEnabled             = [System.Boolean]$mbxTransportService.PipelineTracingEnabled
+            PipelineTracingPath                = [System.String]$mbxTransportService.PipelineTracingPath
+            PipelineTracingSenderAddress       = [System.String]$mbxTransportService.PipelineTracingSenderAddress
+            ReceiveProtocolLogMaxAge           = [System.String]$mbxTransportService.ReceiveProtocolLogMaxAge
+            ReceiveProtocolLogMaxDirectorySize = [System.String]$mbxTransportService.ReceiveProtocolLogMaxDirectorySize
+            ReceiveProtocolLogMaxFileSize      = [System.String]$mbxTransportService.ReceiveProtocolLogMaxFileSize
+            ReceiveProtocolLogPath             = [System.String]$mbxTransportService.ReceiveProtocolLogPath
+            SendProtocolLogMaxAge              = [System.String]$mbxTransportService.SendProtocolLogMaxAge
+            SendProtocolLogMaxDirectorySize    = [System.String]$mbxTransportService.SendProtocolLogMaxDirectorySize
+            SendProtocolLogMaxFileSize         = [System.String]$mbxTransportService.SendProtocolLogMaxFileSize
+            SendProtocolLogPath                = [System.String]$mbxTransportService.SendProtocolLogPath
         }
     }
 

@@ -109,13 +109,13 @@ if ($exchangeInstalled)
             BasicAuthentication = $false
             ChangePasswordEnabled = $false
             DigestAuthentication = $true
-            ExternalUrl = $null
+            ExternalUrl = ''
             FormsAuthentication = $false
             InstantMessagingEnabled = $true
             InstantMessagingCertificateThumbprint = $Global:IMCertThumbprint
             InstantMessagingServerName = $env:COMPUTERNAME
             InstantMessagingType = 'Ocs'
-            InternalUrl = $null  
+            InternalUrl = ''
             LogonPagePublicPrivateSelectionEnabled = $false
             LogonPageLightSelectionEnabled = $false   
             WindowsAuthentication = $true

@@ -46,10 +46,10 @@ function Get-TargetResource
     if ($null -ne $imap)
     {
         $returnValue = @{
-            Server = $Identity
-            LoginType = $imap.LoginType
-            ExternalConnectionSettings = $imap.ExternalConnectionSettings
-            X509CertificateName = $imap.X509CertificateName
+            Server                     = [System.String]$Server
+            ExternalConnectionSettings = [System.String[]]$imap.ExternalConnectionSettings
+            LoginType                  = [System.String]$imap.LoginType
+            X509CertificateName        = [System.String]$imap.X509CertificateName
         }
     }
 

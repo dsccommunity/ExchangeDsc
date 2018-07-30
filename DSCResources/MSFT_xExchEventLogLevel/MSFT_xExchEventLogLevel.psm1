@@ -30,8 +30,8 @@ function Get-TargetResource
     if ($null -ne $eventLogLevel)
     {
         $returnValue = @{
-            Identity = $Identity
-            Level = $eventLogLevel.EventLevel
+            Identity = [System.String]$Identity
+            Level    = [System.String]$eventLogLevel.EventLevel
         }
     }
 

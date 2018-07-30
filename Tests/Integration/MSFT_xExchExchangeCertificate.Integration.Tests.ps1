@@ -24,31 +24,6 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 
 #endregion HEADER
 
-function Test-ServicesInCertificate
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [System.Collections.Hashtable]
-        $TestParams, 
-        
-        [Parameter()]
-        [System.String]
-        $ContextLabel
-    )
-
-    Context $ContextLabel {
-        [System.Collections.Hashtable]$getResult = Get-TargetResource @TestParams
-
-        It 'Certificate Services Check' {
-            CompareCertServices -ServicesActual $getResult.Services `
-                                -ServicesDesired $TestParams.Services `
-                                -AllowExtraServices $TestParams.AllowExtraServices | Should Be $true
-        }
-    }
-}
-
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
@@ -80,14 +55,12 @@ if ($exchangeInstalled)
 
         $expectedGetResults = @{
             Thumbprint = $testCertThumbprint1
+            Services = 'IIS','POP','IMAP','SMTP'
         }
 
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Install and Enable Test Certificate 1' `
                                          -ExpectedGetResults $expectedGetResults
-        
-        Test-ServicesInCertificate -TestParams $testParams `
-                                   -ContextLabel 'Verify Services on Test Certificate 1'
 
         #Test installing and enabling test cert2
         $testParams.Thumbprint = $testCertThumbprint2
@@ -97,9 +70,6 @@ if ($exchangeInstalled)
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Install and Enable Test Certificate 2' `
                                          -ExpectedGetResults $expectedGetResults
-   
-        Test-ServicesInCertificate -TestParams $testParams `
-                                   -ContextLabel 'Verify Services on Test Certificate 2'
 
         #Test removing test cert 1
         $testParams.Thumbprint = $testCertThumbprint1

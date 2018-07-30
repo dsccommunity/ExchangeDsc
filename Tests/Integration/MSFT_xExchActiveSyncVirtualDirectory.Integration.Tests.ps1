@@ -155,8 +155,8 @@ if ($exchangeInstalled)
 
         $testParams.ExternalUrl = ''
         $testParams.InternalUrl = ''
-        $expectedGetResults.ExternalUrl = $null
-        $expectedGetResults.InternalUrl = $null
+        $expectedGetResults.ExternalUrl = ''
+        $expectedGetResults.InternalUrl = ''
 
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Try with empty URLs' `
@@ -262,10 +262,10 @@ if ($exchangeInstalled)
             ClientCertAuth = 'Ignore'
             CompressionEnabled = $false
             ExtendedProtectionTokenChecking = 'None'
-            ExtendedProtectionFlags = $null
-            ExtendedProtectionSPNList = $null
-            ExternalAuthenticationMethods = $null
-            InternalAuthenticationMethods = $null
+            ExtendedProtectionFlags = [System.String[]]@()
+            ExtendedProtectionSPNList = [System.String[]]@()
+            ExternalAuthenticationMethods = [System.String[]]@()
+            InternalAuthenticationMethods = [System.String[]]@()
             MobileClientCertificateAuthorityURL = ''
             MobileClientCertificateProvisioningEnabled = $false
             MobileClientCertTemplateName = ''

@@ -21,11 +21,11 @@ function Get-TargetResource
 
         [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightAllowEntries,
+        $ExtendedRightAllowEntries = @(),
 
         [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightDenyEntries,
+        $ExtendedRightDenyEntries = @(),
 
         [Parameter()]
         [System.Boolean]
@@ -242,56 +242,56 @@ function Get-TargetResource
     if ($null -ne $connector)
     {
         $returnValue = @{
-            Identity = $Identity
-            AdvertiseClientSettings = $connector.AdvertiseClientSettings
-            AuthMechanism = $connector.AuthMechanism
-            Banner = $connector.Banner
-            BareLinefeedRejectionEnabled = $connector.BareLinefeedRejectionEnabled
-            BinaryMimeEnabled = $connector.BinaryMimeEnabled
-            Bindings = $connector.Bindings
-            ChunkingEnabled = $connector.ChunkingEnabled
-            Comment = $connector.Comment
-            ConnectionInactivityTimeout = $connector.ConnectionInactivityTimeout
-            ConnectionTimeout = $connector.ConnectionTimeout
-            DefaultDomain = $connector.DefaultDomain
-            DeliveryStatusNotificationEnabled = $connector.DeliveryStatusNotificationEnabled
-            DomainSecureEnabled = $connector.DomainSecureEnabled
-            EightBitMimeEnabled = $connector.EightBitMimeEnabled
-            EnableAuthGSSAPI = $connector.EnableAuthGSSAPI
-            Enabled = $connector.Enabled
-            EnhancedStatusCodesEnabled = $connector.EnhancedStatusCodesEnabled
-            ExtendedProtectionPolicy = $connector.ExtendedProtectionPolicy
-            ExtendedRightAllowEntries = $ExtendedRightAllowEntries | ForEach-Object {"$($_.key)=$($_.Value)"}
-            ExtendedRightDenyEntries = $ExtendedRightDenyEntries | ForEach-Object {"$($_.key)=$($_.Value)"}
-            Fqdn = $connector.Fqdn
-            LongAddressesEnabled = $connector.LongAddressesEnabled
-            MaxAcknowledgementDelay = $connector.MaxAcknowledgementDelay
-            MaxHeaderSize = $connector.MaxHeaderSize
-            MaxHopCount = $connector.MaxHopCount
-            MaxInboundConnection = $connector.MaxInboundConnection
-            MaxInboundConnectionPercentagePerSource = $connector.MaxInboundConnectionPercentagePerSource
-            MaxInboundConnectionPerSource = $connector.MaxInboundConnectionPerSource
-            MaxLocalHopCount = $connector.MaxLocalHopCount
-            MaxLogonFailures = $connector.MaxLogonFailures
-            MaxMessageSize = $connector.MaxMessageSize
-            MaxProtocolErrors = $connector.MaxProtocolErrors
-            MaxRecipientsPerMessage = $connector.MaxRecipientsPerMessage
-            MessageRateLimit = $connector.MessageRateLimit
-            MessageRateSource = $connector.MessageRateSource
-            OrarEnabled = $connector.OrarEnabled
-            PermissionGroups = $connector.PermissionGroups
-            PipeliningEnabled = $connector.PipeliningEnabled
-            ProtocolLoggingLevel = $connector.ProtocolLoggingLevel
-            RemoteIPRanges = $connector.RemoteIPRanges
-            RequireEHLODomain = $connector.RequireEHLODomain
-            RequireTLS = $connector.RequireTLS
-            ServiceDiscoveryFqdn = $connector.ServiceDiscoveryFqdn
-            SizeEnabled = $connector.SizeEnabled
-            SuppressXAnonymousTls = $connector.SuppressXAnonymousTls
-            TarpitInterval = $connector.TarpitInterval
-            TlsCertificateName = $connector.TlsCertificateName
-            TlsDomainCapabilities = $connector.TlsDomainCapabilities
-            TransportRole = $connector.TransportRole
+            Identity                                = [System.String]$Identity
+            AdvertiseClientSettings                 = [System.Boolean]$connector.AdvertiseClientSettings
+            AuthMechanism                           = [System.String[]]$connector.AuthMechanism.ToString().Split(',').Trim()
+            Banner                                  = [System.String]$connector.Banner
+            BareLinefeedRejectionEnabled            = [System.Boolean]$connector.BareLinefeedRejectionEnabled
+            BinaryMimeEnabled                       = [System.Boolean]$connector.BinaryMimeEnabled
+            Bindings                                = [System.String[]]$connector.Bindings
+            ChunkingEnabled                         = [System.Boolean]$connector.ChunkingEnabled
+            Comment                                 = [System.String]$connector.Comment
+            ConnectionInactivityTimeout             = [System.String]$connector.ConnectionInactivityTimeout
+            ConnectionTimeout                       = [System.String]$connector.ConnectionTimeout
+            DefaultDomain                           = [System.String]$connector.DefaultDomain
+            DeliveryStatusNotificationEnabled       = [System.Boolean]$connector.DeliveryStatusNotificationEnabled
+            DomainSecureEnabled                     = [System.Boolean]$connector.DomainSecureEnabled
+            EightBitMimeEnabled                     = [System.Boolean]$connector.EightBitMimeEnabled
+            EnableAuthGSSAPI                        = [System.Boolean]$connector.EnableAuthGSSAPI
+            Enabled                                 = [System.Boolean]$connector.Enabled
+            EnhancedStatusCodesEnabled              = [System.Boolean]$connector.EnhancedStatusCodesEnabled
+            ExtendedProtectionPolicy                = [System.String]$connector.ExtendedProtectionPolicy
+            ExtendedRightAllowEntries               = [Microsoft.Management.Infrastructure.CimInstance[]]$ExtendedRightAllowEntries
+            ExtendedRightDenyEntries                = [Microsoft.Management.Infrastructure.CimInstance[]]$ExtendedRightDenyEntries
+            Fqdn                                    = [System.String]$connector.Fqdn
+            LongAddressesEnabled                    = [System.Boolean]$connector.LongAddressesEnabled
+            MaxAcknowledgementDelay                 = [System.String]$connector.MaxAcknowledgementDelay
+            MaxHeaderSize                           = [System.String]$connector.MaxHeaderSize
+            MaxHopCount                             = [System.Int32]$connector.MaxHopCount
+            MaxInboundConnection                    = [System.String]$connector.MaxInboundConnection
+            MaxInboundConnectionPercentagePerSource = [System.Int32]$connector.MaxInboundConnectionPercentagePerSource
+            MaxInboundConnectionPerSource           = [System.String]$connector.MaxInboundConnectionPerSource
+            MaxLocalHopCount                        = [System.Int32]$connector.MaxLocalHopCount
+            MaxLogonFailures                        = [System.Int32]$connector.MaxLogonFailures
+            MaxMessageSize                          = [System.String]$connector.MaxMessageSize
+            MaxProtocolErrors                       = [System.String]$connector.MaxProtocolErrors
+            MaxRecipientsPerMessage                 = [System.Int32]$connector.MaxRecipientsPerMessage
+            MessageRateLimit                        = [System.String]$connector.MessageRateLimit
+            MessageRateSource                       = [System.String]$connector.MessageRateSource
+            OrarEnabled                             = [System.Boolean]$connector.OrarEnabled
+            PermissionGroups                        = [System.String[]]$connector.PermissionGroups.ToString().Split(',').Trim()
+            PipeliningEnabled                       = [System.Boolean]$connector.PipeliningEnabled
+            ProtocolLoggingLevel                    = [System.String]$connector.ProtocolLoggingLevel
+            RemoteIPRanges                          = [System.String[]]$connector.RemoteIPRanges
+            RequireEHLODomain                       = [System.Boolean]$connector.RequireEHLODomain
+            RequireTLS                              = [System.Boolean]$connector.RequireTLS
+            ServiceDiscoveryFqdn                    = [System.String]$connector.ServiceDiscoveryFqdn
+            SizeEnabled                             = [System.String]$connector.SizeEnabled
+            SuppressXAnonymousTls                   = [System.Boolean]$connector.SuppressXAnonymousTls
+            TarpitInterval                          = [System.String]$connector.TarpitInterval
+            TlsCertificateName                      = [System.String]$connector.TlsCertificateName
+            TlsDomainCapabilities                   = [System.String[]]$connector.TlsDomainCapabilities
+            TransportRole                           = [System.String]$connector.TransportRole
         }    
     }
 
@@ -320,11 +320,11 @@ function Set-TargetResource
 
         [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightAllowEntries,
+        $ExtendedRightAllowEntries = @(),
 
         [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightDenyEntries,
+        $ExtendedRightDenyEntries = @(),
 
         [Parameter()]
         [System.Boolean]
@@ -648,11 +648,11 @@ function Test-TargetResource
 
         [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightAllowEntries,
+        $ExtendedRightAllowEntries = @(),
 
         [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightDenyEntries,
+        $ExtendedRightDenyEntries = @(),
 
         [Parameter()]
         [System.Boolean]

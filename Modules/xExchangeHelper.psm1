@@ -1027,7 +1027,7 @@ function ConvertTo-Array
     }
     End
     {
-        return $output 
+        return ,$output 
     }
 }
 

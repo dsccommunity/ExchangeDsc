@@ -45,10 +45,10 @@ function Get-TargetResource
     if ($null -ne $vdir)
     {
         $returnValue = @{
-            Identity = $Identity
-            IISAuthenticationMethods = $vdir.IISAuthenticationMethods
-            ExternalUrl = $vdir.ExternalUrl.AbsoluteUri
-            InternalUrl = $vdir.InternalUrl.AbsoluteUri
+            Identity                 = [System.String]$Identity
+            IISAuthenticationMethods = [System.String[]]$vdir.IISAuthenticationMethods
+            ExternalUrl              = [System.String]$vdir.ExternalUrl.AbsoluteUri
+            InternalUrl              = [System.String]$vdir.InternalUrl.AbsoluteUri
         }
     }
 

@@ -66,7 +66,7 @@ if ($exchangeInstalled)
             Identity = $env:COMPUTERNAME
             AutoDatabaseMountDial = 'BestAvailability'
             CalendarRepairIntervalEndWindow = '15'
-            CalendarRepairLogDirectorySizeLimit = '1GB'
+            CalendarRepairLogDirectorySizeLimit = '1 GB (1,073,741,824 bytes)'
             CalendarRepairLogEnabled = $false
             CalendarRepairLogFileAgeLimit = '30.00:00:00'
             CalendarRepairLogPath = 'C:\Program Files\Microsoft\Exchange Server\V15\Logging\Calendar Repair DSC'
@@ -79,9 +79,9 @@ if ($exchangeInstalled)
             ForceGroupMetricsGeneration = $true
             IsExcludedFromProvisioning = $true
             JournalingLogForManagedFoldersEnabled = $true
-            LogDirectorySizeLimitForManagedFolders = '10GB'
+            LogDirectorySizeLimitForManagedFolders = '10 GB (10,737,418,240 bytes)'
             LogFileAgeLimitForManagedFolders = '7.00:00:00'
-            LogFileSizeLimitForManagedFolders = '15MB'
+            LogFileSizeLimitForManagedFolders = '15 MB (15,728,640 bytes)'
             LogPathForManagedFolders = 'C:\Program Files\Microsoft\Exchange Server\V15\Logging\Managed Folder Assistant DSC'
             MAPIEncryptionRequired = $true
             MaximumActiveDatabases = '36'
@@ -199,7 +199,7 @@ if ($exchangeInstalled)
         $expectedGetResults = @{
             Identity = $env:COMPUTERNAME
             AutoDatabaseMountDial = 'GoodAvailability'
-            CalendarRepairLogDirectorySizeLimit = '500MB'
+            CalendarRepairLogDirectorySizeLimit = '500 MB (524,288,000 bytes)'
             CalendarRepairLogEnabled = $true
             CalendarRepairLogFileAgeLimit = '10.00:00:00'
             CalendarRepairLogPath = 'C:\Program Files\Microsoft\Exchange Server\V15\Logging\Calendar Repair'
@@ -214,11 +214,11 @@ if ($exchangeInstalled)
             JournalingLogForManagedFoldersEnabled = $false
             LogDirectorySizeLimitForManagedFolders = 'Unlimited'
             LogFileAgeLimitForManagedFolders = '00:00:00'
-            LogFileSizeLimitForManagedFolders = '10MB'
+            LogFileSizeLimitForManagedFolders = '10 MB (10,485,760 bytes)'
             LogPathForManagedFolders = 'C:\Program Files\Microsoft\Exchange Server\V15\Logging\Managed Folder Assistant'
             MAPIEncryptionRequired = $false
-            MaximumActiveDatabases = $null
-            MaximumPreferredActiveDatabases = $null
+            MaximumActiveDatabases = ''
+            MaximumPreferredActiveDatabases = ''
             RetentionLogForManagedFoldersEnabled = $false
             SubjectLogForManagedFoldersEnabled = $false
         }

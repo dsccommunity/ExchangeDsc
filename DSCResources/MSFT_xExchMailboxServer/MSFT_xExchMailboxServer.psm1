@@ -220,33 +220,34 @@ function Get-TargetResource
     if ($null -ne $server)
     {
         $returnValue = @{
-            Identity = $Identity
-            AutoDatabaseMountDial = $server.AutoDatabaseMountDial
-            CalendarRepairIntervalEndWindow = $server.CalendarRepairIntervalEndWindow
-            CalendarRepairLogDirectorySizeLimit = $server.CalendarRepairLogDirectorySizeLimit
-            CalendarRepairLogEnabled = $server.CalendarRepairLogEnabled
-            CalendarRepairLogFileAgeLimit = $server.CalendarRepairLogFileAgeLimit
-            CalendarRepairLogPath = $server.CalendarRepairLogPath
-            CalendarRepairLogSubjectLoggingEnabled = $server.CalendarRepairLogSubjectLoggingEnabled
-            CalendarRepairMissingItemFixDisabled = $server.CalendarRepairMissingItemFixDisabled
-            CalendarRepairMode = $server.CalendarRepairMode
-            FolderLogForManagedFoldersEnabled = $server.FolderLogForManagedFoldersEnabled
-            ForceGroupMetricsGeneration = $server.ForceGroupMetricsGeneration
-            IsExcludedFromProvisioning = $server.IsExcludedFromProvisioning
-            JournalingLogForManagedFoldersEnabled = $server.JournalingLogForManagedFoldersEnabled
-            Locale = $Server.Locale
-            LogDirectorySizeLimitForManagedFolders = $server.LogDirectorySizeLimitForManagedFolders
-            LogFileAgeLimitForManagedFolders = $server.LogFileAgeLimitForManagedFolders
-            LogFileSizeLimitForManagedFolders = $server.LogFileSizeLimitForManagedFolders
-            LogPathForManagedFolders = $server.LogPathForManagedFolders
-            DatabaseCopyActivationDisabledAndMoveNow = $server.DatabaseCopyActivationDisabledAndMoveNow
-            DatabaseCopyAutoActivationPolicy = $server.DatabaseCopyAutoActivationPolicy
-            MAPIEncryptionRequired = $server.MAPIEncryptionRequired
-            MaximumActiveDatabases = $server.MaximumActiveDatabases
-            MaximumPreferredActiveDatabases = $server.MaximumPreferredActiveDatabases
-            RetentionLogForManagedFoldersEnabled = $server.RetentionLogForManagedFoldersEnabled
-            SharingPolicySchedule = $server.SharingPolicySchedule
-            SubjectLogForManagedFoldersEnabled = $server.SubjectLogForManagedFoldersEnabled
+            Identity                                 = [System.String]$Identity
+            AutoDatabaseMountDial                    = [System.String]$server.AutoDatabaseMountDial
+            CalendarRepairIntervalEndWindow          = [System.Int32]$server.CalendarRepairIntervalEndWindow
+            CalendarRepairLogDirectorySizeLimit      = [System.String]$server.CalendarRepairLogDirectorySizeLimit
+            CalendarRepairLogEnabled                 = [System.Boolean]$server.CalendarRepairLogEnabled
+            CalendarRepairLogFileAgeLimit            = [System.String]$server.CalendarRepairLogFileAgeLimit
+            CalendarRepairLogPath                    = [System.String]$server.CalendarRepairLogPath
+            CalendarRepairLogSubjectLoggingEnabled   = [System.Boolean]$server.CalendarRepairLogSubjectLoggingEnabled
+            CalendarRepairMissingItemFixDisabled     = [System.Boolean]$server.CalendarRepairMissingItemFixDisabled
+            CalendarRepairMode                       = [System.String]$server.CalendarRepairMode
+            DatabaseCopyActivationDisabledAndMoveNow = [System.Boolean]$server.DatabaseCopyActivationDisabledAndMoveNow
+            DatabaseCopyAutoActivationPolicy         = [System.String]$server.DatabaseCopyAutoActivationPolicy
+            FolderLogForManagedFoldersEnabled        = [System.Boolean]$server.FolderLogForManagedFoldersEnabled
+            ForceGroupMetricsGeneration              = [System.Boolean]$server.ForceGroupMetricsGeneration
+            IsExcludedFromProvisioning               = [System.Boolean]$server.IsExcludedFromProvisioning
+            JournalingLogForManagedFoldersEnabled    = [System.Boolean]$server.JournalingLogForManagedFoldersEnabled
+            Locale                                   = [System.String[]]$Server.Locale
+            LogDirectorySizeLimitForManagedFolders   = [System.String]$server.LogDirectorySizeLimitForManagedFolders
+            LogFileAgeLimitForManagedFolders         = [System.String]$server.LogFileAgeLimitForManagedFolders
+            LogFileSizeLimitForManagedFolders        = [System.String]$server.LogFileSizeLimitForManagedFolders
+            LogPathForManagedFolders                 = [System.String]$server.LogPathForManagedFolders
+            MAPIEncryptionRequired                   = [System.Boolean]$server.MAPIEncryptionRequired
+            MaximumActiveDatabases                   = [System.String]$server.MaximumActiveDatabases
+            MaximumPreferredActiveDatabases          = [System.String]$server.MaximumPreferredActiveDatabases
+            RetentionLogForManagedFoldersEnabled     = [System.Boolean]$server.RetentionLogForManagedFoldersEnabled
+            SharingPolicySchedule                    = [System.String[]]$server.SharingPolicySchedule
+            SubjectLogForManagedFoldersEnabled       = [System.Boolean]$server.SubjectLogForManagedFoldersEnabled
+
         }
 
         $serverVersion = GetExchangeVersion

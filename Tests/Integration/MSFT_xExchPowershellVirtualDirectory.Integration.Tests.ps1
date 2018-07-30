@@ -61,8 +61,8 @@ if ($exchangeInstalled)
 
         $testParams.ExternalUrl = ''
         $testParams.InternalUrl = ''
-        $expectedGetResults.ExternalUrl = $null
-        $expectedGetResults.InternalUrl = $null
+        $expectedGetResults.ExternalUrl = ''
+        $expectedGetResults.InternalUrl = ''
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Try with empty URLs' -ExpectedGetResults $expectedGetResults
     }

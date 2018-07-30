@@ -52,8 +52,8 @@ function Get-TargetResource
     if ($null -ne $cert)
     {
         $returnValue = @{
-            Thumbprint = $Thumbprint
-            Services = $cert.Services.ToString()
+            Thumbprint = [System.String]$Thumbprint
+            Services   = [System.String[]]$cert.Services.ToString().Split(',').Trim()
         }
     }
 
