@@ -64,7 +64,7 @@ function Test-ServerIsOutOfMaintenanceMode
         {
             It "Component $($expectedActiveComponent) should be Active" {
                 $getResult.ActiveComponentsList.Contains($expectedActiveComponent) | Should Be $true
-            }                
+            }
         }
 
         $status = $null
@@ -90,28 +90,32 @@ function EnsureOutOfMaintenanceMode
 
     #Put server in maintenance mode
     $testParams = @{
-        Enabled = $false
-        Credential = $Global:ShellCredentials
+        Enabled                        = $false
+        Credential                     = $Global:ShellCredentials
         AdditionalComponentsToActivate = 'AutoDiscoverProxy',`
-                                            'ActiveSyncProxy',`
-                                            'EcpProxy',`
-                                            'EwsProxy',`
-                                            'ImapProxy',`
-                                            'OabProxy',`
-                                            'OwaProxy',`
-                                            'PopProxy',`
-                                            'PushNotificationsProxy',`
-                                            'RpsProxy',`
-                                            'RwsProxy',`
-                                            'RpcProxy',`
-                                            'UMCallRouter',`
-                                            'XropProxy',`
-                                            'HttpProxyAvailabilityGroup',`
-                                            'MapiProxy',`
-                                            'EdgeTransport',`
-                                            'HighAvailability',`
-                                            'SharedCache'
-        MovePreferredDatabasesBack = $true
+                                         'ActiveSyncProxy',`
+                                         'EcpProxy',`
+                                         'EwsProxy',`
+                                         'ImapProxy',`
+                                         'OabProxy',`
+                                         'OwaProxy',`
+                                         'PopProxy',`
+                                         'PushNotificationsProxy',`
+                                         'RpsProxy',`
+                                         'RwsProxy',`
+                                         'RpcProxy',`
+                                         'UMCallRouter',`
+                                         'XropProxy',`
+                                         'HttpProxyAvailabilityGroup',`
+                                         'MapiProxy',`
+                                         'EdgeTransport',`
+                                         'HighAvailability',`
+                                         'SharedCache'
+        MountDialOverride              = 'BestEffort'
+        MovePreferredDatabasesBack     = $true
+        SkipClientExperienceChecks     = $true
+        SkipLagChecks                  = $true
+        SkipMoveSuppressionChecks      = $true
     }
 
     Set-TargetResource @testParams -Verbose
@@ -123,11 +127,11 @@ function EnsureOutOfMaintenanceMode
     }
     elseif ($WaitBetweenTests -eq $true)
     {
-        Wait-ExchDscBetweenTests -Verbose
+        Wait-Verbose -Verbose
     }
 }
 
-function Wait-ExchDscBetweenTests
+function Wait-Verbose
 {
     [CmdletBinding()]
     param
@@ -148,26 +152,26 @@ if ($exchangeInstalled)
     {
         [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
     }
-   
+
     #Make sure server is a DAG member
-    if ($null -eq $Global:IsDagMember)
+    if ($null -eq $isDagMember)
     {
         GetRemoteExchangeSession -Credential $Global:ShellCredentials `
                                  -CommandsToLoad 'Get-MailboxServer','Get-MailboxDatabaseCopyStatus','Get-MailboxDatabase'
 
         $mbxServer = Get-MailboxServer $env:COMPUTERNAME
 
-        [System.Boolean]$Global:IsDagMember = !([System.String]::IsNullOrEmpty($mbxServer.DatabaseAvailabilityGroup))
+        [System.Boolean]$isDagMember = !([System.String]::IsNullOrEmpty($mbxServer.DatabaseAvailabilityGroup))
     }
 
-    if ($Global:IsDagMember -eq $false)
+    if ($isDagMember -eq $false)
     {
         Write-Verbose -Message 'Tests in this file require that this server be a member of a Database Availability Group'
         return
     }
 
     #Make sure server only has replicated DB's
-    if ($null -eq $Global:HasNonReplicationDBs)
+    if ($null -eq $hasNonReplicationDBs)
     {
         $nonReplicatedDBs = Get-MailboxDatabase -Server $env:COMPUTERNAME -ErrorAction SilentlyContinue | Where-Object -FilterScript {
             $_.ReplicationType -like 'None'
@@ -175,20 +179,20 @@ if ($exchangeInstalled)
 
         if ($null -ne $nonReplicatedDBs)
         {
-            $Global:HasNonReplicationDBs = $true
+            $hasNonReplicationDBs = $true
         }
     }
 
-    if ($Global:HasNonReplicationDBs -eq $true)
+    if ($hasNonReplicationDBs -eq $true)
     {
         Write-Verbose -Message 'Tests in this file require that all databases on this server must have copies on other DAG members.'
         return
     }
 
     #Get Domain Controller
-    if ($null -eq $Global:DomainController)
+    if ($null -eq $dcToTestAgainst)
     {
-        [System.String]$Global:DomainController = Read-Host -Prompt 'Enter Domain Controller to use for DC tests'
+        [System.String]$dcToTestAgainst = Read-Host -Prompt 'Enter Domain Controller to use for DC tests'
     }
 
     Write-Verbose -Message 'Ensuring server is out of maintenance mode before beginning tests'
@@ -197,8 +201,8 @@ if ($exchangeInstalled)
     Describe 'Test Putting a Server in and out of Maintenance Mode' {
         #Put server in maintenance mode
         $testParams = @{
-            Enabled = $true
-            Credential = $Global:ShellCredentials
+            Enabled                        = $true
+            Credential                     = $Global:ShellCredentials
             AdditionalComponentsToActivate = 'AutoDiscoverProxy',`
                                              'ActiveSyncProxy',`
                                              'EcpProxy',`
@@ -218,28 +222,32 @@ if ($exchangeInstalled)
                                              'EdgeTransport',`
                                              'HighAvailability',`
                                              'SharedCache'
-            MovePreferredDatabasesBack = $true
+            MountDialOverride              = 'BestEffort' #Copy queue can get behind when rapidly failing over DB's for tests, so set this to BestEffort
+            MovePreferredDatabasesBack     = $true
+            SkipClientExperienceChecks     = $true #Content Index takes a while to become healthy after failing over. Override for tests.
+            SkipLagChecks                  = $true #Copy queue can get behind when rapidly failing over DB's for tests, so skip LAG checks just in case
+            SkipMoveSuppressionChecks      = $true #Exchange 2016 only allows a DB to be failed over 4 times in an hour. Override for tests.
         }
 
         $expectedGetResults = @{
-            Enabled = $true
+            Enabled              = $true
             ActiveComponentCount = 2 #Monitoring and RecoveryActionsEnabled should still be Active after this
-            ActiveDBCount = 0
-            ActiveUMCallCount = 0
-            ClusterState = 'Paused'
-            QueuedMessageCount = 0
+            ActiveDBCount        = 0
+            ActiveUMCallCount    = 0
+            ClusterState         = 'Paused'
+            QueuedMessageCount   = 0
         }
 
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Put server in maintenance mode' `
                                          -ExpectedGetResults $expectedGetResults
-        Wait-ExchDscBetweenTests -Verbose
+        Wait-Verbose -Verbose
 
         #Take server out of maintenance mode
         $testParams.Enabled = $false
 
         $expectedGetResults = @{
-            Enabled = $false            
+            Enabled      = $false
             ClusterState = 'Up'
         }
 
@@ -247,53 +255,61 @@ if ($exchangeInstalled)
                                          -ContextLabel 'Take server out of maintenance mode' `
                                          -ExpectedGetResults $expectedGetResults
         Test-ServerIsOutOfMaintenanceMode
-        Wait-ExchDscBetweenTests -Verbose
+        Wait-Verbose -Verbose
 
         #Test passing in UpgradedServerVersion that is lower than the current server version
         $testParams = @{
-            Enabled = $true
-            Credential = $Global:ShellCredentials
+            Enabled                    = $true
+            Credential                 = $Global:ShellCredentials
+            MountDialOverride          = 'BestEffort'
             MovePreferredDatabasesBack = $true
-            UpgradedServerVersion = '15.0.0.0'
+            UpgradedServerVersion      = '15.0.0.0'
+            SkipClientExperienceChecks = $true
+            SkipLagChecks              = $true
+            SkipMoveSuppressionChecks  = $true
         }
 
         $expectedGetResults = @{
-            Enabled = $false
+            Enabled      = $false
             ClusterState = 'Up'
         }
 
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Try to put server in maintenance mode using UpgradedServerVersion of an older server.' `
                                          -ExpectedGetResults $expectedGetResults
-        Wait-ExchDscBetweenTests -Verbose
+        Wait-Verbose -Verbose
 
         #Test using Domain Controller switch to put server in maintenance mode
         $testParams = @{
-            Enabled = $true
-            Credential = $Global:ShellCredentials
+            Enabled                    = $true
+            Credential                 = $Global:ShellCredentials
+            MountDialOverride          = 'BestEffort'
             MovePreferredDatabasesBack = $true
-            DomainController = $Global:DomainController
+            DomainController           = $dcToTestAgainst
+            SkipClientExperienceChecks = $true
+            SkipLagChecks              = $true
+            SkipMoveSuppressionChecks  = $true
         }
 
         $expectedGetResults = @{
-            Enabled = $true
+            Enabled              = $true
             ActiveComponentCount = 2 #Monitoring and RecoveryActionsEnabled should still be Active after this
-            ActiveDBCount = 0
-            ActiveUMCallCount = 0
-            ClusterState = 'Paused'
-            QueuedMessageCount = 0
+            ActiveDBCount        = 0
+            ActiveUMCallCount    = 0
+            ClusterState         = 'Paused'
+            QueuedMessageCount   = 0
         }
 
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Put server in maintenance mode using Domain Controller switch' `
                                          -ExpectedGetResults $expectedGetResults
-        Wait-ExchDscBetweenTests -Verbose
+        Wait-Verbose -Verbose
 
         #Test using Domain Controller switch to take server out of maintenance mode
         $testParams.Enabled = $false
 
         $expectedGetResults = @{
-            Enabled = $false
+            Enabled      = $false
             ClusterState = 'Up'
         }
 
@@ -301,34 +317,38 @@ if ($exchangeInstalled)
                                          -ContextLabel 'Take server out of maintenance mode using Domain Controller switch' `
                                          -ExpectedGetResults $expectedGetResults
         Test-ServerIsOutOfMaintenanceMode
-        Wait-ExchDscBetweenTests -Verbose
+        Wait-Verbose -Verbose
 
         #Test SetInactiveComponentsFromAnyRequesterToActive Parameter
         #First put the server in maintenance mode
         $testParams = @{
-            Enabled = $true
-            Credential = $Global:ShellCredentials
-            AdditionalComponentsToActivate = 'AutoDiscoverProxy',`
-                                             'ActiveSyncProxy',`
-                                             'EcpProxy',`
-                                             'EwsProxy',`
-                                             'ImapProxy',`
-                                             'OabProxy',`
-                                             'OwaProxy',`
-                                             'PopProxy',`
-                                             'PushNotificationsProxy',`
-                                             'RpsProxy',`
-                                             'RwsProxy',`
-                                             'RpcProxy',`
-                                             'UMCallRouter',`
-                                             'XropProxy',`
-                                             'HttpProxyAvailabilityGroup',`
-                                             'MapiProxy',`
-                                             'EdgeTransport',`
-                                             'HighAvailability',`
-                                             'SharedCache'
-            MovePreferredDatabasesBack = $true
+            Enabled                                       = $true
+            Credential                                    = $Global:ShellCredentials
+            AdditionalComponentsToActivate                = 'AutoDiscoverProxy',`
+                                                            'ActiveSyncProxy',`
+                                                            'EcpProxy',`
+                                                            'EwsProxy',`
+                                                            'ImapProxy',`
+                                                            'OabProxy',`
+                                                            'OwaProxy',`
+                                                            'PopProxy',`
+                                                            'PushNotificationsProxy',`
+                                                            'RpsProxy',`
+                                                            'RwsProxy',`
+                                                            'RpcProxy',`
+                                                            'UMCallRouter',`
+                                                            'XropProxy',`
+                                                            'HttpProxyAvailabilityGroup',`
+                                                            'MapiProxy',`
+                                                            'EdgeTransport',`
+                                                            'HighAvailability',`
+                                                            'SharedCache'
+            MountDialOverride                             = 'BestEffort'
+            MovePreferredDatabasesBack                    = $true
             SetInactiveComponentsFromAnyRequesterToActive = $false
+            SkipClientExperienceChecks                    = $true
+            SkipLagChecks                                 = $true
+            SkipMoveSuppressionChecks                     = $true
         }
 
         Set-TargetResource @testParams -Verbose
