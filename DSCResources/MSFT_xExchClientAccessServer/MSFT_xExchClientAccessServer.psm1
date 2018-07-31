@@ -70,9 +70,7 @@ function Get-TargetResource
 
         if ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials.Count -gt 0)
         {
-            $UserName = ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | Sort-Object WhenAddedUTC | Select-Object -Last 1).Credential.UserName
-            $maskedCreds = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $UserName, (ConvertTo-SecureString -String '#########' -AsPlainText -Force)
-            $returnValue.Add("AlternateServiceAccountCredential",$maskedCreds)
+            $returnValue.Add("AlternateServiceAccountCredential", [System.Management.Automation.PSCredential]$cas.AlternateServiceAccountConfiguration.EffectiveCredentials.Credential)
         }
     }
 

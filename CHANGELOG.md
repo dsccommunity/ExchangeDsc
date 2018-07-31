@@ -8,6 +8,9 @@
 - Explicitly cast member types in Get-DscConfiguration return hashtables to
   align with the types defined in the resource schemas. Fixes an issue where
   Get-DscConfiguration fails to return a value.
+- xExchClientAccessServer: Fixes issue where AlternateServiceAccountConfiguration
+  or RemoveAlternateServiceAccountCredentials parameters can't be used at the
+  same time as other optional parameters.
 
 ## 1.22.0.0
 
