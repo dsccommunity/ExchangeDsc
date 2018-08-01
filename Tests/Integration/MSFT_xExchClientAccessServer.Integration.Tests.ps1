@@ -34,10 +34,16 @@ if ($exchangeInstalled)
         $Global:ServerFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
-    #Make sure all ASA's are cleared before beginning tests
+    # Make sure all AlternateServiceAccount's are cleared before beginning tests
     Set-TargetResource -Identity $env:COMPUTERNAME -Credential $Global:ShellCredentials -RemoveAlternateServiceAccountCredentials $true | Out-Null
+    $getResults = Get-TargetResource -Identity $env:COMPUTERNAME -Credential $Global:ShellCredentials
 
-    Describe 'Test Setting Properties with xExchClientAccessServer' {        
+    Describe 'Test Setting Properties with xExchClientAccessServer' {
+        # Confirm that the AlternateServiceAccount was actually cleared before doing any tests
+        It 'AlternateServiceAccount has been cleared' {
+            ($null -ne $getResults -and $null -eq $getResults.AlternateServiceAccountCredential) | Should Be $true
+        }
+
         #Do standard URL and scope tests
         $testParams = @{
             Identity =  $env:COMPUTERNAME
@@ -94,7 +100,7 @@ if ($exchangeInstalled)
                                 -ContextLabel 'Verify AutoDiscoverSiteScope' `
                                 -ItLabel 'AutoDiscoverSiteScope should be empty'
 
-        #create ASA credentials
+        #create AlternateServiceAccount credentials
         if ($null -eq $asaCredentials)
         {
             $UserASA = 'Fabrikam\ASA'
@@ -103,11 +109,11 @@ if ($exchangeInstalled)
                                                 -ArgumentList $UserASA, $PWordASA
         }
 
-        #Now set ASA account
+        #Now set AlternateServiceAccount account
         $testParams.Add('AlternateServiceAccountCredential',$asaCredentials)
         $expectedGetResults.Add('AlternateServiceAccountCredential',$asaCredentials)
 
-        #Alter Autodiscover settings and make sure they're picked up along with ASA change
+        #Alter Autodiscover settings and make sure they're picked up along with AlternateServiceAccount change
         $testParams.AutoDiscoverSiteScope = 'Site3'
         $expectedGetResults.AutoDiscoverSiteScope = 'Site3'
 
@@ -115,8 +121,8 @@ if ($exchangeInstalled)
                                          -ContextLabel 'Set AlternateServiceAccountCredential' `
                                          -ExpectedGetResults $expectedGetResults
 
-        #Test for invalid ASA account format
-        Context 'Test looking for invalid format of ASA account' {
+        #Test for invalid AlternateServiceAccount account format
+        Context 'Test looking for invalid format of AlternateServiceAccount account' {
             $caughtException = $false
             $UserASA = 'Fabrikam/ASA'
             $PWordASA = ConvertTo-SecureString -String 'Pa$$w0rd!' -AsPlainText -Force
@@ -135,22 +141,22 @@ if ($exchangeInstalled)
                 $caughtException = $true
             }
 
-            It 'Should hit exception for invalid ASA account format' {
+            It 'Should hit exception for invalid AlternateServiceAccount account format' {
                 $caughtException | Should Be $true
             }
 
-            It 'Test results should be false after adding invalid ASA account' {
+            It 'Test results should be false after adding invalid AlternateServiceAccount account' {
                 $testResults = Test-TargetResource @testParams
                 $testResults | Should Be $false
             }
         }
 
-        #Now clear ASA account credentials
+        #Now clear AlternateServiceAccount account credentials
         $testParams.Remove('AlternateServiceAccountCredential')
         $testParams.Add('RemoveAlternateServiceAccountCredentials',$true)
         $expectedGetResults.Remove('AlternateServiceAccountCredential')
 
-        #Alter Autodiscover settings and make sure they're picked up along with ASA change
+        #Alter Autodiscover settings and make sure they're picked up along with AlternateServiceAccount change
         $testParams.AutoDiscoverSiteScope = 'Site4'
         $expectedGetResults.AutoDiscoverSiteScope = 'Site4'
 

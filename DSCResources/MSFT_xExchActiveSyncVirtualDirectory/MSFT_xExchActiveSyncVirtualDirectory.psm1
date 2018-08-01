@@ -142,30 +142,30 @@ function Get-TargetResource
     if ($null -ne $easVdir)
     {
         $returnValue = @{
-            Identity                                   = [System.String]$Identity
-            ActiveSyncServer                           = [System.String]$easVdir.ActiveSyncServer
-            BadItemReportingEnabled                    = [System.Boolean]$easVdir.BadItemReportingEnabled
-            BasicAuthEnabled                           = [System.Boolean]$easVdir.BasicAuthEnabled
-            ClientCertAuth                             = [System.String]$easVdir.ClientCertAuth
-            CompressionEnabled                         = [System.Boolean]$easVdir.CompressionEnabled
-            ExtendedProtectionFlags                    = [System.String[]]$easVdir.ExtendedProtectionFlags
-            ExtendedProtectionSPNList                  = [System.String[]]$easVdir.ExtendedProtectionSPNList
-            ExtendedProtectionTokenChecking            = [System.String]($easVdir.ExtendedProtectionTokenChecking)
-            ExternalAuthenticationMethods              = [System.String[]]$easVdir.ExternalAuthenticationMethods
-            ExternalUrl                                = [System.String]$easVdir.ExternalUrl.AbsoluteUri
-            InstallIsapiFilter                         = [System.Boolean](Test-ISAPIFilter)
-            InternalAuthenticationMethods              = [System.String[]]$easVdir.InternalAuthenticationMethods
-            InternalUrl                                = [System.String]$easVdir.InternalUrl.AbsoluteUri
-            MobileClientCertificateAuthorityURL        = [System.String]$easVdir.MobileClientCertificateAuthorityURL
-            MobileClientCertificateProvisioningEnabled = [System.Boolean]$easVdir.MobileClientCertificateProvisioningEnabled
-            MobileClientCertTemplateName               = [System.String]$easVdir.MobileClientCertTemplateName
-            Name                                       = [System.String]$easVdir.Name
-            RemoteDocumentsActionForUnknownServers     = [System.String]$easVdir.RemoteDocumentsActionForUnknownServers
-            RemoteDocumentsAllowedServers              = [System.String[]]$easVdir.RemoteDocumentsAllowedServers
-            RemoteDocumentsBlockedServers              = [System.String[]]$easVdir.RemoteDocumentsBlockedServers
-            RemoteDocumentsInternalDomainSuffixList    = [System.String[]]$easVdir.RemoteDocumentsInternalDomainSuffixList
-            SendWatsonReport                           = [System.Boolean]$easVdir.SendWatsonReport
-            WindowsAuthEnabled                         = [System.Boolean]$easVdir.WindowsAuthEnabled
+            Identity                                   = [System.String] $Identity
+            ActiveSyncServer                           = [System.String] $easVdir.ActiveSyncServer
+            BadItemReportingEnabled                    = [System.Boolean] $easVdir.BadItemReportingEnabled
+            BasicAuthEnabled                           = [System.Boolean] $easVdir.BasicAuthEnabled
+            ClientCertAuth                             = [System.String] $easVdir.ClientCertAuth
+            CompressionEnabled                         = [System.Boolean] $easVdir.CompressionEnabled
+            ExtendedProtectionFlags                    = [System.String[]] $easVdir.ExtendedProtectionFlags
+            ExtendedProtectionSPNList                  = [System.String[]] $easVdir.ExtendedProtectionSPNList
+            ExtendedProtectionTokenChecking            = [System.String] ($easVdir.ExtendedProtectionTokenChecking)
+            ExternalAuthenticationMethods              = [System.String[]] $easVdir.ExternalAuthenticationMethods
+            ExternalUrl                                = [System.String] $easVdir.ExternalUrl.AbsoluteUri
+            InstallIsapiFilter                         = [System.Boolean] (Test-ISAPIFilter)
+            InternalAuthenticationMethods              = [System.String[]] $easVdir.InternalAuthenticationMethods
+            InternalUrl                                = [System.String] $easVdir.InternalUrl.AbsoluteUri
+            MobileClientCertificateAuthorityURL        = [System.String] $easVdir.MobileClientCertificateAuthorityURL
+            MobileClientCertificateProvisioningEnabled = [System.Boolean] $easVdir.MobileClientCertificateProvisioningEnabled
+            MobileClientCertTemplateName               = [System.String] $easVdir.MobileClientCertTemplateName
+            Name                                       = [System.String] $easVdir.Name
+            RemoteDocumentsActionForUnknownServers     = [System.String] $easVdir.RemoteDocumentsActionForUnknownServers
+            RemoteDocumentsAllowedServers              = [System.String[]] $easVdir.RemoteDocumentsAllowedServers
+            RemoteDocumentsBlockedServers              = [System.String[]] $easVdir.RemoteDocumentsBlockedServers
+            RemoteDocumentsInternalDomainSuffixList    = [System.String[]] $easVdir.RemoteDocumentsInternalDomainSuffixList
+            SendWatsonReport                           = [System.Boolean] $easVdir.SendWatsonReport
+            WindowsAuthEnabled                         = [System.Boolean] $easVdir.WindowsAuthEnabled
         }
     }
 

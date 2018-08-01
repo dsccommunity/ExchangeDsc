@@ -52,8 +52,8 @@ function Get-TargetResource
     if ($null -ne $cert)
     {
         $returnValue = @{
-            Thumbprint = [System.String]$Thumbprint
-            Services   = [System.String[]]$cert.Services.ToString().Split(',').Trim()
+            Thumbprint = [System.String] $Thumbprint
+            Services   = [System.String[]] $cert.Services.ToString().Split(',').Trim()
         }
     }
 
@@ -365,7 +365,7 @@ function CompareCertServices
     }
     else
     {
-        $result = CompareArrayContents -Array1 $actual -Array2 $ServicesDesired -IgnoreCase
+        $result = Compare-ArrayContent -Array1 $actual -Array2 $ServicesDesired -IgnoreCase
     }
 
     return $result

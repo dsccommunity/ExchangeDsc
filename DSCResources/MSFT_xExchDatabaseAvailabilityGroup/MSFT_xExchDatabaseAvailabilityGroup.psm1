@@ -125,26 +125,26 @@ function Get-TargetResource
     if ($null -ne $dag)
     {
         $returnValue = @{
-            Name                                 = [System.String]$Name
-            AlternateWitnessDirectory            = [System.String]$dag.AlternateWitnessDirectory
-            AlternateWitnessServer               = [System.String]$dag.AlternateWitnessServer
-            AutoDagAutoReseedEnabled             = [System.Boolean]$dag.AutoDagAutoReseedEnabled
-            AutoDagDatabaseCopiesPerDatabase     = [System.Int32]$dag.AutoDagDatabaseCopiesPerDatabase
-            AutoDagDatabaseCopiesPerVolume       = [System.Int32]$dag.AutoDagDatabaseCopiesPerVolume
-            AutoDagDatabasesRootFolderPath       = [System.String]$dag.AutoDagDatabasesRootFolderPath
-            AutoDagDiskReclaimerEnabled          = [System.Boolean]$dag.AutoDagDiskReclaimerEnabled
-            AutoDagTotalNumberOfDatabases        = [System.Int32]$dag.AutoDagTotalNumberOfDatabases
-            AutoDagTotalNumberOfServers          = [System.Int32]$dag.AutoDagTotalNumberOfServers
-            AutoDagVolumesRootFolderPath         = [System.String]$dag.AutoDagVolumesRootFolderPath
-            DatabaseAvailabilityGroupIpAddresses = [System.String[]]$dag.DatabaseAvailabilityGroupIpAddresses
-            DatacenterActivationMode             = [System.String]$dag.DatacenterActivationMode
-            ManualDagNetworkConfiguration        = [System.Boolean]$dag.ManualDagNetworkConfiguration
-            NetworkCompression                   = [System.String]$dag.NetworkCompression
-            NetworkEncryption                    = [System.String]$dag.NetworkEncryption
-            ReplayLagManagerEnabled              = [System.Boolean]$dag.ReplayLagManagerEnabled
-            ReplicationPort                      = [System.UInt16]$dag.ReplicationPort
-            WitnessDirectory                     = [System.String]$dag.WitnessDirectory
-            WitnessServer                        = [System.String]$dag.WitnessServer
+            Name                                 = [System.String] $Name
+            AlternateWitnessDirectory            = [System.String] $dag.AlternateWitnessDirectory
+            AlternateWitnessServer               = [System.String] $dag.AlternateWitnessServer
+            AutoDagAutoReseedEnabled             = [System.Boolean] $dag.AutoDagAutoReseedEnabled
+            AutoDagDatabaseCopiesPerDatabase     = [System.Int32] $dag.AutoDagDatabaseCopiesPerDatabase
+            AutoDagDatabaseCopiesPerVolume       = [System.Int32] $dag.AutoDagDatabaseCopiesPerVolume
+            AutoDagDatabasesRootFolderPath       = [System.String] $dag.AutoDagDatabasesRootFolderPath
+            AutoDagDiskReclaimerEnabled          = [System.Boolean] $dag.AutoDagDiskReclaimerEnabled
+            AutoDagTotalNumberOfDatabases        = [System.Int32] $dag.AutoDagTotalNumberOfDatabases
+            AutoDagTotalNumberOfServers          = [System.Int32] $dag.AutoDagTotalNumberOfServers
+            AutoDagVolumesRootFolderPath         = [System.String] $dag.AutoDagVolumesRootFolderPath
+            DatabaseAvailabilityGroupIpAddresses = [System.String[]] $dag.DatabaseAvailabilityGroupIpAddresses
+            DatacenterActivationMode             = [System.String] $dag.DatacenterActivationMode
+            ManualDagNetworkConfiguration        = [System.Boolean] $dag.ManualDagNetworkConfiguration
+            NetworkCompression                   = [System.String] $dag.NetworkCompression
+            NetworkEncryption                    = [System.String] $dag.NetworkEncryption
+            ReplayLagManagerEnabled              = [System.Boolean] $dag.ReplayLagManagerEnabled
+            ReplicationPort                      = [System.UInt16] $dag.ReplicationPort
+            WitnessDirectory                     = [System.String] $dag.WitnessDirectory
+            WitnessServer                        = [System.String] $dag.WitnessServer
         }
 
         $serverVersion = GetExchangeVersion

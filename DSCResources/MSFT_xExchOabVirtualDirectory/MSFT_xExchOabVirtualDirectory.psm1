@@ -91,17 +91,17 @@ function Get-TargetResource
         }
 
         $returnValue = @{
-            Identity                        = [System.String]$Identity
-            BasicAuthentication             = [System.Boolean]$vdir.BasicAuthentication
-            ExtendedProtectionFlags         = [System.String[]]$vdir.ExtendedProtectionFlags
-            ExtendedProtectionSPNList       = [System.String[]]$vdir.ExtendedProtectionSPNList
-            ExtendedProtectionTokenChecking = [System.String]$vdir.ExtendedProtectionTokenChecking
-            ExternalUrl                     = [System.String]$vdir.ExternalUrl.AbsoluteUri
-            InternalUrl                     = [System.String]$vdir.InternalUrl.AbsoluteUri
-            OABsToDistribute                = [System.String[]]$oabNames
-            PollInterval                    = [System.Int32]$vdir.PollInterval
-            RequireSSL                      = [System.Boolean]$vdir.RequireSSL
-            WindowsAuthentication           = [System.Boolean]$vdir.WindowsAuthentication
+            Identity                        = [System.String] $Identity
+            BasicAuthentication             = [System.Boolean] $vdir.BasicAuthentication
+            ExtendedProtectionFlags         = [System.String[]] $vdir.ExtendedProtectionFlags
+            ExtendedProtectionSPNList       = [System.String[]] $vdir.ExtendedProtectionSPNList
+            ExtendedProtectionTokenChecking = [System.String] $vdir.ExtendedProtectionTokenChecking
+            ExternalUrl                     = [System.String] $vdir.ExternalUrl.AbsoluteUri
+            InternalUrl                     = [System.String] $vdir.InternalUrl.AbsoluteUri
+            OABsToDistribute                = [System.String[]] $oabNames
+            PollInterval                    = [System.Int32] $vdir.PollInterval
+            RequireSSL                      = [System.Boolean] $vdir.RequireSSL
+            WindowsAuthentication           = [System.Boolean] $vdir.WindowsAuthentication
         }
     }
 
@@ -197,13 +197,6 @@ function Set-TargetResource
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart','OABsToDistribute'
 
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
-
-    $newHash = @{}
-
-    foreach ($key in $PSBoundParameters.Keys)
-    {
-        $newHash.Add($key, $PSBoundParameters[$key])
-    }
 
     Set-OabVirtualDirectory @PSBoundParameters
 

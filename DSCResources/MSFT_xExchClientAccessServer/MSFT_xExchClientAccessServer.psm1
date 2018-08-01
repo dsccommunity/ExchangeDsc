@@ -60,17 +60,17 @@ function Get-TargetResource
         }
 
         $returnValue = @{
-            Identity                                         = [System.String]$Identity
-            AutoDiscoverServiceInternalUri                   = [System.String]$cas.AutoDiscoverServiceInternalUri
-            AutoDiscoverSiteScope                            = [System.String[]]$sites
-            CleanUpInvalidAlternateServiceAccountCredentials = [System.Boolean]$CleanUpInvalidAlternateServiceAccountCredentials
-            DomainController                                 = [System.String]$DomainController
-            RemoveAlternateServiceAccountCredentials         = [System.Boolean]$RemoveAlternateServiceAccountCredentials
+            Identity                                         = [System.String] $Identity
+            AutoDiscoverServiceInternalUri                   = [System.String] $cas.AutoDiscoverServiceInternalUri
+            AutoDiscoverSiteScope                            = [System.String[]] $sites
+            CleanUpInvalidAlternateServiceAccountCredentials = [System.Boolean] $CleanUpInvalidAlternateServiceAccountCredentials
+            DomainController                                 = [System.String] $DomainController
+            RemoveAlternateServiceAccountCredentials         = [System.Boolean] $RemoveAlternateServiceAccountCredentials
         }
 
         if ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials.Count -gt 0)
         {
-            $returnValue.Add("AlternateServiceAccountCredential", [System.Management.Automation.PSCredential]$cas.AlternateServiceAccountConfiguration.EffectiveCredentials.Credential)
+            $returnValue.Add("AlternateServiceAccountCredential", [System.Management.Automation.PSCredential] $cas.AlternateServiceAccountConfiguration.EffectiveCredentials.Credential)
         }
     }
 
@@ -146,18 +146,16 @@ function Set-TargetResource
     
     $serverVersion = GetExchangeVersion -ThrowIfUnknownVersion $true
 
-    $keys = $PSBoundParameters.Keys
-
-    if ($serverVersion -eq "2016")
+    if ($serverVersion -eq '2016')
     {
-        $setCasCmd = "Set-ClientAccessService"
+        $setCasCmd = 'Set-ClientAccessService'
     }
-    elseif ($serverVersion -eq "2013")
+    elseif ($serverVersion -eq '2013')
     {
-        $setCasCmd = "Set-ClientAccessServer"
+        $setCasCmd = 'Set-ClientAccessServer'
     }
 
-    #The ASA can't be set with parameters other than Identity and DomainController, so execute as one off
+    # The AlternateServiceAccount can't be set with parameters other than Identity and DomainController, so execute as one off
     if ($null -ne $AlternateServiceAccountCredential)
     {
         $asaParams = @{
@@ -170,12 +168,12 @@ function Set-TargetResource
             $asaParams.Add('DomainController', $DomainController)
         }
 
-        &$setCasCmd @asaParams
+        & $setCasCmd @asaParams
 
         $PSBoundParameters.Remove('AlternateServiceAccountCredential')
     }
 
-    #Remove ASA can't be performed with parameters other than Identity and DomainController, so execute as one off
+    # Remove AlternateServiceAccount can't be performed with parameters other than Identity and DomainController, so execute as one off
     if ($RemoveAlternateServiceAccountCredentials)
     {
         $asaParams = @{
@@ -188,13 +186,12 @@ function Set-TargetResource
             $asaParams.Add('DomainController', $DomainController)
         }
 
-        &$setCasCmd @asaParams
+        & $setCasCmd @asaParams
 
         $PSBoundParameters.Remove('RemoveAlternateServiceAccountCredentials')
     }
 
-    $keys = $PSBoundParameters.Keys
-    &$setCasCmd @PSBoundParameters
+    & $setCasCmd @PSBoundParameters
 }
 
 

@@ -147,31 +147,31 @@ function Get-TargetResource
     if ($null -ne $db)
     {
         $returnValue = @{
-            Name                          = [System.String]$Name
-            Server                        = [System.String]$Server
-            EdbFilePath                   = [System.String]$EdbFilePath
-            LogFolderPath                 = [System.String]$LogFolderPath
-            DatabaseCopyCount             = [System.UInt32]$DatabaseCopyCount
-            AutoDagExcludeFromMonitoring  = [System.Boolean]$db.AutoDagExcludeFromMonitoring
-            BackgroundDatabaseMaintenance = [System.Boolean]$db.BackgroundDatabaseMaintenance
-            CalendarLoggingQuota          = [System.String]$db.CalendarLoggingQuota
-            CircularLoggingEnabled        = [System.Boolean]$db.CircularLoggingEnabled
-            DataMoveReplicationConstraint = [System.String]$db.DataMoveReplicationConstraint
-            DeletedItemRetention          = [System.String]$db.DeletedItemRetention
-            EventHistoryRetentionPeriod   = [System.String]$db.EventHistoryRetentionPeriod
-            IndexEnabled                  = [System.Boolean]$db.IndexEnabled
-            IsExcludedFromProvisioning    = [System.Boolean]$db.IsExcludedFromProvisioning
-            IssueWarningQuota             = [System.String]$db.IssueWarningQuota
-            IsSuspendedFromProvisioning   = [System.Boolean]$db.IsSuspendedFromProvisioning
-            JournalRecipient              = [System.String]$db.JournalRecipient
-            MailboxRetention              = [System.String]$db.MailboxRetention
-            MountAtStartup                = [System.Boolean]$db.MountAtStartup
-            OfflineAddressBook            = [System.String]$db.OfflineAddressBook
-            ProhibitSendQuota             = [System.String]$db.ProhibitSendQuota
-            ProhibitSendReceiveQuota      = [System.String]$db.ProhibitSendReceiveQuota
-            RecoverableItemsQuota         = [System.String]$db.RecoverableItemsQuota
-            RecoverableItemsWarningQuota  = [System.String]$db.RecoverableItemsWarningQuota
-            RetainDeletedItemsUntilBackup = [System.Boolean]$db.RetainDeletedItemsUntilBackup
+            Name                          = [System.String] $Name
+            Server                        = [System.String] $Server
+            EdbFilePath                   = [System.String] $EdbFilePath
+            LogFolderPath                 = [System.String] $LogFolderPath
+            DatabaseCopyCount             = [System.UInt32] $DatabaseCopyCount
+            AutoDagExcludeFromMonitoring  = [System.Boolean] $db.AutoDagExcludeFromMonitoring
+            BackgroundDatabaseMaintenance = [System.Boolean] $db.BackgroundDatabaseMaintenance
+            CalendarLoggingQuota          = [System.String] $db.CalendarLoggingQuota
+            CircularLoggingEnabled        = [System.Boolean] $db.CircularLoggingEnabled
+            DataMoveReplicationConstraint = [System.String] $db.DataMoveReplicationConstraint
+            DeletedItemRetention          = [System.String] $db.DeletedItemRetention
+            EventHistoryRetentionPeriod   = [System.String] $db.EventHistoryRetentionPeriod
+            IndexEnabled                  = [System.Boolean] $db.IndexEnabled
+            IsExcludedFromProvisioning    = [System.Boolean] $db.IsExcludedFromProvisioning
+            IssueWarningQuota             = [System.String] $db.IssueWarningQuota
+            IsSuspendedFromProvisioning   = [System.Boolean] $db.IsSuspendedFromProvisioning
+            JournalRecipient              = [System.String] $db.JournalRecipient
+            MailboxRetention              = [System.String] $db.MailboxRetention
+            MountAtStartup                = [System.Boolean] $db.MountAtStartup
+            OfflineAddressBook            = [System.String] $db.OfflineAddressBook
+            ProhibitSendQuota             = [System.String] $db.ProhibitSendQuota
+            ProhibitSendReceiveQuota      = [System.String] $db.ProhibitSendReceiveQuota
+            RecoverableItemsQuota         = [System.String] $db.RecoverableItemsQuota
+            RecoverableItemsWarningQuota  = [System.String] $db.RecoverableItemsWarningQuota
+            RetainDeletedItemsUntilBackup = [System.Boolean] $db.RetainDeletedItemsUntilBackup
         }
 
         $serverVersion = GetExchangeVersion

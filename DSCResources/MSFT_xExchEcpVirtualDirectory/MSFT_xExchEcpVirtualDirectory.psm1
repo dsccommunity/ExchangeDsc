@@ -65,15 +65,15 @@ function Get-TargetResource
     if ($null -ne $EcpVdir)
     {
         $returnValue = @{
-            Identity                      = [System.String]$Identity
-            AdfsAuthentication            = [System.Boolean]$EcpVdir.AdfsAuthentication
-            BasicAuthentication           = [System.Boolean]$EcpVdir.BasicAuthentication
-            DigestAuthentication          = [System.Boolean]$EcpVdir.DigestAuthentication
-            ExternalAuthenticationMethods = [System.String[]]$EcpVdir.ExternalAuthenticationMethods
-            ExternalUrl                   = [System.String]$EcpVdir.ExternalUrl
-            FormsAuthentication           = [System.Boolean]$EcpVdir.FormsAuthentication
-            InternalUrl                   = [System.String]$EcpVdir.InternalUrl
-            WindowsAuthentication         = [System.Boolean]$EcpVdir.WindowsAuthentication
+            Identity                      = [System.String] $Identity
+            AdfsAuthentication            = [System.Boolean] $EcpVdir.AdfsAuthentication
+            BasicAuthentication           = [System.Boolean] $EcpVdir.BasicAuthentication
+            DigestAuthentication          = [System.Boolean] $EcpVdir.DigestAuthentication
+            ExternalAuthenticationMethods = [System.String[]] $EcpVdir.ExternalAuthenticationMethods
+            ExternalUrl                   = [System.String] $EcpVdir.ExternalUrl
+            FormsAuthentication           = [System.Boolean] $EcpVdir.FormsAuthentication
+            InternalUrl                   = [System.String] $EcpVdir.InternalUrl
+            WindowsAuthentication         = [System.Boolean] $EcpVdir.WindowsAuthentication
         }
     }
 

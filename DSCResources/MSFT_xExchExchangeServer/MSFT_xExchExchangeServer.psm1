@@ -69,12 +69,12 @@ function Get-TargetResource
         }
 
         $returnValue = @{
-            Identity                 = [System.String]$Identity
-            CustomerFeedbackEnabled  = [System.Boolean]$server.CustomerFeedbackEnabled
-            InternetWebProxy         = [System.String]$server.InternetWebProxy.AbsoluteUri
-            MonitoringGroup          = [System.String]$server.MonitoringGroup
-            ProductKey               = [System.String]$ProductKey
-            WorkloadManagementPolicy = [System.String]$server.WorkloadManagementPolicy
+            Identity                 = [System.String] $Identity
+            CustomerFeedbackEnabled  = [System.Boolean] $server.CustomerFeedbackEnabled
+            InternetWebProxy         = [System.String] $server.InternetWebProxy.AbsoluteUri
+            MonitoringGroup          = [System.String] $server.MonitoringGroup
+            ProductKey               = [System.String] $ProductKey
+            WorkloadManagementPolicy = [System.String] $server.WorkloadManagementPolicy
         }
     }
 

@@ -46,10 +46,10 @@ function Get-TargetResource
     if ($null -ne $pop)
     {
         $returnValue = @{
-            Server                     = [System.String]$Identity
-            ExternalConnectionSettings = [System.String[]]$pop.ExternalConnectionSettings
-            LoginType                  = [System.String]$pop.LoginType
-            X509CertificateName        = [System.String]$pop.X509CertificateName
+            Server                     = [System.String] $Identity
+            ExternalConnectionSettings = [System.String[]] $pop.ExternalConnectionSettings
+            LoginType                  = [System.String] $pop.LoginType
+            X509CertificateName        = [System.String] $pop.X509CertificateName
         }
     }
 

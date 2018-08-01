@@ -44,8 +44,10 @@ function Test-TargetResourceFunctionality
         }
         else
         {
-            #Check the members of the Get-TargetResource results and make sure the result types
-            #match those of the function parameters
+            <#
+                Check the members of the Get-TargetResource results and make sure the result types
+                match those of the function parameters
+            #>
             $getTargetResourceCommand = Get-Command Get-TargetResource
 
             It "Only 1 Get-TargetResource function is loaded" {
@@ -54,20 +56,17 @@ function Test-TargetResourceFunctionality
 
             if ($getTargetResourceCommand.Count -eq 1)
             {
-                foreach ($getTargetResourceParam in $getTargetResourceCommand.Parameters.Keys)
+                foreach ($getTargetResourceParam in $getTargetResourceCommand.Parameters.Keys | Where-Object {$getResult.ContainsKey($_)})
                 {
-                    if ($getResult.ContainsKey($getTargetResourceParam))
+                    $getResultMemberType = '$null'
+
+                    if ($null -ne ($getResult[$getTargetResourceParam]))
                     {
-                        $getResultMemberType = '$null'
+                        $getResultMemberType = $getResult[$getTargetResourceParam].GetType().ToString()
+                    }
 
-                        if ($null -ne ($getResult[$getTargetResourceParam]))
-                        {
-                            $getResultMemberType = $getResult[$getTargetResourceParam].GetType().ToString()
-                        }
-
-                        It "Get-TargetResource: Parameter '$getTargetResourceParam' expects return type: '$($getTargetResourceCommand.Parameters[$getTargetResourceParam].ParameterType.ToString())'. Actual return type: '$getResultMemberType'" {
-                            ($getTargetResourceCommand.Parameters[$getTargetResourceParam].ParameterType.ToString()) -eq $getResultMemberType | Should Be $true
-                        }
+                    It "Get-TargetResource: Parameter '$getTargetResourceParam' expects return type: '$($getTargetResourceCommand.Parameters[$getTargetResourceParam].ParameterType.ToString())'. Actual return type: '$getResultMemberType'" {
+                        ($getTargetResourceCommand.Parameters[$getTargetResourceParam].ParameterType.ToString()) -eq $getResultMemberType | Should Be $true
                     }
                 }
             }
@@ -89,7 +88,7 @@ function Test-TargetResourceFunctionality
                         {
                             ([System.String[]])
                             {
-                                $getValueMatchesForKey = CompareArrayContents -Array1 $getResult[$key] -Array2 $ExpectedGetResults[$key]
+                                $getValueMatchesForKey = Compare-ArrayContent -Array1 $getResult[$key] -Array2 $ExpectedGetResults[$key]
                             }
                             ([System.Management.Automation.PSCredential])
                             {
@@ -150,7 +149,7 @@ function Test-ArrayContentsEqual
         [System.Collections.Hashtable]$getResult = Get-TargetResource @TestParams
 
         It $ItLabel {
-            CompareArrayContents -Array1 $DesiredArrayContents -Array2 $getResult."$($GetResultParameterName)" -IgnoreCase | Should Be $true
+            Compare-ArrayContent -Array1 $DesiredArrayContents -Array2 $getResult."$($GetResultParameterName)" -IgnoreCase | Should Be $true
         }
     }
 }
