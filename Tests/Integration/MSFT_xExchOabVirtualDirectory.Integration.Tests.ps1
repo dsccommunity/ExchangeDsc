@@ -58,7 +58,7 @@ if ($exchangeInstalled)
             BasicAuthentication = $false
             ExtendedProtectionTokenChecking = 'Allow'
             InternalUrl = "http://$($Global:ServerFqdn)/OAB"
-            ExternalUrl = $null
+            ExternalUrl = ''
             RequireSSL = $false
             WindowsAuthentication = $true
             PollInterval = 481   

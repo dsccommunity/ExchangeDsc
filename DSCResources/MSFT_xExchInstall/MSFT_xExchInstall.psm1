@@ -25,8 +25,8 @@ function Get-TargetResource
     } -VerbosePreference $VerbosePreference
 
     $returnValue = @{
-        Path = $Path
-        Arguments = $Arguments
+        Path      = [System.String] $Path
+        Arguments = [System.String] $Arguments
     }
 
     $returnValue

@@ -57,13 +57,13 @@ function Get-TargetResource
     if ($null -ne $vdir)
     {
         $returnValue = @{
-            Identity = $Identity
-            BasicAuthentication = $vdir.BasicAuthentication
-            CertificateAuthentication = $vdir.CertificateAuthentication
-            ExternalUrl = $vdir.ExternalUrl.AbsoluteUri
-            InternalUrl = $vdir.InternalUrl.AbsoluteUri
-            RequireSSL = $vdir.RequireSSL
-            WindowsAuthentication = $vdir.WindowsAuthentication
+            Identity                  = [System.String] $Identity
+            BasicAuthentication       = [System.Boolean] $vdir.BasicAuthentication
+            CertificateAuthentication = [System.Boolean] $vdir.CertificateAuthentication
+            ExternalUrl               = [System.String] $vdir.ExternalUrl.AbsoluteUri
+            InternalUrl               = [System.String] $vdir.InternalUrl.AbsoluteUri
+            RequireSSL                = [System.Boolean] $vdir.RequireSSL
+            WindowsAuthentication     = [System.Boolean] $vdir.WindowsAuthentication
         }
     }
 

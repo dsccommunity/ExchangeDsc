@@ -220,63 +220,72 @@ function Get-TargetResource
     if ($null -ne $server)
     {
         $returnValue = @{
-            Identity = $Identity
-            AutoDatabaseMountDial = $server.AutoDatabaseMountDial
-            CalendarRepairIntervalEndWindow = $server.CalendarRepairIntervalEndWindow
-            CalendarRepairLogDirectorySizeLimit = $server.CalendarRepairLogDirectorySizeLimit
-            CalendarRepairLogEnabled = $server.CalendarRepairLogEnabled
-            CalendarRepairLogFileAgeLimit = $server.CalendarRepairLogFileAgeLimit
-            CalendarRepairLogPath = $server.CalendarRepairLogPath
-            CalendarRepairLogSubjectLoggingEnabled = $server.CalendarRepairLogSubjectLoggingEnabled
-            CalendarRepairMissingItemFixDisabled = $server.CalendarRepairMissingItemFixDisabled
-            CalendarRepairMode = $server.CalendarRepairMode
-            FolderLogForManagedFoldersEnabled = $server.FolderLogForManagedFoldersEnabled
-            ForceGroupMetricsGeneration = $server.ForceGroupMetricsGeneration
-            IsExcludedFromProvisioning = $server.IsExcludedFromProvisioning
-            JournalingLogForManagedFoldersEnabled = $server.JournalingLogForManagedFoldersEnabled
-            Locale = $Server.Locale
-            LogDirectorySizeLimitForManagedFolders = $server.LogDirectorySizeLimitForManagedFolders
-            LogFileAgeLimitForManagedFolders = $server.LogFileAgeLimitForManagedFolders
-            LogFileSizeLimitForManagedFolders = $server.LogFileSizeLimitForManagedFolders
-            LogPathForManagedFolders = $server.LogPathForManagedFolders
-            DatabaseCopyActivationDisabledAndMoveNow = $server.DatabaseCopyActivationDisabledAndMoveNow
-            DatabaseCopyAutoActivationPolicy = $server.DatabaseCopyAutoActivationPolicy
-            MAPIEncryptionRequired = $server.MAPIEncryptionRequired
-            MaximumActiveDatabases = $server.MaximumActiveDatabases
-            MaximumPreferredActiveDatabases = $server.MaximumPreferredActiveDatabases
-            RetentionLogForManagedFoldersEnabled = $server.RetentionLogForManagedFoldersEnabled
-            SharingPolicySchedule = $server.SharingPolicySchedule
-            SubjectLogForManagedFoldersEnabled = $server.SubjectLogForManagedFoldersEnabled
+            Identity                                 = [System.String] $Identity
+            AutoDatabaseMountDial                    = [System.String] $server.AutoDatabaseMountDial
+            CalendarRepairIntervalEndWindow          = [System.Int32] $server.CalendarRepairIntervalEndWindow
+            CalendarRepairLogDirectorySizeLimit      = [System.String] $server.CalendarRepairLogDirectorySizeLimit
+            CalendarRepairLogEnabled                 = [System.Boolean] $server.CalendarRepairLogEnabled
+            CalendarRepairLogFileAgeLimit            = [System.String] $server.CalendarRepairLogFileAgeLimit
+            CalendarRepairLogPath                    = [System.String] $server.CalendarRepairLogPath
+            CalendarRepairLogSubjectLoggingEnabled   = [System.Boolean] $server.CalendarRepairLogSubjectLoggingEnabled
+            CalendarRepairMissingItemFixDisabled     = [System.Boolean] $server.CalendarRepairMissingItemFixDisabled
+            CalendarRepairMode                       = [System.String] $server.CalendarRepairMode
+            DatabaseCopyActivationDisabledAndMoveNow = [System.Boolean] $server.DatabaseCopyActivationDisabledAndMoveNow
+            DatabaseCopyAutoActivationPolicy         = [System.String] $server.DatabaseCopyAutoActivationPolicy
+            FolderLogForManagedFoldersEnabled        = [System.Boolean] $server.FolderLogForManagedFoldersEnabled
+            ForceGroupMetricsGeneration              = [System.Boolean] $server.ForceGroupMetricsGeneration
+            IsExcludedFromProvisioning               = [System.Boolean] $server.IsExcludedFromProvisioning
+            JournalingLogForManagedFoldersEnabled    = [System.Boolean] $server.JournalingLogForManagedFoldersEnabled
+            Locale                                   = [System.String[]] $Server.Locale
+            LogDirectorySizeLimitForManagedFolders   = [System.String] $server.LogDirectorySizeLimitForManagedFolders
+            LogFileAgeLimitForManagedFolders         = [System.String] $server.LogFileAgeLimitForManagedFolders
+            LogFileSizeLimitForManagedFolders        = [System.String] $server.LogFileSizeLimitForManagedFolders
+            LogPathForManagedFolders                 = [System.String] $server.LogPathForManagedFolders
+            MAPIEncryptionRequired                   = [System.Boolean] $server.MAPIEncryptionRequired
+            MaximumActiveDatabases                   = [System.String] $server.MaximumActiveDatabases
+            MaximumPreferredActiveDatabases          = [System.String] $server.MaximumPreferredActiveDatabases
+            RetentionLogForManagedFoldersEnabled     = [System.Boolean] $server.RetentionLogForManagedFoldersEnabled
+            SharingPolicySchedule                    = [System.String[]] $server.SharingPolicySchedule
+            SubjectLogForManagedFoldersEnabled       = [System.Boolean] $server.SubjectLogForManagedFoldersEnabled
         }
 
         $serverVersion = GetExchangeVersion
 
         if ($serverVersion -eq '2016')
         {
-            $returnValue.Add('WacDiscoveryEndpoint', $server.WacDiscoveryEndpoint)
+            $returnValue.Add('WacDiscoveryEndpoint', [System.String]$server.WacDiscoveryEndpoint)
         }
         elseif ($serverVersion -eq '2013')
         {
-            $returnValue.Add('CalendarRepairWorkCycle', $server.CalendarRepairWorkCycle)
-            $returnValue.Add('CalendarRepairWorkCycleCheckpoint', $server.CalendarRepairWorkCycleCheckpoint)
-            $returnValue.Add('MailboxProcessorWorkCycle', $server.MailboxProcessorWorkCycle)
-            $returnValue.Add('ManagedFolderAssistantSchedule', $server.ManagedFolderAssistantSchedule)
-            $returnValue.Add('ManagedFolderWorkCycle', $server.ManagedFolderWorkCycle)
-            $returnValue.Add('ManagedFolderWorkCycleCheckpoint', $server.ManagedFolderWorkCycleCheckpoint)
-            $returnValue.Add('OABGeneratorWorkCycle', $server.OABGeneratorWorkCycle)
-            $returnValue.Add('OABGeneratorWorkCycleCheckpoint', $server.OABGeneratorWorkCycleCheckpoint)
-            $returnValue.Add('PublicFolderWorkCycle', $server.PublicFolderWorkCycle)
-            $returnValue.Add('PublicFolderWorkCycleCheckpoint', $server.PublicFolderWorkCycleCheckpoint)
-            $returnValue.Add('SharingPolicyWorkCycle', $server.SharingPolicyWorkCycle)
-            $returnValue.Add('SharingPolicyWorkCycleCheckpoint', $server.SharingPolicyWorkCycleCheckpoint)
-            $returnValue.Add('SharingSyncWorkCycle', $server.SharingSyncWorkCycle)
-            $returnValue.Add('SharingSyncWorkCycleCheckpoint', $server.SharingSyncWorkCycleCheckpoint)
-            $returnValue.Add('SiteMailboxWorkCycle', $server.SiteMailboxWorkCycle)
-            $returnValue.Add('SiteMailboxWorkCycleCheckpoint', $server.SiteMailboxWorkCycleCheckpoint)
-            $returnValue.Add('TopNWorkCycle', $server.TopNWorkCycle)
-            $returnValue.Add('TopNWorkCycleCheckpoint', $server.TopNWorkCycleCheckpoint)
-            $returnValue.Add('UMReportingWorkCycle', $server.UMReportingWorkCycle)
-            $returnValue.Add('UMReportingWorkCycleCheckpoint', $server.UMReportingWorkCycleCheckpoint)
+            if ($null -ne $server.ManagedFolderAssistantSchedule)
+            {
+                $mfaSchedule = [System.String[]]$server.ManagedFolderAssistantSchedule
+            }
+            else
+            {
+                $mfaSchedule = [System.String[]]@()
+            }
+
+            $returnValue.Add('CalendarRepairWorkCycle', [System.String]$server.CalendarRepairWorkCycle)
+            $returnValue.Add('CalendarRepairWorkCycleCheckpoint', [System.String]$server.CalendarRepairWorkCycleCheckpoint)
+            $returnValue.Add('MailboxProcessorWorkCycle', [System.String]$server.MailboxProcessorWorkCycle)
+            $returnValue.Add('ManagedFolderAssistantSchedule', $mfaSchedule)
+            $returnValue.Add('ManagedFolderWorkCycle', [System.String]$server.ManagedFolderWorkCycle)
+            $returnValue.Add('ManagedFolderWorkCycleCheckpoint', [System.String]$server.ManagedFolderWorkCycleCheckpoint)
+            $returnValue.Add('OABGeneratorWorkCycle', [System.String]$server.OABGeneratorWorkCycle)
+            $returnValue.Add('OABGeneratorWorkCycleCheckpoint', [System.String]$server.OABGeneratorWorkCycleCheckpoint)
+            $returnValue.Add('PublicFolderWorkCycle', [System.String]$server.PublicFolderWorkCycle)
+            $returnValue.Add('PublicFolderWorkCycleCheckpoint', [System.String]$server.PublicFolderWorkCycleCheckpoint)
+            $returnValue.Add('SharingPolicyWorkCycle', [System.String]$server.SharingPolicyWorkCycle)
+            $returnValue.Add('SharingPolicyWorkCycleCheckpoint', [System.String]$server.SharingPolicyWorkCycleCheckpoint)
+            $returnValue.Add('SharingSyncWorkCycle', [System.String]$server.SharingSyncWorkCycle)
+            $returnValue.Add('SharingSyncWorkCycleCheckpoint', [System.String]$server.SharingSyncWorkCycleCheckpoint)
+            $returnValue.Add('SiteMailboxWorkCycle', [System.String]$server.SiteMailboxWorkCycle)
+            $returnValue.Add('SiteMailboxWorkCycleCheckpoint', [System.String]$server.SiteMailboxWorkCycleCheckpoint)
+            $returnValue.Add('TopNWorkCycle', [System.String]$server.TopNWorkCycle)
+            $returnValue.Add('TopNWorkCycleCheckpoint', [System.String]$server.TopNWorkCycleCheckpoint)
+            $returnValue.Add('UMReportingWorkCycle', [System.String]$server.UMReportingWorkCycle)
+            $returnValue.Add('UMReportingWorkCycleCheckpoint', [System.String]$server.UMReportingWorkCycleCheckpoint)
         }
         else
         {

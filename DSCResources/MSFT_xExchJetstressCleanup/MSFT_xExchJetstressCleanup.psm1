@@ -39,7 +39,7 @@ function Get-TargetResource
     LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -VerbosePreference $VerbosePreference
 
     $returnValue = @{
-        JetstressPath = $JetstressPath
+        JetstressPath = [System.String] $JetstressPath
     }
 
     $returnValue

@@ -103,24 +103,24 @@ function Get-TargetResource
     if ($null -ne $OwaVdir)
     {
         $returnValue = @{
-            Identity = $Identity
-            InternalUrl = $OwaVdir.InternalUrl.AbsoluteUri
-            ExternalUrl = $OwaVdir.ExternalUrl.AbsoluteUri
-            FormsAuthentication = $OwaVdir.FormsAuthentication
-            WindowsAuthentication = $OwaVdir.WindowsAuthentication
-            BasicAuthentication = $OwaVdir.BasicAuthentication
-            ChangePasswordEnabled = $OwaVdir.ChangePasswordEnabled
-            DigestAuthentication = $OwaVdir.DigestAuthentication
-            AdfsAuthentication = $OwaVdir.AdfsAuthentication
-            InstantMessagingType = $OwaVdir.InstantMessagingType
-            InstantMessagingEnabled = $OwaVdir.InstantMessagingEnabled
-            InstantMessagingServerName = $OwaVdir.InstantMessagingServerName
-            InstantMessagingCertificateThumbprint = $OwaVdir.InstantMessagingCertificateThumbprint
-            LogonPagePublicPrivateSelectionEnabled = $OwaVdir.LogonPagePublicPrivateSelectionEnabled
-            LogonPageLightSelectionEnabled = $OwaVdir.LogonPageLightSelectionEnabled
-            ExternalAuthenticationMethods = $OwaVdir.ExternalAuthenticationMethods
-            LogonFormat = $OwaVdir.LogonFormat
-            DefaultDomain = $OwaVdir.DefaultDomain
+            Identity                               = [System.String] $Identity
+            AdfsAuthentication                     = [System.Boolean] $OwaVdir.AdfsAuthentication
+            BasicAuthentication                    = [System.Boolean] $OwaVdir.BasicAuthentication
+            ChangePasswordEnabled                  = [System.Boolean] $OwaVdir.ChangePasswordEnabled
+            DefaultDomain                          = [System.String] $OwaVdir.DefaultDomain
+            DigestAuthentication                   = [System.Boolean] $OwaVdir.DigestAuthentication
+            ExternalAuthenticationMethods          = [System.String[]] $OwaVdir.ExternalAuthenticationMethods
+            ExternalUrl                            = [System.String] $OwaVdir.ExternalUrl.AbsoluteUri
+            FormsAuthentication                    = [System.Boolean] $OwaVdir.FormsAuthentication
+            InstantMessagingCertificateThumbprint  = [System.String] $OwaVdir.InstantMessagingCertificateThumbprint
+            InstantMessagingEnabled                = [System.Boolean] $OwaVdir.InstantMessagingEnabled
+            InstantMessagingServerName             = [System.String] $OwaVdir.InstantMessagingServerName
+            InstantMessagingType                   = [System.String] $OwaVdir.InstantMessagingType
+            InternalUrl                            = [System.String] $OwaVdir.InternalUrl.AbsoluteUri
+            LogonFormat                            = [System.String] $OwaVdir.LogonFormat
+            LogonPageLightSelectionEnabled         = [System.Boolean] $OwaVdir.LogonPageLightSelectionEnabled
+            LogonPagePublicPrivateSelectionEnabled = [System.Boolean] $OwaVdir.LogonPagePublicPrivateSelectionEnabled
+            WindowsAuthentication                  = [System.Boolean] $OwaVdir.WindowsAuthentication
         }
     }
 

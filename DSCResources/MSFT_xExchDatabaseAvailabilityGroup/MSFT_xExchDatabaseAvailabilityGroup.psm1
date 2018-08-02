@@ -125,35 +125,35 @@ function Get-TargetResource
     if ($null -ne $dag)
     {
         $returnValue = @{
-            Name = $Name
-            AlternateWitnessDirectory = $dag.AlternateWitnessDirectory
-            AlternateWitnessServer = $dag.AlternateWitnessServer
-            AutoDagAutoReseedEnabled = $dag.AutoDagAutoReseedEnabled
-            AutoDagDatabaseCopiesPerDatabase = $dag.AutoDagDatabaseCopiesPerDatabase
-            AutoDagDatabaseCopiesPerVolume = $dag.AutoDagDatabaseCopiesPerVolume
-            AutoDagDatabasesRootFolderPath = $dag.AutoDagDatabasesRootFolderPath
-            AutoDagDiskReclaimerEnabled = $dag.AutoDagDiskReclaimerEnabled
-            AutoDagTotalNumberOfDatabases = $dag.AutoDagTotalNumberOfDatabases
-            AutoDagTotalNumberOfServers = $dag.AutoDagTotalNumberOfServers
-            AutoDagVolumesRootFolderPath = $dag.AutoDagVolumesRootFolderPath
-            DatabaseAvailabilityGroupIpAddresses = $dag.DatabaseAvailabilityGroupIpAddresses
-            DatacenterActivationMode = $dag.DatacenterActivationMode
-            ManualDagNetworkConfiguration = $dag.ManualDagNetworkConfiguration
-            NetworkCompression = $dag.NetworkCompression
-            NetworkEncryption = $dag.NetworkEncryption
-            ReplayLagManagerEnabled = $dag.ReplayLagManagerEnabled
-            ReplicationPort = $dag.ReplicationPort
-            WitnessDirectory = $dag.WitnessDirectory
-            WitnessServer = $dag.WitnessServer
+            Name                                 = [System.String] $Name
+            AlternateWitnessDirectory            = [System.String] $dag.AlternateWitnessDirectory
+            AlternateWitnessServer               = [System.String] $dag.AlternateWitnessServer
+            AutoDagAutoReseedEnabled             = [System.Boolean] $dag.AutoDagAutoReseedEnabled
+            AutoDagDatabaseCopiesPerDatabase     = [System.Int32] $dag.AutoDagDatabaseCopiesPerDatabase
+            AutoDagDatabaseCopiesPerVolume       = [System.Int32] $dag.AutoDagDatabaseCopiesPerVolume
+            AutoDagDatabasesRootFolderPath       = [System.String] $dag.AutoDagDatabasesRootFolderPath
+            AutoDagDiskReclaimerEnabled          = [System.Boolean] $dag.AutoDagDiskReclaimerEnabled
+            AutoDagTotalNumberOfDatabases        = [System.Int32] $dag.AutoDagTotalNumberOfDatabases
+            AutoDagTotalNumberOfServers          = [System.Int32] $dag.AutoDagTotalNumberOfServers
+            AutoDagVolumesRootFolderPath         = [System.String] $dag.AutoDagVolumesRootFolderPath
+            DatabaseAvailabilityGroupIpAddresses = [System.String[]] $dag.DatabaseAvailabilityGroupIpAddresses
+            DatacenterActivationMode             = [System.String] $dag.DatacenterActivationMode
+            ManualDagNetworkConfiguration        = [System.Boolean] $dag.ManualDagNetworkConfiguration
+            NetworkCompression                   = [System.String] $dag.NetworkCompression
+            NetworkEncryption                    = [System.String] $dag.NetworkEncryption
+            ReplayLagManagerEnabled              = [System.Boolean] $dag.ReplayLagManagerEnabled
+            ReplicationPort                      = [System.UInt16] $dag.ReplicationPort
+            WitnessDirectory                     = [System.String] $dag.WitnessDirectory
+            WitnessServer                        = [System.String] $dag.WitnessServer
         }
 
         $serverVersion = GetExchangeVersion
 
         if ($serverVersion -eq "2016")
         {
-            $returnValue.Add("AutoDagAutoRedistributeEnabled", $dag.AutoDagAutoRedistributeEnabled)
-            $returnValue.Add("FileSystem", $dag.FileSystem)
-            $returnValue.Add("PreferenceMoveFrequency", $dag.PreferenceMoveFrequency)
+            $returnValue.Add("AutoDagAutoRedistributeEnabled", [System.Boolean]$dag.AutoDagAutoRedistributeEnabled)
+            $returnValue.Add("FileSystem", [System.String]$dag.FileSystem)
+            $returnValue.Add("PreferenceMoveFrequency", [System.String]$dag.PreferenceMoveFrequency)
         }
     }
 

@@ -414,7 +414,7 @@ function StringArrayToLower
 }
 
 #Checks whether two arrays have the same contents, where element order doesn't matter
-function CompareArrayContents
+function Compare-ArrayContent
 {
     param([System.String[]]$Array1, [System.String[]]$Array2, [switch]$IgnoreCase)
 
@@ -592,7 +592,7 @@ function VerifySetting
         }
         elseif ($Type -like "Array")
         {
-            if ((CompareArrayContents -Array1 $ExpectedValue -Array2 $ActualValue -IgnoreCase) -eq $false)
+            if ((Compare-ArrayContent -Array1 $ExpectedValue -Array2 $ActualValue -IgnoreCase) -eq $false)
             {
                 $returnValue = $false
             }
@@ -671,7 +671,7 @@ function VerifySetting
             }
             else
             {
-                if ((CompareArrayContents -Array1 $ExpectedValue -Array2 $ActualValue -IgnoreCase) -eq $false)
+                if ((Compare-ArrayContent -Array1 $ExpectedValue -Array2 $ActualValue -IgnoreCase) -eq $false)
                 {
                     $returnValue = $false
                 }
@@ -959,7 +959,7 @@ function CompareIPAddressesWithArray
     }
     else
     {
-        CompareArrayContents -Array1 $IPAddresses -Array2 $Array
+        Compare-ArrayContent -Array1 $IPAddresses -Array2 $Array
     }
     if ($returnValue -eq $false)
     {
@@ -1007,28 +1007,6 @@ Process {
 End {
     return $returnValue
 }
-}
-
-#helper function to convert Microsoft.Exchange.Data.MultiValuedPropertyBase to System.Array
-function ConvertTo-Array
-{
-    [CmdletBinding()]
-    [OutputType([System.Array])]
-    param(
-        [Object[]]$InputObject
-    )
-    Begin
-    {
-        $output = @()
-    }
-    Process
-    {
-        $InputObject | ForEach-Object -Process {$output += $_}
-    }
-    End
-    {
-        return $output 
-    }
 }
 
 #helper function to check SPN for Dotless name

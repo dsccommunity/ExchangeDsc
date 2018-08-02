@@ -50,11 +50,11 @@ function Get-TargetResource
     if ($null -ne $dagNet)
     {
         $returnValue = @{
-            Name = $Name
-            DatabaseAvailabilityGroup = $DatabaseAvailabilityGroup
-            IgnoreNetwork = $dagNet.IgnoreNetwork
-            ReplicationEnabled = $dagNet.ReplicationEnabled
-            Subnets = $dagNet.Subnets
+            Name                      = [System.String] $Name
+            DatabaseAvailabilityGroup = [System.String] $DatabaseAvailabilityGroup
+            IgnoreNetwork             = [System.Boolean] $dagNet.IgnoreNetwork
+            ReplicationEnabled        = [System.Boolean] $dagNet.ReplicationEnabled
+            Subnets                   = [System.String[]] $dagNet.Subnets
         }
     }
 

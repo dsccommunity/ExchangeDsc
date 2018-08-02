@@ -76,9 +76,9 @@ if ($exchangeInstalled)
             Identity =  "$($env:COMPUTERNAME)\ecp (Default Web Site)"
             BasicAuthentication = $false
             DigestAuthentication = $true
-            ExternalUrl = $null
+            ExternalUrl = ''
             FormsAuthentication = $false
-            InternalUrl = $null                      
+            InternalUrl = ''                     
             WindowsAuthentication = $true 
         }
 

@@ -40,9 +40,9 @@ function Get-TargetResource
     if ($null -ne $umService)
     {
         $returnValue = @{
-            Identity = $Identity
-            UMStartupMode = $umService.UMStartupMode
-            DialPlans = $umService.DialPlans.Name
+            Identity      = [System.String] $Identity
+            UMStartupMode = [System.String] $umService.UMStartupMode
+            DialPlans     = [System.String[]] $umService.DialPlans
         }
     }
 

@@ -37,7 +37,7 @@ function Get-TargetResource
     if ($null -ne $dag)
     {
         $returnValue = @{
-            Identity = $Identity
+            Identity = [System.String] $Identity
         }    
 
     }

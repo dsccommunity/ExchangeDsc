@@ -135,9 +135,9 @@ function Get-TargetResource
     }
 
     $returnValue = @{
-        SchemaVersion = $currentSchemaVersion
-        OrganizationVersion = $currentOrganizationVersion
-        DomainVersion = $currentDomainVersions
+        SchemaVersion       = [System.String] $currentSchemaVersion
+        OrganizationVersion = [System.String] $currentOrganizationVersion
+        DomainVersion       = [System.String] $currentDomainVersions
     }    
 
     $returnValue

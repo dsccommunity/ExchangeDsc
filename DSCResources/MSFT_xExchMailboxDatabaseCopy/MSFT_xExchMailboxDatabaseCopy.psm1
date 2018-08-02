@@ -104,11 +104,11 @@ function Get-TargetResource
         }
 
         $returnValue = @{
-            Identity = $Identity
-            MailboxServer = $MailboxServer
-            ActivationPreference = $ActivationPreference
-            ReplayLagTime = $ReplayLagTime
-            TruncationLagTime = $TruncationLagTime
+            Identity             = [System.String] $Identity
+            MailboxServer        = [System.String] $MailboxServer
+            ActivationPreference = [System.UInt32] $ActivationPreference
+            ReplayLagTime        = [System.String] $ReplayLagTime
+            TruncationLagTime    = [System.String] $TruncationLagTime
         }
     }
 

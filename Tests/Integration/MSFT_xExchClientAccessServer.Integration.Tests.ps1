@@ -34,7 +34,16 @@ if ($exchangeInstalled)
         $Global:ServerFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
-    Describe 'Test Setting Properties with xExchClientAccessServer' {        
+    # Make sure all AlternateServiceAccount's are cleared before beginning tests
+    Set-TargetResource -Identity $env:COMPUTERNAME -Credential $Global:ShellCredentials -RemoveAlternateServiceAccountCredentials $true | Out-Null
+    $getResults = Get-TargetResource -Identity $env:COMPUTERNAME -Credential $Global:ShellCredentials
+
+    Describe 'Test Setting Properties with xExchClientAccessServer' {
+        # Confirm that the AlternateServiceAccount was actually cleared before doing any tests
+        It 'AlternateServiceAccount has been cleared' {
+            ($null -ne $getResults -and $null -eq $getResults.AlternateServiceAccountCredential) | Should Be $true
+        }
+
         #Do standard URL and scope tests
         $testParams = @{
             Identity =  $env:COMPUTERNAME
@@ -55,7 +64,7 @@ if ($exchangeInstalled)
 
         #Now set the URL to empty
         $testParams.AutoDiscoverServiceInternalUri = ''
-        $expectedGetResults.AutoDiscoverServiceInternalUri = $null
+        $expectedGetResults.AutoDiscoverServiceInternalUri = ''
 
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Set url to empty' `
@@ -77,7 +86,9 @@ if ($exchangeInstalled)
 
         #Now set the site scope to $null
         $testParams.AutoDiscoverSiteScope = $null
-        $expectedGetResults = @{}
+        $expectedGetResults = @{
+            AutoDiscoverSiteScope = [String[]]@()
+        }
 
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Set site scope to null' `
@@ -89,37 +100,37 @@ if ($exchangeInstalled)
                                 -ContextLabel 'Verify AutoDiscoverSiteScope' `
                                 -ItLabel 'AutoDiscoverSiteScope should be empty'
 
-        #create ASA credentials
-        if ($null -eq $Global:ASACredentials)
+        #create AlternateServiceAccount credentials
+        if ($null -eq $asaCredentials)
         {
             $UserASA = 'Fabrikam\ASA'
             $PWordASA = ConvertTo-SecureString -String 'Pa$$w0rd!' -AsPlainText -Force
-            $Global:ASACredentials = New-Object -TypeName System.Management.Automation.PSCredential `
+            $asaCredentials = New-Object -TypeName System.Management.Automation.PSCredential `
                                                 -ArgumentList $UserASA, $PWordASA
         }
 
-        #Now set ASA account
-        $testParams.Remove('AutoDiscoverSiteScope')
-        $testParams.Remove('AutoDiscoverServiceInternalUri')
-        $testParams.Add('AlternateServiceAccountCredential',$Global:ASACredentials)
-        $expectedGetResults.Add('AlternateServiceAccountCredential','UserName:Fabrikam\ASA Password:Pa$$w0rd!')
-        
+        #Now set AlternateServiceAccount account
+        $testParams.Add('AlternateServiceAccountCredential',$asaCredentials)
+        $expectedGetResults.Add('AlternateServiceAccountCredential',$asaCredentials)
+
+        #Alter Autodiscover settings and make sure they're picked up along with AlternateServiceAccount change
+        $testParams.AutoDiscoverSiteScope = 'Site3'
+        $expectedGetResults.AutoDiscoverSiteScope = 'Site3'
+
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Set AlternateServiceAccountCredential' `
                                          -ExpectedGetResults $expectedGetResults
 
-        #Test for invalid ASA account format
-        Context 'Test looking for invalid format of ASA account' {
+        #Test for invalid AlternateServiceAccount account format
+        Context 'Test looking for invalid format of AlternateServiceAccount account' {
             $caughtException = $false
             $UserASA = 'Fabrikam/ASA'
             $PWordASA = ConvertTo-SecureString -String 'Pa$$w0rd!' -AsPlainText -Force
-            $Global:ASACredentials = New-Object -TypeName System.Management.Automation.PSCredential `
+            $asaCredentials = New-Object -TypeName System.Management.Automation.PSCredential `
                                                 -ArgumentList $UserASA, $PWordASA
-            
-            #first clear the current ASA account credentials
-            $testParams.Remove('AlternateServiceAccountCredential')
-            #add the invalid credentials
-            $testParams.Add('AlternateServiceAccountCredential',$Global:ASACredentials)
+
+            #Set the invalid credentials
+            $testParams['AlternateServiceAccountCredential'] = $asaCredentials
 
             try
             {
@@ -130,20 +141,24 @@ if ($exchangeInstalled)
                 $caughtException = $true
             }
 
-            It 'Should hit exception for invalid ASA account format' {
+            It 'Should hit exception for invalid AlternateServiceAccount account format' {
                 $caughtException | Should Be $true
             }
 
-            It 'Test results should be false after adding invalid ASA account' {
+            It 'Test results should be false after adding invalid AlternateServiceAccount account' {
                 $testResults = Test-TargetResource @testParams
                 $testResults | Should Be $false
             }
         }
 
-        #Now clear ASA account credentials
+        #Now clear AlternateServiceAccount account credentials
         $testParams.Remove('AlternateServiceAccountCredential')
-        $testParams.RemoveAlternateServiceAccountCredentials = $true
+        $testParams.Add('RemoveAlternateServiceAccountCredentials',$true)
         $expectedGetResults.Remove('AlternateServiceAccountCredential')
+
+        #Alter Autodiscover settings and make sure they're picked up along with AlternateServiceAccount change
+        $testParams.AutoDiscoverSiteScope = 'Site4'
+        $expectedGetResults.AutoDiscoverSiteScope = 'Site4'
 
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Clear AlternateServiceAccountCredential' `
@@ -154,4 +169,3 @@ else
 {
     Write-Verbose -Message 'Tests in this file require that Exchange is installed to be run.'
 }
-    

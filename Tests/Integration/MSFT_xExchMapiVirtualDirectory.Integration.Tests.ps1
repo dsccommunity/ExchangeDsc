@@ -69,7 +69,7 @@ if ($exchangeInstalled)
 
         $expectedGetResults = @{
             Identity =  "$($env:COMPUTERNAME)\mapi (Default Web Site)"
-            ExternalUrl = $null
+            ExternalUrl = ''
             InternalUrl = "https://$($Global:ServerFqdn)/mapi" 
         }
 

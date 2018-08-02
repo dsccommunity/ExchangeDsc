@@ -91,17 +91,17 @@ function Get-TargetResource
         }
 
         $returnValue = @{
-            Identity = $Identity
-            OABsToDistribute = $oabNames
-            BasicAuthentication = $vdir.BasicAuthentication
-            ExtendedProtectionFlags = $vdir.ExtendedProtectionFlags
-            ExtendedProtectionSPNList = $vdir.ExtendedProtectionSPNList
-            ExtendedProtectionTokenChecking = $vdir.ExtendedProtectionTokenChecking
-            ExternalUrl = $vdir.ExternalUrl
-            InternalUrl = $vdir.InternalUrl
-            PollInterval = $vdir.PollInterval
-            RequireSSL = $vdir.RequireSSL
-            WindowsAuthentication = $vdir.WindowsAuthentication
+            Identity                        = [System.String] $Identity
+            BasicAuthentication             = [System.Boolean] $vdir.BasicAuthentication
+            ExtendedProtectionFlags         = [System.String[]] $vdir.ExtendedProtectionFlags
+            ExtendedProtectionSPNList       = [System.String[]] $vdir.ExtendedProtectionSPNList
+            ExtendedProtectionTokenChecking = [System.String] $vdir.ExtendedProtectionTokenChecking
+            ExternalUrl                     = [System.String] $vdir.ExternalUrl.AbsoluteUri
+            InternalUrl                     = [System.String] $vdir.InternalUrl.AbsoluteUri
+            OABsToDistribute                = [System.String[]] $oabNames
+            PollInterval                    = [System.Int32] $vdir.PollInterval
+            RequireSSL                      = [System.Boolean] $vdir.RequireSSL
+            WindowsAuthentication           = [System.Boolean] $vdir.WindowsAuthentication
         }
     }
 
@@ -317,12 +317,12 @@ function Test-TargetResource
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'ExternalUrl' -Type 'String' -ExpectedValue $ExternalUrl -ActualValue $vdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ExternalUrl' -Type 'String' -ExpectedValue $ExternalUrl -ActualValue $vdir.ExternalUrl -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'InternalUrl' -Type 'String' -ExpectedValue $InternalUrl -ActualValue $vdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'InternalUrl' -Type 'String' -ExpectedValue $InternalUrl -ActualValue $vdir.InternalUrl -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
         {
             $testResults = $false
         }

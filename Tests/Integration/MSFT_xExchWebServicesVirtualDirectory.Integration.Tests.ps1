@@ -55,7 +55,7 @@ if ($exchangeInstalled)
 
         $expectedGetResults = @{
             BasicAuthentication = $false
-            CertificateAuthentication = $null
+            CertificateAuthentication = $false
             DigestAuthentication = $false
             ExtendedProtectionTokenChecking = 'Allow'
             ExternalUrl = "http://$($Global:ServerFqdn)/ews/exchange.asmx"
@@ -73,8 +73,8 @@ if ($exchangeInstalled)
 
         $testParams.ExternalUrl = ''
         $testParams.InternalUrl = ''
-        $expectedGetResults.ExternalUrl = $null
-        $expectedGetResults.InternalUrl = $null
+        $expectedGetResults.ExternalUrl = ''
+        $expectedGetResults.InternalUrl = ''
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Try with empty URLs' -ExpectedGetResults $expectedGetResults
 
@@ -144,8 +144,8 @@ if ($exchangeInstalled)
         $expectedGetResults = @{
             BasicAuthentication = $false
             DigestAuthentication = $false
-            ExtendedProtectionFlags = $null
-            ExtendedProtectionSPNList = $null
+            ExtendedProtectionFlags = [System.String[]]@()
+            ExtendedProtectionSPNList = [System.String[]]@()
             ExtendedProtectionTokenChecking = 'None'
             GzipLevel = 'Low'
             OAuthAuthentication = $true

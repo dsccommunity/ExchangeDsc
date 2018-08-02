@@ -8,18 +8,18 @@ function Test-TargetResourceFunctionality
     [CmdletBinding()]
     param
     (
-        [Parameter()]    
+        [Parameter()]
         [System.Collections.Hashtable]
         $Params,
-        
+
         [Parameter()]
         [System.String]
-        $ContextLabel, 
-        
+        $ContextLabel,
+
         [Parameter()]
         [System.Collections.Hashtable]
-        $ExpectedGetResults, 
-        
+        $ExpectedGetResults,
+
         [Parameter()]
         [System.Boolean]
         $ExpectedTestResult = $true
@@ -44,17 +44,69 @@ function Test-TargetResourceFunctionality
         }
         else
         {
+            <#
+                Check the members of the Get-TargetResource results and make sure the result types
+                match those of the function parameters
+            #>
+            $getTargetResourceCommand = Get-Command Get-TargetResource
+
+            It "Only 1 Get-TargetResource function is loaded" {
+                $getTargetResourceCommand.Count -eq 1 | Should Be $true
+            }
+
+            if ($getTargetResourceCommand.Count -eq 1)
+            {
+                foreach ($getTargetResourceParam in $getTargetResourceCommand.Parameters.Keys | Where-Object {$getResult.ContainsKey($_)})
+                {
+                    $getResultMemberType = '$null'
+
+                    if ($null -ne ($getResult[$getTargetResourceParam]))
+                    {
+                        $getResultMemberType = $getResult[$getTargetResourceParam].GetType().ToString()
+                    }
+
+                    It "Get-TargetResource: Parameter '$getTargetResourceParam' expects return type: '$($getTargetResourceCommand.Parameters[$getTargetResourceParam].ParameterType.ToString())'. Actual return type: '$getResultMemberType'" {
+                        ($getTargetResourceCommand.Parameters[$getTargetResourceParam].ParameterType.ToString()) -eq $getResultMemberType | Should Be $true
+                    }
+                }
+            }
+
             #Test each individual key in $ExpectedGetResult to see if they exist, and if the expected value matches
             foreach ($key in $ExpectedGetResults.Keys)
             {
+                $getContainsKey = $getResult.ContainsKey($key)
+
                 It "Get-TargetResource: Contains Key: $($key)" {
-                    $getResult | Should Be ($getResult.ContainsKey($key))
+                    $getContainsKey | Should Be $true
                 }
 
-                if ($getResult.ContainsKey($key))
+                if ($getContainsKey)
                 {
+                    if ($getResult.ContainsKey($key))
+                    {
+                        switch ((Get-Command Get-TargetResource).Parameters[$key].ParameterType)
+                        {
+                            ([System.String[]])
+                            {
+                                $getValueMatchesForKey = Compare-ArrayContent -Array1 $getResult[$key] -Array2 $ExpectedGetResults[$key]
+                            }
+                            ([System.Management.Automation.PSCredential])
+                            {
+                                $getValueMatchesForKey = $getResult[$key].UserName -like $ExpectedGetResults[$key].UserName
+                            }
+                            default
+                            {
+                                $getValueMatchesForKey = ($getResult[$key] -eq $ExpectedGetResults[$key])
+                            }
+                        }
+                    }
+                    else
+                    {
+                        $getValueMatchesForKey = $false
+                    }
+
                     It "Get-TargetResource: Value Matches for Key: $($key)" {
-                        $getResult | Should Be ($getResult.ContainsKey($key) -and $getResult[$key] -eq $ExpectedGetResults[$key])
+                        $getValueMatchesForKey | Should Be $true
                     }
                 }
             }
@@ -74,20 +126,20 @@ function Test-ArrayContentsEqual
     (
         [Parameter()]
         [System.Collections.Hashtable]
-        $TestParams, 
-        
+        $TestParams,
+
         [Parameter()]
         [System.String[]]
-        $DesiredArrayContents, 
-        
+        $DesiredArrayContents,
+
         [Parameter()]
         [System.String]
-        $GetResultParameterName, 
-        
+        $GetResultParameterName,
+
         [Parameter()]
         [System.String]
-        $ContextLabel, 
-        
+        $ContextLabel,
+
         [Parameter()]
         [System.String]
         $ItLabel
@@ -97,7 +149,7 @@ function Test-ArrayContentsEqual
         [System.Collections.Hashtable]$getResult = Get-TargetResource @TestParams
 
         It $ItLabel {
-            CompareArrayContents -Array1 $DesiredArrayContents -Array2 $getResult."$($GetResultParameterName)" -IgnoreCase | Should Be $true
+            Compare-ArrayContent -Array1 $DesiredArrayContents -Array2 $getResult."$($GetResultParameterName)" -IgnoreCase | Should Be $true
         }
     }
 }
@@ -109,20 +161,20 @@ function Test-Array2ContainsArray1
     (
         [Parameter()]
         [System.Collections.Hashtable]
-        $TestParams, 
-        
+        $TestParams,
+
         [Parameter()]
         [System.String[]]
-        $DesiredArrayContents, 
-        
+        $DesiredArrayContents,
+
         [Parameter()]
         [System.String]
-        $GetResultParameterName, 
-        
+        $GetResultParameterName,
+
         [Parameter()]
         [System.String]
-        $ContextLabel, 
-        
+        $ContextLabel,
+
         [Parameter()]
         [System.String]
         $ItLabel
@@ -187,7 +239,7 @@ function Initialize-TestForDAG
         [System.String]
         $DatabaseName
     )
-    
+
     Write-Verbose -Message 'Cleaning up test DAG and related resources'
 
     GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad '*-MailboxDatabase',`

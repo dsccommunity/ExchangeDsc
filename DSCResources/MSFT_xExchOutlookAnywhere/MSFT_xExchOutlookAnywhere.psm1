@@ -80,18 +80,18 @@ function Get-TargetResource
     if ($null -ne $RpcVdir)
     {
         $returnValue = @{
-            Identity = $Identity
-            InternalHostname = $RpcVdir.InternalHostname.HostnameString
-            ExternalHostname = $RpcVdir.ExternalHostname.HostnameString
-            InternalClientAuthenticationMethod = $RpcVdir.InternalClientAuthenticationMethod
-            ExternalClientAuthenticationMethod = $RpcVdir.ExternalClientAuthenticationMethod
-            IISAuthenticationMethods = $RpcVdir.IISAuthenticationMethods
-            ExtendedProtectionFlags = $RpcVdir.ExtendedProtectionFlags
-            ExtendedProtectionSPNList = $RpcVdir.ExtendedProtectionSPNList
-            ExtendedProtectionTokenChecking = $RpcVdir.ExtendedProtectionTokenChecking
-            ExternalClientsRequireSsl = $RpcVdir.ExternalClientsRequireSsl
-            InternalClientsRequireSsl = $RpcVdir.InternalClientsRequireSsl
-            SSLOffloading = $RpcVdir.SSLOffloading
+            Identity                           = [System.String] $Identity
+            ExtendedProtectionFlags            = [System.String[]] $RpcVdir.ExtendedProtectionFlags
+            ExtendedProtectionSPNList          = [System.String[]] $RpcVdir.ExtendedProtectionSPNList
+            ExtendedProtectionTokenChecking    = [System.String] $RpcVdir.ExtendedProtectionTokenChecking
+            ExternalClientAuthenticationMethod = [System.String] $RpcVdir.ExternalClientAuthenticationMethod
+            ExternalClientsRequireSsl          = [System.Boolean] $RpcVdir.ExternalClientsRequireSsl
+            ExternalHostname                   = [System.String] $RpcVdir.ExternalHostname.HostnameString
+            IISAuthenticationMethods           = [System.String[]] $RpcVdir.IISAuthenticationMethods
+            InternalClientAuthenticationMethod = [System.String] $RpcVdir.InternalClientAuthenticationMethod
+            InternalClientsRequireSsl          = [System.Boolean] $RpcVdir.InternalClientsRequireSsl
+            InternalHostname                   = [System.String] $RpcVdir.InternalHostname.HostnameString
+            SSLOffloading                      = [System.Boolean] $RpcVdir.SSLOffloading
         }
     }
 

@@ -112,11 +112,11 @@ if ($exchangeInstalled)
             MountAtStartup = $true
             OfflineAddressBook = "\$testOabName"
             RetainDeletedItemsUntilBackup = $false
-            IssueWarningQuota = '27 MB'
-            ProhibitSendQuota = '1GB'
-            ProhibitSendReceiveQuota = '1.5 GB'
+            IssueWarningQuota = '27 MB (28,311,552 bytes)'
+            ProhibitSendQuota = '1 GB (1,073,741,824 bytes)'
+            ProhibitSendReceiveQuota = '1.5 GB (1,610,612,736 bytes)'
             RecoverableItemsQuota = 'uNlImItEd'
-            RecoverableItemsWarningQuota = '1,000,448'
+            RecoverableItemsWarningQuota = '977 KB (1,000,448 bytes)'
         }
 
         Test-TargetResourceFunctionality -Params $testParams `
@@ -140,7 +140,7 @@ if ($exchangeInstalled)
         $testParams.RecoverableItemsQuota = '2 GB'
         $testParams.RecoverableItemsWarningQuota = '1.5 GB'
 
-        $expectedGetResults.CalendarLoggingQuota = '30mb'
+        $expectedGetResults.CalendarLoggingQuota = '30 MB (31,457,280 bytes)'
         $expectedGetResults.CircularLoggingEnabled = $false
         $expectedGetResults.DeletedItemRetention = '15.00:00:00'
         $expectedGetResults.EventHistoryRetentionPeriod = '04:05:06'
@@ -150,11 +150,11 @@ if ($exchangeInstalled)
         $expectedGetResults.MailboxRetention = '31.00:00:00'
         $expectedGetResults.MountAtStartup = $false
         $expectedGetResults.RetainDeletedItemsUntilBackup = $true
-        $expectedGetResults.IssueWarningQuota = '28 MB'
-        $expectedGetResults.ProhibitSendQuota = '2GB'
-        $expectedGetResults.ProhibitSendReceiveQuota = '2.5 GB'
-        $expectedGetResults.RecoverableItemsQuota = '2 GB'
-        $expectedGetResults.RecoverableItemsWarningQuota = '1.5 GB'
+        $expectedGetResults.IssueWarningQuota = '28 MB (29,360,128 bytes)'
+        $expectedGetResults.ProhibitSendQuota = '2 GB (2,147,483,648 bytes)'
+        $expectedGetResults.ProhibitSendReceiveQuota = '2.5 GB (2,684,354,560 bytes)'
+        $expectedGetResults.RecoverableItemsQuota = '2 GB (2,147,483,648 bytes)'
+        $expectedGetResults.RecoverableItemsWarningQuota = '1.5 GB (1,610,612,736 bytes)'
 
         $serverVersion = GetExchangeVersion
 
