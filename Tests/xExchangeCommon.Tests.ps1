@@ -21,7 +21,7 @@ function RemoveExistingPSSessions
 }
 
 # Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = IsSetupComplete
+[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
 
 if ($exchangeInstalled)
 {
