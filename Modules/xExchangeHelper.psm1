@@ -49,7 +49,7 @@ function GetRemoteExchangeSession
     if ($null -eq $Session)
     {
         #First make sure we are on a valid server version, and that Exchange is fully installed
-        if (!(Get-IsSetupComplete -VerbosePreference $VerbosePreference))
+        if (!(Get-IsSetupComplete -Verbose:$VerbosePreference))
         {
             throw 'A supported version of Exchange is either not present, or not fully installed on this machine.'
         }
@@ -169,13 +169,10 @@ function Get-IsSetupComplete
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param
-    (
-        $VerbosePreference
-    )
+    param()
 
     $exchangePresent = Get-IsExchangePresent
-    $setupPartiallyCompleted = Get-IsSetupPartiallyCompleted -VerbosePreference $VerbosePreference
+    $setupPartiallyCompleted = Get-IsSetupPartiallyCompleted -Verbose:$VerbosePreference
 
     if ($exchangePresent -eq $true -and $setupPartiallyCompleted -eq $false)
     {
@@ -197,10 +194,7 @@ function Get-IsSetupComplete
 function Get-IsSetupPartiallyCompleted
 {
     [CmdletBinding()]
-    param
-    (
-        $VerbosePreference
-    )
+    param()
 
     Write-Verbose -Message 'Checking if setup is partially complete'
 
@@ -261,9 +255,7 @@ function Get-InstallStatus
     (
         [Parameter()]
         [System.String]
-        $Arguments,
-
-        $VerbosePreference
+        $Arguments
     )
 
     Write-Verbose -Message 'Checking Exchange Install Status'
@@ -272,7 +264,7 @@ function Get-InstallStatus
 
     $shouldInstallLanguagePack = Get-ShouldInstallLanguagePack -Arguments $Arguments
     $setupRunning = Get-IsSetupRunning
-    $setupComplete = Get-IsSetupComplete -VerbosePreference $VerbosePreference
+    $setupComplete = Get-IsSetupComplete -Verbose:$VerbosePreference
     $exchangePresent = Get-IsExchangePresent
 
     if ($setupRunning -or $setupComplete)
@@ -816,6 +808,7 @@ function ReportBadSetting
 
 function LogFunctionEntry
 {
+    [CmdletBinding()]
     param([Hashtable]$Parameters, $VerbosePreference)
 
     $callingFunction = (Get-PSCallStack)[1].FunctionName

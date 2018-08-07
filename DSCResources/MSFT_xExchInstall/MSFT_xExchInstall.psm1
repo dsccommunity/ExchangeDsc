@@ -22,7 +22,7 @@ function Get-TargetResource
     LogFunctionEntry -Parameters @{
         'Path' = $Path
         'Arguments' = $Arguments
-    } -VerbosePreference $VerbosePreference
+    } -Verbose:$VerbosePreference
 
     $returnValue = @{
         Path      = [System.String] $Path
@@ -51,9 +51,9 @@ function Set-TargetResource
         $Credential
     )
 
-    LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -Verbose:$VerbosePreference
 
-    $installStatus = Get-InstallStatus -Arguments $Arguments -VerbosePreference $VerbosePreference
+    $installStatus = Get-InstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
 
     $waitingForSetup = $false
 
@@ -70,7 +70,7 @@ function Set-TargetResource
 
         Write-Verbose "Initiating Exchange Setup. Command: $($Path) $($Arguments)"
 
-        StartScheduledTask -Path "$($Path)" -Arguments "$($Arguments)" -Credential $Credential -TaskName 'Install Exchange' -VerbosePreference $VerbosePreference
+        StartScheduledTask -Path "$($Path)" -Arguments "$($Arguments)" -Credential $Credential -TaskName 'Install Exchange' -Verbose:$VerbosePreference
 
         $detectedExsetup = $false
 
@@ -120,7 +120,7 @@ function Set-TargetResource
     }
 
     #Check install status one more time and see if setup was successful
-    $installStatus = Get-InstallStatus -Arguments $Arguments -VerbosePreference $VerbosePreference
+    $installStatus = Get-InstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
 
     if ($installStatus.SetupComplete)
     {
@@ -152,9 +152,9 @@ function Test-TargetResource
         $Credential
     )
 
-    LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -Verbose:$VerbosePreference
 
-    $installStatus = Get-InstallStatus -Arguments $Arguments -VerbosePreference $VerbosePreference
+    $installStatus = Get-InstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
 
     [System.Boolean]$shouldStartOrWaitForInstall = $false
 
