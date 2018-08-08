@@ -37,16 +37,32 @@ try
 
     InModuleScope $script:DSCResourceName {
 
-        $testTargetResourceParams = @{
+        $targetResourceParams = @{
             Path       = 'E:\Setup.exe'
             Arguments  = '/mode:Install /role:Mailbox /Iacceptexchangeserverlicenseterms'
             Credential = New-Object -TypeName System.Management.Automation.PSCredential -argumentlist "fakeuser",(New-Object -TypeName System.Security.SecureString)
         }
 
+        Describe 'MSFT_xExchInstall\Get-TargetResource' -Tag 'Get' {
+            Context 'When Get-TargetResource is called' {
+                It 'Should return the input Path and Arguments' {
+
+                    $getResults = Get-TargetResource @targetResourceParams
+
+                    $getResults.Path | Should -Be $targetResourceParams.Path
+                    $getResults.Arguments | Should -Be $targetResourceParams.Arguments
+                }
+            }
+        }
+
         Describe 'MSFT_xExchInstall\Test-TargetResource' -Tag 'Test' {
+            AfterEach {
+                Assert-MockCalled -CommandName Get-InstallStatus -Exactly -Times 1 -Scope It
+            }
+
             Context 'When Exchange is not present on the system' {
                 It 'Should return $false' {
-                    Mock -CommandName Get-InstallStatus -ModuleName MSFT_xExchInstall -MockWith {
+                    Mock -CommandName Get-InstallStatus -MockWith {
                         return @{
                             ShouldInstallLanguagePack = $false
                             SetupRunning              = $false
@@ -56,13 +72,13 @@ try
                         }
                     }
 
-                    Test-TargetResource @testTargetResourceParams | Should Be $false
+                    Test-TargetResource @targetResourceParams | Should -Be $false
                 }
             }
 
             Context 'When Exchange Setup has fully completed' {
                 It 'Should return $true' {
-                    Mock -CommandName Get-InstallStatus -ModuleName MSFT_xExchInstall -MockWith {
+                    Mock -CommandName Get-InstallStatus -MockWith {
                         return @{
                             ShouldInstallLanguagePack = $false
                             SetupRunning              = $false
@@ -72,13 +88,13 @@ try
                         }
                     }
 
-                    Test-TargetResource @testTargetResourceParams | Should Be $true
+                    Test-TargetResource @targetResourceParams | Should -Be $true
                 }
             }
 
             Context 'When Exchange Setup has partially completed' {
                 It 'Should return $false' {
-                    Mock -CommandName Get-InstallStatus -ModuleName MSFT_xExchInstall -MockWith {
+                    Mock -CommandName Get-InstallStatus -MockWith {
                         return @{
                             ShouldInstallLanguagePack = $false
                             SetupRunning              = $false
@@ -88,13 +104,13 @@ try
                         }
                     }
 
-                    Test-TargetResource @testTargetResourceParams | Should Be $false
+                    Test-TargetResource @targetResourceParams | Should -Be $false
                 }
             }
 
             Context 'When Exchange Setup is currently running' {
                 It 'Should return $false' {
-                    Mock -CommandName Get-InstallStatus -ModuleName MSFT_xExchInstall -MockWith {
+                    Mock -CommandName Get-InstallStatus -MockWith {
                         return @{
                             ShouldInstallLanguagePack = $false
                             SetupRunning              = $true
@@ -104,13 +120,13 @@ try
                         }
                     }
 
-                    Test-TargetResource @testTargetResourceParams | Should Be $false
+                    Test-TargetResource @targetResourceParams | Should -Be $false
                 }
             }
 
             Context 'When a Language Pack install is requested, and the Language Pack has not been installed' {
                 It 'Should return $false' {
-                    Mock -CommandName Get-InstallStatus -ModuleName MSFT_xExchInstall -MockWith {
+                    Mock -CommandName Get-InstallStatus -MockWith {
                         return @{
                             ShouldInstallLanguagePack = $true
                             SetupRunning              = $false
@@ -120,7 +136,7 @@ try
                         }
                     }
 
-                    Test-TargetResource @testTargetResourceParams | Should Be $false
+                    Test-TargetResource @targetResourceParams | Should -Be $false
                 }
             }
         }
