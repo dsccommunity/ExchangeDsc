@@ -211,7 +211,7 @@ function Set-TargetResource
     New-Alias Write-Host Write-Verbose
 
     #Check if setup is running.
-    $setupRunning = IsSetupRunning
+    $setupRunning = Get-IsSetupRunning
 
     if ($setupRunning -eq $true)
     {
@@ -459,7 +459,7 @@ function Test-TargetResource
     #Load TransportMaintenanceMode Helper
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)"))\TransportMaintenance.psm1" -Verbose:0
 
-    $setupRunning = IsSetupRunning
+    $setupRunning = Get-IsSetupRunning
 
     if ($setupRunning -eq $true)
     {

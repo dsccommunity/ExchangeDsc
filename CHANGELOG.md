@@ -11,6 +11,10 @@
 - xExchClientAccessServer: Fixes issue where AlternateServiceAccountConfiguration
   or RemoveAlternateServiceAccountCredentials parameters can't be used at the
   same time as other optional parameters.
+- xExchInstall: Fixes issue where Test-TargetResource returns true if setup is
+  running. Fixes issue where setup is not detected as having been successfully
+  completed even if setup was successful. Adds initial set of unit tests for
+  xExchInstall and related functions.
 
 ## 1.22.0.0
 
