@@ -210,10 +210,10 @@ function Get-TargetResource
         $WacDiscoveryEndpoint
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxServer' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxServer' -Verbose:$VerbosePreference
 
     $server = GetMailboxServer @PSBoundParameters
 
@@ -507,10 +507,10 @@ function Set-TargetResource
         $WacDiscoveryEndpoint
     )
 
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-MailboxServer' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-MailboxServer' -Verbose:$VerbosePreference
 
     #Setup params for next command
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential'
@@ -759,10 +759,10 @@ function Test-TargetResource
         $WacDiscoveryEndpoint
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxServer','Set-MailboxServer' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxServer','Set-MailboxServer' -Verbose:$VerbosePreference
 
     #create array of Exchange 2013 only parameters
     [array]$Exchange2013Only = 'CalendarRepairWorkCycle','CalendarRepairWorkCycleCheckpoint','MailboxProcessorWorkCycle','ManagedFolderAssistantSchedule','ManagedFolderWorkCycle',
@@ -801,237 +801,237 @@ function Test-TargetResource
     }
     else #Validate server params
     {
-        if (!(VerifySetting -Name 'AutoDatabaseMountDial' -Type 'String' -ExpectedValue $AutoDatabaseMountDial -ActualValue $server.AutoDatabaseMountDial -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'AutoDatabaseMountDial' -Type 'String' -ExpectedValue $AutoDatabaseMountDial -ActualValue $server.AutoDatabaseMountDial -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'CalendarRepairIntervalEndWindow' -Type 'Int' -ExpectedValue $CalendarRepairIntervalEndWindow -ActualValue $server.CalendarRepairIntervalEndWindow -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'CalendarRepairIntervalEndWindow' -Type 'Int' -ExpectedValue $CalendarRepairIntervalEndWindow -ActualValue $server.CalendarRepairIntervalEndWindow -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'CalendarRepairLogDirectorySizeLimit' -Type 'Unlimited' -ExpectedValue $CalendarRepairLogDirectorySizeLimit -ActualValue $server.CalendarRepairLogDirectorySizeLimit -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'CalendarRepairLogDirectorySizeLimit' -Type 'Unlimited' -ExpectedValue $CalendarRepairLogDirectorySizeLimit -ActualValue $server.CalendarRepairLogDirectorySizeLimit -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'CalendarRepairLogEnabled' -Type 'Boolean' -ExpectedValue $CalendarRepairLogEnabled -ActualValue $server.CalendarRepairLogEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'CalendarRepairLogEnabled' -Type 'Boolean' -ExpectedValue $CalendarRepairLogEnabled -ActualValue $server.CalendarRepairLogEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'CalendarRepairLogFileAgeLimit' -Type 'TimeSpan' -ExpectedValue $CalendarRepairLogFileAgeLimit -ActualValue $server.CalendarRepairLogFileAgeLimit -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'CalendarRepairLogFileAgeLimit' -Type 'TimeSpan' -ExpectedValue $CalendarRepairLogFileAgeLimit -ActualValue $server.CalendarRepairLogFileAgeLimit -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'CalendarRepairLogPath' -Type 'String' -ExpectedValue $CalendarRepairLogPath -ActualValue $server.CalendarRepairLogPath -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'CalendarRepairLogPath' -Type 'String' -ExpectedValue $CalendarRepairLogPath -ActualValue $server.CalendarRepairLogPath -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'CalendarRepairLogSubjectLoggingEnabled' -Type 'Boolean' -ExpectedValue $CalendarRepairLogSubjectLoggingEnabled -ActualValue $server.CalendarRepairLogSubjectLoggingEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'CalendarRepairLogSubjectLoggingEnabled' -Type 'Boolean' -ExpectedValue $CalendarRepairLogSubjectLoggingEnabled -ActualValue $server.CalendarRepairLogSubjectLoggingEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'CalendarRepairMissingItemFixDisabled' -Type 'Boolean' -ExpectedValue $CalendarRepairMissingItemFixDisabled -ActualValue $server.CalendarRepairMissingItemFixDisabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'CalendarRepairMissingItemFixDisabled' -Type 'Boolean' -ExpectedValue $CalendarRepairMissingItemFixDisabled -ActualValue $server.CalendarRepairMissingItemFixDisabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'CalendarRepairMode' -Type 'String' -ExpectedValue $CalendarRepairMode -ActualValue $server.CalendarRepairMode -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'CalendarRepairMode' -Type 'String' -ExpectedValue $CalendarRepairMode -ActualValue $server.CalendarRepairMode -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'CalendarRepairWorkCycle' -Type 'TimeSpan' -ExpectedValue $CalendarRepairWorkCycle -ActualValue $server.CalendarRepairWorkCycle -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'CalendarRepairWorkCycle' -Type 'TimeSpan' -ExpectedValue $CalendarRepairWorkCycle -ActualValue $server.CalendarRepairWorkCycle -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'CalendarRepairWorkCycleCheckpoint' -Type 'TimeSpan' -ExpectedValue $CalendarRepairWorkCycleCheckpoint -ActualValue $server.CalendarRepairWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'CalendarRepairWorkCycleCheckpoint' -Type 'TimeSpan' -ExpectedValue $CalendarRepairWorkCycleCheckpoint -ActualValue $server.CalendarRepairWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'DatabaseCopyActivationDisabledAndMoveNow' -Type 'Boolean' -ExpectedValue $DatabaseCopyActivationDisabledAndMoveNow -ActualValue $server.DatabaseCopyActivationDisabledAndMoveNow -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'DatabaseCopyActivationDisabledAndMoveNow' -Type 'Boolean' -ExpectedValue $DatabaseCopyActivationDisabledAndMoveNow -ActualValue $server.DatabaseCopyActivationDisabledAndMoveNow -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'DatabaseCopyAutoActivationPolicy' -Type 'String' -ExpectedValue $DatabaseCopyAutoActivationPolicy -ActualValue $server.DatabaseCopyAutoActivationPolicy -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'DatabaseCopyAutoActivationPolicy' -Type 'String' -ExpectedValue $DatabaseCopyAutoActivationPolicy -ActualValue $server.DatabaseCopyAutoActivationPolicy -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'FolderLogForManagedFoldersEnabled' -Type 'Boolean' -ExpectedValue $FolderLogForManagedFoldersEnabled -ActualValue $server.FolderLogForManagedFoldersEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'FolderLogForManagedFoldersEnabled' -Type 'Boolean' -ExpectedValue $FolderLogForManagedFoldersEnabled -ActualValue $server.FolderLogForManagedFoldersEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'ForceGroupMetricsGeneration' -Type 'Boolean' -ExpectedValue $ForceGroupMetricsGeneration -ActualValue $server.ForceGroupMetricsGeneration -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ForceGroupMetricsGeneration' -Type 'Boolean' -ExpectedValue $ForceGroupMetricsGeneration -ActualValue $server.ForceGroupMetricsGeneration -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'IsExcludedFromProvisioning' -Type 'Boolean' -ExpectedValue $IsExcludedFromProvisioning -ActualValue $server.IsExcludedFromProvisioning -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'IsExcludedFromProvisioning' -Type 'Boolean' -ExpectedValue $IsExcludedFromProvisioning -ActualValue $server.IsExcludedFromProvisioning -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'JournalingLogForManagedFoldersEnabled' -Type 'Boolean' -ExpectedValue $JournalingLogForManagedFoldersEnabled -ActualValue $server.JournalingLogForManagedFoldersEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'JournalingLogForManagedFoldersEnabled' -Type 'Boolean' -ExpectedValue $JournalingLogForManagedFoldersEnabled -ActualValue $server.JournalingLogForManagedFoldersEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'Locale' -Type 'Array' -ExpectedValue $Locale -ActualValue $server.Locale -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'Locale' -Type 'Array' -ExpectedValue $Locale -ActualValue $server.Locale -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'LogDirectorySizeLimitForManagedFolders' -Type 'Unlimited' -ExpectedValue $LogDirectorySizeLimitForManagedFolders -ActualValue $server.LogDirectorySizeLimitForManagedFolders -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'LogDirectorySizeLimitForManagedFolders' -Type 'Unlimited' -ExpectedValue $LogDirectorySizeLimitForManagedFolders -ActualValue $server.LogDirectorySizeLimitForManagedFolders -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'LogFileAgeLimitForManagedFolders' -Type 'TimeSpan' -ExpectedValue $LogFileAgeLimitForManagedFolders -ActualValue $server.LogFileAgeLimitForManagedFolders -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'LogFileAgeLimitForManagedFolders' -Type 'TimeSpan' -ExpectedValue $LogFileAgeLimitForManagedFolders -ActualValue $server.LogFileAgeLimitForManagedFolders -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'LogFileSizeLimitForManagedFolders' -Type 'Unlimited' -ExpectedValue $LogFileSizeLimitForManagedFolders -ActualValue $server.LogFileSizeLimitForManagedFolders -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'LogFileSizeLimitForManagedFolders' -Type 'Unlimited' -ExpectedValue $LogFileSizeLimitForManagedFolders -ActualValue $server.LogFileSizeLimitForManagedFolders -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'LogPathForManagedFolders' -Type 'String' -ExpectedValue $LogPathForManagedFolders -ActualValue $server.LogPathForManagedFolders -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'LogPathForManagedFolders' -Type 'String' -ExpectedValue $LogPathForManagedFolders -ActualValue $server.LogPathForManagedFolders -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'MailboxProcessorWorkCycle' -Type 'TimeSpan' -ExpectedValue $MailboxProcessorWorkCycle -ActualValue $server.MailboxProcessorWorkCycle -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'MailboxProcessorWorkCycle' -Type 'TimeSpan' -ExpectedValue $MailboxProcessorWorkCycle -ActualValue $server.MailboxProcessorWorkCycle -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'ManagedFolderAssistantSchedule' -Type 'Array' -ExpectedValue $ManagedFolderAssistantSchedule -ActualValue $server.ManagedFolderAssistantSchedule -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ManagedFolderAssistantSchedule' -Type 'Array' -ExpectedValue $ManagedFolderAssistantSchedule -ActualValue $server.ManagedFolderAssistantSchedule -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'ManagedFolderWorkCycle' -Type 'TimeSpan' -ExpectedValue $ManagedFolderWorkCycle -ActualValue $server.ManagedFolderWorkCycle -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ManagedFolderWorkCycle' -Type 'TimeSpan' -ExpectedValue $ManagedFolderWorkCycle -ActualValue $server.ManagedFolderWorkCycle -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'ManagedFolderWorkCycleCheckpoint' -Type 'TimeSpan' -ExpectedValue $ManagedFolderWorkCycleCheckpoint -ActualValue $server.ManagedFolderWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ManagedFolderWorkCycleCheckpoint' -Type 'TimeSpan' -ExpectedValue $ManagedFolderWorkCycleCheckpoint -ActualValue $server.ManagedFolderWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'MAPIEncryptionRequired' -Type 'Boolean' -ExpectedValue $MAPIEncryptionRequired -ActualValue $server.MAPIEncryptionRequired -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'MAPIEncryptionRequired' -Type 'Boolean' -ExpectedValue $MAPIEncryptionRequired -ActualValue $server.MAPIEncryptionRequired -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'MaximumActiveDatabases' -Type 'String' -ExpectedValue $MaximumActiveDatabases -ActualValue $server.MaximumActiveDatabases -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'MaximumActiveDatabases' -Type 'String' -ExpectedValue $MaximumActiveDatabases -ActualValue $server.MaximumActiveDatabases -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'MaximumPreferredActiveDatabases' -Type 'String' -ExpectedValue $MaximumPreferredActiveDatabases -ActualValue $server.MaximumPreferredActiveDatabases -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'MaximumPreferredActiveDatabases' -Type 'String' -ExpectedValue $MaximumPreferredActiveDatabases -ActualValue $server.MaximumPreferredActiveDatabases -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'OABGeneratorWorkCycle' -Type 'TimeSpan' -ExpectedValue $OABGeneratorWorkCycle -ActualValue $server.OABGeneratorWorkCycle -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'OABGeneratorWorkCycle' -Type 'TimeSpan' -ExpectedValue $OABGeneratorWorkCycle -ActualValue $server.OABGeneratorWorkCycle -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'OABGeneratorWorkCycleCheckpoint' -Type 'TimeSpan' -ExpectedValue $OABGeneratorWorkCycleCheckpoint -ActualValue $server.OABGeneratorWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'OABGeneratorWorkCycleCheckpoint' -Type 'TimeSpan' -ExpectedValue $OABGeneratorWorkCycleCheckpoint -ActualValue $server.OABGeneratorWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'PublicFolderWorkCycle' -Type 'TimeSpan' -ExpectedValue $PublicFolderWorkCycle -ActualValue $server.PublicFolderWorkCycle -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'PublicFolderWorkCycle' -Type 'TimeSpan' -ExpectedValue $PublicFolderWorkCycle -ActualValue $server.PublicFolderWorkCycle -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'PublicFolderWorkCycleCheckpoint' -Type 'TimeSpan' -ExpectedValue $PublicFolderWorkCycleCheckpoint -ActualValue $server.PublicFolderWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'PublicFolderWorkCycleCheckpoint' -Type 'TimeSpan' -ExpectedValue $PublicFolderWorkCycleCheckpoint -ActualValue $server.PublicFolderWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'RetentionLogForManagedFoldersEnabled' -Type 'Boolean' -ExpectedValue $RetentionLogForManagedFoldersEnabled -ActualValue $server.RetentionLogForManagedFoldersEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'RetentionLogForManagedFoldersEnabled' -Type 'Boolean' -ExpectedValue $RetentionLogForManagedFoldersEnabled -ActualValue $server.RetentionLogForManagedFoldersEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'SharingPolicySchedule' -Type 'Array' -ExpectedValue $SharingPolicySchedule -ActualValue $server.SharingPolicySchedule -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'SharingPolicySchedule' -Type 'Array' -ExpectedValue $SharingPolicySchedule -ActualValue $server.SharingPolicySchedule -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'SharingPolicyWorkCycle' -Type 'TimeSpan' -ExpectedValue $SharingPolicyWorkCycle -ActualValue $server.SharingPolicyWorkCycle -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'SharingPolicyWorkCycle' -Type 'TimeSpan' -ExpectedValue $SharingPolicyWorkCycle -ActualValue $server.SharingPolicyWorkCycle -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'SharingPolicyWorkCycleCheckpoint' -Type 'TimeSpan' -ExpectedValue $SharingPolicyWorkCycleCheckpoint -ActualValue $server.SharingPolicyWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'SharingPolicyWorkCycleCheckpoint' -Type 'TimeSpan' -ExpectedValue $SharingPolicyWorkCycleCheckpoint -ActualValue $server.SharingPolicyWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'SharingSyncWorkCycle' -Type 'TimeSpan' -ExpectedValue $SharingSyncWorkCycle -ActualValue $server.SharingSyncWorkCycle -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'SharingSyncWorkCycle' -Type 'TimeSpan' -ExpectedValue $SharingSyncWorkCycle -ActualValue $server.SharingSyncWorkCycle -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'SharingSyncWorkCycleCheckpoint' -Type 'TimeSpan' -ExpectedValue $SharingSyncWorkCycleCheckpoint -ActualValue $server.SharingSyncWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'SharingSyncWorkCycleCheckpoint' -Type 'TimeSpan' -ExpectedValue $SharingSyncWorkCycleCheckpoint -ActualValue $server.SharingSyncWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'SiteMailboxWorkCycle' -Type 'TimeSpan' -ExpectedValue $SiteMailboxWorkCycle -ActualValue $server.SiteMailboxWorkCycle -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'SiteMailboxWorkCycle' -Type 'TimeSpan' -ExpectedValue $SiteMailboxWorkCycle -ActualValue $server.SiteMailboxWorkCycle -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'SiteMailboxWorkCycleCheckpoint' -Type 'TimeSpan' -ExpectedValue $SiteMailboxWorkCycleCheckpoint -ActualValue $server.SiteMailboxWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'SiteMailboxWorkCycleCheckpoint' -Type 'TimeSpan' -ExpectedValue $SiteMailboxWorkCycleCheckpoint -ActualValue $server.SiteMailboxWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'SubjectLogForManagedFoldersEnabled' -Type 'Boolean' -ExpectedValue $SubjectLogForManagedFoldersEnabled -ActualValue $server.SubjectLogForManagedFoldersEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'SubjectLogForManagedFoldersEnabled' -Type 'Boolean' -ExpectedValue $SubjectLogForManagedFoldersEnabled -ActualValue $server.SubjectLogForManagedFoldersEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'TopNWorkCycle' -Type 'TimeSpan' -ExpectedValue $TopNWorkCycle -ActualValue $server.TopNWorkCycle -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'TopNWorkCycle' -Type 'TimeSpan' -ExpectedValue $TopNWorkCycle -ActualValue $server.TopNWorkCycle -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'TopNWorkCycleCheckpoint' -Type 'TimeSpan' -ExpectedValue $TopNWorkCycleCheckpoint -ActualValue $server.TopNWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'TopNWorkCycleCheckpoint' -Type 'TimeSpan' -ExpectedValue $TopNWorkCycleCheckpoint -ActualValue $server.TopNWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'UMReportingWorkCycle' -Type 'TimeSpan' -ExpectedValue $UMReportingWorkCycle -ActualValue $server.UMReportingWorkCycle -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'UMReportingWorkCycle' -Type 'TimeSpan' -ExpectedValue $UMReportingWorkCycle -ActualValue $server.UMReportingWorkCycle -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'UMReportingWorkCycleCheckpoint' -Type 'TimeSpan' -ExpectedValue $UMReportingWorkCycleCheckpoint -ActualValue $server.UMReportingWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'UMReportingWorkCycleCheckpoint' -Type 'TimeSpan' -ExpectedValue $UMReportingWorkCycleCheckpoint -ActualValue $server.UMReportingWorkCycleCheckpoint -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'WacDiscoveryEndpoint' -Type 'String' -ExpectedValue $WacDiscoveryEndpoint -ActualValue $server.WacDiscoveryEndpoint -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'WacDiscoveryEndpoint' -Type 'String' -ExpectedValue $WacDiscoveryEndpoint -ActualValue $server.WacDiscoveryEndpoint -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }

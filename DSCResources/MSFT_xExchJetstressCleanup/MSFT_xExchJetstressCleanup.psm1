@@ -36,7 +36,7 @@ function Get-TargetResource
         $RemoveBinaries
     )
 
-    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -Verbose:$VerbosePreference
 
     $returnValue = @{
         JetstressPath = [System.String] $JetstressPath
@@ -86,7 +86,7 @@ function Set-TargetResource
         $RemoveBinaries
     )
 
-    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -Verbose:$VerbosePreference
 
     VerifyParameters @PSBoundParameters
 
@@ -137,7 +137,7 @@ function Set-TargetResource
 
                 if ($volNum -ge 0)
                 {
-                    StartDiskpart -Commands "select volume $($volNum)","remove mount=`"$($parent)`"" -VerbosePreference $VerbosePreference | Out-Null
+                    StartDiskpart -Commands "select volume $($volNum)","remove mount=`"$($parent)`"" -Verbose:$VerbosePreference | Out-Null
 
                     RemoveFolder -Path "$($parent)"
                 }
@@ -235,7 +235,7 @@ function Test-TargetResource
         $RemoveBinaries
     )
 
-    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -Verbose:$VerbosePreference
 
     VerifyParameters @PSBoundParameters
 

@@ -58,7 +58,7 @@ function Get-TargetResource
         $VolumePrefix = 'EXVOL'
     )
 
-    LogFunctionEntry -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Verbose:$VerbosePreference
 
     $diskInfo = GetDiskInfo
 
@@ -137,7 +137,7 @@ function Set-TargetResource
         $VolumePrefix = 'EXVOL'
     )
 
-    LogFunctionEntry -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Verbose:$VerbosePreference
 
     #First see if we need to assign any disks to ExVol's
     $diskInfo = GetDiskInfo
@@ -242,7 +242,7 @@ function Test-TargetResource
         $VolumePrefix = 'EXVOL'
     )
 
-    LogFunctionEntry -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Verbose:$VerbosePreference
 
     $diskInfo = GetDiskInfo
 
@@ -253,7 +253,7 @@ function Test-TargetResource
 
     if ($mountPointCount -lt ($DiskToDBMap.Count + $SpareVolumeCount))
     {
-        ReportBadSetting -SettingName 'MountPointCount' -ExpectedValue ($DiskToDBMap.Count + $SpareVolumeCount) -ActualValue $mountPointCount -VerbosePreference $VerbosePreference
+        ReportBadSetting -SettingName 'MountPointCount' -ExpectedValue ($DiskToDBMap.Count + $SpareVolumeCount) -ActualValue $mountPointCount -Verbose:$VerbosePreference
         $testResults = $false
     }
     else #Loop through all requested DB's and see if they have a mount point yet
@@ -264,7 +264,7 @@ function Test-TargetResource
             {
                 if ((DBHasMountPoint -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -Database $db -DiskInfo $diskInfo) -eq $false)
                 {
-                    ReportBadSetting -SettingName "DB '$($db)' Has Mount Point" -ExpectedValue $true -ActualValue $false -VerbosePreference $VerbosePreference
+                    ReportBadSetting -SettingName "DB '$($db)' Has Mount Point" -ExpectedValue $true -ActualValue $false -Verbose:$VerbosePreference
                     $testResults = $false
                 }
             }
@@ -987,7 +987,7 @@ function SendVolumeMountPointToEndOfList
                 $folderName = $folderName.Substring(0, $folderName.Length - 1)
             }
 
-            StartDiskpart -Commands "select volume $($VolumeNumber)","remove mount=`"$($folderName)`"","assign mount=`"$($folderName)`"" -VerbosePreference $VerbosePreference | Out-Null
+            StartDiskpart -Commands "select volume $($VolumeNumber)","remove mount=`"$($folderName)`"","assign mount=`"$($folderName)`"" -Verbose:$VerbosePreference | Out-Null
             break
         }
     }
@@ -1026,18 +1026,18 @@ function PrepareVolume
     )
 
     #Initialize the disk and put in MBR format
-    StartDiskpart -Commands "select disk $($DiskNumber)",'clean' -VerbosePreference $VerbosePreference | Out-Null
-    StartDiskpart -Commands "select disk $($DiskNumber)",'online disk' -VerbosePreference $VerbosePreference | Out-Null
-    StartDiskpart -Commands "select disk $($DiskNumber)",'attributes disk clear readonly','convert MBR' -VerbosePreference $VerbosePreference | Out-Null
-    StartDiskpart -Commands "select disk $($DiskNumber)",'offline disk' -VerbosePreference $VerbosePreference | Out-Null
+    StartDiskpart -Commands "select disk $($DiskNumber)",'clean' -Verbose:$VerbosePreference | Out-Null
+    StartDiskpart -Commands "select disk $($DiskNumber)",'online disk' -Verbose:$VerbosePreference | Out-Null
+    StartDiskpart -Commands "select disk $($DiskNumber)",'attributes disk clear readonly','convert MBR' -Verbose:$VerbosePreference | Out-Null
+    StartDiskpart -Commands "select disk $($DiskNumber)",'offline disk' -Verbose:$VerbosePreference | Out-Null
 
     #Online the disk
-    StartDiskpart -Commands "select disk $($DiskNumber)",'attributes disk clear readonly','online disk' -VerbosePreference $VerbosePreference | Out-Null
+    StartDiskpart -Commands "select disk $($DiskNumber)",'attributes disk clear readonly','online disk' -Verbose:$VerbosePreference | Out-Null
 
     #Convert to GPT if requested
     if ($PartitioningScheme -eq 'GPT')
     {
-        StartDiskpart -Commands "select disk $($DiskNumber)",'convert GPT noerr' -VerbosePreference $VerbosePreference | Out-Null
+        StartDiskpart -Commands "select disk $($DiskNumber)",'convert GPT noerr' -Verbose:$VerbosePreference | Out-Null
     }
 
     #Create the directory if it doesn't exist
@@ -1051,11 +1051,11 @@ function PrepareVolume
     {
         $formatString = "Format FS=$($FileSystem) UNIT=$($UnitSize) Label=$($Label) QUICK"
 
-        StartDiskpart -Commands "select disk $($DiskNumber)","create partition primary","$($formatString)","assign mount=`"$($Folder)`"" -VerbosePreference $VerbosePreference | Out-Null
+        StartDiskpart -Commands "select disk $($DiskNumber)","create partition primary","$($formatString)","assign mount=`"$($Folder)`"" -Verbose:$VerbosePreference | Out-Null
     }
     else #if ($FileSystem -eq "REFS")
     {
-        StartDiskpart -Commands "select disk $($DiskNumber)","create partition primary" -VerbosePreference $VerbosePreference | Out-Null
+        StartDiskpart -Commands "select disk $($DiskNumber)","create partition primary" -Verbose:$VerbosePreference | Out-Null
 
         if ($UnitSize.ToLower().EndsWith('k'))
         {
@@ -1096,7 +1096,7 @@ function AddMountPoint
         mkdir -Path "$($Folder)" | Out-Null
     }
 
-    StartDiskpart -Commands "select volume $($VolumeNumber)","assign mount=`"$($Folder)`"" -VerbosePreference $VerbosePreference | Out-Null
+    StartDiskpart -Commands "select volume $($VolumeNumber)","assign mount=`"$($Folder)`"" -Verbose:$VerbosePreference | Out-Null
 }
 
 Export-ModuleMember -Function *-TargetResource

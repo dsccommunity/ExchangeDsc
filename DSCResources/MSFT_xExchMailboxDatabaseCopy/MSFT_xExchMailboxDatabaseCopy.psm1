@@ -47,12 +47,12 @@ function Get-TargetResource
         $AdServerSettingsPreferredServer
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential `
                              -CommandsToLoad 'Get-MailboxDatabase','*DatabaseCopy*','Set-AdServerSettings' `
-                             -VerbosePreference $VerbosePreference
+                             -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
@@ -163,7 +163,7 @@ function Set-TargetResource
         $AdServerSettingsPreferredServer
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
 
     #Don't need to establish remote session, as Get-TargetResource will do it
     $copy = Get-TargetResource @PSBoundParameters
@@ -216,7 +216,7 @@ function Set-TargetResource
 
         Add-MailboxDatabaseCopy @PSBoundParameters
 
-        ThrowIfNewErrorsEncountered -CmdletBeingRun 'Add-MailboxDatabaseCopy' -VerbosePreference $VerbosePreference
+        ThrowIfNewErrorsEncountered -CmdletBeingRun 'Add-MailboxDatabaseCopy' -Verbose:$VerbosePreference
 
         #Increment the copy count, as if we made it here, we didn't fail
         $copyCount++
@@ -314,7 +314,7 @@ function Test-TargetResource
         $AdServerSettingsPreferredServer
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
 
     #Don't need to establish remote session, as Get-TargetResource will do it
     $copy = Get-TargetResource @PSBoundParameters
@@ -329,17 +329,17 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name 'ActivationPreference' -Type 'Int' -ExpectedValue $ActivationPreference -ActualValue $copy.ActivationPreference -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ActivationPreference' -Type 'Int' -ExpectedValue $ActivationPreference -ActualValue $copy.ActivationPreference -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'ReplayLagTime' -Type 'Timespan' -ExpectedValue $ReplayLagTime -ActualValue $copy.ReplayLagTime -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ReplayLagTime' -Type 'Timespan' -ExpectedValue $ReplayLagTime -ActualValue $copy.ReplayLagTime -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'TruncationLagTime' -Type 'Timespan' -ExpectedValue $TruncationLagTime -ActualValue $copy.TruncationLagTime -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'TruncationLagTime' -Type 'Timespan' -ExpectedValue $TruncationLagTime -ActualValue $copy.TruncationLagTime -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }

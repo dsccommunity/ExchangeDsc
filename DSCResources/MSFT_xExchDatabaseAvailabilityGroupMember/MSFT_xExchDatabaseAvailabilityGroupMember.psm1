@@ -27,10 +27,10 @@ function Get-TargetResource
         $SkipDagValidation
     )
 
-    LogFunctionEntry -Parameters @{'MailboxServer' = $MailboxServer;'DAGName' = $DAGName} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'MailboxServer' = $MailboxServer;'DAGName' = $DAGName} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
     #Setup params
     AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $PSBoundParameters['DAGName']}
@@ -90,10 +90,10 @@ function Set-TargetResource
         $SkipDagValidation
     )
 
-    LogFunctionEntry -Parameters @{'MailboxServer' = $MailboxServer;'DAGName' = $DAGName} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'MailboxServer' = $MailboxServer;'DAGName' = $DAGName} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Add-DatabaseAvailabilityGroupServer' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Add-DatabaseAvailabilityGroupServer' -Verbose:$VerbosePreference
 
     #Setup params
     AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $PSBoundParameters['DAGName']}
@@ -147,10 +147,10 @@ function Test-TargetResource
         $SkipDagValidation
     )
 
-    LogFunctionEntry -Parameters @{'MailboxServer' = $MailboxServer;'DAGName' = $DAGName} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'MailboxServer' = $MailboxServer;'DAGName' = $DAGName} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
     #Setup params
     AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $PSBoundParameters['DAGName']}

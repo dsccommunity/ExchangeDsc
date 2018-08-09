@@ -39,7 +39,7 @@ function Get-TargetResource
         $RetryCount = 30
     )
 
-    LogFunctionEntry -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Verbose:$VerbosePreference
 
     $dse = GetADRootDSE -Credential $Credential
 
@@ -182,7 +182,7 @@ function Set-TargetResource
         $RetryCount = 30
     )
 
-    LogFunctionEntry -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Verbose:$VerbosePreference
 
     $testResults = Test-TargetResource @PSBoundParameters
 
@@ -248,7 +248,7 @@ function Test-TargetResource
         $RetryCount = 30
     )
 
-    LogFunctionEntry -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Verbose:$VerbosePreference
 
     $adStatus = Get-TargetResource @PSBoundParameters
 
@@ -260,12 +260,12 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name 'SchemaVersion' -Type 'Int' -ExpectedValue $SchemaVersion -ActualValue $adStatus.SchemaVersion -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'SchemaVersion' -Type 'Int' -ExpectedValue $SchemaVersion -ActualValue $adStatus.SchemaVersion -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'OrganizationVersion' -Type 'Int' -ExpectedValue $OrganizationVersion -ActualValue $adStatus.OrganizationVersion -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'OrganizationVersion' -Type 'Int' -ExpectedValue $OrganizationVersion -ActualValue $adStatus.OrganizationVersion -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
@@ -295,7 +295,7 @@ function Test-TargetResource
             #Compare the desired DomainVersion with the actual version of each domain
             foreach ($domain in $targetDomains)
             {
-                if (!(VerifySetting -Name 'DomainVersion' -Type 'Int' -ExpectedValue $DomainVersion -ActualValue $adStatus.DomainVersion[$domain] -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+                if (!(VerifySetting -Name 'DomainVersion' -Type 'Int' -ExpectedValue $DomainVersion -ActualValue $adStatus.DomainVersion[$domain] -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
                 {
                     $testResults = $false
                 }

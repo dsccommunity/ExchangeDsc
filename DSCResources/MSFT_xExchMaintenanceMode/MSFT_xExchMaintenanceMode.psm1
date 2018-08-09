@@ -72,13 +72,13 @@ function Get-TargetResource
         $UpgradedServerVersion
     )
 
-    LogFunctionEntry -Parameters @{"Enabled" = $Enabled} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Enabled" = $Enabled} -Verbose:$VerbosePreference
 
     #Load TransportMaintenanceMode Helper
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)"))\TransportMaintenance.psm1" -Verbose:0
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-*" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-*" -Verbose:$VerbosePreference
 
     $maintenanceModeStatus = GetMaintenanceModeStatus -EnteringMaintenanceMode $Enabled -DomainController $DomainController
     $atDesiredVersion = IsExchangeAtDesiredVersion -DomainController $DomainController -UpgradedServerVersion $UpgradedServerVersion
@@ -197,7 +197,7 @@ function Set-TargetResource
         $UpgradedServerVersion
     )
 
-    LogFunctionEntry -Parameters @{"Enabled" = $Enabled} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Enabled" = $Enabled} -Verbose:$VerbosePreference
 
     #Load TransportMaintenanceMode Helper
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)"))\TransportMaintenance.psm1" -Verbose:0
@@ -220,7 +220,7 @@ function Set-TargetResource
     }
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "*" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "*" -Verbose:$VerbosePreference
 
     #If the request is to put the server in maintenance mode, make sure we aren't already at the (optional) requested Exchange Server version
     $atDesiredVersion = IsExchangeAtDesiredVersion -DomainController $DomainController -UpgradedServerVersion $UpgradedServerVersion
@@ -454,7 +454,7 @@ function Test-TargetResource
         $UpgradedServerVersion
     )
 
-    LogFunctionEntry -Parameters @{"Enabled" = $Enabled} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Enabled" = $Enabled} -Verbose:$VerbosePreference
 
     #Load TransportMaintenanceMode Helper
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)"))\TransportMaintenance.psm1" -Verbose:0
@@ -468,7 +468,7 @@ function Test-TargetResource
     }
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-*" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-*" -Verbose:$VerbosePreference
 
     $maintenanceModeStatus = GetMaintenanceModeStatus -EnteringMaintenanceMode $Enabled -DomainController $DomainController
 

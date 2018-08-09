@@ -15,6 +15,8 @@
   running. Fixes issue where setup is not detected as having been successfully
   completed even if setup was successful. Adds initial set of unit tests for
   xExchInstall and related functions.
+- Remove VerbosePreference from function parameters and update all calls to
+  changed functions.
 
 ## 1.22.0.0
 
