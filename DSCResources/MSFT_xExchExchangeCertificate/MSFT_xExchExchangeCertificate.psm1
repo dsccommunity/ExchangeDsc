@@ -42,10 +42,10 @@ function Get-TargetResource
         $Services
     )
 
-    LogFunctionEntry -Parameters @{"Thumbprint" = $Thumbprint} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Thumbprint" = $Thumbprint} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -Verbose:$VerbosePreference
 
     $cert = GetExchangeCertificate @PSBoundParameters
 
@@ -102,10 +102,10 @@ function Set-TargetResource
         $Services
     )
 
-    LogFunctionEntry -Parameters @{"Thumbprint" = $Thumbprint} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Thumbprint" = $Thumbprint} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*ExchangeCertificate' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*ExchangeCertificate' -Verbose:$VerbosePreference
 
     $cert = GetExchangeCertificate @PSBoundParameters
 
@@ -174,7 +174,7 @@ function Set-TargetResource
 
             Enable-ExchangeCertificate -Thumbprint $Thumbprint -Services $Services -Force -Server $env:COMPUTERNAME
 
-            ThrowIfNewErrorsEncountered -CmdletBeingRun 'Enable-ExchangeCertificate' -VerbosePreference $VerbosePreference
+            ThrowIfNewErrorsEncountered -CmdletBeingRun 'Enable-ExchangeCertificate' -Verbose:$VerbosePreference
         }
         else
         {
@@ -240,10 +240,10 @@ function Test-TargetResource
         $Services
     )
 
-    LogFunctionEntry -Parameters @{"Thumbprint" = $Thumbprint} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Thumbprint" = $Thumbprint} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -Verbose:$VerbosePreference
 
     $cert = GetExchangeCertificate @PSBoundParameters
 
@@ -255,7 +255,7 @@ function Test-TargetResource
         {
             if (!(CompareCertServices -ServicesActual $cert.Services -ServicesDesired $Services -AllowExtraServices $AllowExtraServices))
             {
-                ReportBadSetting -SettingName 'Services' -ExpectedValue $Services -ActualValue $cert.Services -VerbosePreference $VerbosePreference
+                ReportBadSetting -SettingName 'Services' -ExpectedValue $Services -ActualValue $cert.Services -Verbose:$VerbosePreference
                 $testResults = $false
             }
         }

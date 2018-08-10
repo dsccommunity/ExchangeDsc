@@ -82,10 +82,10 @@ function Get-TargetResource
         $WSSecurityAuthentication
     )
 
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-WebServicesVirtualDirectory' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-WebServicesVirtualDirectory' -Verbose:$VerbosePreference
 
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
@@ -197,10 +197,10 @@ function Set-TargetResource
         $WSSecurityAuthentication
     )
 
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-WebServicesVirtualDirectory' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-WebServicesVirtualDirectory' -Verbose:$VerbosePreference
 
     #Ensure an empty string is $null and not a string
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
@@ -312,10 +312,10 @@ function Test-TargetResource
         $WSSecurityAuthentication
     )
 
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-WebServicesVirtualDirectory' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-WebServicesVirtualDirectory' -Verbose:$VerbosePreference
 
     #Ensure an empty string is $null and not a string
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
@@ -332,72 +332,72 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name 'BasicAuthentication' -Type 'Boolean' -ExpectedValue $BasicAuthentication -ActualValue $EwsVdir.BasicAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'BasicAuthentication' -Type 'Boolean' -ExpectedValue $BasicAuthentication -ActualValue $EwsVdir.BasicAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'CertificateAuthentication' -Type 'Boolean' -ExpectedValue $CertificateAuthentication -ActualValue $EwsVdir.CertificateAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'CertificateAuthentication' -Type 'Boolean' -ExpectedValue $CertificateAuthentication -ActualValue $EwsVdir.CertificateAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'DigestAuthentication' -Type 'Boolean' -ExpectedValue $DigestAuthentication -ActualValue $EwsVdir.DigestAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'DigestAuthentication' -Type 'Boolean' -ExpectedValue $DigestAuthentication -ActualValue $EwsVdir.DigestAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'ExtendedProtectionFlags' -Type 'ExtendedProtection' -ExpectedValue $ExtendedProtectionFlags -ActualValue $EwsVdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'ExtendedProtectionFlags' -Type 'ExtendedProtection' -ExpectedValue $ExtendedProtectionFlags -ActualValue $EwsVdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'ExtendedProtectionSPNList' -Type 'Array' -ExpectedValue $ExtendedProtectionSPNList -ActualValue $EwsVdir.ExtendedProtectionSPNList -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'ExtendedProtectionSPNList' -Type 'Array' -ExpectedValue $ExtendedProtectionSPNList -ActualValue $EwsVdir.ExtendedProtectionSPNList -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'ExtendedProtectionTokenChecking' -Type 'String' -ExpectedValue $ExtendedProtectionTokenChecking -ActualValue $EwsVdir.ExtendedProtectionTokenChecking -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'ExtendedProtectionTokenChecking' -Type 'String' -ExpectedValue $ExtendedProtectionTokenChecking -ActualValue $EwsVdir.ExtendedProtectionTokenChecking -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'ExternalUrl' -Type 'String' -ExpectedValue $ExternalUrl -ActualValue $EwsVdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ExternalUrl' -Type 'String' -ExpectedValue $ExternalUrl -ActualValue $EwsVdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'GzipLevel' -Type 'Boolean' -ExpectedValue $GzipLevel -ActualValue $EwsVdir.GzipLevel -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'GzipLevel' -Type 'Boolean' -ExpectedValue $GzipLevel -ActualValue $EwsVdir.GzipLevel -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'InternalNLBBypassUrl' -Type 'String' -ExpectedValue $InternalNLBBypassUrl -ActualValue $EwsVdir.InternalNLBBypassUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'InternalNLBBypassUrl' -Type 'String' -ExpectedValue $InternalNLBBypassUrl -ActualValue $EwsVdir.InternalNLBBypassUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'InternalUrl' -Type 'String' -ExpectedValue $InternalUrl -ActualValue $EwsVdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'InternalUrl' -Type 'String' -ExpectedValue $InternalUrl -ActualValue $EwsVdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'MRSProxyEnabled' -Type 'Boolean' -ExpectedValue $MRSProxyEnabled -ActualValue $EwsVdir.MRSProxyEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'MRSProxyEnabled' -Type 'Boolean' -ExpectedValue $MRSProxyEnabled -ActualValue $EwsVdir.MRSProxyEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'OAuthAuthentication' -Type 'Boolean' -ExpectedValue $OAuthAuthentication -ActualValue $EwsVdir.OAuthAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'OAuthAuthentication' -Type 'Boolean' -ExpectedValue $OAuthAuthentication -ActualValue $EwsVdir.OAuthAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'WindowsAuthentication' -Type 'Boolean' -ExpectedValue $WindowsAuthentication -ActualValue $EwsVdir.WindowsAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'WindowsAuthentication' -Type 'Boolean' -ExpectedValue $WindowsAuthentication -ActualValue $EwsVdir.WindowsAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'WSSecurityAuthentication' -Type 'Boolean' -ExpectedValue $WSSecurityAuthentication -ActualValue $EwsVdir.WSSecurityAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'WSSecurityAuthentication' -Type 'Boolean' -ExpectedValue $WSSecurityAuthentication -ActualValue $EwsVdir.WSSecurityAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }

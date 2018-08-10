@@ -132,10 +132,10 @@ function Get-TargetResource
     
     Write-Verbose -Message 'Getting the Exchange ActiveSyncVirtualDirectory settings'
     
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ActiveSyncVirtualDirectory' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ActiveSyncVirtualDirectory' -Verbose:$VerbosePreference
 
     $easVdir = Get-ActiveSyncVirtualDirectoryInternal @PSBoundParameters
     
@@ -305,10 +305,10 @@ function Set-TargetResource
 
     Write-Verbose -Message 'Setting the Exchange ActiveSyncVirtualDirectory settings'
 
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-ActiveSyncVirtualDirectory' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-ActiveSyncVirtualDirectory' -Verbose:$VerbosePreference
 
     #Ensure an empty string is $null and not a string
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
@@ -513,10 +513,10 @@ function Test-TargetResource
 
     Write-Verbose -Message 'Testing the Exchange ActiveSyncVirtualDirectory settings'
 
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ActiveSyncVirtualDirectory' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ActiveSyncVirtualDirectory' -Verbose:$VerbosePreference
 
     #Ensure an empty string is $null and not a string
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
@@ -533,112 +533,112 @@ function Test-TargetResource
     }
     else
     {
-        if (-not (VerifySetting -Name 'ActiveSyncServer' -Type 'String' -ExpectedValue $ActiveSyncServer -ActualValue $easVdir.ActiveSyncServer -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'ActiveSyncServer' -Type 'String' -ExpectedValue $ActiveSyncServer -ActualValue $easVdir.ActiveSyncServer -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'BadItemReportingEnabled' -Type 'Boolean' -ExpectedValue $BadItemReportingEnabled -ActualValue $easVdir.BadItemReportingEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'BadItemReportingEnabled' -Type 'Boolean' -ExpectedValue $BadItemReportingEnabled -ActualValue $easVdir.BadItemReportingEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'BasicAuthEnabled' -Type 'Boolean' -ExpectedValue $BasicAuthEnabled -ActualValue $easVdir.BasicAuthEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'BasicAuthEnabled' -Type 'Boolean' -ExpectedValue $BasicAuthEnabled -ActualValue $easVdir.BasicAuthEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'ClientCertAuth' -Type 'String' -ExpectedValue $ClientCertAuth -ActualValue $easVdir.ClientCertAuth -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'ClientCertAuth' -Type 'String' -ExpectedValue $ClientCertAuth -ActualValue $easVdir.ClientCertAuth -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'CompressionEnabled' -Type 'Boolean' -ExpectedValue $CompressionEnabled -ActualValue $easVdir.CompressionEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'CompressionEnabled' -Type 'Boolean' -ExpectedValue $CompressionEnabled -ActualValue $easVdir.CompressionEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'ExtendedProtectionFlags' -Type 'ExtendedProtection' -ExpectedValue $ExtendedProtectionFlags -ActualValue $easVdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'ExtendedProtectionFlags' -Type 'ExtendedProtection' -ExpectedValue $ExtendedProtectionFlags -ActualValue $easVdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'ExtendedProtectionSPNList' -Type 'Array' -ExpectedValue $ExtendedProtectionSPNList -ActualValue $easVdir.ExtendedProtectionSPNList -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'ExtendedProtectionSPNList' -Type 'Array' -ExpectedValue $ExtendedProtectionSPNList -ActualValue $easVdir.ExtendedProtectionSPNList -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'ExtendedProtectionTokenChecking' -Type 'String' -ExpectedValue $ExtendedProtectionTokenChecking -ActualValue $easVdir.ExtendedProtectionTokenChecking -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'ExtendedProtectionTokenChecking' -Type 'String' -ExpectedValue $ExtendedProtectionTokenChecking -ActualValue $easVdir.ExtendedProtectionTokenChecking -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'ExternalAuthenticationMethods' -Type 'Array' -ExpectedValue $ExternalAuthenticationMethods -ActualValue $easVdir.ExternalAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'ExternalAuthenticationMethods' -Type 'Array' -ExpectedValue $ExternalAuthenticationMethods -ActualValue $easVdir.ExternalAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'ExternalUrl' -Type 'String' -ExpectedValue $ExternalUrl -ActualValue $easVdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'ExternalUrl' -Type 'String' -ExpectedValue $ExternalUrl -ActualValue $easVdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'InternalAuthenticationMethods' -Type 'Array' -ExpectedValue $InternalAuthenticationMethods -ActualValue $easVdir.InternalAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'InternalAuthenticationMethods' -Type 'Array' -ExpectedValue $InternalAuthenticationMethods -ActualValue $easVdir.InternalAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'InternalUrl' -Type 'String' -ExpectedValue $InternalUrl -ActualValue $easVdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'InternalUrl' -Type 'String' -ExpectedValue $InternalUrl -ActualValue $easVdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'MobileClientCertificateAuthorityURL' -Type 'String' -ExpectedValue $MobileClientCertificateAuthorityURL -ActualValue $easVdir.MobileClientCertificateAuthorityURL -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'MobileClientCertificateAuthorityURL' -Type 'String' -ExpectedValue $MobileClientCertificateAuthorityURL -ActualValue $easVdir.MobileClientCertificateAuthorityURL -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'MobileClientCertificateProvisioningEnabled' -Type 'Boolean' -ExpectedValue $MobileClientCertificateProvisioningEnabled -ActualValue $easVdir.MobileClientCertificateProvisioningEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'MobileClientCertificateProvisioningEnabled' -Type 'Boolean' -ExpectedValue $MobileClientCertificateProvisioningEnabled -ActualValue $easVdir.MobileClientCertificateProvisioningEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'MobileClientCertTemplateName' -Type 'String' -ExpectedValue $MobileClientCertTemplateName -ActualValue $easVdir.MobileClientCertTemplateName -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'MobileClientCertTemplateName' -Type 'String' -ExpectedValue $MobileClientCertTemplateName -ActualValue $easVdir.MobileClientCertTemplateName -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'Name' -Type 'String' -ExpectedValue $Name -ActualValue $easVdir.Name -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'Name' -Type 'String' -ExpectedValue $Name -ActualValue $easVdir.Name -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'RemoteDocumentsActionForUnknownServers' -Type 'String' -ExpectedValue $RemoteDocumentsActionForUnknownServers -ActualValue $easVdir.RemoteDocumentsActionForUnknownServers -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'RemoteDocumentsActionForUnknownServers' -Type 'String' -ExpectedValue $RemoteDocumentsActionForUnknownServers -ActualValue $easVdir.RemoteDocumentsActionForUnknownServers -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'RemoteDocumentsAllowedServers' -Type 'Array' -ExpectedValue $RemoteDocumentsAllowedServers -ActualValue $easVdir.RemoteDocumentsAllowedServers -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'RemoteDocumentsAllowedServers' -Type 'Array' -ExpectedValue $RemoteDocumentsAllowedServers -ActualValue $easVdir.RemoteDocumentsAllowedServers -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'RemoteDocumentsBlockedServers' -Type 'Array' -ExpectedValue $RemoteDocumentsBlockedServers -ActualValue $easVdir.RemoteDocumentsBlockedServers -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'RemoteDocumentsBlockedServers' -Type 'Array' -ExpectedValue $RemoteDocumentsBlockedServers -ActualValue $easVdir.RemoteDocumentsBlockedServers -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'RemoteDocumentsInternalDomainSuffixList' -Type 'Array' -ExpectedValue $RemoteDocumentsInternalDomainSuffixList -ActualValue $easVdir.RemoteDocumentsInternalDomainSuffixList -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'RemoteDocumentsInternalDomainSuffixList' -Type 'Array' -ExpectedValue $RemoteDocumentsInternalDomainSuffixList -ActualValue $easVdir.RemoteDocumentsInternalDomainSuffixList -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'SendWatsonReport' -Type 'Boolean' -ExpectedValue $SendWatsonReport -ActualValue $easVdir.SendWatsonReport -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'SendWatsonReport' -Type 'Boolean' -ExpectedValue $SendWatsonReport -ActualValue $easVdir.SendWatsonReport -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (-not (VerifySetting -Name 'WindowsAuthEnabled' -Type 'Boolean' -ExpectedValue $WindowsAuthEnabled -ActualValue $easVdir.WindowsAuthEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (-not (VerifySetting -Name 'WindowsAuthEnabled' -Type 'Boolean' -ExpectedValue $WindowsAuthEnabled -ActualValue $easVdir.WindowsAuthEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
@@ -652,7 +652,7 @@ function Test-TargetResource
                 ReportBadSetting -SettingName 'AutoCertBasedAuthThumbprint' `
                                  -ExpectedValue 'Not null or empty' `
                                  -ActualValue '' `
-                                 -VerbosePreference $VerbosePreference
+                                 -Verbose:$VerbosePreference
                 $testResults = $false
             }
             elseif ($null -eq $AutoCertBasedAuthHttpsBindings -or $AutoCertBasedAuthHttpsBindings.Count -eq 0)
@@ -660,7 +660,7 @@ function Test-TargetResource
                 ReportBadSetting -SettingName 'AutoCertBasedAuthHttpsBindings' `
                                  -ExpectedValue 'Not null or empty' `
                                  -ActualValue '' `
-                                 -VerbosePreference $VerbosePreference
+                                 -Verbose:$VerbosePreference
                 $testResults = $false
             }
             elseif ((Test-CertBasedAuth -AutoCertBasedAuthThumbprint $AutoCertBasedAuthThumbprint -AutoCertBasedAuthHttpsBindings $AutoCertBasedAuthHttpsBindings) -eq $false)
@@ -668,7 +668,7 @@ function Test-TargetResource
                 ReportBadSetting -SettingName 'TestCertBasedAuth' `
                                  -ExpectedValue $true `
                                  -ActualValue $false `
-                                 -VerbosePreference $VerbosePreference
+                                 -Verbose:$VerbosePreference
                 $testResults = $false
             }
         }
@@ -677,7 +677,7 @@ function Test-TargetResource
         {
             if (-not (Test-ISAPIFilter))
             {
-                ReportBadSetting -SettingName 'InstallIsapiFilter' -ExpectedValue $InstallIsapiFilter -ActualValue 'false' -VerbosePreference $VerbosePreference
+                ReportBadSetting -SettingName 'InstallIsapiFilter' -ExpectedValue $InstallIsapiFilter -ActualValue 'false' -Verbose:$VerbosePreference
                 $testResults = $false
             }
         }

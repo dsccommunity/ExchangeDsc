@@ -17,8 +17,6 @@ function GetRemoteExchangeSession
         [System.String[]]
         $CommandsToLoad,
 
-        $VerbosePreference,
-
         $SetupProcessName = "ExSetup*"
     )
 
@@ -112,7 +110,7 @@ function GetRemoteExchangeSession
 function RemoveExistingRemoteSession
 {
     [CmdletBinding()]
-    param($VerbosePreference)
+    param()
 
     $sessions = GetExistingExchangeSession
 
@@ -678,7 +676,7 @@ function VerifySetting
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param([System.String]$Name, [System.String]$Type, $ExpectedValue, $ActualValue, $PSBoundParametersIn, $VerbosePreference)
+    param([System.String]$Name, [System.String]$Type, $ExpectedValue, $ActualValue, $PSBoundParametersIn)
 
     $returnValue = $true
 
@@ -793,7 +791,7 @@ function VerifySetting
 
     if ($returnValue -eq $false)
     {
-        ReportBadSetting -SettingName $Name -ExpectedValue $ExpectedValue -ActualValue $ActualValue -VerbosePreference $VerbosePreference
+        ReportBadSetting -SettingName $Name -ExpectedValue $ExpectedValue -ActualValue $ActualValue -Verbose:$VerbosePreference
     }
 
     return $returnValue
@@ -801,7 +799,7 @@ function VerifySetting
 
 function ReportBadSetting
 {
-    param($SettingName, $ExpectedValue, $ActualValue, $VerbosePreference)
+    param($SettingName, $ExpectedValue, $ActualValue)
 
     Write-Verbose "Invalid setting '$($SettingName)'. Expected value: '$($ExpectedValue)'. Actual value: '$($ActualValue)'"
 }
@@ -809,7 +807,7 @@ function ReportBadSetting
 function LogFunctionEntry
 {
     [CmdletBinding()]
-    param([Hashtable]$Parameters, $VerbosePreference)
+    param([Hashtable]$Parameters)
 
     $callingFunction = (Get-PSCallStack)[1].FunctionName
 
@@ -863,9 +861,7 @@ function StartScheduledTask
         $MaxWaitMinutes = 0,
 
         [System.UInt32]
-        $TaskPriority = 4,
-
-        $VerbosePreference
+        $TaskPriority = 4
     )
 
     $tName = "$([guid]::NewGuid().ToString())"
@@ -952,7 +948,7 @@ function NotePreviousError
 function ThrowIfNewErrorsEncountered
 {
     [CmdletBinding()]
-    param([System.String]$CmdletBeingRun, $VerbosePreference)
+    param([System.String]$CmdletBeingRun)
 
     #Throw an exception if errors were encountered
     if ($Global:error.Count -gt 0 -and $Global:previousError -ne $Global:error[0])
@@ -1014,7 +1010,7 @@ function CompareIPAddresseWithString
 
     if ($returnValue -eq $false)
     {
-        ReportBadSetting -SettingName $IPAddress -ExpectedValue $ExpectedValue -ActualValue $IPAddress -VerbosePreference $VerbosePreference
+        ReportBadSetting -SettingName $IPAddress -ExpectedValue $ExpectedValue -ActualValue $IPAddress -Verbose:$VerbosePreference
     }
     return $returnValue
 }
@@ -1072,7 +1068,7 @@ function CompareIPAddressesWithArray
     }
     if ($returnValue -eq $false)
     {
-        ReportBadSetting -SettingName $IPAddresses -ExpectedValue $ExpectedValue -ActualValue $IPAddress -VerbosePreference $VerbosePreference
+        ReportBadSetting -SettingName $IPAddresses -ExpectedValue $ExpectedValue -ActualValue $IPAddress -Verbose:$VerbosePreference
     }
     return $returnValue
 }

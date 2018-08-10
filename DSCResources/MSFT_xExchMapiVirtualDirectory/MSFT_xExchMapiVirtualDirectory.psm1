@@ -35,10 +35,10 @@ function Get-TargetResource
         $InternalUrl
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MapiVirtualDirectory" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MapiVirtualDirectory" -Verbose:$VerbosePreference
 
     $vdir = GetMapiVirtualDirectory @PSBoundParameters
 
@@ -90,10 +90,10 @@ function Set-TargetResource
         $InternalUrl
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Set-MapiVirtualDirectory" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Set-MapiVirtualDirectory" -Verbose:$VerbosePreference
 
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential","AllowServiceRestart"
 
@@ -151,10 +151,10 @@ function Test-TargetResource
         $InternalUrl
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MapiVirtualDirectory" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MapiVirtualDirectory" -Verbose:$VerbosePreference
 
     $vdir = GetMapiVirtualDirectory @PSBoundParameters
 
@@ -168,17 +168,17 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name "IISAuthenticationMethods" -Type "Array" -ExpectedValue $IISAuthenticationMethods -ActualValue $vdir.IISAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "IISAuthenticationMethods" -Type "Array" -ExpectedValue $IISAuthenticationMethods -ActualValue $vdir.IISAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name "ExternalUrl" -Type "String" -ExpectedValue $ExternalUrl -ActualValue $vdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "ExternalUrl" -Type "String" -ExpectedValue $ExternalUrl -ActualValue $vdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name "InternalUrl" -Type "String" -ExpectedValue $InternalUrl -ActualValue $vdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "InternalUrl" -Type "String" -ExpectedValue $InternalUrl -ActualValue $vdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }    

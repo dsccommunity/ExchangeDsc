@@ -36,10 +36,10 @@ function Get-TargetResource
         $X509CertificateName
     )
 
-    LogFunctionEntry -Parameters @{"Server" = $Server} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Server" = $Server} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ImapSettings' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ImapSettings' -Verbose:$VerbosePreference
 
     $imap = GetImapSettings @PSBoundParameters
 
@@ -92,10 +92,10 @@ function Set-TargetResource
         $X509CertificateName
     )
 
-    LogFunctionEntry -Parameters @{"Server" = $Server} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Server" = $Server} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-ImapSettings' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-ImapSettings' -Verbose:$VerbosePreference
 
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
 
@@ -151,10 +151,10 @@ function Test-TargetResource
         $X509CertificateName
     )
 
-    LogFunctionEntry -Parameters @{"Server" = $Server} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Server" = $Server} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ImapSettings' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ImapSettings' -Verbose:$VerbosePreference
 
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
@@ -170,17 +170,17 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name 'LoginType' -Type 'String' -ExpectedValue $LoginType -ActualValue $imap.LoginType -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'LoginType' -Type 'String' -ExpectedValue $LoginType -ActualValue $imap.LoginType -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }  
         
-        if (!(VerifySetting -Name 'ExternalConnectionSettings' -Type 'Array' -ExpectedValue $ExternalConnectionSettings -ActualValue $imap.ExternalConnectionSettings -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ExternalConnectionSettings' -Type 'Array' -ExpectedValue $ExternalConnectionSettings -ActualValue $imap.ExternalConnectionSettings -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         } 
         
-        if (!(VerifySetting -Name 'X509CertificateName' -Type 'String' -ExpectedValue $X509CertificateName -ActualValue $imap.X509CertificateName -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'X509CertificateName' -Type 'String' -ExpectedValue $X509CertificateName -ActualValue $imap.X509CertificateName -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }  

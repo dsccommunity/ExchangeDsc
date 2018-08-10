@@ -24,10 +24,10 @@ function Get-TargetResource
         $DomainController
     )
 
-    LogFunctionEntry -Parameters @{'Server' = $Server} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMCallRouterSettings' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMCallRouterSettings' -Verbose:$VerbosePreference
 
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Server','DomainController'
 
@@ -69,10 +69,10 @@ function Set-TargetResource
         $DomainController
     )
 
-    LogFunctionEntry -Parameters @{'Server' = $Server} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMCallRouterSettings' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMCallRouterSettings' -Verbose:$VerbosePreference
 
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential'
 
@@ -105,7 +105,7 @@ function Test-TargetResource
         $DomainController
     )
 
-    LogFunctionEntry -Parameters @{'Server' = $Server} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
 
     $umService = Get-TargetResource @PSBoundParameters
@@ -120,7 +120,7 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name 'UMStartupMode' -Type 'String' -ExpectedValue $UMStartupMode -ActualValue $umService.UMStartupMode -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'UMStartupMode' -Type 'String' -ExpectedValue $UMStartupMode -ActualValue $umService.UMStartupMode -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }        

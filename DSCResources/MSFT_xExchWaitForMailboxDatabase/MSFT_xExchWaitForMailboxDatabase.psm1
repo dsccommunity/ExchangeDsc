@@ -31,10 +31,10 @@ function Get-TargetResource
         $AdServerSettingsPreferredServer
     )
 
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase','Set-AdServerSettings' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase','Set-AdServerSettings' -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
@@ -85,10 +85,10 @@ function Set-TargetResource
         $AdServerSettingsPreferredServer
     )
 
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase','Set-AdServerSettings' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase','Set-AdServerSettings' -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
@@ -151,10 +151,10 @@ function Test-TargetResource
         $AdServerSettingsPreferredServer
     )
 
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase','Set-AdServerSettings' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase','Set-AdServerSettings' -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
