@@ -23,31 +23,28 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     #Get the Server FQDN for using in URL's
-    if ($null -eq $Global:ServerFqdn)
+    if ($null -eq $serverFqdn)
     {
-        $Global:ServerFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
+        $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
     Describe 'Test Setting Properties with xExchWebServicesVirtualDirectory' {
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\EWS (Default Web Site)"
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             BasicAuthentication = $false
             CertificateAuthentication = $false
             DigestAuthentication = $false
             ExtendedProtectionFlags = @('AllowDotlessSPN','NoServicenameCheck')
             ExtendedProtectionSPNList = @('http/mail.fabrikam.com','http/mail.fabrikam.local','http/wxweqc')
             ExtendedProtectionTokenChecking = 'Allow'
-            ExternalUrl = "http://$($Global:ServerFqdn)/ews/exchange.asmx"
+            ExternalUrl = "http://$($serverFqdn)/ews/exchange.asmx"
             GzipLevel = 'High'
-            InternalNLBBypassUrl = "http://$($Global:ServerFqdn)/ews/exchange.asmx"
-            InternalUrl = "http://$($Global:ServerFqdn)/ews/exchange.asmx"
+            InternalNLBBypassUrl = "http://$($serverFqdn)/ews/exchange.asmx"
+            InternalUrl = "http://$($serverFqdn)/ews/exchange.asmx"
             OAuthAuthentication = $false
             WindowsAuthentication = $true
             WSSecurityAuthentication = $true
@@ -58,10 +55,10 @@ if ($exchangeInstalled)
             CertificateAuthentication = $false
             DigestAuthentication = $false
             ExtendedProtectionTokenChecking = 'Allow'
-            ExternalUrl = "http://$($Global:ServerFqdn)/ews/exchange.asmx"
+            ExternalUrl = "http://$($serverFqdn)/ews/exchange.asmx"
             GzipLevel = 'High'
-            InternalNLBBypassUrl = "http://$($Global:ServerFqdn)/ews/exchange.asmx"
-            InternalUrl = "http://$($Global:ServerFqdn)/ews/exchange.asmx"
+            InternalNLBBypassUrl = "http://$($serverFqdn)/ews/exchange.asmx"
+            InternalUrl = "http://$($serverFqdn)/ews/exchange.asmx"
             OAuthAuthentication = $false
             WindowsAuthentication = $true
             WSSecurityAuthentication = $true
@@ -83,7 +80,7 @@ if ($exchangeInstalled)
             $testParams.ExtendedProtectionFlags = @('NoServicenameCheck')
             try
             {
-                $SetResults = Set-TargetResource @testParams
+                Set-TargetResource @testParams | Out-Null
             }
             catch
             {
@@ -107,7 +104,7 @@ if ($exchangeInstalled)
             $testParams.ExtendedProtectionFlags = @('NoServicenameCheck','None')
             try
             {
-                $SetResults = Set-TargetResource @testParams
+                Set-TargetResource @testParams | Out-Null
             }
             catch
             {
@@ -129,16 +126,16 @@ if ($exchangeInstalled)
         #Set Authentication values back to default
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\EWS (Default Web Site)"
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             BasicAuthentication = $false
             DigestAuthentication = $false
             ExtendedProtectionFlags = 'None'
             ExtendedProtectionSPNList = $null
             ExtendedProtectionTokenChecking = 'None'
             GzipLevel = 'Low'
-            OAuthAuthentication = $true                       
+            OAuthAuthentication = $true
             WindowsAuthentication = $true
-            WSSecurityAuthentication = $true          
+            WSSecurityAuthentication = $true
         }
 
         $expectedGetResults = @{

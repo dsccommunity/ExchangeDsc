@@ -53,11 +53,11 @@ $ConfigurationData = @{
     DAG1 = @(
         @{
             ###DAG Settings###
-            DAGName                              = 'TestDAG1'           
-            AutoDagTotalNumberOfServers          = 4     
+            DAGName                              = 'TestDAG1'
+            AutoDagTotalNumberOfServers          = 4
             AutoDagDatabaseCopiesPerVolume       = 2
-            DatabaseAvailabilityGroupIPAddresses = '192.168.1.99','192.168.2.99'     
-            WitnessServer                        = 'e14-1.mikelab.local'
+            DatabaseAvailabilityGroupIPAddresses = '192.168.1.99','192.168.2.99'
+            WitnessServer                        = 'e14-1.contoso.local'
 
             #xDatabaseAvailabilityGroupNetwork params
             #New network params
@@ -83,7 +83,7 @@ Configuration Example
         [System.Management.Automation.PSCredential]
         $ExchangeAdminCredential
     )
-    
+
     Import-DscResource -Module xExchange
 
     #This section only configures a single DAG node, the first member of the DAG.
@@ -102,7 +102,7 @@ Configuration Example
             AutoDagDatabasesRootFolderPath       = 'C:\ExchangeDatabases'
             AutoDagVolumesRootFolderPath         = 'C:\ExchangeVolumes'
             DatacenterActivationMode             = 'DagOnly'
-            DatabaseAvailabilityGroupIPAddresses = $dagSettings.DatabaseAvailabilityGroupIPAddresses 
+            DatabaseAvailabilityGroupIPAddresses = $dagSettings.DatabaseAvailabilityGroupIPAddresses
             ManualDagNetworkConfiguration        = $true
             ReplayLagManagerEnabled              = $true
             SkipDagValidation                    = $true
@@ -139,7 +139,7 @@ Configuration Example
             DatabaseAvailabilityGroup = $dagSettings.DAGName
             Ensure                    = 'Present'
             ReplicationEnabled        = $dagSettings.DAGNet2ReplicationEnabled
-            Subnets                   = $dagSettings.DAGNet2Subnets            
+            Subnets                   = $dagSettings.DAGNet2Subnets
             DependsOn                 = '[xExchDatabaseAvailabilityGroupMember]DAGMember' #Can't do work on DAG networks until at least one member is in the DAG...
         }
 

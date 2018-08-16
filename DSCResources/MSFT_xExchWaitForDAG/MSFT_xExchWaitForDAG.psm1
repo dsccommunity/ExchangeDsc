@@ -38,7 +38,7 @@ function Get-TargetResource
     {
         $returnValue = @{
             Identity = [System.String] $Identity
-        }    
+        }
 
     }
 
@@ -94,7 +94,7 @@ function Set-TargetResource
             break
         }
     }
-    
+
     if ($null -eq $dag)
     {
         throw "DAG '$($Identity)' does not yet exist. This will prevent resources that are dependant on this resource from executing. If you are running the DSC configuration in push mode, you will need to re-run the configuration once the database has been created."

@@ -170,11 +170,11 @@ function Set-TargetResource
     {
         if ($null -ne $cert)
         {
-            NotePreviousError
+            $previousError = Get-PreviousError
 
             Enable-ExchangeCertificate -Thumbprint $Thumbprint -Services $Services -Force -Server $env:COMPUTERNAME
 
-            ThrowIfNewErrorsEncountered -CmdletBeingRun 'Enable-ExchangeCertificate' -Verbose:$VerbosePreference
+            Assert-NoNewError -CmdletBeingRun 'Enable-ExchangeCertificate' -PreviousError $previousError -Verbose:$VerbosePreference
         }
         else
         {
@@ -339,17 +339,17 @@ function CompareCertServices
     (
         [Parameter()]
         [System.String]
-        $ServicesActual, 
-        
+        $ServicesActual,
+
         [Parameter()]
         [System.String[]]
-        $ServicesDesired, 
-        
+        $ServicesDesired,
+
         [Parameter()]
         [System.Boolean]
         $AllowExtraServices
     )
-    
+
     $actual = StringToArray -StringIn $ServicesActual -Separator ','
 
     if ($AllowExtraServices -eq $true)

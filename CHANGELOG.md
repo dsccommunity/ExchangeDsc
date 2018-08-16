@@ -17,6 +17,10 @@
   xExchInstall and related functions.
 - Remove VerbosePreference from function parameters and update all calls to
   changed functions.
+- Fixes multiple PSScriptAnalyzer issues. Specifically, fixes all instances of
+  PSAvoidTrailingWhitespace, PSAvoidGlobalVars,
+  PSAvoidUsingConvertToSecureStringWithPlainText, PSUseSingularNouns, and
+  fixes many instances of PSUseDeclaredVarsMoreThanAssignments.
 
 ## 1.22.0.0
 

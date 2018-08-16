@@ -33,7 +33,7 @@ function Get-TargetResource
         Type            = [System.String] $Type
         JetstressPath   = [System.String] $JetstressPath
         JetstressParams = [System.String] $JetstressParams
-        MaxWaitMinutes  = [System.UInt32] $MaxWaitMinutes        
+        MaxWaitMinutes  = [System.UInt32] $MaxWaitMinutes
     }
 
     $returnValue
@@ -100,7 +100,7 @@ function Set-TargetResource
         if ($initializingESE -eq $true)
         {
             Write-Verbose -Message 'Jetstress has never initialized performance counters for ESE. Waiting a full 60 seconds for this to occurr'
-            
+
             Start-Sleep -Seconds 5
 
             for ($i = 55; $i -gt 0; $i--)

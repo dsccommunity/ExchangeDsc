@@ -363,14 +363,14 @@ function Set-TargetResource
             {
                 Write-Warning -Message 'The configuration will not take effect until MSExchangeIS is manually restarted.'
             }
-            
+
             #If MountAtStartup is not explicitly set to $false, mount the new database
             if ($PSBoundParameters.ContainsKey('SkipInitialDatabaseMount') -eq $true -and $SkipInitialDatabaseMount -eq $true)
             {
                 #Don't mount the DB, regardless of what else is set.
             }
             elseif ($PSBoundParameters.ContainsKey('MountAtStartup') -eq $false -or $MountAtStartup -eq $true)
-            {                            
+            {
                 Write-Verbose -Message 'Attempting to mount database.'
 
                 MountDatabase @PSBoundParameters
@@ -399,7 +399,7 @@ function Set-TargetResource
                 throw 'Database must have only a single copy for the DB path or log path to be moved'
             }
         }
-        
+
         #setup params
         AddParameters -PSBoundParametersIn $PSBoundParameters `
                       -ParamsToAdd @{'Identity' = $Name}
@@ -714,7 +714,7 @@ function Test-TargetResource
             $testResults = $false
         }
     }
-    
+
     return $testResults
 }
 
@@ -989,7 +989,7 @@ function MoveDatabaseOrLogPath
         [System.Boolean]
         $SkipInitialDatabaseMount
     )
-    
+
     AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $Name}
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController','EdbFilePath','LogFolderPath'
 
@@ -1128,15 +1128,15 @@ function MountDatabase
         [System.Boolean]
         $SkipInitialDatabaseMount
     )
-    
+
     AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $Name}
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
-    NotePreviousError
+    $previousError = Get-PreviousError
 
     Mount-Database @PSBoundParameters
 
-    ThrowIfNewErrorsEncountered -CmdletBeingRun 'Mount-Database' -Verbose:$VerbosePreference
+    Assert-NoNewError -CmdletBeingRun 'Mount-Database' -PreviousError $previousError -Verbose:$VerbosePreference
 }
 
 Export-ModuleMember -Function *-TargetResource

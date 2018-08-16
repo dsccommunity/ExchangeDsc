@@ -23,17 +23,14 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     Describe 'Test Enabling and Disabling Event Log Levels' {
         #Set event log level to high
         $testParams = @{
             Identity = 'MSExchangeTransport\DSN'
             Level = 'High'
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
         }
 
         $expectedGetResults = @{
@@ -43,7 +40,7 @@ if ($exchangeInstalled)
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Set MSExchangeTransport\DSN to High' `
                                          -ExpectedGetResults $expectedGetResults
-        
+
         #Set event log level to lowest
         $testParams.Level = 'Lowest'
         $expectedGetResults.Level = 'Lowest'

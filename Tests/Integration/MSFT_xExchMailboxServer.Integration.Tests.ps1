@@ -23,10 +23,7 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     Describe 'Test Setting Properties with xExchMailboxServer' {
         $serverVersion = GetExchangeVersion
@@ -34,7 +31,7 @@ if ($exchangeInstalled)
         #Make sure DB activation is not blocked
         $testParams = @{
             Identity = $env:COMPUTERNAME
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             AutoDatabaseMountDial = 'BestAvailability'
             CalendarRepairIntervalEndWindow = '15'
             CalendarRepairLogDirectorySizeLimit = '1GB'
@@ -169,7 +166,7 @@ if ($exchangeInstalled)
         #Make sure DB activation is not blocked
         $testParams = @{
             Identity = $env:COMPUTERNAME
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             AutoDatabaseMountDial = 'GoodAvailability'
             CalendarRepairLogDirectorySizeLimit = '500MB'
             CalendarRepairLogEnabled = $true
@@ -276,7 +273,7 @@ if ($exchangeInstalled)
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Reset values to default' `
                                          -ExpectedGetResults $expectedGetResults
-        
+
         Test-ArrayContentsEqual -TestParams $testParams `
                                 -DesiredArrayContents $testParams.SharingPolicySchedule `
                                 -GetResultParameterName 'SharingPolicySchedule' `

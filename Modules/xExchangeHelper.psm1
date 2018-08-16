@@ -935,27 +935,59 @@ function CheckForCmdletParameter
     return $hasParameter
 }
 
-function NotePreviousError
+<#
+    .SYNOPSIS
+        Returns the most recent error in the $Global:Error Variable
+#>
+function Get-PreviousError
 {
-    $Global:previousError = $null
+    # Suppressing this rule to allow use of the built-in Global:Error variable
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.ErrorRecord])]
+    param()
 
-    if ($Global:error.Count -gt 0)
+    $previousError = $null
+
+    if ($Global:Error.Count -gt 0)
     {
-        $Global:previousError = $Global:error[0]
+        $previousError = $Global:Error[0]
     }
+
+    return $previousError
 }
 
-function ThrowIfNewErrorsEncountered
+<#
+    .SYNOPSIS
+        Compares the most recent error in the $Global:Error variable to the input
+        $PreviousError variable. If they are not the same, throws an exception.
+
+    .PARAMETER CmdletBeingRun
+        The name of the cmdlet that was run immediately prior to calling
+        this function.
+
+    .PARAMETER PreviousError
+        The previous known error variable to compare against the most recent
+        error that has occurred.
+#>
+function Assert-NoNewError
 {
+    # Suppressing this rule to allow use of the built-in Global:Error variable
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
     [CmdletBinding()]
-    param([System.String]$CmdletBeingRun)
+    param
+    (
+        [System.String]
+        $CmdletBeingRun,
+
+        [System.Management.Automation.ErrorRecord]
+        $PreviousError
+    )
 
     #Throw an exception if errors were encountered
-    if ($Global:error.Count -gt 0 -and $Global:previousError -ne $Global:error[0])
+    if ($Global:Error.Count -gt 0 -and $PreviousError -ne $Global:Error[0])
     {
-        [System.String]$errorMsg = "Failed to run $($CmdletBeingRun) with: " + $Global:error[0]
-        Write-Error $errorMsg
-        throw $errorMsg
+        throw "Failed to run $CmdletBeingRun with: $($Global:Error[0])"
     }
 }
 

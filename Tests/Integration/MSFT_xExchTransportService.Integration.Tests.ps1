@@ -23,16 +23,13 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     Describe 'Set and modify Transport Service configuration' {
     #Set configuration with default values
     $testParams = @{
          Identity                                = $env:computername
-         Credential                              = $Global:ShellCredentials
+         Credential                              = $shellCredentials
          AllowServiceRestart                     = $true
          ActiveUserStatisticsLogMaxAge           = '30.00:00:00'
          ActiveUserStatisticsLogMaxDirectorySize = '250MB'
@@ -60,7 +57,7 @@ if ($exchangeInstalled)
          ExternalDNSProtocolOption               = 'any'
          ExternalDNSServers                      = ''
          ExternalIPAddress                       = ''
-         InternalDNSAdapterEnabled               = $true          
+         InternalDNSAdapterEnabled               = $true
          InternalDNSAdapterGuid                  = '00000000-0000-0000-0000-000000000000'
          InternalDNSProtocolOption               = 'any'
          InternalDNSServers                      = ''
@@ -149,7 +146,7 @@ if ($exchangeInstalled)
          ExternalDNSProtocolOption               = 'any'
          ExternalDNSServers                      = [System.String[]]@()
          ExternalIPAddress                       = ''
-         InternalDNSAdapterEnabled               = $true          
+         InternalDNSAdapterEnabled               = $true
          InternalDNSAdapterGuid                  = '00000000-0000-0000-0000-000000000000'
          InternalDNSProtocolOption               = 'any'
          InternalDNSServers                      = [System.String[]]@()
@@ -212,27 +209,27 @@ if ($exchangeInstalled)
     }
 
      Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Set default Transport Service configuration' -ExpectedGetResults $expectedGetResults
-     
+
      #modify configuration
      $testParams.InternalDNSServers = '192.168.1.10'
      $testParams.ExternalDNSServers = '10.1.1.10'
      $testParams.PipelineTracingSenderAddress = 'john.doe@contoso.com'
-     
+
      $expectedGetResults.InternalDNSServers = [System.String]@('192.168.1.10')
      $expectedGetResults.ExternalDNSServers = [System.String]@('10.1.1.10')
      $expectedGetResults.PipelineTracingSenderAddress = 'john.doe@contoso.com'
 
      Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Modify Transport Service configuration' -ExpectedGetResults $expectedGetResults
-     
+
      #modify configuration
      $testParams.InternalDNSServers = ''
      $testParams.ExternalDNSServers = ''
      $testParams.PipelineTracingSenderAddress = ''
-     
+
      $expectedGetResults.InternalDNSServers = [System.String[]]@()
      $expectedGetResults.ExternalDNSServers = [System.String[]]@()
      $expectedGetResults.PipelineTracingSenderAddress = ''
-     
+
      Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Revert Transport Service configuration' -ExpectedGetResults $expectedGetResults
      }
 }

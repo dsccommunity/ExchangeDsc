@@ -67,13 +67,13 @@ Configuration Example
     Import-DscResource -Module xExchange
 
     Node $AllNodes.NodeName
-    {      
+    {
         #Create primary databases
         foreach ($DB in $Node.PrimaryDBList.Values)
         {
             $resourceId = "MDB_$($DB.Name)" #Need to define a unique ID for each database
 
-            xExchMailboxDatabase $resourceId 
+            xExchMailboxDatabase $resourceId
             {
                 Name                     = $DB.Name
                 Credential               = $ExchangeAdminCredential
@@ -93,13 +93,13 @@ Configuration Example
         foreach ($DB in $Node.CopyDBList.Values)
         {
             $waitResourceId = "WaitForDB_$($DB.Name)" #Unique ID for the xExchWaitForMailboxDatabase resource
-            $copyResourceId = "MDBCopy_$($DB.Name)" #Unique ID for the xExchMailboxDatabaseCopy resource 
+            $copyResourceId = "MDBCopy_$($DB.Name)" #Unique ID for the xExchMailboxDatabaseCopy resource
 
             #Need to wait for a primary copy to be created before we add a copy
             xExchWaitForMailboxDatabase $waitResourceId
             {
                 Identity   = $DB.Name
-                Credential = $ExchangeAdminCredential                
+                Credential = $ExchangeAdminCredential
             }
 
             xExchMailboxDatabaseCopy $copyResourceId
@@ -109,7 +109,7 @@ Configuration Example
                 MailboxServer        = $Node.NodeName
                 ActivationPreference = $DB.ActivationPreference
                 ReplayLagTime        = $DB.ReplayLagTime
-                AllowServiceRestart  = $true                
+                AllowServiceRestart  = $true
                 DependsOn            = "[xExchWaitForMailboxDatabase]$($waitResourceId)"
             }
         }

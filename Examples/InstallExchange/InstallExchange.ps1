@@ -34,7 +34,7 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
-        $ExchangeAdminCredential    
+        $ExchangeAdminCredential
     )
 
     Import-DscResource -Module xExchange

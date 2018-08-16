@@ -25,18 +25,18 @@ $ConfigurationData = @{
             <#
                 The location of the exported public certifcate which will be used to encrypt
                 credentials during compilation.
-                CertificateFile = 'C:\public-certificate.cer' 
+                CertificateFile = 'C:\public-certificate.cer'
             #>
-            
+
             #Thumbprint of the certificate being used for decrypting credentials
-            Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673' 
+            Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673'
 
             #endregion
         }
 
         #region Individual Node Settings
         @{
-            NodeName        = 'e15-1'     
+            NodeName        = 'e15-1'
         }
 
         @{
@@ -44,7 +44,7 @@ $ConfigurationData = @{
         }
 
         @{
-            NodeName        = 'e15-3'      
+            NodeName        = 'e15-3'
         }
 
         @{
@@ -55,7 +55,7 @@ $ConfigurationData = @{
 }
 
 Configuration Example
-{  
+{
     Node $AllNodes.NodeName
     {
         LocalConfigurationManager

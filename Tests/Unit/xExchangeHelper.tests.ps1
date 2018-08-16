@@ -25,10 +25,23 @@ try
     Invoke-TestSetup
 
     InModuleScope $script:DSCHelperName {
-
+        # Used for calls to Get-InstallStatus
         $getInstallStatusParams = @{
             Arguments = '/mode:Install /role:Mailbox /Iacceptexchangeserverlicenseterms'
         }
+
+        # Get a unique Guid that doesn't resolve to a local path
+        # Use System.Guid, as New-Guid isn't available in PS4 and below
+        do
+        {
+            $guid1 = [System.Guid]::NewGuid().ToString()
+        } while (Test-Path -Path $guid1)
+
+        # Get a unique Guid that doesn't resolve to a local path
+        do
+        {
+            $guid2 = [System.Guid]::NewGuid().ToString()
+        } while ((Test-Path -Path $guid2) -or $guid1 -like $guid2)
 
         Describe 'xExchangeHelper\Get-InstallStatus' -Tag 'Helper' {
             AfterEach {
@@ -120,6 +133,95 @@ try
                     $installStatus.SetupComplete | Should -Be $true
                     $installStatus.ExchangePresent | Should -Be $true
                     $installStatus.ShouldStartInstall | Should -Be $true
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Get-PreviousError' -Tag 'Helper' {
+            Context 'After an error occurs' {
+                It 'Should retrieve the most recent error' {
+                    # First get whatever error is currently on top of the stack
+                    $initialError = Get-PreviousError
+
+                    # Cause an error by trying to get a non-existent item
+                    Get-ChildItem -Path $guid1 -ErrorAction SilentlyContinue
+
+                    $firstError = Get-PreviousError
+
+                    # Cause another error by trying to get a non-existent item
+                    Get-ChildItem -Path $guid2 -ErrorAction SilentlyContinue
+
+                    $secondError = Get-PreviousError
+
+                    $initialError -ne $firstError | Should -Be $true
+                    $secondError -ne $firstError | Should -Be $true
+                    $firstError -eq $null | Should -Be $false
+                    $secondError -eq $null | Should -Be $false
+                }
+            }
+
+            Context 'When an error has not occurred' {
+                It 'Should return the same previous error with each call' {
+                    # Run Get-PreviousError twice in a row so we can later ensure results are the same
+                    $error1 = Get-PreviousError
+                    $error2 = Get-PreviousError
+
+                    # Run a command that should always succeed
+                    Get-ChildItem  | Out-Null
+
+                    # Get the previous error one more time
+                    $error3 = Get-PreviousError
+
+                    $error1 -eq $error2 | Should -Be $true
+                    $error1 -eq $error3 | Should -Be $true
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Assert-NoNewError' -Tag 'Helper' {
+            Context 'After a new, unique error occurs' {
+                It 'Should throw an exception' {
+                    # First get whatever error is currently on top of the stack
+                    $initialError = Get-PreviousError
+
+                    # Cause an error by trying to get a non-existent item
+                    Get-ChildItem $guid1 -ErrorAction SilentlyContinue
+
+                    $caughtException = $false
+
+                    try
+                    {
+                        Assert-NoNewError -CmdletBeingRun "Get-ChildItem" -PreviousError $initialError
+                    }
+                    catch
+                    {
+                        $caughtException = $true
+                    }
+
+                    $caughtException | Should -Be $true
+                }
+            }
+
+            Context 'When an error has not occurred' {
+                It 'Should not throw an exception' {
+                    # First get whatever error is currently on top of the stack
+                    $initialError = Get-PreviousError
+
+                    # Run a command that should always succeed
+                    Get-ChildItem | Out-Null
+
+                    $caughtException = $false
+
+                    try
+                    {
+                        Assert-NoNewError -CmdletBeingRun "Get-ChildItem" -PreviousError $initialError
+                    }
+                    catch
+                    {
+                        $caughtException = $true
+                    }
+
+                    $caughtException | Should -Be $false
                 }
             }
         }

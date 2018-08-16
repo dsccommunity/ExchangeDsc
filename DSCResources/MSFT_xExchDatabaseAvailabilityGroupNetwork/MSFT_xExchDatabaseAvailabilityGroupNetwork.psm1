@@ -142,7 +142,7 @@ function Set-TargetResource
         {
             AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $dagId}
             RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Name','DatabaseAvailabilityGroup'
-                   
+
             Set-DatabaseAvailabilityGroupNetwork @PSBoundParameters
         }
     }
@@ -230,7 +230,7 @@ function Test-TargetResource
             {
                 $testResults = $false
             }
-        }     
+        }
     }
 
     return $testResults

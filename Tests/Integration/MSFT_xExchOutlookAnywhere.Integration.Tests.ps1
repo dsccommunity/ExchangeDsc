@@ -23,32 +23,29 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     #Get the Server FQDN for using in URL's
-    if ($null -eq $Global:ServerFqdn)
+    if ($null -eq $serverFqdn)
     {
-        $Global:ServerFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
+        $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
     Describe 'Test Setting Properties with xExchOutlookAnywhere' {
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\Rpc (Default Web Site)"
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             ExtendedProtectionFlags = 'Proxy','ProxyCoHosting'
             ExtendedProtectionSPNList = @()
             ExtendedProtectionTokenChecking = 'Allow'
             ExternalClientAuthenticationMethod = 'Ntlm'
             ExternalClientsRequireSsl = $true
-            ExternalHostname = $Global:ServerFqdn
+            ExternalHostname = $serverFqdn
             IISAuthenticationMethods = 'Basic','Ntlm','Negotiate'
             InternalClientAuthenticationMethod = 'Negotiate'
-            InternalHostname = $Global:ServerFqdn
+            InternalHostname = $serverFqdn
             InternalClientsRequireSsl = $true
-            SSLOffloading = $false      
+            SSLOffloading = $false
         }
 
         $expectedGetResults = @{
@@ -56,11 +53,11 @@ if ($exchangeInstalled)
             ExtendedProtectionTokenChecking = 'Allow'
             ExternalClientAuthenticationMethod = 'Ntlm'
             ExternalClientsRequireSsl = $true
-            ExternalHostname = $Global:ServerFqdn
+            ExternalHostname = $serverFqdn
             InternalClientAuthenticationMethod = 'Negotiate'
-            InternalHostname = $Global:ServerFqdn
+            InternalHostname = $serverFqdn
             InternalClientsRequireSsl = $true
-            SSLOffloading = $false    
+            SSLOffloading = $false
         }
 
         Test-TargetResourceFunctionality -Params $testParams `

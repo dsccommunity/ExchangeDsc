@@ -340,9 +340,9 @@ function Test-TargetResource
         if (!(VerifySetting -Name 'WindowsAuthentication' -Type 'Boolean' -ExpectedValue $WindowsAuthentication -ActualValue $vdir.WindowsAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
-        }       
+        }
     }
-    
+
     return $testResults
 }
 
@@ -429,13 +429,13 @@ function AddOabDistributionPoint
         #Assemble the list of existing Virtual Directories
         [System.String[]]$allVdirs = @()
 
-      
+
         foreach ($vdir in $oab.VirtualDirectories)
         {
             $oabServer = ServerFromOABVdirDN -OabVdirDN $vdir.DistinguishedName
-            
-            [System.String]$entry = $oabServer + '\' + $vdir.Name    
-        
+
+            [System.String]$entry = $oabServer + '\' + $vdir.Name
+
             $allVdirs += $entry
         }
 
@@ -461,7 +461,7 @@ function ServerFromOABVdirDN
         [Parameter(Mandatory = $true)]
         [System.String]
         $OabVdirDN
-    )    
+    )
     $startString = 'CN=Protocols,CN='
     $endString = ',CN=Servers'
 
@@ -469,7 +469,7 @@ function ServerFromOABVdirDN
     $length = $OabVdirDN.IndexOf($endString) - $startIndex
 
     $serverName = $OabVdirDN.Substring($startIndex, $length)
-    
+
     return $serverName
 }
 

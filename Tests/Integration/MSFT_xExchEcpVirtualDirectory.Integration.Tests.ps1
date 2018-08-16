@@ -23,38 +23,35 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     #Get the Server FQDN for using in URL's
-    if ($null -eq $Global:ServerFqdn)
+    if ($null -eq $serverFqdn)
     {
-        $Global:ServerFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
+        $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
     Describe 'Test Setting Properties with xExchEcpVirtualDirectory' {
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\ecp (Default Web Site)"
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             #AdfsAuthentication = $false #Don't test AdfsAuthentication changes in dedicated ECP tests, as they have to be done to OWA at the same time
             BasicAuthentication = $true
             DigestAuthentication = $false
-            ExternalUrl = "https://$($Global:ServerFqdn)/ecp"
+            ExternalUrl = "https://$($serverFqdn)/ecp"
             FormsAuthentication = $true
-            InternalUrl = "https://$($Global:ServerFqdn)/ecp"                        
-            WindowsAuthentication = $false        
+            InternalUrl = "https://$($serverFqdn)/ecp"
+            WindowsAuthentication = $false
         }
 
         $expectedGetResults = @{
             Identity =  "$($env:COMPUTERNAME)\ecp (Default Web Site)"
             BasicAuthentication = $true
             DigestAuthentication = $false
-            ExternalUrl = "https://$($Global:ServerFqdn)/ecp"
+            ExternalUrl = "https://$($serverFqdn)/ecp"
             FormsAuthentication = $true
-            InternalUrl = "https://$($Global:ServerFqdn)/ecp"                        
-            WindowsAuthentication = $false  
+            InternalUrl = "https://$($serverFqdn)/ecp"
+            WindowsAuthentication = $false
         }
 
         Test-TargetResourceFunctionality -Params $testParams `
@@ -63,13 +60,13 @@ if ($exchangeInstalled)
 
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\ecp (Default Web Site)"
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             BasicAuthentication = $false
             DigestAuthentication = $true
             ExternalUrl = ''
             FormsAuthentication = $false
-            InternalUrl = ''                       
-            WindowsAuthentication = $true        
+            InternalUrl = ''
+            WindowsAuthentication = $true
         }
 
         $expectedGetResults = @{
@@ -78,8 +75,8 @@ if ($exchangeInstalled)
             DigestAuthentication = $true
             ExternalUrl = ''
             FormsAuthentication = $false
-            InternalUrl = ''                     
-            WindowsAuthentication = $true 
+            InternalUrl = ''
+            WindowsAuthentication = $true
         }
 
         Test-TargetResourceFunctionality -Params $testParams `
@@ -89,19 +86,19 @@ if ($exchangeInstalled)
         #Set Authentication values back to default
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\ecp (Default Web Site)"
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             BasicAuthentication = $true
             DigestAuthentication = $false
-            FormsAuthentication = $true                      
-            WindowsAuthentication = $false        
+            FormsAuthentication = $true
+            WindowsAuthentication = $false
         }
 
         $expectedGetResults = @{
             Identity =  "$($env:COMPUTERNAME)\ecp (Default Web Site)"
             BasicAuthentication = $true
             DigestAuthentication = $false
-            FormsAuthentication = $true                      
-            WindowsAuthentication = $false   
+            FormsAuthentication = $true
+            WindowsAuthentication = $false
         }
 
         Test-TargetResourceFunctionality -Params $testParams `

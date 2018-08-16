@@ -78,7 +78,7 @@ function Get-TargetResource
         else
         {
             Write-Warning "Unable to find Exchange Configuration Container at 'CN=Microsoft Exchange,CN=Services,$($dse.configurationNamingContext)'. This is either because Exchange /PrepareAD has not been run, or because the configured account does not have permissions to access this object."
-        }  
+        }
     }
 
     if ($PSBoundParameters.ContainsKey('DomainVersion'))
@@ -138,7 +138,7 @@ function Get-TargetResource
         SchemaVersion       = [System.String] $currentSchemaVersion
         OrganizationVersion = [System.String] $currentOrganizationVersion
         DomainVersion       = [System.String] $currentDomainVersions
-    }    
+    }
 
     $returnValue
 }
@@ -200,7 +200,7 @@ function Set-TargetResource
             break
         }
     }
-    
+
     if ($testResults -eq $false)
     {
         throw 'AD has still not been prepped after the maximum amount of retries.'
@@ -291,7 +291,7 @@ function Test-TargetResource
                     }
                 }
             }
-            
+
             #Compare the desired DomainVersion with the actual version of each domain
             foreach ($domain in $targetDomains)
             {
@@ -299,7 +299,7 @@ function Test-TargetResource
                 {
                     $testResults = $false
                 }
-            }       
+            }
         }
     }
 

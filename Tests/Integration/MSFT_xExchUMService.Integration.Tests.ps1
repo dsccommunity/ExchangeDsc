@@ -25,13 +25,10 @@ $testUMDPName = 'UMDP (DSC Test)'
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     #Check if the test UM Dial Plan exists, and if not, create it
-    GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad '*-UMDialPlan'
+    GetRemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-UMDialPlan'
 
     if ($null -eq (Get-UMDialPlan -Identity $testUMDPName -ErrorAction SilentlyContinue))
     {
@@ -48,7 +45,7 @@ if ($exchangeInstalled)
     Describe 'Test Setting Properties with xExchUMService' {
         $testParams = @{
             Identity =  $env:COMPUTERNAME
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             UMStartupMode = 'TLS'
             DialPlans = @()
         }

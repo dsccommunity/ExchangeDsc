@@ -30,10 +30,10 @@ function Initialize-ExchDscDatabase
         [System.String]
         $Database
     )
-    
+
     Write-Verbose -Message 'Cleaning up test database'
 
-    GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad '*-MailboxDatabase'
+    GetRemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-MailboxDatabase'
     Get-MailboxDatabase | Where-Object -FilterScript {
         $_.Name -like "$($Database)"
     } | Remove-MailboxDatabase -Confirm:$false
@@ -51,26 +51,23 @@ function Initialize-ExchDscDatabase
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     $TestDBName = 'Mailbox Database Test 123'
 
     Initialize-ExchDscDatabase -Database $TestDBName
 
     #Get the test OAB
-    $testOabName = Get-TestOfflineAddressBook -ShellCredentials $Global:ShellCredentials
+    $testOabName = Get-TestOfflineAddressBook -ShellCredentials $shellCredentials
 
     Describe 'Test Creating a DB and Setting Properties with xExchMailboxDatabase' {
         #First create and set properties on a test database
         $testParams = @{
             Name = $TestDBName
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             Server = $env:COMPUTERNAME
             EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)\$($TestDBName).edb"
-            LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)"         
+            LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)"
             AllowServiceRestart = $true
             AutoDagExcludeFromMonitoring = $true
             BackgroundDatabaseMaintenance = $true
@@ -97,7 +94,7 @@ if ($exchangeInstalled)
             Name = $TestDBName
             Server = $env:COMPUTERNAME
             EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)\$($TestDBName).edb"
-            LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)"         
+            LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)"
             AutoDagExcludeFromMonitoring = $true
             BackgroundDatabaseMaintenance = $true
             CalendarLoggingQuota = 'unlimited'
@@ -121,7 +118,7 @@ if ($exchangeInstalled)
 
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Create Test Database' `
-                                         -ExpectedGetResults $expectedGetResults        
+                                         -ExpectedGetResults $expectedGetResults
 
         #Now change properties on the test database
         $testParams.CalendarLoggingQuota = '30mb'
@@ -178,7 +175,7 @@ if ($exchangeInstalled)
 
             #First set a quota to a non-Unlimited value
             $testParams.ProhibitSendReceiveQuota = '10GB'
-            Set-TargetResource @testParams 
+            Set-TargetResource @testParams
 
             #Now test for the value and look to see if it's Unlimited
             $testParams.ProhibitSendReceiveQuota = 'Unlimited'
@@ -205,7 +202,7 @@ if ($exchangeInstalled)
         Context 'Test Looking For Non-Unlimited Value When Currently Set to Different Non-Unlimited Value' {
             #First set a quota to a non-Unlimited value
             $testParams.ProhibitSendReceiveQuota = '10GB'
-            Set-TargetResource @testParams 
+            Set-TargetResource @testParams
 
             #Now test for the value and look to see if it's a different non-unlimited value
             $testParams.ProhibitSendReceiveQuota = '11GB'
@@ -220,7 +217,7 @@ if ($exchangeInstalled)
         Context 'Test Looking For Non-Unlimited Value When Currently Set to Unlimited Value' {
             #First set a quota to an Unlimited value
             $testParams.ProhibitSendReceiveQuota = 'Unlimited'
-            Set-TargetResource @testParams 
+            Set-TargetResource @testParams
 
             #Now test for the value and look to see if it's non-Unlimited
             $testParams.ProhibitSendReceiveQuota = '11GB'
@@ -235,7 +232,7 @@ if ($exchangeInstalled)
         Context 'Test Looking For Same Value In A Different Size Format' {
             #First set a quota to a non-Unlimited value in megabytes
             $testParams.ProhibitSendReceiveQuota = '10240MB'
-            Set-TargetResource @testParams 
+            Set-TargetResource @testParams
 
             #Now test for the value and look to see if it's the same value, but in gigabytes
             $testParams.ProhibitSendReceiveQuota = '10GB'

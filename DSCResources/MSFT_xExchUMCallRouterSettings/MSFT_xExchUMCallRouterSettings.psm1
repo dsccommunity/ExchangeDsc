@@ -123,7 +123,7 @@ function Test-TargetResource
         if (!(VerifySetting -Name 'UMStartupMode' -Type 'String' -ExpectedValue $UMStartupMode -ActualValue $umService.UMStartupMode -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
-        }        
+        }
     }
 
     return $testResults

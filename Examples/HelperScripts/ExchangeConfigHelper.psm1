@@ -13,7 +13,7 @@ function DBMapFromServersCsv
 
         #Loop through until we find a matching server
         for ($i = 0; $i -lt $serversCsv.Count -and $foundServer -eq $false; $i++)
-        {           
+        {
             if ($serversCsv[$i].ServerName -like $ServerNameInCsv)
             {
                 #We found a match, proceed

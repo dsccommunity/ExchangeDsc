@@ -238,9 +238,9 @@ function Test-TargetResource
         if (!(VerifySetting -Name 'WindowsAuthentication' -Type 'Boolean' -ExpectedValue $WindowsAuthentication -ActualValue $vdir.WindowsAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
-        }       
+        }
     }
-    
+
     return $testResults
 }
 

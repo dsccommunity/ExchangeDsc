@@ -21,7 +21,7 @@ $ConfigurationData = @{
             #>
             PSDscAllowPlainTextPassword = $true
         },
-        
+
         #Individual target nodes are defined next
         @{
             NodeName = 'e15-1'
@@ -37,8 +37,8 @@ $ConfigurationData = @{
     #CAS settings that are unique per site will go in separate hash table entries.
     Site1CAS = @(
         @{
-            InternalNLBFqdn            = 'mail-site1.mikelab.local'
-            ExternalNLBFqdn            = 'mail.mikelab.local'
+            InternalNLBFqdn            = 'mail-site1.contoso.local'
+            ExternalNLBFqdn            = 'mail.contoso.local'
 
             #ClientAccessServer Settings
             AutoDiscoverSiteScope      = 'Site1','Site3','Site5'
@@ -50,8 +50,8 @@ $ConfigurationData = @{
 
     Site2CAS = @(
         @{
-            InternalNLBFqdn            = 'mail-site2.mikelab.local'
-            ExternalNLBFqdn            = 'mail.mikelab.local'
+            InternalNLBFqdn            = 'mail-site2.contoso.local'
+            ExternalNLBFqdn            = 'mail.contoso.local'
 
             #ClientAccessServer Settings
             AutoDiscoverSiteScope      = 'Site2','Site4','Site6'
@@ -76,7 +76,7 @@ Configuration Example
     Node $AllNodes.NodeName
     {
         $casSettings = $ConfigurationData[$Node.CASId] #Look up and retrieve the CAS settings for this node
-       
+
         ###CAS specific settings###
         xExchClientAccessServer CAS
         {
@@ -108,11 +108,11 @@ Configuration Example
             AutoCertBasedAuthThumbprint = '49bef4b2e82599233154465323ebf96a12b60673'
             BasicAuthEnabled            = $false
             ClientCertAuth              = 'Required'
-            ExternalUrl                 = "https://$($casSettings.ExternalNLBFqdn)/Microsoft-Server-ActiveSync"  
-            InternalUrl                 = "https://$($casSettings.InternalNLBFqdn)/Microsoft-Server-ActiveSync"  
+            ExternalUrl                 = "https://$($casSettings.ExternalNLBFqdn)/Microsoft-Server-ActiveSync"
+            InternalUrl                 = "https://$($casSettings.InternalNLBFqdn)/Microsoft-Server-ActiveSync"
             WindowsAuthEnabled          = $false
             AllowServiceRestart         = $true
-            
+
             DependsOn                   = '[WindowsFeature]WebClientAuth','[WindowsFeature]WebCertAuth'
             #NOTE: If CBA is being configured, this should also be dependent on the cert whose thumbprint is being used. See EndToEndExample.
         }
@@ -126,7 +126,7 @@ Configuration Example
             ExternalAuthenticationMethods = 'Fba'
             ExternalUrl                   = "https://$($casSettings.ExternalNLBFqdn)/ecp"
             FormsAuthentication           = $true
-            InternalUrl                   = "https://$($casSettings.InternalNLBFqdn)/ecp"           
+            InternalUrl                   = "https://$($casSettings.InternalNLBFqdn)/ecp"
             WindowsAuthentication         = $false
             AllowServiceRestart           = $true
         }
@@ -138,7 +138,7 @@ Configuration Example
             Credential               = $ExchangeAdminCredential
             ExternalUrl              = "https://$($casSettings.ExternalNLBFqdn)/mapi"
             IISAuthenticationMethods = 'NTLM','Negotiate'
-            InternalUrl              = "https://$($casSettings.InternalNLBFqdn)/mapi" 
+            InternalUrl              = "https://$($casSettings.InternalNLBFqdn)/mapi"
             AllowServiceRestart      = $true
         }
 
@@ -148,7 +148,7 @@ Configuration Example
             Identity            = "$($Node.NodeName)\OAB (Default Web Site)"
             Credential          = $ExchangeAdminCredential
             ExternalUrl         = "https://$($casSettings.ExternalNLBFqdn)/oab"
-            InternalUrl         = "https://$($casSettings.InternalNLBFqdn)/oab"     
+            InternalUrl         = "https://$($casSettings.InternalNLBFqdn)/oab"
             OABsToDistribute    = $casSettings.OABsToDistribute
             AllowServiceRestart = $true
         }
@@ -177,7 +177,7 @@ Configuration Example
             ExternalAuthenticationMethods         = 'Fba'
             ExternalUrl                           = "https://$($casSettings.ExternalNLBFqdn)/owa"
             FormsAuthentication                   = $true
-            InternalUrl                           = "https://$($casSettings.InternalNLBFqdn)/owa"    
+            InternalUrl                           = "https://$($casSettings.InternalNLBFqdn)/owa"
             WindowsAuthentication                 = $false
             AllowServiceRestart                   = $true
         }
@@ -196,9 +196,9 @@ Configuration Example
         {
             Identity            = "$($Node.NodeName)\EWS (Default Web Site)"
             Credential          = $ExchangeAdminCredential
-            ExternalUrl         = "https://$($casSettings.ExternalNLBFqdn)/ews/exchange.asmx" 
+            ExternalUrl         = "https://$($casSettings.ExternalNLBFqdn)/ews/exchange.asmx"
             InternalUrl         = "https://$($casSettings.InternalNLBFqdn)/ews/exchange.asmx"
-            AllowServiceRestart = $true         
+            AllowServiceRestart = $true
         }
     }
 }

@@ -342,7 +342,7 @@ function Set-TargetResource
         {
             if ($PSBoundParameters.ContainsKey("DatacenterActivationMode") -and $DatacenterActivationMode -like "DagOnly")
             {
-                RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "DatacenterActivationMode"                
+                RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "DatacenterActivationMode"
             }
         }
 
@@ -605,7 +605,7 @@ function Test-TargetResource
                 $testResults = $false
             }
         }
-        
+
         if (!(VerifySetting -Name "WitnessDirectory" -Type "String" -ExpectedValue $WitnessDirectory -ActualValue $dag.WitnessDirectory -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false

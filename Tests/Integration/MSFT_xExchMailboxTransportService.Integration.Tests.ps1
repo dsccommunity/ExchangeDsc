@@ -23,16 +23,13 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $global:ShellCredentials)
-    {
-        [PSCredential]$global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     Describe 'Set and modify Mailbox Transport Service configuration' {
         #Set configuration with default values
         $testParams = @{
              Identity                                = $env:computername
-             Credential                              = $global:ShellCredentials
+             Credential                              = $shellCredentials
              AllowServiceRestart                     = $true
              ConnectivityLogEnabled                  = $true
              ConnectivityLogMaxAge                   = '30.00:00:00'
@@ -78,15 +75,15 @@ if ($exchangeInstalled)
         }
 
          Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Set default Mailbox Transport Service configuration' -ExpectedGetResults $expectedGetResults
-     
+
          #modify configuration
-         $testParams.PipelineTracingSenderAddress = 'john.doe@contoso.com'     
+         $testParams.PipelineTracingSenderAddress = 'john.doe@contoso.com'
          $expectedGetResults.PipelineTracingSenderAddress = 'john.doe@contoso.com'
          Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Modify Mailbox Transport Service configuration' -ExpectedGetResults $expectedGetResults
-     
+
          #modify configuration
-         $testParams.PipelineTracingSenderAddress = ''     
-         $expectedGetResults.PipelineTracingSenderAddress = ''   
+         $testParams.PipelineTracingSenderAddress = ''
+         $expectedGetResults.PipelineTracingSenderAddress = ''
          Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Revert Mailbox Transport Service configuration' -ExpectedGetResults $expectedGetResults
      }
 }
