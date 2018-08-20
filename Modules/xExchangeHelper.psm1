@@ -468,21 +468,22 @@ function CompareUnlimitedWithString
     }
 }
 
-#Takes an ADObjectId, gets a mailbox from it, and checks if it's EmailAddresses property contains the given string.
-#The Get-Mailbox cmdlet must be loaded for this function to succeed.
+#Takes an ADObjectId, gets a the Exchange object from it, and checks if it's EmailAddresses property contains the given string.
+#The Get-Recipient cmdlet must be loaded for this function to succeed.
+#Get-Recipient can cover mailusers or mailcontacts as well. e.g. MailboxDatabase's journalrecipient can be a MailContact
 function CompareADObjectIdWithEmailAddressString
 {
     param([Microsoft.Exchange.Data.Directory.ADObjectId]$ADObjectId, [System.String]$String)
 
-    if ($null -ne (Get-Command Get-Mailbox -ErrorAction SilentlyContinue))
+    if ($null -ne (Get-Command Get-Recipient -ErrorAction SilentlyContinue))
     {
-        $mailbox = $ADObjectId | Get-Mailbox -ErrorAction SilentlyContinue
+        $mailbox = $ADObjectId | Get-Recipient -ErrorAction SilentlyContinue
 
         return ($mailbox.EmailAddresses.Contains($String))
     }
     else
     {
-        Write-Error "CompareADObjectIdWithEmailAddressString requires the Get-Mailbox cmdlert"
+        Write-Error "CompareADObjectIdWithEmailAddressString requires the Get-Recipient cmdlert"
 
         return $false
     }
