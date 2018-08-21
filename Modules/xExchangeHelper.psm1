@@ -477,9 +477,22 @@ function CompareADObjectIdWithEmailAddressString
 
     if ($null -ne (Get-Command Get-Recipient -ErrorAction SilentlyContinue))
     {
-        $mailbox = $ADObjectId | Get-Recipient -ErrorAction SilentlyContinue
+        $recipient = $ADObjectId | Get-Recipient -ErrorAction SilentlyContinue
 
-        return ($mailbox.EmailAddresses.Contains($String))
+        if(-Not $recipient)
+        {
+            Write-Error "CompareADObjectIdWithEmailAddressString specified object '$ADObjectId' cannot be found."
+
+            return $false
+        }
+        elseif($recipient -is [array])
+        {
+            Write-Error "CompareADObjectIdWithEmailAddressString found multiple objects for '$ADObjectId'."
+            
+            return $false
+        }
+
+        return ($recipient.EmailAddresses.Contains($String))
     }
     else
     {

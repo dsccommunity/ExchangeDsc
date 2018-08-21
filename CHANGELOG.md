@@ -17,6 +17,8 @@
   xExchInstall and related functions.
 - Remove VerbosePreference from function parameters and update all calls to
   changed functions.
+- Change Get-Mailbox cmdlet call in CompareADObjectIdWithEmailAddressString function
+  in order to support MailUser and MailContact objects as well.
 
 ## 1.22.0.0
 
