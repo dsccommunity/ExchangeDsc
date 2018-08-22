@@ -33,7 +33,7 @@ function Initialize-ExchDscDatabase
     
     Write-Verbose -Message 'Cleaning up test database'
 
-    GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad '*-MailboxDatabase'
+    GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad '*-MailboxDatabase','Get-Recipient'
     Get-MailboxDatabase | Where-Object -FilterScript {
         $_.Name -like "$($Database)"
     } | Remove-MailboxDatabase -Confirm:$false
@@ -63,6 +63,9 @@ if ($exchangeInstalled)
     #Get the test OAB
     $testOabName = Get-TestOfflineAddressBook -ShellCredentials $Global:ShellCredentials
 
+    #Get test recipient for JournalRecipient attribute
+    $testJournalRecipient = (Get-Recipient -ResultSize 1).EmailAddresses[0]
+
     Describe 'Test Creating a DB and Setting Properties with xExchMailboxDatabase' {
         #First create and set properties on a test database
         $testParams = @{
@@ -82,6 +85,7 @@ if ($exchangeInstalled)
             IndexEnabled = $true
             IsExcludedFromProvisioning = $false
             IsSuspendedFromProvisioning = $false
+            JournalRecipient = $testJournalRecipient
             MailboxRetention = '30.00:00:00'
             MountAtStartup = $true
             OfflineAddressBook = $testOabName
@@ -108,6 +112,7 @@ if ($exchangeInstalled)
             IndexEnabled = $true
             IsExcludedFromProvisioning = $false
             IsSuspendedFromProvisioning = $false
+            JournalRecipient = $testJournalRecipient
             MailboxRetention = '30.00:00:00'
             MountAtStartup = $true
             OfflineAddressBook = "\$testOabName"
@@ -139,6 +144,7 @@ if ($exchangeInstalled)
         $testParams.ProhibitSendReceiveQuota = '2.5 GB'
         $testParams.RecoverableItemsQuota = '2 GB'
         $testParams.RecoverableItemsWarningQuota = '1.5 GB'
+        $testParams.JournalRecipient = $testJournalRecipient
 
         $expectedGetResults.CalendarLoggingQuota = '30 MB (31,457,280 bytes)'
         $expectedGetResults.CircularLoggingEnabled = $false
@@ -155,6 +161,7 @@ if ($exchangeInstalled)
         $expectedGetResults.ProhibitSendReceiveQuota = '2.5 GB (2,684,354,560 bytes)'
         $expectedGetResults.RecoverableItemsQuota = '2 GB (2,147,483,648 bytes)'
         $expectedGetResults.RecoverableItemsWarningQuota = '1.5 GB (1,610,612,736 bytes)'
+        $expectedGetResults.JournalRecipient = $testJournalRecipient
 
         $serverVersion = GetExchangeVersion
 
