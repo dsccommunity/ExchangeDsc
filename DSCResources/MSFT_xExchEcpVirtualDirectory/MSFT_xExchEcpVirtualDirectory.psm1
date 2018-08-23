@@ -141,13 +141,13 @@ function Set-TargetResource
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-EcpVirtualDirectory' -Verbose:$VerbosePreference
 
     #Ensure an empty string is $null and not a string
-    SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters  
-  
+    SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
+
     #Remove Credential and AllowServiceRestart because those parameters do not exist on Set-OwaVirtualDirectory
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
 
     Set-EcpVirtualDirectory @PSBoundParameters
-  
+
     If($AllowServiceRestart -eq $true)
     {
         Write-Verbose -Message 'Recycling MSExchangeECPAppPool'
@@ -219,12 +219,12 @@ function Test-TargetResource
 
     LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session    
+    #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-EcpVirtualDirectory' -Verbose:$VerbosePreference
 
     #Ensure an empty string is $null and not a string
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
-    
+
     $EcpVdir = GetEcpVirtualDirectory @PSBoundParameters
 
     $testResults = $true
@@ -277,8 +277,8 @@ function Test-TargetResource
             $testResults = $false
         }
     }
-   
-    return $testResults 
+
+    return $testResults
 }
 
 function GetEcpVirtualDirectory

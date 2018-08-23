@@ -25,17 +25,17 @@ $ConfigurationData = @{
             <#
                 The location of the exported public certifcate which will be used to encrypt
                 credentials during compilation.
-                CertificateFile = 'C:\public-certificate.cer' 
+                CertificateFile = 'C:\public-certificate.cer'
             #>
-            
+
             #Thumbprint of the certificate being used for decrypting credentials
-            Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673' 
+            Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673'
 
             #DiskToDBMap used by xExchAutoMountPoint specifically for Jetstress purposes
             JetstressDiskToDBMap = 'DB1,DB2,DB3,DB4','DB5,DB6,DB7,DB8'
 
             #The base file server UNC path that will be used for copying things like certificates, Exchange binaries, and Jetstress binaries
-            FileServerBase = '\\rras-1.mikelab.local\Binaries'
+            FileServerBase = '\\rras-1.contoso.local\Binaries'
 
             #endregion
         }
@@ -43,7 +43,7 @@ $ConfigurationData = @{
         #region Individual Node Settings
         #region DAG01 Nodes
         @{
-            NodeName        = 'e15-1'        
+            NodeName        = 'e15-1'
         }
 
         @{
@@ -51,7 +51,7 @@ $ConfigurationData = @{
         }
 
         @{
-            NodeName        = 'e15-3'   
+            NodeName        = 'e15-3'
         }
 
         @{
@@ -62,7 +62,7 @@ $ConfigurationData = @{
 }
 
 Configuration Example
-{   
+{
     param
     (
         [Parameter(Mandatory = $true)]

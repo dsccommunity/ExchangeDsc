@@ -23,43 +23,40 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     #Get the Server FQDN for using in URL's
-    if ($null -eq $Global:ServerFqdn)
+    if ($null -eq $serverFqdn)
     {
-        $Global:ServerFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
+        $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
     #Get the thumbprint to use for Lync integration
-    if ($null -eq $Global:IMCertThumbprint)
+    if ($null -eq $imCertThumbprint)
     {
-        $Global:IMCertThumbprint = Read-Host -Prompt 'Enter the thumbprint of an Exchange certificate to use when enabling Lync integration'
+        $imCertThumbprint = Read-Host -Prompt 'Enter the thumbprint of an Exchange certificate to use when enabling Lync integration'
     }
 
     Describe 'Test Setting Properties with xExchOwaVirtualDirectory' {
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             #AdfsAuthentication = $false #Don't test AdfsAuthentication changes in dedicated OWA tests, as they have to be done to ECP at the same time
             BasicAuthentication = $true
             ChangePasswordEnabled = $true
             DigestAuthentication = $false
-            ExternalUrl = "https://$($Global:ServerFqdn)/owa"
+            ExternalUrl = "https://$($serverFqdn)/owa"
             FormsAuthentication = $true
             InstantMessagingEnabled = $false
             InstantMessagingCertificateThumbprint = ''
             InstantMessagingServerName = ''
             InstantMessagingType = 'None'
-            InternalUrl = "https://$($Global:ServerFqdn)/owa"     
+            InternalUrl = "https://$($serverFqdn)/owa"
             LogonPagePublicPrivateSelectionEnabled = $true
-            LogonPageLightSelectionEnabled = $true   
+            LogonPageLightSelectionEnabled = $true
             WindowsAuthentication = $false
             LogonFormat = 'PrincipalName'
-            DefaultDomain = 'contoso.local'      
+            DefaultDomain = 'contoso.local'
         }
 
         $expectedGetResults = @{
@@ -67,18 +64,18 @@ if ($exchangeInstalled)
             BasicAuthentication = $true
             ChangePasswordEnabled = $true
             DigestAuthentication = $false
-            ExternalUrl = "https://$($Global:ServerFqdn)/owa"
+            ExternalUrl = "https://$($serverFqdn)/owa"
             FormsAuthentication = $true
             InstantMessagingEnabled = $false
             InstantMessagingCertificateThumbprint = ''
             InstantMessagingServerName = ''
             InstantMessagingType = 'None'
-            InternalUrl = "https://$($Global:ServerFqdn)/owa"     
+            InternalUrl = "https://$($serverFqdn)/owa"
             LogonPagePublicPrivateSelectionEnabled = $true
-            LogonPageLightSelectionEnabled = $true   
+            LogonPageLightSelectionEnabled = $true
             WindowsAuthentication = $false
             LogonFormat = 'PrincipalName'
-            DefaultDomain = 'contoso.local' 
+            DefaultDomain = 'contoso.local'
         }
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Set standard parameters' -ExpectedGetResults $expectedGetResults
@@ -86,22 +83,22 @@ if ($exchangeInstalled)
 
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             BasicAuthentication = $false
             ChangePasswordEnabled = $false
             DigestAuthentication = $true
             ExternalUrl = ''
             FormsAuthentication = $false
             InstantMessagingEnabled = $true
-            InstantMessagingCertificateThumbprint = $Global:IMCertThumbprint
+            InstantMessagingCertificateThumbprint = $imCertThumbprint
             InstantMessagingServerName = $env:COMPUTERNAME
             InstantMessagingType = 'Ocs'
-            InternalUrl = ''   
+            InternalUrl = ''
             LogonPagePublicPrivateSelectionEnabled = $false
-            LogonPageLightSelectionEnabled = $false   
-            WindowsAuthentication = $true 
+            LogonPageLightSelectionEnabled = $false
+            WindowsAuthentication = $true
             LogonFormat = 'FullDomain'
-            DefaultDomain = ''      
+            DefaultDomain = ''
         }
 
         $expectedGetResults = @{
@@ -112,15 +109,15 @@ if ($exchangeInstalled)
             ExternalUrl = ''
             FormsAuthentication = $false
             InstantMessagingEnabled = $true
-            InstantMessagingCertificateThumbprint = $Global:IMCertThumbprint
+            InstantMessagingCertificateThumbprint = $imCertThumbprint
             InstantMessagingServerName = $env:COMPUTERNAME
             InstantMessagingType = 'Ocs'
             InternalUrl = ''
             LogonPagePublicPrivateSelectionEnabled = $false
-            LogonPageLightSelectionEnabled = $false   
+            LogonPageLightSelectionEnabled = $false
             WindowsAuthentication = $true
             LogonFormat = 'FullDomain'
-            DefaultDomain = ''    
+            DefaultDomain = ''
         }
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Try with the opposite of each property value' -ExpectedGetResults $expectedGetResults
@@ -129,19 +126,19 @@ if ($exchangeInstalled)
         #Set Authentication values back to default
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             BasicAuthentication = $true
             DigestAuthentication = $false
-            FormsAuthentication = $true                      
-            WindowsAuthentication = $false        
+            FormsAuthentication = $true
+            WindowsAuthentication = $false
         }
 
         $expectedGetResults = @{
             Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
             BasicAuthentication = $true
             DigestAuthentication = $false
-            FormsAuthentication = $true                      
-            WindowsAuthentication = $false   
+            FormsAuthentication = $true
+            WindowsAuthentication = $false
         }
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Reset authentication to default' -ExpectedGetResults $expectedGetResults

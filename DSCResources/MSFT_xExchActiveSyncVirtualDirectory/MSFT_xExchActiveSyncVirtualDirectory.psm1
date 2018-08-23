@@ -123,22 +123,22 @@ function Get-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $SendWatsonReport,   
+        $SendWatsonReport,
 
         [Parameter()]
         [System.Boolean]
         $WindowsAuthEnabled
     )
-    
+
     Write-Verbose -Message 'Getting the Exchange ActiveSyncVirtualDirectory settings'
-    
+
     LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ActiveSyncVirtualDirectory' -Verbose:$VerbosePreference
 
     $easVdir = Get-ActiveSyncVirtualDirectoryInternal @PSBoundParameters
-    
+
     if ($null -ne $easVdir)
     {
         $returnValue = @{
@@ -296,7 +296,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $SendWatsonReport,   
+        $SendWatsonReport,
 
         [Parameter()]
         [System.Boolean]
@@ -312,7 +312,7 @@ function Set-TargetResource
 
     #Ensure an empty string is $null and not a string
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
-    
+
     #Remove Credential and AllowServiceRestart because those parameters do not exist on Set-ActiveSyncVirtualDirectory
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart','AutoCertBasedAuth','AutoCertBasedAuthThumbprint','AutoCertBasedAuthHttpsBindings'
 
@@ -324,7 +324,7 @@ function Set-TargetResource
 
     #Configure everything but CBA
     Set-ActiveSyncVirtualDirectory @PSBoundParameters
-    
+
     if ($AutoCertBasedAuth) #Need to configure CBA
     {
         Test-PreReqsForCertBasedAuth
@@ -353,7 +353,7 @@ function Set-TargetResource
     #Only bounce the app pool if we didn't already restart IIS for CBA
     if (-not $AutoCertBasedAuth)
     {
-        if($AllowServiceRestart) 
+        if($AllowServiceRestart)
         {
             Write-Verbose -Message 'Recycling MSExchangeSyncAppPool'
 
@@ -504,7 +504,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $SendWatsonReport,   
+        $SendWatsonReport,
 
         [Parameter()]
         [System.Boolean]
@@ -682,7 +682,7 @@ function Test-TargetResource
             }
         }
     }
- 
+
     return $testResults
 }
 
@@ -810,7 +810,7 @@ function Get-ActiveSyncVirtualDirectoryInternal
 
         [Parameter()]
         [System.Boolean]
-        $SendWatsonReport,   
+        $SendWatsonReport,
 
         [Parameter()]
         [System.Boolean]
@@ -834,19 +834,19 @@ function Enable-CertBasedAuth
         [System.String[]]
         $AutoCertBasedAuthHttpsBindings = @('0.0.0.0:443', '127.0.0.1:443')
     )
-    
+
     $appCmdExe = "$($env:SystemRoot)\System32\inetsrv\appcmd.exe"
 
     #Enable cert auth in IIS, and require SSL on the AS vdir
     $output = &$appCmdExe set config -section:system.webServer/security/authentication/clientCertificateMappingAuthentication /enabled:'True' /commit:apphost
     Write-Verbose -Message "$output"
-    
+
     $output = &$appCmdExe set config 'Default Web Site' -section:system.webServer/security/authentication/clientCertificateMappingAuthentication /enabled:'True' /commit:apphost
     Write-Verbose -Message "$output"
-    
+
     $output = &$appCmdExe set config 'Default Web Site/Microsoft-Server-ActiveSync' /section:access /sslFlags:'Ssl, SslNegotiateCert, SslRequireCert, Ssl128' /commit:apphost
     Write-Verbose -Message "$output"
-    
+
     $output = &$appCmdExe set config 'Default Web Site/Microsoft-Server-ActiveSync' -section:system.webServer/security/authentication/clientCertificateMappingAuthentication /enabled:'True' /commit:apphost
     Write-Verbose -Message "$output"
 
@@ -910,7 +910,7 @@ function Test-CertBasedAuth
         {
             return $false
         }
-        
+
         if (-not (Test-NetshSslCertSetting -IpPort $binding -NetshSslCertOutput $netshOutput -SettingName 'Certificate Hash' -SettingValue $AutoCertBasedAuthThumbprint))
         {
             return $false
@@ -943,7 +943,7 @@ function Test-IsSslBinding
             }
         }
     }
-    
+
     return $false
 }
 
@@ -971,7 +971,7 @@ function Enable-DSMapperUsage
         $output = netsh http delete sslcert ipport=$($IpPortCombo)
         Write-Verbose -Message "$output"
     }
-    
+
     #Add the binding back with new settings
     $output = netsh http add sslcert ipport=$($IpPortCombo) certhash=$($CertThumbprint) appid=$($AppId) dsmapperusage=enable certstorename=MY
     Write-Verbose -Message "$output"
@@ -999,7 +999,7 @@ function Test-AppCmdOutputContainsString
             }
         }
     }
-    
+
     return $false
 }
 
@@ -1008,15 +1008,15 @@ function Test-NetshSslCertSetting
     param
     (
         [Parameter()]
-        $NetshSslCertOutput, 
+        $NetshSslCertOutput,
 
         [Parameter(Mandatory = $true)]
         [System.String]
-        $IpPort, 
-        
+        $IpPort,
+
         [Parameter(Mandatory = $true)]
         [System.String]
-        $SettingName, 
+        $SettingName,
 
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -1025,7 +1025,7 @@ function Test-NetshSslCertSetting
 
     $SettingName = $SettingName.ToLower()
     $SettingValue = $SettingValue.ToLower()
-    
+
     if ($null -ne $NetshSslCertOutput -and $NetshSslCertOutput.GetType().Name -eq 'Object[]')
     {
         $foundSetting = $false
@@ -1034,29 +1034,29 @@ function Test-NetshSslCertSetting
             if ($NetshSslCertOutput[$i].ToLower().Contains('ip:port') -and $NetshSslCertOutput[$i].Contains($IpPort))
             {
                 $i++
-                
+
                 while ( -not $NetshSslCertOutput[$i].ToLower().Contains('ip:port') -and -not $foundSetting )
                 {
                     if ($NetshSslCertOutput[$i].ToLower().Contains($SettingName))
                     {
                         $foundSetting = $true
-                        
+
                         if ($NetshSslCertOutput[$i].ToLower().Contains($SettingValue))
                         {
                             return $true
                         }
                     }
-                    
+
                     $i++
                 }
             }
         }
     }
-    
+
     return $false
 }
 
-#Ensures that required uto Certification Based Authentication prereqs are installed 
+# Ensures that required Certification Based Authentication prereqs are installed
 function Test-PreReqsForCertBasedAuth
 {
     $hasAllPreReqs = $true
@@ -1090,7 +1090,7 @@ function Test-ISAPIFilter
     [OutputType([System.Boolean])]
     param
     (
-        [Parameter()]    
+        [Parameter()]
         [System.String]
         $WebSite = 'Default Web Site',
 

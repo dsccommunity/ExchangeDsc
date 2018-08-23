@@ -8,9 +8,9 @@ $ConfigurationData = @{
         @{
             #region Common Settings for All Nodes
             NodeName        = '*'
-            
+
             #The base file server UNC path that will be used for copying things like certificates, Exchange binaries, and Jetstress binaries
-            FileServerBase = '\\rras-1.mikelab.local\Binaries'
+            FileServerBase = '\\rras-1.contoso.local\Binaries'
 
             #endregion
         }
@@ -25,7 +25,7 @@ $ConfigurationData = @{
         }
 
         @{
-            NodeName        = 'e15-3'     
+            NodeName        = 'e15-3'
         }
 
         @{

@@ -226,11 +226,11 @@ function Set-TargetResource
 
     #Ensure an empty string is $null and not a string
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
-        
+
     #Remove Credential and AllowServiceRestart because those parameters do not exist on Set-OwaVirtualDirectory
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
 
-    Set-OwaVirtualDirectory @PSBoundParameters    
+    Set-OwaVirtualDirectory @PSBoundParameters
 
     if($AllowServiceRestart -eq $true)
     {
@@ -337,15 +337,15 @@ function Test-TargetResource
         [System.String]
         $DefaultDomain
     )
-        
+
     LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session    
+    #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OwaVirtualDirectory' -Verbose:$VerbosePreference
 
     #Ensure an empty string is $null and not a string
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
-  
+
     $OwaVdir = GetOwaVirtualDirectory @PSBoundParameters
 
     $testResults = $true

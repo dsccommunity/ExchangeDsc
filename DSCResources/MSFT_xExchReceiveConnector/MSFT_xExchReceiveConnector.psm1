@@ -292,7 +292,7 @@ function Get-TargetResource
             TlsCertificateName                      = [System.String] $connector.TlsCertificateName
             TlsDomainCapabilities                   = [System.String[]] $connector.TlsDomainCapabilities
             TransportRole                           = [System.String] $connector.TransportRole
-        }    
+        }
     }
 
     $returnValue
@@ -551,7 +551,7 @@ function Set-TargetResource
     {
         #Remove Credential and Ensure so we don't pass it into the next command
         RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','Ensure'
-       
+
         SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
         #We need to create the new connector
@@ -560,7 +560,7 @@ function Set-TargetResource
             #Create a copy of the original parameters
             $originalPSBoundParameters = @{} + $PSBoundParameters
 
-            #The following aren't valid for New-ReceiveConnector 
+            #The following aren't valid for New-ReceiveConnector
             RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Identity','BareLinefeedRejectionEnabled','ExtendedRightAllowEntries','ExtendedRightDenyEntries'
 
             #Parse out the server name and connector name from the given Identity
@@ -581,9 +581,9 @@ function Set-TargetResource
             {
                 #Remove the two props we added
                 RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server','Name'
-                
+
                 #Add original props back
-                AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters                          
+                AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
             }
             else
             {
@@ -598,7 +598,7 @@ function Set-TargetResource
             RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Usage','ExtendedRightAllowEntries','ExtendedRightDenyEntries'
 
             Set-ReceiveConnector @PSBoundParameters
-            
+
             #set AD permissions
             if ($ExtendedRightAllowEntries)
             {
@@ -610,7 +610,7 @@ function Set-TargetResource
                     }
                 }
             }
-            
+
             if ($ExtendedRightDenyEntries)
             {
                 foreach ($ExtendedRightDenyEntry in $ExtendedRightDenyEntries)
@@ -873,7 +873,7 @@ function Test-TargetResource
     }
 
     $testResults = $true
-        
+
     if ($null -eq $connector)
     {
         if ($Ensure -eq 'Present')
@@ -1128,7 +1128,7 @@ function Test-TargetResource
             {
                 $testResults = $false
             }
-            
+
             #check AD permissions if necessary
             if ($ExtendedRightAllowEntries)
             {
@@ -1137,7 +1137,7 @@ function Test-TargetResource
                     $testResults = $false
                 }
             }
-            
+
             if ($ExtendedRightDenyEntries)
             {
                 if (ExtendedRightExists -ADPermissions $ADPermissions -ExtendedRights $ExtendedRightDenyEntries -ShouldbeTrue:$false -Verbose:$VerbosePreference)

@@ -24,9 +24,9 @@ $ConfigurationData = @{
             NodeName        = 'SRV-01-04'
             ServerNameInCsv = 'SRV-nn-04'
             DAGId           = "DAG1"
-        }        
+        }
     );
-    
+
     DAG1 = @{
         DbNameReplacements = @{"-nn-" = "-01-"}
     }
@@ -41,7 +41,7 @@ Configuration Example
     Node $AllNodes.NodeName
     {
         $dagSettings = $ConfigurationData[$Node.DAGId]
-        
+
         $dbMap = DBMapFromServersCsv `
                     -ServersCsvPath "$($PSScriptRoot)\CalculatorAndScripts\Servers.csv" `
                     -ServerNameInCsv $Node.ServerNameInCsv `

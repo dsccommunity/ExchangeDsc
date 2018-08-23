@@ -13,7 +13,7 @@ function Get-TargetResource
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
-        
+
         [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
@@ -159,7 +159,7 @@ function Set-TargetResource
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
-        
+
         [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
@@ -266,7 +266,7 @@ function Set-TargetResource
     }
 
     Set-MailboxTransportService @PSBoundParameters
-    
+
     if ($AllowServiceRestart -eq $true)
     {
         Write-Verbose -Message 'Restart service MSExchangeDelivery'
@@ -296,7 +296,7 @@ function Test-TargetResource
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
-        
+
         [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,

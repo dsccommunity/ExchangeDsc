@@ -50,7 +50,7 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String]
-        $ExternalUrl,    
+        $ExternalUrl,
 
         [Parameter()]
         [ValidateSet('Off', 'Low', 'High', 'Error')]
@@ -165,7 +165,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        $ExternalUrl,    
+        $ExternalUrl,
 
         [Parameter()]
         [ValidateSet('Off', 'Low', 'High', 'Error')]
@@ -216,7 +216,7 @@ function Set-TargetResource
 
     #Need to do -Force and -Confirm:$false here or else an unresolvable URL will prompt for confirmation
     Set-WebServicesVirtualDirectory @PSBoundParameters -Force -Confirm:$false
-    
+
     if($AllowServiceRestart -eq $true)
     {
         Write-Verbose -Message 'Recycling MSExchangeServicesAppPool'
@@ -280,7 +280,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $ExternalUrl,    
+        $ExternalUrl,
 
         [Parameter()]
         [ValidateSet('Off', 'Low', 'High', 'Error')]
@@ -402,7 +402,7 @@ function Test-TargetResource
             $testResults = $false
         }
     }
-     
+
     return $testResults
 }
 
@@ -456,7 +456,7 @@ function GetWebServicesVirtualDirectory
 
         [Parameter()]
         [System.String]
-        $ExternalUrl,    
+        $ExternalUrl,
 
         [Parameter()]
         [ValidateSet('Off', 'Low', 'High', 'Error')]

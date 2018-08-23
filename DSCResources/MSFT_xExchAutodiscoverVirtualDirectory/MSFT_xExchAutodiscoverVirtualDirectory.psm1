@@ -62,7 +62,7 @@ function Get-TargetResource
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-AutodiscoverVirtualDirectory' -Verbose:$VerbosePreference
 
-    $autoDVdir = Get-AutodiscoverVirtualDirectoryWithCorrectParams @PSBoundParameters
+    $autoDVdir = Get-AutodiscoverVirtualDirectoryInternal @PSBoundParameters
 
     if ($null -ne $autoDVdir)
     {
@@ -144,7 +144,7 @@ function Set-TargetResource
 
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-AutodiscoverVirtualDirectory' -Verbose:$VerbosePreference
-    
+
     #Ensure an empty string is $null and not a string
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
@@ -237,7 +237,7 @@ function Test-TargetResource
     #Ensure an empty string is $null and not a string
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    $autoDVdir = Get-AutodiscoverVirtualDirectoryWithCorrectParams @PSBoundParameters
+    $autoDVdir = Get-AutodiscoverVirtualDirectoryInternal @PSBoundParameters
 
     $testResults = $true
 
@@ -293,7 +293,7 @@ function Test-TargetResource
     return $testResults
 }
 
-function Get-AutodiscoverVirtualDirectoryWithCorrectParams
+function Get-AutodiscoverVirtualDirectoryInternal
 {
     [CmdletBinding()]
     param

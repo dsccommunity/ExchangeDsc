@@ -13,7 +13,7 @@ function Get-TargetResource
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
-        
+
         [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
@@ -489,7 +489,7 @@ function Set-TargetResource
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
-        
+
         [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
@@ -906,7 +906,7 @@ function Set-TargetResource
     {
         Write-Verbose -Message "The following exception was thrown:$($_.Exception.Message)"
     }
-    
+
     if ($AllowServiceRestart -eq $true)
     {
         Write-Verbose -Message 'Restart service MSExchangeTransport'
@@ -933,7 +933,7 @@ function Test-TargetResource
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
-        
+
         [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
@@ -1322,12 +1322,12 @@ function Test-TargetResource
         if (!(VerifySetting -Name 'ActiveUserStatisticsLogMaxFileSize' -Type 'ByteQuantifiedSize' -ExpectedValue $ActiveUserStatisticsLogMaxFileSize -ActualValue $TransportService.ActiveUserStatisticsLogMaxFileSize -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
-        }   
+        }
 
         if (!(VerifySetting -Name 'ActiveUserStatisticsLogPath' -Type 'String' -ExpectedValue $ActiveUserStatisticsLogPath -ActualValue $TransportService.ActiveUserStatisticsLogPath -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
-        }   
+        }
 
         if (!(VerifySetting -Name 'AgentLogEnabled' -Type 'Boolean' -ExpectedValue $AgentLogEnabled -ActualValue $TransportService.AgentLogEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
@@ -1423,7 +1423,7 @@ function Test-TargetResource
         {
             $testResults = $false
         }
- 
+
         if (!(VerifySetting -Name 'ExternalDNSProtocolOption' -Type 'String' -ExpectedValue $ExternalDNSProtocolOption -ActualValue $TransportService.ExternalDNSProtocolOption -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
@@ -1578,7 +1578,7 @@ function Test-TargetResource
         {
             $testResults = $false
         }
-        
+
         if (!(VerifySetting -Name 'PickupDirectoryPath' -Type 'String' -ExpectedValue $PickupDirectoryPath -ActualValue $TransportService.PickupDirectoryPath -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
@@ -1753,7 +1753,7 @@ function CompareIPAddressewithString
         [Parameter()]
         [System.Net.IPAddress]
         $IPAddress,
-        
+
         [Parameter()]
         [System.String]
         $String
@@ -1771,7 +1771,7 @@ function CompareIPAddressewithString
     {
         $returnValue =($IPAddress.Equals([System.Net.IPAddress]::Parse($string)))
     }
-    
+
     if ($returnValue -eq $false)
     {
         ReportBadSetting -SettingName $IPAddress -ExpectedValue $ExpectedValue -ActualValue $IPAddress -Verbose:$VerbosePreference
@@ -1787,12 +1787,12 @@ function CompareSmtpAdresswithString
     (
         [Parameter()]
         $SmtpAddress,
-        
+
         [Parameter()]
         [System.String]
         $String
     )
-    
+
     if (($null -eq $SmtpAddress) -and ([System.String]::IsNullOrEmpty($String)))
     {
         Write-Verbose -Message 'Expected and actual value is empty, therefore equal!'

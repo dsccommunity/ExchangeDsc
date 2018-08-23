@@ -181,9 +181,9 @@ function Test-TargetResource
         if (!(VerifySetting -Name "InternalUrl" -Type "String" -ExpectedValue $InternalUrl -ActualValue $vdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
-        }    
+        }
     }
-    
+
     return $testResults
 }
 

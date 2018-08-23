@@ -23,21 +23,18 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     Describe 'Test Setting Properties with xExchUMCallRouterSettings' {
         $testParams = @{
             Server =  $env:COMPUTERNAME
-            Credential = $Global:ShellCredentials
-            UMStartupMode = 'TLS'       
+            Credential = $shellCredentials
+            UMStartupMode = 'TLS'
         }
 
         $expectedGetResults = @{
             Server =  $env:COMPUTERNAME
-            UMStartupMode = 'TLS'  
+            UMStartupMode = 'TLS'
         }
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Set standard parameters' -ExpectedGetResults $expectedGetResults

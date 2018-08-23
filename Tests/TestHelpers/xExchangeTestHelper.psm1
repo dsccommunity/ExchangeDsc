@@ -237,12 +237,16 @@ function Initialize-TestForDAG
 
         [Parameter()]
         [System.String]
-        $DatabaseName
+        $DatabaseName,
+
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        $ShellCredentials
     )
 
     Write-Verbose -Message 'Cleaning up test DAG and related resources'
 
-    GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad '*-MailboxDatabase',`
+    GetRemoteExchangeSession -Credential $ShellCredentials -CommandsToLoad '*-MailboxDatabase',`
                                                                                   '*-DatabaseAvailabilityGroup',`
                                                                                   'Remove-DatabaseAvailabilityGroupServer',`
                                                                                   'Get-MailboxDatabaseCopyStatus',`
@@ -299,6 +303,28 @@ function Initialize-TestForDAG
     }
 
     Write-Verbose -Message 'Finished cleaning up test DAG and related resources'
+}
+
+<#
+    .SYNOPSIS
+        Prompts for credentials to use for Exchange tests and returns the
+        credentials as a PSCredential object. Only prompts for credentials
+        on the first call to the function.
+#>
+function Get-TestCredential
+{
+    # Suppressing this rule so that Exchange credentials can be re-used across multiple test scripts
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCredential])]
+    param()
+
+    if ($null -eq $Global:TestCredential)
+    {
+        [PSCredential]$Global:TestCredential = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
+    }
+
+    return $Global:TestCredential
 }
 
 Export-ModuleMember -Function *

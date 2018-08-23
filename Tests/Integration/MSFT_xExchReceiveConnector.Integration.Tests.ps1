@@ -23,10 +23,7 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     Describe 'Set and modify a Receive Connector' {
     #Set configuration with default values
@@ -36,7 +33,7 @@ if ($exchangeInstalled)
                                         Value = 'Ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-Bypass-Anti-Spam'})
     $testParams = @{
          Identity                                = "$($env:computername)\AnonymousRelay $($env:computername)"
-         Credential                              = $Global:ShellCredentials
+         Credential                              = $shellCredentials
          Ensure                                  = 'Present'
          ExtendedRightAllowEntries               = $extendedRightAllowEntries
          AdvertiseClientSettings                 = $false
@@ -143,7 +140,7 @@ if ($exchangeInstalled)
     }
 
      Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Create Receive Connector' -ExpectedGetResults $expectedGetResults
-     
+
      #modify configuration
      $extendedRightDenyEntries = $(New-CimInstance -ClassName MSFT_KeyValuePair -Namespace root/microsoft/Windows/DesiredStateConfiguration `
                                             -Property @{Key = 'Domain Users'; Value = 'ms-Exch-Bypass-Anti-Spam'} -ClientOnly)
@@ -152,7 +149,7 @@ if ($exchangeInstalled)
      $expectedGetResults.ExtendedRightDenyEntries = $extendedRightDenyEntries
 
      Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Modify Receive Connector' -ExpectedGetResults $expectedGetResults
-     
+
      #modify configuration
      $testParams.Ensure = 'Absent'
      $expectedGetResults = $null

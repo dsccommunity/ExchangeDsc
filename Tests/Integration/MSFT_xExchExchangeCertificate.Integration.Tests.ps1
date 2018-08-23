@@ -27,10 +27,7 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     #Get required credentials to use for the test
     $certPassword = ConvertTo-SecureString 'Password1' -AsPlainText -Force
@@ -45,7 +42,7 @@ if ($exchangeInstalled)
         #Test installing and enabling test cert 1
         $testParams = @{
             Thumbprint = $testCertThumbprint1
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             Ensure = 'Present'
             AllowExtraServices = $true
             CertCreds = $certCredentials
@@ -75,10 +72,10 @@ if ($exchangeInstalled)
         $testParams.Thumbprint = $testCertThumbprint1
         $testParams.Ensure = 'Absent'
         $expectedGetResults = $null
-        
+
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Remove Test Certificate 1' `
-                                         -ExpectedGetResults $expectedGetResults        
+                                         -ExpectedGetResults $expectedGetResults
     }
 }
 else

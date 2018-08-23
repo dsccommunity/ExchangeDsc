@@ -170,7 +170,7 @@ function Set-TargetResource
 
     $copyCount = 0
     $existingDb = GetMailboxDatabase @PSBoundParameters -ErrorAction SilentlyContinue
-    
+
     if ($null -ne $existingDb)
     {
         $copyCount = $existingDb.DatabaseCopies.Count
@@ -188,12 +188,12 @@ function Set-TargetResource
 
         RemoveParameters -PSBoundParametersIn $PSBoundParameters `
                          -ParamsToRemove 'Credential','AllowServiceRestart','AdServerSettingsPreferredServer'
-        
+
         #Only send in ActivationPreference if it is less than or equal to the future copy count after adding this copy
         if ($PSBoundParameters.ContainsKey('ActivationPreference') -and $ActivationPreference -gt $copyCount)
         {
             Write-Warning "Desired activation preference '$($ActivationPreference)' is higher than the future copy count '$($copyCount)'. Skipping setting ActivationPreference at this point."
-            RemoveParameters -PSBoundParametersIn $PSBoundParameters 
+            RemoveParameters -PSBoundParametersIn $PSBoundParameters
                              -ParamsToRemove 'ActivationPreference'
         }
 
@@ -209,14 +209,14 @@ function Set-TargetResource
             {
                 $PSBoundParameters.Remove('SeedingPostponed')
             }
-        }        
+        }
 
         #Create the database
-        NotePreviousError
+        $previousError = Get-PreviousError
 
         Add-MailboxDatabaseCopy @PSBoundParameters
 
-        ThrowIfNewErrorsEncountered -CmdletBeingRun 'Add-MailboxDatabaseCopy' -Verbose:$VerbosePreference
+        Assert-NoNewError -CmdletBeingRun 'Add-MailboxDatabaseCopy' -PreviousError $previousError -Verbose:$VerbosePreference
 
         #Increment the copy count, as if we made it here, we didn't fail
         $copyCount++
@@ -261,7 +261,7 @@ function Set-TargetResource
         }
 
         Set-MailboxDatabaseCopy @PSBoundParameters
-    }  
+    }
 }
 
 

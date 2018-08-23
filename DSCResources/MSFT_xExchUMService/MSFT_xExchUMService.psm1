@@ -18,11 +18,11 @@ function Get-TargetResource
         [ValidateSet('TCP','TLS','Dual')]
         [System.String]
         $UMStartupMode,
-        
+
         [Parameter()]
         [System.String[]]
         $DialPlans,
-        
+
         [Parameter()]
         [System.String]
         $DomainController
@@ -68,7 +68,7 @@ function Set-TargetResource
         [ValidateSet('TCP','TLS','Dual')]
         [System.String]
         $UMStartupMode,
-                
+
         [Parameter()]
         [System.String[]]
         $DialPlans,
@@ -108,11 +108,11 @@ function Test-TargetResource
         [ValidateSet('TCP','TLS','Dual')]
         [System.String]
         $UMStartupMode,
-        
+
         [Parameter()]
         [System.String[]]
         $DialPlans,
-        
+
         [Parameter()]
         [System.String]
         $DomainController

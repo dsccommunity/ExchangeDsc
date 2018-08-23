@@ -25,14 +25,14 @@ $ConfigurationData = @{
             <#
                 The location of the exported public certifcate which will be used to encrypt
                 credentials during compilation.
-                CertificateFile = 'C:\public-certificate.cer' 
+                CertificateFile = 'C:\public-certificate.cer'
             #>
-            
+
             #Thumbprint of the certificate being used for decrypting credentials
-            Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673' 
+            Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673'
 
             #The base file server UNC path that will be used for copying things like certificates, Exchange binaries, and Jetstress binaries
-            FileServerBase = '\\rras-1.mikelab.local\Binaries'
+            FileServerBase = '\\rras-1.contoso.local\Binaries'
 
             #endregion
         }
@@ -41,16 +41,16 @@ $ConfigurationData = @{
         #region DAG01 Nodes
         @{
             NodeName        = 'e15-1'
-            Fqdn            = 'e15-1.mikelab.local'
+            Fqdn            = 'e15-1.contoso.local'
             Role            = 'AdditionalDAGMember'
             DAGId           = 'DAG01'
             CASId           = 'Site1CAS'
-            ServerNameInCsv = 'e15-1'          
+            ServerNameInCsv = 'e15-1'
         }
 
         @{
             NodeName        = 'e15-2'
-            Fqdn            = 'e15-2.mikelab.local'
+            Fqdn            = 'e15-2.contoso.local'
             Role            = 'AdditionalDAGMember'
             DAGId           = 'DAG01'
             CASId           = 'Site1CAS'
@@ -59,16 +59,16 @@ $ConfigurationData = @{
 
         @{
             NodeName        = 'e15-3'
-            Fqdn            = 'e15-3.mikelab.local'
+            Fqdn            = 'e15-3.contoso.local'
             Role            = 'FirstDAGMember'
             DAGId           = 'DAG01'
             CASId           = 'Site2CAS'
-            ServerNameInCsv = 'e15-3'       
+            ServerNameInCsv = 'e15-3'
         }
 
         @{
             NodeName        = 'e15-4'
-            Fqdn            = 'e15-4.mikelab.local'
+            Fqdn            = 'e15-4.contoso.local'
             Role            = 'AdditionalDAGMember'
             DAGId           = 'DAG01'
             CASId           = 'Site2CAS'
@@ -80,11 +80,11 @@ $ConfigurationData = @{
     #region DAG Settings
     DAG01 = @(
         @{
-            DAGName                              = 'DAG01'           
+            DAGName                              = 'DAG01'
             AutoDagTotalNumberOfServers          = 12
             AutoDagDatabaseCopiesPerVolume       = 4
             DatabaseAvailabilityGroupIPAddresses = '192.168.1.31','192.168.2.31'
-            WitnessServer                        = 'e14-1.mikelab.local'
+            WitnessServer                        = 'e14-1.contoso.local'
             DbNameReplacements                   = @{"nn" = "01"}
             Thumbprint                           = "0079D0F68F44C7DA5252B4779F872F46DFAF0CBC"
         }
@@ -95,16 +95,16 @@ $ConfigurationData = @{
     #Settings that will apply to all CAS
     AllCAS = @(
         @{
-            ExternalNamespace = 'mail.mikelab.local'
+            ExternalNamespace = 'mail.contoso.local'
         }
     )
 
     #Settings that will apply only to Quincy CAS
     Site1CAS = @(
         @{
-            InternalNamespace          = 'mail-site1.mikelab.local'
+            InternalNamespace          = 'mail-site1.contoso.local'
             AutoDiscoverSiteScope      = 'Site1'
-            InstantMessagingServerName = 'l15-1.mikelab.local'
+            InstantMessagingServerName = 'l15-1.contoso.local'
             DefaultOAB                 = "Default Offline Address Book (Site1)"
         }
     );
@@ -112,9 +112,9 @@ $ConfigurationData = @{
     #Settings that will apply only to Phoenix CAS
     Site2CAS = @(
         @{
-            InternalNamespace          = 'mail-site2.mikelab.local'
+            InternalNamespace          = 'mail-site2.contoso.local'
             AutoDiscoverSiteScope      = 'Site2'
-            InstantMessagingServerName = 'l15-2.mikelab.local'
+            InstantMessagingServerName = 'l15-2.contoso.local'
             DefaultOAB                 = "Default Offline Address Book (Site2)"
         }
     );
@@ -127,7 +127,7 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullorEmpty()]
-        [System.Management.Automation.PSCredential]    
+        [System.Management.Automation.PSCredential]
         $ExchangeAdminCredential,
 
         [Parameter(Mandatory = $true)]
@@ -137,7 +137,7 @@ Configuration Example
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullorEmpty()]
-        [System.Management.Automation.PSCredential]    
+        [System.Management.Automation.PSCredential]
         $ExchangeFileCopyCredential
     )
 
@@ -159,13 +159,13 @@ Configuration Example
             DestinationPath = 'C:\Binaries\Certificates\ExchangeCert.pfx'
             Credential      = $ExchangeFileCopyCredential
         }
-       
+
         xExchExchangeCertificate Certificate
         {
             Thumbprint              = $dagSettings.Thumbprint
             Credential              = $ExchangeAdminCredential
             Ensure                  = 'Present'
-            AllowExtraServices      = $true        
+            AllowExtraServices      = $true
             CertCreds               = $ExchangeCertCredential
             CertFilePath            = 'C:\Binaries\Certificates\ExchangeCert.pfx'
             Services                = 'IIS','POP','IMAP','SMTP'
@@ -186,16 +186,16 @@ Configuration Example
         {
             Identity    = "$($Node.NodeName)\Microsoft-Server-ActiveSync (Default Web Site)"
             Credential  = $ExchangeAdminCredential
-            ExternalUrl = "https://$($casSettingsAll.ExternalNamespace)/Microsoft-Server-ActiveSync"  
-            InternalUrl = "https://$($casSettingsPerSite.InternalNamespace)/Microsoft-Server-ActiveSync"  
+            ExternalUrl = "https://$($casSettingsAll.ExternalNamespace)/Microsoft-Server-ActiveSync"
+            InternalUrl = "https://$($casSettingsPerSite.InternalNamespace)/Microsoft-Server-ActiveSync"
         }
 
         xExchEcpVirtualDirectory ECPVDir
         {
             Identity    = "$($Node.NodeName)\ecp (Default Web Site)"
             Credential  = $ExchangeAdminCredential
-            ExternalUrl = "https://$($casSettingsAll.ExternalNamespace)/ecp"  
-            InternalUrl = "https://$($casSettingsPerSite.InternalNamespace)/ecp"    
+            ExternalUrl = "https://$($casSettingsAll.ExternalNamespace)/ecp"
+            InternalUrl = "https://$($casSettingsPerSite.InternalNamespace)/ecp"
         }
 
         xExchMapiVirtualDirectory MAPIVdir
@@ -212,7 +212,7 @@ Configuration Example
             Identity    = "$($Node.NodeName)\OAB (Default Web Site)"
             Credential  = $ExchangeAdminCredential
             ExternalUrl = "https://$($casSettingsAll.ExternalNamespace)/oab"
-            InternalUrl = "https://$($casSettingsPerSite.InternalNamespace)/oab"  
+            InternalUrl = "https://$($casSettingsPerSite.InternalNamespace)/oab"
         }
 
         xExchOutlookAnywhere OAVdir
@@ -252,12 +252,12 @@ Configuration Example
         {
             Identity                              = "$($Node.NodeName)\owa (Default Web Site)"
             Credential                            = $ExchangeAdminCredential
-            ExternalUrl                           = "https://$($casSettingsAll.ExternalNamespace)/owa"  
-            InternalUrl                           = "https://$($casSettingsPerSite.InternalNamespace)/owa"   
+            ExternalUrl                           = "https://$($casSettingsAll.ExternalNamespace)/owa"
+            InternalUrl                           = "https://$($casSettingsPerSite.InternalNamespace)/owa"
             InstantMessagingEnabled               = $true
             InstantMessagingCertificateThumbprint = $dagSettings.Thumbprint
             InstantMessagingServerName            = $casSettingsPerSite.InstantMessagingServerName
-            InstantMessagingType                  = 'Ocs'            
+            InstantMessagingType                  = 'Ocs'
             DependsOn                             = '[xExchExchangeCertificate]Certificate' #Can't configure the IM cert until it's valid
         }
 

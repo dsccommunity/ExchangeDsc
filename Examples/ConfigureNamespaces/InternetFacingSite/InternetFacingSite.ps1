@@ -37,14 +37,14 @@ $ConfigurationData = @{
     #CAS settings that are unique per site will go in separate hash table entries.
     Site1CAS = @(
         @{
-            ExternalUrlActiveSync   = 'https://mail.mikelab.local/Microsoft-Server-ActiveSync' 
-            ExternalUrlECP          = 'https://mail.mikelab.local/ecp'
-            ExternalUrlMAPI         = 'https://mail.mikelab.local/mapi'
-            ExternalUrlOAB          = 'https://mail.mikelab.local/oab'
-            ExternalUrlOA           = 'mail.mikelab.local'
-            ExternalUrlOWA          = 'https://mail.mikelab.local/owa'
-            ExternalUrlEWS          = 'https://mail.mikelab.local/ews/exchange.asmx'
-            InternalNLBFqdn         = 'mail-site1.mikelab.local'
+            ExternalUrlActiveSync   = 'https://mail.contoso.local/Microsoft-Server-ActiveSync'
+            ExternalUrlECP          = 'https://mail.contoso.local/ecp'
+            ExternalUrlMAPI         = 'https://mail.contoso.local/mapi'
+            ExternalUrlOAB          = 'https://mail.contoso.local/oab'
+            ExternalUrlOA           = 'mail.contoso.local'
+            ExternalUrlOWA          = 'https://mail.contoso.local/owa'
+            ExternalUrlEWS          = 'https://mail.contoso.local/ews/exchange.asmx'
+            InternalNLBFqdn         = 'mail-site1.contoso.local'
             AutoDiscoverSiteScope   = 'Site1'
         }
     );
@@ -58,7 +58,7 @@ $ConfigurationData = @{
             ExternalUrlOA           = ''
             ExternalUrlOWA          = ''
             ExternalUrlEWS          = ''
-            InternalNLBFqdn         = 'mail-site2.mikelab.local'
+            InternalNLBFqdn         = 'mail-site2.contoso.local'
             AutoDiscoverSiteScope   = 'Site2'
         }
     );
@@ -79,7 +79,7 @@ Configuration Example
     Node $AllNodes.NodeName
     {
         $casSettings = $ConfigurationData[$Node.CASId] #Look up and retrieve the CAS settings for this node
-        
+
         xExchClientAccessServer CAS
         {
             Identity                       = $Node.NodeName
@@ -93,7 +93,7 @@ Configuration Example
             Identity    = "$($Node.NodeName)\Microsoft-Server-ActiveSync (Default Web Site)"
             Credential  = $ExchangeAdminCredential
             ExternalUrl = $casSettings.ExternalUrlActiveSync
-            InternalUrl = "https://$($casSettings.InternalNLBFqdn)/Microsoft-Server-ActiveSync"  
+            InternalUrl = "https://$($casSettings.InternalNLBFqdn)/Microsoft-Server-ActiveSync"
         }
 
         xExchEcpVirtualDirectory ECPVDir
@@ -101,7 +101,7 @@ Configuration Example
             Identity    = "$($Node.NodeName)\ecp (Default Web Site)"
             Credential  = $ExchangeAdminCredential
             ExternalUrl = $casSettings.ExternalUrlECP
-            InternalUrl = "https://$($casSettings.InternalNLBFqdn)/ecp"           
+            InternalUrl = "https://$($casSettings.InternalNLBFqdn)/ecp"
         }
 
         xExchMapiVirtualDirectory MAPIVdir
@@ -119,7 +119,7 @@ Configuration Example
             Identity    = "$($Node.NodeName)\OAB (Default Web Site)"
             Credential  = $ExchangeAdminCredential
             ExternalUrl = $casSettings.ExternalUrlOAB
-            InternalUrl = "https://$($casSettings.InternalNLBFqdn)/oab"     
+            InternalUrl = "https://$($casSettings.InternalNLBFqdn)/oab"
         }
 
         xExchOutlookAnywhere OAVdir
@@ -140,7 +140,7 @@ Configuration Example
             Identity    = "$($Node.NodeName)\owa (Default Web Site)"
             Credential  = $ExchangeAdminCredential
             ExternalUrl = $casSettings.ExternalUrlOWA
-            InternalUrl = "https://$($casSettings.InternalNLBFqdn)/owa"    
+            InternalUrl = "https://$($casSettings.InternalNLBFqdn)/owa"
         }
 
         xExchWebServicesVirtualDirectory EWSVdir
@@ -148,7 +148,7 @@ Configuration Example
             Identity    = "$($Node.NodeName)\EWS (Default Web Site)"
             Credential  = $ExchangeAdminCredential
             ExternalUrl = $casSettings.ExternalUrlEWS
-            InternalUrl = "https://$($casSettings.InternalNLBFqdn)/ews/exchange.asmx"    
+            InternalUrl = "https://$($casSettings.InternalNLBFqdn)/ews/exchange.asmx"
         }
     }
 }

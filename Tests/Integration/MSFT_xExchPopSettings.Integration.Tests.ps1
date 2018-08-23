@@ -23,29 +23,26 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     #Get the Server FQDN for using in URL's
-    if ($null -eq $Global:ServerFqdn)
+    if ($null -eq $serverFqdn)
     {
-        $Global:ServerFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
+        $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
     Describe 'Test Setting Properties with xExchPopSettings' {
         $testParams = @{
             Server =  $env:COMPUTERNAME
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             LoginType = 'PlainTextLogin'
-            ExternalConnectionSettings = @("$($Global:ServerFqdn):143:TLS")
-            X509CertificateName = "$($Global:ServerFqdn)"
+            ExternalConnectionSettings = @("$($serverFqdn):143:TLS")
+            X509CertificateName = "$($serverFqdn)"
         }
 
         $expectedGetResults = @{
             LoginType = 'PlainTextLogin'
-            X509CertificateName = "$($Global:ServerFqdn)"
+            X509CertificateName = "$($serverFqdn)"
         }
 
         Test-TargetResourceFunctionality -Params $testParams `

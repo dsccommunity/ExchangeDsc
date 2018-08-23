@@ -143,7 +143,7 @@ function Set-TargetResource
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential"
 
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
-    
+
     $serverVersion = GetExchangeVersion -ThrowIfUnknownVersion $true
 
     if ($serverVersion -eq '2016')
@@ -245,8 +245,6 @@ function Test-TargetResource
 
     $cas = GetClientAccessServer @PSBoundParameters
 
-    $serverVersion = GetExchangeVersion -ThrowIfUnknownVersion $true
-
     $testResults = $true
 
     if ($null -eq $cas)
@@ -344,7 +342,7 @@ function GetClientAccessServer
     elseif ($serverVersion -eq '2013')
     {
         return (Get-ClientAccessServer @PSBoundParameters)
-    } 
+    }
 }
 
 Export-ModuleMember -Function *-TargetResource

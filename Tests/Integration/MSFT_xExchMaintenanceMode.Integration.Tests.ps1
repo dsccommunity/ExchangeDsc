@@ -91,7 +91,7 @@ function EnsureOutOfMaintenanceMode
     #Put server in maintenance mode
     $testParams = @{
         Enabled                        = $false
-        Credential                     = $Global:ShellCredentials
+        Credential                     = $shellCredentials
         AdditionalComponentsToActivate = 'AutoDiscoverProxy',`
                                          'ActiveSyncProxy',`
                                          'EcpProxy',`
@@ -148,15 +148,12 @@ function Wait-Verbose
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     #Make sure server is a DAG member
     if ($null -eq $isDagMember)
     {
-        GetRemoteExchangeSession -Credential $Global:ShellCredentials `
+        GetRemoteExchangeSession -Credential $shellCredentials `
                                  -CommandsToLoad 'Get-MailboxServer','Get-MailboxDatabaseCopyStatus','Get-MailboxDatabase'
 
         $mbxServer = Get-MailboxServer $env:COMPUTERNAME
@@ -202,7 +199,7 @@ if ($exchangeInstalled)
         #Put server in maintenance mode
         $testParams = @{
             Enabled                        = $true
-            Credential                     = $Global:ShellCredentials
+            Credential                     = $shellCredentials
             AdditionalComponentsToActivate = 'AutoDiscoverProxy',`
                                              'ActiveSyncProxy',`
                                              'EcpProxy',`
@@ -260,7 +257,7 @@ if ($exchangeInstalled)
         #Test passing in UpgradedServerVersion that is lower than the current server version
         $testParams = @{
             Enabled                    = $true
-            Credential                 = $Global:ShellCredentials
+            Credential                 = $shellCredentials
             MountDialOverride          = 'BestEffort'
             MovePreferredDatabasesBack = $true
             UpgradedServerVersion      = '15.0.0.0'
@@ -282,7 +279,7 @@ if ($exchangeInstalled)
         #Test using Domain Controller switch to put server in maintenance mode
         $testParams = @{
             Enabled                    = $true
-            Credential                 = $Global:ShellCredentials
+            Credential                 = $shellCredentials
             MountDialOverride          = 'BestEffort'
             MovePreferredDatabasesBack = $true
             DomainController           = $dcToTestAgainst
@@ -323,7 +320,7 @@ if ($exchangeInstalled)
         #First put the server in maintenance mode
         $testParams = @{
             Enabled                                       = $true
-            Credential                                    = $Global:ShellCredentials
+            Credential                                    = $shellCredentials
             AdditionalComponentsToActivate                = 'AutoDiscoverProxy',`
                                                             'ActiveSyncProxy',`
                                                             'EcpProxy',`
