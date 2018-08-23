@@ -32,7 +32,7 @@ if ($exchangeInstalled)
     }
 
     # Make sure all AlternateServiceAccount's are cleared before beginning tests
-    Set-TargetResource -Identity $env:COMPUTERNAME -Credential $shellCredentials -RemoveAlternateServiceAccountCredentials $true | Out-Null
+    Set-TargetResource -Identity $env:COMPUTERNAME -Credential $shellCredentials -RemoveAlternateServiceAccountCredentials $true
     $getResults = Get-TargetResource -Identity $env:COMPUTERNAME -Credential $shellCredentials
 
     Describe 'Test Setting Properties with xExchClientAccessServer' {
@@ -131,7 +131,7 @@ if ($exchangeInstalled)
 
             try
             {
-                Set-TargetResource @testParams | Out-Null
+                Set-TargetResource @testParams
             }
             catch
             {
