@@ -26,6 +26,8 @@ function Get-TargetResource
 
     LogFunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
+    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMCallRouterSettings' -SupportedVersions '2013','2016'
+
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMCallRouterSettings' -Verbose:$VerbosePreference
 
@@ -71,6 +73,8 @@ function Set-TargetResource
 
     LogFunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
+    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMCallRouterSettings' -SupportedVersions '2013','2016'
+
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMCallRouterSettings' -Verbose:$VerbosePreference
 
@@ -107,6 +111,7 @@ function Test-TargetResource
 
     LogFunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
+    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMCallRouterSettings' -SupportedVersions '2013','2016'
 
     $umService = Get-TargetResource @PSBoundParameters
 

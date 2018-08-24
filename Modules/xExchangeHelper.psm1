@@ -125,9 +125,9 @@ function RemoveExistingRemoteSession
 #Checks whether a supported version of Exchange is at least partially installed by looking for Exchange's product GUID
 function Get-IsExchangePresent
 {
-    $version = GetExchangeVersion
+    $version = Get-ExchangeVersion
 
-    if ($version -eq '2013' -or $version -eq '2016')
+    if ($version -in '2013','2016','2019')
     {
         return $true
     }
@@ -140,15 +140,24 @@ function Get-IsExchangePresent
 #Gets the installed Exchange Version, and returns the number as a string.
 #Returns N/A if the version cannot be found, and will optionally throw an exception
 #if ThrowIfUnknownVersion was set to $true.
-function GetExchangeVersion
+function Get-ExchangeVersion
 {
     param ([bool]$ThrowIfUnknownVersion = $false)
 
     $version = "N/A"
 
-    if ($null -ne (Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}' -ErrorAction SilentlyContinue))
+    $uninstall20162019Key = Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}' -ErrorAction SilentlyContinue
+
+    if ($null -ne $uninstall20162019Key)
     {
-        $version = '2016'
+        if ($uninstall20162019Key.GetValue("VersionMajor") -eq 15 -and $uninstall20162019Key.GetValue("VersionMinor") -eq 2)
+        {
+            $version = '2019'
+        }
+        else
+        {
+            $version = '2016'
+        }
     }
     elseif ($null -ne (Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4934D1EA-BE46-48B1-8847-F1AF20E892C1}' -ErrorAction SilentlyContinue))
     {
@@ -636,13 +645,13 @@ function RemoveParameters
 
 function RemoveVersionSpecificParameters
 {
-    param($PSBoundParametersIn, [System.String]$ParamName, [System.String]$ResourceName, [ValidateSet("2013","2016")][System.String]$ParamExistsInVersion)
+    param($PSBoundParametersIn, [System.String]$ParamName, [System.String]$ResourceName, [ValidateSet('2013','2016','2019')][System.String[]]$ParamExistsInVersion)
 
     if ($PSBoundParametersIn.ContainsKey($ParamName))
     {
-        $serverVersion = GetExchangeVersion
+        $serverVersion = Get-ExchangeVersion
 
-        if ($serverVersion -ne $ParamExistsInVersion)
+        if ($serverVersion -notin $ParamExistsInVersion)
         {
             Write-Warning "$($ParamName) is not a valid parameter for $($ResourceName) in Exchange $($serverVersion). Skipping usage."
             RemoveParameters -PSBoundParametersIn $PSBoundParametersIn -ParamsToRemove $ParamName
@@ -1226,5 +1235,37 @@ function Test-ExtendedProtectionSPNList
     }
 }
 
+<#
+    .SYNOPSIS
+        Checks if the current Exchange Server version is contained within the
+        $SupportedVersions parameter. If it is not, throws an exception.
+
+    .PARAMETER ObjectOrOperationName
+        The name of object type or operation name that is about to be utilized
+        if the call to this function does not throw an exception.
+
+    .PARAMETER SupportedVersions
+        The allowed Exchange Server versions that the object or operation is
+        allowed to be utilized on.
+#>
+function Assert-IsSupportedWithExchangeVersion
+{
+    [CmdletBinding()]
+    param
+    (
+        [System.String]
+        $ObjectOrOperationName,
+
+        [System.String[]]
+        $SupportedVersions
+    )
+
+    $serverVersion = Get-ExchangeVersion
+
+    if ($serverVersion -notin $SupportedVersions)
+    {
+        throw "$ObjectOrOperationName is not supported in Exchange Server $serverVersion"
+    }
+}
 
 Export-ModuleMember -Function *

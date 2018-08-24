@@ -225,6 +225,60 @@ try
                 }
             }
         }
+
+        Describe 'xExchangeHelper\Assert-IsSupportedWithExchangeVersion' -Tag 'Helper' {
+            $supportedVersionTestCases = @(
+                @{Name='2013 Operation Supported on 2013';      ExchangeVersion='2013'; SupportedVersions='2013'}
+                @{Name='2013 Operation Supported on 2013,2019'; ExchangeVersion='2013'; SupportedVersions='2013','2019'}
+            )
+
+            $notSupportedVersionTestCases = @(
+                @{Name='2013 Operation Not Supported on 2016';      ExchangeVersion='2013'; SupportedVersions='2016'}
+                @{Name='2013 Operation Not Supported on 2016,2019'; ExchangeVersion='2013'; SupportedVersions='2016','2019'}
+            )
+
+            Context 'When a supported version is passed' {
+                It 'Should not throw an exception' -TestCases $supportedVersionTestCases {
+                    param($Name, $ExchangeVersion, $SupportedVersions)
+
+                    Mock -CommandName Get-ExchangeVersion -MockWith { return $ExchangeVersion }
+
+                    $caughtException = $false
+
+                    try
+                    {
+                        Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName $Name -SupportedVersions $SupportedVersions
+                    }
+                    catch
+                    {
+                        $caughtException = $true
+                    }
+
+                    $caughtException | Should -Be $false
+                }
+            }
+
+            Context 'When an unsupported version is passed' {
+                It 'Should throw an exception' -TestCases $notSupportedVersionTestCases {
+                    param($Name, $ExchangeVersion, $SupportedVersions)
+
+                    Mock -CommandName Get-ExchangeVersion -MockWith { return $ExchangeVersion }
+
+                    $caughtException = $false
+
+                    try
+                    {
+                        Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName $Name -SupportedVersions $SupportedVersions
+                    }
+                    catch
+                    {
+                        $caughtException = $true
+                    }
+
+                    $caughtException | Should -Be $true
+                }
+            }
+        }
     }
 }
 finally

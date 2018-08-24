@@ -282,7 +282,7 @@ function Set-TargetResource
                     Verbose = $true
                 }
 
-                if ((GetExchangeVersion) -eq '2016')
+                if ((Get-ExchangeVersion) -in '2016','2019')
                 {
                     $startDagScriptParams.Add('pauseClusterNode', $true)
                 }
@@ -470,6 +470,8 @@ function Test-TargetResource
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-*" -Verbose:$VerbosePreference
 
+    $serverVersion = Get-ExchangeVersion
+
     $maintenanceModeStatus = GetMaintenanceModeStatus -EnteringMaintenanceMode $Enabled -DomainController $DomainController
 
     $testResults = $true
@@ -563,10 +565,13 @@ function Test-TargetResource
                 $testResults = $false
             }
 
-            if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "UMCallRouter"}))
+            if ($serverVersion -in '2013','2016')
             {
-                Write-Verbose "Component UMCallRouter is not Active"
-                $testResults = $false
+                if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "UMCallRouter"}))
+                {
+                    Write-Verbose "Component UMCallRouter is not Active"
+                    $testResults = $false
+                }
             }
 
             if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "HubTransport"}))
@@ -1433,12 +1438,21 @@ function GetUMActiveCalls
         $DomainController
     )
 
-    if ([System.String]::IsNullOrEmpty($DomainController))
+    $umActiveCalls = $null
+
+    $serverVersion = Get-ExchangeVersion
+
+    if ($serverVersion -in '2013','2016')
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
+        if ([System.String]::IsNullOrEmpty($DomainController))
+        {
+            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
+        }
+
+        $umActiveCalls = Get-UMActiveCalls @PSBoundParameters
     }
 
-    return (Get-UMActiveCalls @PSBoundParameters)
+    return $umActiveCalls
 }
 
 function MoveActiveMailboxDatabase
@@ -1560,7 +1574,7 @@ function MoveActiveMailboxDatabase
         $moveDBParams.Add("SkipMaximumActiveDatabasesChecks", $true)
     }
 
-    if ((GetExchangeVersion) -eq '2016')
+    if ((Get-ExchangeVersion) -in '2016','2019')
     {
         if ($SkipAllChecks)
         {

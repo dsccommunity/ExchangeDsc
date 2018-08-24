@@ -35,30 +35,9 @@ function Test-ServerIsOutOfMaintenanceMode
             Verify that all components in the following list are Active.
             This list comes from an Exchange 2013 CU9 machine with both the CAS and MBX roles.
         #>
-        [System.String[]]$expectedActiveComponentsList = 'ServerWideOffline',`
-                                                         'HubTransport',`
-                                                         'FrontendTransport',`
-                                                         'Monitoring',`
-                                                         'RecoveryActionsEnabled',`
-                                                         'AutoDiscoverProxy',`
-                                                         'ActiveSyncProxy',`
-                                                         'EcpProxy',`
-                                                         'EwsProxy',`
-                                                         'ImapProxy',`
-                                                         'OabProxy',`
-                                                         'OwaProxy',`
-                                                         'PopProxy',`
-                                                         'PushNotificationsProxy',`
-                                                         'RpsProxy',`
-                                                         'RwsProxy',`
-                                                         'RpcProxy',`
-                                                         'UMCallRouter',`
-                                                         'XropProxy',`
-                                                         'HttpProxyAvailabilityGroup',`
-                                                         'MapiProxy',`
-                                                         'EdgeTransport',`
-                                                         'HighAvailability',`
-                                                         'SharedCache'
+        [System.String[]]$expectedActiveComponentsList = Get-VersionSpecificComponentsToActivate
+
+        $expectedActiveComponentsList += 'ServerWideOffline','HubTransport','FrontendTransport','Monitoring','RecoveryActionsEnabled'
 
         foreach ($expectedActiveComponent in $expectedActiveComponentsList)
         {
@@ -92,25 +71,7 @@ function EnsureOutOfMaintenanceMode
     $testParams = @{
         Enabled                        = $false
         Credential                     = $shellCredentials
-        AdditionalComponentsToActivate = 'AutoDiscoverProxy',`
-                                         'ActiveSyncProxy',`
-                                         'EcpProxy',`
-                                         'EwsProxy',`
-                                         'ImapProxy',`
-                                         'OabProxy',`
-                                         'OwaProxy',`
-                                         'PopProxy',`
-                                         'PushNotificationsProxy',`
-                                         'RpsProxy',`
-                                         'RwsProxy',`
-                                         'RpcProxy',`
-                                         'UMCallRouter',`
-                                         'XropProxy',`
-                                         'HttpProxyAvailabilityGroup',`
-                                         'MapiProxy',`
-                                         'EdgeTransport',`
-                                         'HighAvailability',`
-                                         'SharedCache'
+        AdditionalComponentsToActivate = Get-VersionSpecificComponentsToActivate
         MountDialOverride              = 'BestEffort'
         MovePreferredDatabasesBack     = $true
         SkipClientExperienceChecks     = $true
@@ -138,11 +99,43 @@ function Wait-Verbose
     (
         [Parameter()]
         [System.Int32]
-        $SleepSeconds = 60
+        $SleepSeconds = 15
     )
 
     Write-Verbose -Message "Sleeping $($SleepSeconds) between tests."
     Start-Sleep -Seconds $SleepSeconds
+}
+
+function Get-VersionSpecificComponentsToActivate
+{
+    [CmdletBinding()]
+    param()
+
+    $serverVersion = Get-ExchangeVersion
+
+    $componentsToActivate = 'AutoDiscoverProxy',`
+                            'ActiveSyncProxy',`
+                            'EcpProxy',`
+                            'EwsProxy',`
+                            'ImapProxy',`
+                            'OabProxy',`
+                            'OwaProxy',`
+                            'PopProxy',`
+                            'PushNotificationsProxy',`
+                            'RpsProxy',`
+                            'RwsProxy',`
+                            'RpcProxy',`
+                            'XropProxy',`
+                            'HttpProxyAvailabilityGroup',`
+                            'MapiProxy',`
+                            'EdgeTransport',`
+                            'HighAvailability',`
+                            'SharedCache'
+
+    if ($serverVersion -in '2013','2016')
+    {
+        $testParams.AdditionalComponentsToActivate += 'UMCallRouter'
+    }
 }
 
 if ($exchangeInstalled)
@@ -163,7 +156,7 @@ if ($exchangeInstalled)
 
     if ($isDagMember -eq $false)
     {
-        Write-Verbose -Message 'Tests in this file require that this server be a member of a Database Availability Group'
+        Write-Warning -Message 'Tests in this file require that this server be a member of a Database Availability Group. Skipping testing.'
         return
     }
 
@@ -182,7 +175,7 @@ if ($exchangeInstalled)
 
     if ($hasNonReplicationDBs -eq $true)
     {
-        Write-Verbose -Message 'Tests in this file require that all databases on this server must have copies on other DAG members.'
+        Write-Warning -Message 'Tests in this file require that all databases on this server must have copies on other DAG members. Skipping testing.'
         return
     }
 
@@ -200,25 +193,7 @@ if ($exchangeInstalled)
         $testParams = @{
             Enabled                        = $true
             Credential                     = $shellCredentials
-            AdditionalComponentsToActivate = 'AutoDiscoverProxy',`
-                                             'ActiveSyncProxy',`
-                                             'EcpProxy',`
-                                             'EwsProxy',`
-                                             'ImapProxy',`
-                                             'OabProxy',`
-                                             'OwaProxy',`
-                                             'PopProxy',`
-                                             'PushNotificationsProxy',`
-                                             'RpsProxy',`
-                                             'RwsProxy',`
-                                             'RpcProxy',`
-                                             'UMCallRouter',`
-                                             'XropProxy',`
-                                             'HttpProxyAvailabilityGroup',`
-                                             'MapiProxy',`
-                                             'EdgeTransport',`
-                                             'HighAvailability',`
-                                             'SharedCache'
+            AdditionalComponentsToActivate = Get-VersionSpecificComponentsToActivate
             MountDialOverride              = 'BestEffort' #Copy queue can get behind when rapidly failing over DB's for tests, so set this to BestEffort
             MovePreferredDatabasesBack     = $true
             SkipClientExperienceChecks     = $true #Content Index takes a while to become healthy after failing over. Override for tests.
@@ -321,25 +296,7 @@ if ($exchangeInstalled)
         $testParams = @{
             Enabled                                       = $true
             Credential                                    = $shellCredentials
-            AdditionalComponentsToActivate                = 'AutoDiscoverProxy',`
-                                                            'ActiveSyncProxy',`
-                                                            'EcpProxy',`
-                                                            'EwsProxy',`
-                                                            'ImapProxy',`
-                                                            'OabProxy',`
-                                                            'OwaProxy',`
-                                                            'PopProxy',`
-                                                            'PushNotificationsProxy',`
-                                                            'RpsProxy',`
-                                                            'RwsProxy',`
-                                                            'RpcProxy',`
-                                                            'UMCallRouter',`
-                                                            'XropProxy',`
-                                                            'HttpProxyAvailabilityGroup',`
-                                                            'MapiProxy',`
-                                                            'EdgeTransport',`
-                                                            'HighAvailability',`
-                                                            'SharedCache'
+            AdditionalComponentsToActivate                = Get-VersionSpecificComponentsToActivate
             MountDialOverride                             = 'BestEffort'
             MovePreferredDatabasesBack                    = $true
             SetInactiveComponentsFromAnyRequesterToActive = $false

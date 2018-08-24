@@ -143,10 +143,10 @@ function Set-TargetResource
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential"
 
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
+    
+    $serverVersion = Get-ExchangeVersion -ThrowIfUnknownVersion $true
 
-    $serverVersion = GetExchangeVersion -ThrowIfUnknownVersion $true
-
-    if ($serverVersion -eq '2016')
+    if ($serverVersion -in '2016','2019')
     {
         $setCasCmd = 'Set-ClientAccessService'
     }
@@ -329,13 +329,13 @@ function GetClientAccessServer
     #Remove params we don't want to pass into the next command
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
-    $serverVersion = GetExchangeVersion -ThrowIfUnknownVersion $true
+    $serverVersion = Get-ExchangeVersion -ThrowIfUnknownVersion $true
     if (($null -ne $AlternateServiceAccountCredential) -or ($RemoveAlternateServiceAccountCredentials))
     {
         $PSBoundParameters.Add('IncludeAlternateServiceAccountCredentialPassword',$true)
     }
 
-    if ($serverVersion -eq '2016')
+    if ($serverVersion -in '2016','2019')
     {
         return (Get-ClientAccessService @PSBoundParameters)
     }

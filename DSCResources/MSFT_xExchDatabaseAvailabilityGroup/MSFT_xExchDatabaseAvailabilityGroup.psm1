@@ -147,9 +147,9 @@ function Get-TargetResource
             WitnessServer                        = [System.String] $dag.WitnessServer
         }
 
-        $serverVersion = GetExchangeVersion
+        $serverVersion = Get-ExchangeVersion
 
-        if ($serverVersion -eq "2016")
+        if ($serverVersion -in '2016','2019')
         {
             $returnValue.Add("AutoDagAutoRedistributeEnabled", [System.Boolean]$dag.AutoDagAutoRedistributeEnabled)
             $returnValue.Add("FileSystem", [System.String]$dag.FileSystem)
@@ -284,7 +284,7 @@ function Set-TargetResource
     #create array of Exchange 2016 only parameters
     [array]$Exchange2016Only = 'AutoDagAutoRedistributeEnabled','FileSystem','PreferenceMoveFrequency'
 
-    $serverVersion = GetExchangeVersion
+    $serverVersion = Get-ExchangeVersion
 
     if ($serverVersion -eq '2013')
     {
@@ -294,7 +294,7 @@ function Set-TargetResource
             RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "$($Exchange2016Parameter)"  -ResourceName "xExchDatabaseAvailabilityGroup" -ParamExistsInVersion "2016"
         }
     }
-    elseif ($serverVersion -eq '2016')
+    elseif ($serverVersion -in '2016','2019')
     {
         Write-Verbose -Message "No need to remove parameters"
     }
@@ -476,7 +476,7 @@ function Test-TargetResource
     #create array of Exchange 2016 only parameters
     [array]$Exchange2016Only = 'AutoDagAutoRedistributeEnabled','FileSystem','PreferenceMoveFrequency'
 
-    $serverVersion = GetExchangeVersion
+    $serverVersion = Get-ExchangeVersion
 
     if ($serverVersion -eq '2013')
     {
@@ -486,7 +486,7 @@ function Test-TargetResource
             RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "$($Exchange2016Parameter)"  -ResourceName "xExchDatabaseAvailabilityGroup" -ParamExistsInVersion "2016"
         }
     }
-    elseif ($serverVersion -eq '2016')
+    elseif ($serverVersion -in '2016','2019')
     {
         Write-Verbose -Message "No need to remove parameters"
     }

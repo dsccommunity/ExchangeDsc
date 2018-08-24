@@ -96,7 +96,7 @@ if ($null -ne $adModule)
         #Get the product key to use for testing
         if ($null -eq $productKey)
         {
-            $productKey = Read-Host -Prompt 'Enter the product key to license Exchange with'
+            $productKey = Read-Host -Prompt 'Enter the product key to license Exchange with, or press ENTER to skip'
         }
 
         Describe 'Test Setting Properties with xExchExchangeServer' {
@@ -115,13 +115,17 @@ if ($null -ne $adModule)
                 Identity = $env:COMPUTERNAME
                 Credential = $shellCredentials
                 InternetWebProxy = 'http://someproxy.local/'
-                ProductKey = $productKey
             }
 
             $expectedGetResults = @{
                 Identity = $env:COMPUTERNAME
                 InternetWebProxy = 'http://someproxy.local/'
-                ProductKey = 'Licensed'
+            }
+
+            if (![System.String]::IsNullOrEmpty($productKey))
+            {
+                $testParams.Add("ProductKey", $productKey)
+                $expectedGetResults.Add("ProductKey", 'Licensed')
             }
 
             Test-TargetResourceFunctionality -Params $testParams `
@@ -136,5 +140,5 @@ if ($null -ne $adModule)
 }
 else
 {
-    Write-Verbose -Message 'Tests in this file require that the ActiveDirectory module is installed. Run: Add-WindowsFeature RSAT-ADDS'
+    Write-Error -Message 'Tests in this file require that the ActiveDirectory module is installed. Run: Add-WindowsFeature RSAT-ADDS'
 }
