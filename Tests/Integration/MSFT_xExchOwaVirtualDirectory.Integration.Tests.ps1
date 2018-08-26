@@ -31,10 +31,19 @@ if ($exchangeInstalled)
         $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
+    GetRemoteExchangeSession -Credential $shellCredentials -CommandsToLoad 'Get-ExchangeCertificate'
+
     #Get the thumbprint to use for Lync integration
-    if ($null -eq $imCertThumbprint)
+    [System.Object[]]$exCerts = Get-ExchangeCertificate
+
+    if ($exCerts.Count -gt 0)
     {
-        $imCertThumbprint = Read-Host -Prompt 'Enter the thumbprint of an Exchange certificate to use when enabling Lync integration'
+        $imCertThumbprint = $exCerts[0].Thumbprint
+    }
+    else
+    {
+        Write-Error 'At least one Exchange certificate must be installed to perform tests in this file'
+        return
     }
 
     Describe 'Test Setting Properties with xExchOwaVirtualDirectory' {

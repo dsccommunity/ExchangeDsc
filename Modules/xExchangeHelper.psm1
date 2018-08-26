@@ -1268,4 +1268,23 @@ function Assert-IsSupportedWithExchangeVersion
     }
 }
 
+<#
+    .SYNOPSIS
+        Removes Exchange snapins that have been loaded via Add-PSSnapin. This
+        prevents issues if another resource in the session tries to later add
+        the same snapin.
+#>
+function Remove-ExchangeSnapin
+{
+    [CmdletBinding()]
+    param()
+
+    if ($null -ne (Get-PSSnapin -Name 'Microsoft.Exchange.Management.Powershell.E2010' -ErrorAction SilentlyContinue))
+    {
+        Write-Verbose -Message "'Microsoft.Exchange.Management.Powershell.E2010' snapin is currently loaded. Removing."
+
+        Remove-PSSnapin -Name 'Microsoft.Exchange.Management.Powershell.E2010' -ErrorAction SilentlyContinue -Confirm:$false
+    }
+}
+
 Export-ModuleMember -Function *

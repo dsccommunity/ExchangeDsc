@@ -378,6 +378,8 @@ function Set-TargetResource
         throw "Failed to retrieve maintenance mode status of server."
     }
 
+    Remove-ExchangeSnapin
+
     Remove-Item Alias:Write-Host -ErrorAction SilentlyContinue
 }
 
@@ -623,6 +625,8 @@ function Test-TargetResource
             }
         }
     }
+
+    Remove-ExchangeSnapin
 
     return $testResults
 }
