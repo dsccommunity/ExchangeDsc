@@ -321,7 +321,7 @@ To disable PreferenceMoveFrequency you have to use the following value:
 
 ### xExchDatabaseAvailabilityGroupMember
 
-***xExchDatabaseAvailabilityGroupMember** adds a member to a Database
+**xExchDatabaseAvailabilityGroupMember** adds a member to a Database
 Availability Group. This must be implemented by all nodes, including the one
 that creates and maintains the DAG.
 
