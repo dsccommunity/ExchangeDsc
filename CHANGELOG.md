@@ -21,6 +21,7 @@
   PSAvoidTrailingWhitespace, PSAvoidGlobalVars,
   PSAvoidUsingConvertToSecureStringWithPlainText, PSUseSingularNouns, and
   fixes many instances of PSUseDeclaredVarsMoreThanAssignments.
+- Add support for Exchange Server 2019 - Preview
 
 ## 1.22.0.0
 

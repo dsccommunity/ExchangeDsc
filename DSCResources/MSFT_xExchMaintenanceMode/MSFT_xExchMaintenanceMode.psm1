@@ -378,7 +378,7 @@ function Set-TargetResource
         throw "Failed to retrieve maintenance mode status of server."
     }
 
-    Remove-ExchangeSnapin
+    Remove-HelperSnapin
 
     Remove-Item Alias:Write-Host -ErrorAction SilentlyContinue
 }
@@ -626,7 +626,7 @@ function Test-TargetResource
         }
     }
 
-    Remove-ExchangeSnapin
+    Remove-HelperSnapin
 
     return $testResults
 }
@@ -1603,5 +1603,31 @@ function MoveActiveMailboxDatabase
     Move-ActiveMailboxDatabase @PSBoundParameters @moveDBParams
 }
 #endregion
+
+<#
+    .SYNOPSIS
+        Removes the Exchange PowerShell snapin, which is loaded by the
+        Start/StopDagMaintennace.ps1 scripts in the $Exscripts
+        directory. Prevents an issue where if a snapin is added by multiple
+        modules during the same session, subsequent additions of the same
+        module fail with 'An item with the same key has already been added'.
+#>
+function Remove-HelperSnapin
+{
+    [CmdletBinding()]
+    param()
+
+    $snapinsToRemove = @('Microsoft.Exchange.Management.Powershell.E2010')
+
+    foreach ($snapin in $snapinsToRemove)
+    {
+        if ($null -ne (Get-PSSnapin -Name $snapin -ErrorAction SilentlyContinue))
+        {
+            Write-Verbose -Message "'$snapin' snapin is currently loaded. Removing."
+
+            Remove-PSSnapin -Name $snapin -ErrorAction SilentlyContinue -Confirm:$false
+        }
+    }
+}
 
 Export-ModuleMember -Function *-TargetResource

@@ -49,7 +49,7 @@ if ($exchangeInstalled)
         Describe 'Test Setting Properties with xExchUMService' {
             $testParams = @{
                 Identity =  $env:COMPUTERNAME
-                Credential = $Global:ShellCredentials
+                Credential = $shellCredentials
                 UMStartupMode = 'TLS'
                 DialPlans = @()
             }

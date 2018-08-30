@@ -143,7 +143,7 @@ function Set-TargetResource
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential"
 
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
-    
+
     $serverVersion = Get-ExchangeVersion -ThrowIfUnknownVersion $true
 
     if ($serverVersion -in '2016','2019')

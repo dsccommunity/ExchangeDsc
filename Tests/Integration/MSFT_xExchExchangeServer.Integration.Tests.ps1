@@ -124,8 +124,8 @@ if ($null -ne $adModule)
 
             if (![System.String]::IsNullOrEmpty($productKey))
             {
-                $testParams.Add("ProductKey", $productKey)
-                $expectedGetResults.Add("ProductKey", 'Licensed')
+                $testParams.Add('ProductKey', $productKey)
+                $expectedGetResults.Add('ProductKey', 'Licensed')
             }
 
             Test-TargetResourceFunctionality -Params $testParams `

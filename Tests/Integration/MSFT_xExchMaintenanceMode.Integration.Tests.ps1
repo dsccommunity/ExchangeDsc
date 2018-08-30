@@ -65,7 +65,7 @@ function Test-ServerIsOutOfMaintenanceMode
         Performs steps to take the server out of maintenance mode, verifies
         that the server was fully taken out of maintenance mode, and throws
         an exception if it was not.
-        
+
     .PARAMETER WaitBetweenTests
         Whether the script should sleep a predetermined amount of time after
         the server has been taken out of maintenance mode before exiting the
@@ -145,28 +145,28 @@ function Get-VersionSpecificComponentsToActivate
 
     $serverVersion = Get-ExchangeVersion
 
-    $componentsToActivate = 'AutoDiscoverProxy',`
-                            'ActiveSyncProxy',`
-                            'EcpProxy',`
-                            'EwsProxy',`
-                            'ImapProxy',`
-                            'OabProxy',`
-                            'OwaProxy',`
-                            'PopProxy',`
-                            'PushNotificationsProxy',`
-                            'RpsProxy',`
-                            'RwsProxy',`
-                            'RpcProxy',`
-                            'XropProxy',`
-                            'HttpProxyAvailabilityGroup',`
-                            'MapiProxy',`
-                            'EdgeTransport',`
-                            'HighAvailability',`
-                            'SharedCache'
+    [System.Object[]]$componentsToActivate = @('AutoDiscoverProxy',
+                                               'ActiveSyncProxy',
+                                               'EcpProxy',
+                                               'EwsProxy',
+                                               'ImapProxy',
+                                               'OabProxy',
+                                               'OwaProxy',
+                                               'PopProxy',
+                                               'PushNotificationsProxy',
+                                               'RpsProxy',
+                                               'RwsProxy',
+                                               'RpcProxy',
+                                               'XropProxy',
+                                               'HttpProxyAvailabilityGroup',
+                                               'MapiProxy',
+                                               'EdgeTransport',
+                                               'HighAvailability',
+                                               'SharedCache')
 
     if ($serverVersion -in '2013','2016')
     {
-        $componentsToActivate.AdditionalComponentsToActivate += 'UMCallRouter'
+        $componentsToActivate += 'UMCallRouter'
     }
 
     return $componentsToActivate
@@ -239,7 +239,7 @@ function Wait-ForSecondaryHealthyIndexState
 
     $hasHealthyContentIndexes = $false
 
-    [System.Object[]]$unhealthyDBs = Get-UnhealthySecondaryIndexes
+    [System.Object[]]$unhealthyDBs = Get-UnhealthySecondaryPartnerIndexesInDAG
 
     if ($unhealthyDBs.Count -gt 0)
     {
@@ -257,7 +257,7 @@ function Wait-ForSecondaryHealthyIndexState
         # Now wait up to 15 minutes for the indexes to go healthy
         for ($i = 0; $i -lt 15 -and !$hasHealthyContentIndexes; $i++)
         {
-            $hasHealthyContentIndexes = (Get-UnhealthySecondaryIndexes).Count -eq 0
+            $hasHealthyContentIndexes = (Get-UnhealthySecondaryPartnerIndexesInDAG).Count -eq 0
 
             if (!$hasHealthyContentIndexes)
             {
@@ -294,7 +294,7 @@ function Get-UnhealthyPrimaryIndexesOnServer
         copy partner on other DAG mebmers with Content Index state that is not
         Healthy.
 #>
-function Get-UnhealthySecondaryIndexes
+function Get-UnhealthySecondaryPartnerIndexesInDAG
 {
     [CmdletBinding()]
     [OutputType([System.Object[]])]
@@ -359,13 +359,13 @@ if ($exchangeInstalled)
     Set-ThenAssertOutOfMaintenanceMode
 
     # Make sure the content index is healthy on primary database copies
-    if (!(Wait-ForPrimaryHealthyIndexState))
+    if (!(Wait-ForPrimaryHealthyIndexState -Verbose))
     {
         Write-Error -Message 'One or more databases on this server have a content index in an unhealthy state. Unable to perform Maintenance Mode tests.'
         return
     }
 
-    if (!(Wait-ForSecondaryHealthyIndexState))
+    if (!(Wait-ForSecondaryHealthyIndexState -Verbose))
     {
         Write-Error -Message 'One or more database replica partners on other DAG servers have a content index in an unhealthy state. Unable to perform Maintenance Mode tests.'
         return

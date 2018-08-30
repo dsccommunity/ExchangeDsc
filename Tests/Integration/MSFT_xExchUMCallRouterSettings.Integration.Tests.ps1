@@ -33,12 +33,12 @@ if ($exchangeInstalled)
             $testParams = @{
                 Server =  $env:COMPUTERNAME
                 Credential = $shellCredentials
-                UMStartupMode = 'TLS'       
+                UMStartupMode = 'TLS'
             }
 
             $expectedGetResults = @{
                 Server =  $env:COMPUTERNAME
-                UMStartupMode = 'TLS'  
+                UMStartupMode = 'TLS'
             }
 
             Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Set standard parameters' -ExpectedGetResults $expectedGetResults

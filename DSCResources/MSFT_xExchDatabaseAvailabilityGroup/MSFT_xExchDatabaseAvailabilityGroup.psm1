@@ -291,7 +291,7 @@ function Set-TargetResource
         foreach ($Exchange2016Parameter in $Exchange2016Only)
         {
             #Check for non-existent parameters in Exchange 2013
-            RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "$($Exchange2016Parameter)"  -ResourceName "xExchDatabaseAvailabilityGroup" -ParamExistsInVersion "2016"
+            Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2016Parameter"  -ResourceName 'xExchDatabaseAvailabilityGroup' -ParamExistsInVersion '2016'
         }
     }
     elseif ($serverVersion -in '2016','2019')
@@ -483,7 +483,7 @@ function Test-TargetResource
         foreach ($Exchange2016Parameter in $Exchange2016Only)
         {
             #Check for non-existent parameters in Exchange 2013
-            RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "$($Exchange2016Parameter)"  -ResourceName "xExchDatabaseAvailabilityGroup" -ParamExistsInVersion "2016"
+            Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2016Parameter"  -ResourceName 'xExchDatabaseAvailabilityGroup' -ParamExistsInVersion '2016'
         }
     }
     elseif ($serverVersion -in '2016','2019')

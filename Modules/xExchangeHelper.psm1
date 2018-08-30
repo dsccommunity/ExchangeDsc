@@ -150,7 +150,7 @@ function Get-ExchangeVersion
 
     if ($null -ne $uninstall20162019Key)
     {
-        if ($uninstall20162019Key.GetValue("VersionMajor") -eq 15 -and $uninstall20162019Key.GetValue("VersionMinor") -eq 2)
+        if ($uninstall20162019Key.GetValue('VersionMajor') -eq 15 -and $uninstall20162019Key.GetValue('VersionMinor') -eq 2)
         {
             $version = '2019'
         }
@@ -643,9 +643,41 @@ function RemoveParameters
     }
 }
 
-function RemoveVersionSpecificParameters
+<#
+    .SYNOPSIS
+        Inspects the input $PSBoundParametersIn hashtable, and removes any
+        parameters that do not work with the version of Exchange on this
+        server.
+
+    .PARAMETER PSBoundParametersIn
+        The $PSBoundParameters hashtable from the calling function.
+
+    .PARAMETER ParamName
+        The parameter to check for and remove if not applicable to this
+        server version.
+
+    .PARAMETER ParamExistsInVersion
+        The parameter to check for and remove if not applicable to this
+        server version.
+#>
+function Remove-NotApplicableParamsForVersion
 {
-    param($PSBoundParametersIn, [System.String]$ParamName, [System.String]$ResourceName, [ValidateSet('2013','2016','2019')][System.String[]]$ParamExistsInVersion)
+    [CmdletBinding()]
+    param
+    (
+        [System.Collections.Hashtable]
+        $PSBoundParametersIn,
+
+        [System.String]
+        $ParamName,
+
+        [System.String]
+        $ResourceName,
+
+        [ValidateSet('2013','2016','2019')]
+        [System.String[]]
+        $ParamExistsInVersion
+    )
 
     if ($PSBoundParametersIn.ContainsKey($ParamName))
     {
@@ -1265,25 +1297,6 @@ function Assert-IsSupportedWithExchangeVersion
     if ($serverVersion -notin $SupportedVersions)
     {
         throw "$ObjectOrOperationName is not supported in Exchange Server $serverVersion"
-    }
-}
-
-<#
-    .SYNOPSIS
-        Removes Exchange snapins that have been loaded via Add-PSSnapin. This
-        prevents issues if another resource in the session tries to later add
-        the same snapin.
-#>
-function Remove-ExchangeSnapin
-{
-    [CmdletBinding()]
-    param()
-
-    if ($null -ne (Get-PSSnapin -Name 'Microsoft.Exchange.Management.Powershell.E2010' -ErrorAction SilentlyContinue))
-    {
-        Write-Verbose -Message "'Microsoft.Exchange.Management.Powershell.E2010' snapin is currently loaded. Removing."
-
-        Remove-PSSnapin -Name 'Microsoft.Exchange.Management.Powershell.E2010' -ErrorAction SilentlyContinue -Confirm:$false
     }
 }
 

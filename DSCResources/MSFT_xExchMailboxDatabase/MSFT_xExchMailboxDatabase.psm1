@@ -326,7 +326,7 @@ function Set-TargetResource
                              -Verbose:$VerbosePreference
 
     #Check for non-existent parameters in Exchange 2013
-    RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters `
+    Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
                                     -ParamName 'IsExcludedFromProvisioningReason' `
                                     -ResourceName 'xExchMailboxDatabase' `
                                     -ParamExistsInVersion '2016','2019'
@@ -560,7 +560,7 @@ function Test-TargetResource
                              -Verbose:$VerbosePreference
 
     #Check for non-existent parameters in Exchange 2013
-    RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters `
+    Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
                                     -ParamName 'IsExcludedFromProvisioningReason' `
                                     -ResourceName 'xExchMailboxDatabase' `
                                     -ParamExistsInVersion '2016','2019'

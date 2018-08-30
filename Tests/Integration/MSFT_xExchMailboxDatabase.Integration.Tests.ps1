@@ -20,7 +20,13 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 
 #endregion HEADER
 
-# Removes the test database if it exists
+<#
+    .SYNOPSIS
+        Removes the specified Mailbox Database and associated files
+
+    .PARAMETER Database
+        The name of the Mailbox Database to remove.
+#>
 function Initialize-ExchDscDatabase
 {
     [CmdletBinding()]

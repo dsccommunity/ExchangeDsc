@@ -1,8 +1,8 @@
 # xExchange
 
-The **xExchange** module contains many DSC resources for configuring and managing
-Exchange 2013 and 2016 servers including individual server properties, databases,
-mount points, and Database Availability Groups.
+The **xExchange** module contains many DSC resources for configuring and
+managing Exchange 2013, 2016, and 2019 (Preview) servers including individual
+server properties, databases, mount points, and Database Availability Groups.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/)
@@ -97,7 +97,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   an ExchangeCertificate using *-ExchangeCertificate cmdlets.
 * **xExchExchangeServer**
 * **xExchImapSettings** configures IMAP settings using Set-ImapSettings.
-* **xExchInstall** installs Exchange 2013 or 2016.
+* **xExchInstall** installs Exchange 2013, 2016, or 2019 (Preview).
 * **xExchJetstress** automatically runs Jetstress using
   the **JetstressCmd.exe** command line executable.
 * **xExchJetstressCleanup** cleans up the database and log
@@ -118,14 +118,18 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **xExchUMCallRouterSettings** configures the UM Call Router service using Set-UMCallRouterSettings.
 * **xExchUMService** configures a UM server using Set-UMService.
 * **xExchWaitForADPrep** ensures that Active Directory has been prepared for
-  Exchange 2013 or 2016.
+  Exchange 2013, 2016, or 2019 (Preview).
 * **xExchWaitForDAG**
 * **xExchWaitForMailboxDatabase**
 * **xExchWebServicesVirtualDirectory**
 
 ### xExchActiveSyncVirtualDirectory
 
-Where no description is listed, properties correspond directly to [Set-ActiveSyncVirtualDirectory](http://technet.microsoft.com/en-us/library/bb123679(v=exchg.150).aspx)
+**xExchActiveSyncVirtualDirectory** is used to configure properties on an
+ActiveSync Virtual Directory.
+
+Where no description is listed, properties correspond directly to
+[Set-ActiveSyncVirtualDirectory](https://docs.microsoft.com/en-us/powershell/module/exchange/client-access-servers/set-activesyncvirtualdirectory)
 parameters.
 
 * **Identity**: The Identity of the ActiveSync Virtual Directory.
@@ -187,7 +191,11 @@ Therefore Add-WebConfigurationProperty is used to add a missing IsapiFilter.
 
 ## xExchAutodiscoverVirtualDirectory
 
-Where no description is listed, properties correspond directly to [Set-AutodiscoverVirtualDirectory](http://technet.microsoft.com/en-us/library/aa998601(v=exchg.150).aspx)
+**xExchAutodiscoverVirtualDirectory** is used to configure properties on an
+AutoDiscover Virtual Directory.
+
+Where no description is listed, properties correspond directly to
+[Set-AutodiscoverVirtualDirectory](https://docs.microsoft.com/en-us/powershell/module/exchange/client-access-servers/set-autodiscovervirtualdirectory)
 parameters.
 
 * **Identity**: The Identity of the Autodiscover Virtual Directory.
@@ -246,7 +254,11 @@ just find the next unused number and assign it to a new volume folder.
 
 ### xExchClientAccessServer
 
-Where no description is listed, properties correspond directly to [Set-ClientAccessServer](http://technet.microsoft.com/en-us/library/bb125157(v=exchg.150).aspx)
+**xExchClientAccessServer** is used to configure properties on a Client Access
+Server.
+
+Where no description is listed, properties correspond directly to
+[Set-ClientAccessService](https://docs.microsoft.com/en-us/powershell/module/exchange/client-access-servers/set-clientaccessservice)
 parameters.
 
 * **Identity**: The Identity of the Autodiscover Virtual Directory.
@@ -266,7 +278,8 @@ parameters.
   implementing **xExchDatabaseAvailabilityGroup**, should use
   **xExchDatabaseAvailabilityGroupMember** to join a DAG.
 
-Where no description is listed, properties correspond directly to [Set-DatabaseAvailabilityGroup](http://technet.microsoft.com/en-us/library/dd297934(v=exchg.150).aspx)
+Where no description is listed, properties correspond directly to
+[Set-DatabaseAvailabilityGroup](https://docs.microsoft.com/en-us/powershell/module/exchange/database-availability-groups/set-databaseavailabilitygroup)
 parameters.
 
 * **Name**: The name of the Database Availability Group.
@@ -312,7 +325,8 @@ To disable PreferenceMoveFrequency you have to use the following value:
 Availability Group. This must be implemented by all nodes, including the one
 that creates and maintains the DAG.
 
-Where no description is listed, properties correspond directly to [Add-DatabaseAvailabilityGroupServer](http://technet.microsoft.com/en-us/library/dd298049(v=exchg.150).aspx)
+Where no description is listed, properties correspond directly to
+[Add-DatabaseAvailabilityGroupServer](https://docs.microsoft.com/en-us/powershell/module/exchange/database-availability-groups/add-databaseavailabilitygroupserver)
 parameters.
 
 * **MailboxServer**: The hostname of the server to add to the DAG.
@@ -327,7 +341,8 @@ parameters.
   a Database Availability Group Network.
   This should only be implemented by a single node in the DAG.
 
-Where no description is listed, properties correspond directly to [Set-DatabaseAvailabilityGroupNetwork](http://technet.microsoft.com/en-us/library/dd298008(v=exchg.150).aspx)
+Where no description is listed, properties correspond directly to
+[Set-DatabaseAvailabilityGroupNetwork](https://docs.microsoft.com/en-us/powershell/module/exchange/database-availability-groups/Set-DatabaseAvailabilityGroupNetwork)
 parameters.
 
 * **Name**: The name of the DAG network
@@ -342,7 +357,11 @@ parameters.
 
 ### xExchEcpVirtualDirectory
 
-Where no description is listed, properties correspond directly to [Set-EcpVirtualDirectory](http://technet.microsoft.com/en-us/library/dd297991(v=exchg.150).aspx)
+**xExchEcpVirtualDirectory** is used to configure properties on an Exchange
+Control Panel Virtual Directory.
+
+Where no description is listed, properties correspond directly to
+[Set-EcpVirtualDirectory](https://docs.microsoft.com/en-us/powershell/module/exchange/client-access-servers/set-ecpvirtualdirectory)
 parameters.
 
 * **Identity**: The Identity of the ECP Virtual Directory.
@@ -362,9 +381,11 @@ parameters.
 
 ### xExchEventLogLevel
 
-**xExchEventLogLevel** is used to configure Exchange diagnostic logging via Set-EventLogLevel.
+**xExchEventLogLevel** is used to configure Exchange diagnostic logging via
+Set-EventLogLevel.
 
-Properties correspond to [Set-EventLogLevel](https://technet.microsoft.com/en-us/library/aa998905(v=exchg.150).aspx)
+Properties correspond to
+[Set-EventLogLevel](https://docs.microsoft.com/en-us/powershell/module/exchange/server-health-and-performance/set-eventloglevel)
 parameters.
 
 * **Identity**: The Identity parameter specifies the name of the event logging
@@ -376,7 +397,7 @@ parameters.
 
 ### xExchExchangeCertificate
 
-xExchExchangeCertificate can install, remove, or configure
+**xExchExchangeCertificate** can install, remove, or configure
 an ExchangeCertificate using *-ExchangeCertificate cmdlets.
 
 * **Thumbprint**: The Thumbprint of the Exchange Certificate to configure.
@@ -391,12 +412,16 @@ an ExchangeCertificate using *-ExchangeCertificate cmdlets.
 * **CertFilePath**: The file path to the certificate .pfx file that should be imported.
 * **DomainController**: Domain Controller to talk to.
 * **Services**: Services to enable on the certificate.
-  See [Enable-ExchangeCertificate](http://technet.microsoft.com/en-us/library/aa997231(v=exchg.150).aspx)
+  See [Enable-ExchangeCertificate](https://docs.microsoft.com/en-us/powershell/module/exchange/encryption-and-certificates/enable-exchangecertificate)
   documentation.
 
 ### xExchExchangeServer
 
-Where no description is listed, properties correspond directly to [Set-ExchangeServer](http://technet.microsoft.com/en-us/library/bb123716(v=exchg.150).aspx)
+**xExchExchangeServer** is used to configure properties on an Exchange Server
+via Set-ExchangeServer.
+
+Where no description is listed, properties correspond directly to
+[Set-ExchangeServer](https://docs.microsoft.com/en-us/powershell/module/exchange/organization/set-exchangeserver)
 parameters.
 
 * **Identity**: The hostname of the Exchange Server to configure.
@@ -414,6 +439,10 @@ parameters.
 
 **xExchImapSettings** configures IMAP settings using Set-ImapSettings.
 
+Most properties correspond directly to
+[Set-ImapSettings](https://docs.microsoft.com/en-us/powershell/module/exchange/client-access/set-imapsettings)
+parameters.
+
 * **Server**: Hostname of the IMAP server to configure.
 * **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
 * **AllowServiceRestart**: Whether it is OK to restart the IMAP services after
@@ -427,10 +456,13 @@ parameters.
 
 ### xExchInstall
 
-**xExchInstall** installs Exchange 2013 or 2016.
+**xExchInstall** installs Exchange 2013, 2016, or 2019 (Preview).
 
-* **Path**: Full path to setup.exe in the Exchange 2013 or 2016 setup directory.
+* **Path**: Full path to setup.exe in the Exchange 2013, 2016, or 2019
+  (Preview) setup directory.
 * **Arguments**: Command line arguments to pass to setup.exe
+  For help on command line arguments, see
+  [Install Exchange 2016 using unattended mode](https://docs.microsoft.com/en-us/Exchange/plan-and-deploy/deploy-new-installations/unattended-installs)
 * **Credential**: The credentials to use to perform the installation.
 
 ### xExchJetstress
@@ -514,7 +546,11 @@ result in a configuration loop.
 
 ### xExchMailboxDatabase
 
-Where no description is listed, properties correspond directly to [Set-MailboxDatabase](http://technet.microsoft.com/en-us/library/bb123971%28v=exchg.150%29.aspx)
+**xExchMailboxDatabase** is used to create, remove, or change properties on a
+Mailbox Database.
+
+Where no description is listed, properties correspond directly to
+[Set-MailboxDatabase](https://docs.microsoft.com/en-us/powershell/module/exchange/mailbox-databases-and-servers/set-mailboxdatabase)
 parameters.
 
 * **Name**: The name of the Mailbox Database.
@@ -553,7 +589,11 @@ parameters.
 
 ### xExchMailboxDatabaseCopy
 
-Where no description is listed, properties correspond directly to [Add-MailboxDatabaseCopy](http://technet.microsoft.com/en-us/library/dd298105(v=exchg.150).aspx)
+**xExchMailboxDatabaseCopy** is used to create, remove, or change properties on
+a Mailbox Database Copy.
+
+Where no description is listed, properties correspond directly to
+[Add-MailboxDatabaseCopy](https://docs.microsoft.com/en-us/powershell/module/exchange/database-availability-groups/add-mailboxdatabasecopy)
 parameters.
 
 * **Identity**: The name of the Mailbox Database.
@@ -569,9 +609,11 @@ parameters.
 
 ### xExchMailboxServer
 
-**xExchMailboxServer** is used to configure Mailbox Server properties via Set-MailboxServer.
+**xExchMailboxServer** is used to configure Mailbox Server properties via
+Set-MailboxServer.
 
-Properties correspond to [Set-MailboxServer](https://technet.microsoft.com/en-us/library/aa998651(v=exchg.160).aspx)
+Properties correspond to
+[Set-MailboxServer](https://docs.microsoft.com/en-us/powershell/module/exchange/mailbox-databases-and-servers/set-mailboxserver)
 parameters.
 
 * **Identity**: The Identity parameter specifies the Mailbox server
@@ -763,10 +805,11 @@ The parameter Locale doesn't work.
 
 ### xExchMailboxTransportService
 
-xExchMailboxTransportService configures the Mailbox Transport service settings
-on Mailbox servers using Set-MailboxTransportService.
+**xExchMailboxTransportService** configures the Mailbox Transport service
+settings on Mailbox servers using Set-MailboxTransportService.
 
-Where no description is listed, properties correspond directly to [Set-MailboxTransportService](https://technet.microsoft.com/en-us/library/jj215711(v=exchg.160).aspx)
+Where no description is listed, properties correspond directly to
+[Set-MailboxTransportService](https://docs.microsoft.com/en-us/powershell/module/exchange/mail-flow/set-mailboxtransportservice)
 parameters.
 
 * **Identity**: Hostname of the server to configure.
@@ -908,7 +951,11 @@ exiting Maintenance Mode
 
 ### xExchMapiVirtualDirectory
 
-Where no description is listed, properties correspond directly to [Set-MapiVirtualDirectory](http://technet.microsoft.com/en-US/library/dn595082%28v=exchg.150%29.aspx)
+**xExchMapiVirtualDirectory** is used to configure properties on a MAPI
+Virtual Directory.
+
+Where no description is listed, properties correspond directly to
+[Set-MapiVirtualDirectory](https://docs.microsoft.com/en-us/powershell/module/exchange/client-access-servers/set-mapivirtualdirectory)
 parameters.
 
 * **Identity**: The Identity of the MAPI Virtual Directory.
@@ -923,7 +970,11 @@ parameters.
 
 ### xExchOabVirtualDirectory
 
-Where no description is listed, properties correspond directly to [Set-OabVirtualDirectory](http://technet.microsoft.com/en-us/library/bb124707(v=exchg.150).aspx)
+**xExchOabVirtualDirectory** is used to configure properties on an Offline
+Address Book Virtual Directory.
+
+Where no description is listed, properties correspond directly to
+[Set-OabVirtualDirectory](https://docs.microsoft.com/en-us/powershell/module/exchange/email-addresses-and-address-books/set-oabvirtualdirectory)
 parameters.
 
 * **Identity**: The Identity of the OAB Virtual Directory.
@@ -948,7 +999,11 @@ parameters.
 
 ### xExchOutlookAnywhere
 
-Where no description is listed, properties correspond directly to [Set-OutlookAnywhere](http://technet.microsoft.com/en-us/library/bb123545(v=exchg.150).aspx)
+**xExchOutlookAnywhere** is used to configure Outlook Anywhere
+properties for an Exchange Server.
+
+Where no description is listed, properties correspond directly to
+[Set-OutlookAnywhere](https://docs.microsoft.com/en-us/powershell/module/exchange/client-access-servers/set-outlookanywhere)
 parameters.
 
 * **Identity**: The Identity of the Outlook Anywhere Virtual Directory.
@@ -970,7 +1025,11 @@ parameters.
 
 ### xExchOwaVirtualDirectory
 
-Where no description is listed, properties correspond directly to [Set-OwaVirtualDirectory](http://technet.microsoft.com/en-us/library/bb123515(v=exchg.150).aspx)
+**xExchOwaVirtualDirectory** is used to configure properties on an Outlook
+on the Web Virtual Directory.
+
+Where no description is listed, properties correspond directly to
+[Set-OwaVirtualDirectory](https://docs.microsoft.com/en-us/powershell/module/exchange/client-access-servers/set-owavirtualdirectory)
 parameters.
 
 * **Identity**: The Identity of the OWA Virtual Directory.
@@ -1000,7 +1059,11 @@ parameters.
 
 ### xExchPopSettings
 
-xExchPopSettings configures POP settings using Set-PopSettings.
+**xExchPopSettings** configures POP settings using Set-PopSettings.
+
+Most properties correspond directly to
+[Set-PopSettings](https://docs.microsoft.com/en-us/powershell/module/exchange/client-access/set-popsettings)
+parameters.
 
 * **Server**: Hostname of the POP server to configure.
 * **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
@@ -1016,7 +1079,11 @@ xExchPopSettings configures POP settings using Set-PopSettings.
 
 ### xExchPowerShellVirtualDirectory
 
-Where no description is listed, properties correspond directly to [Set-PowerShellVirtualDirectory](http://technet.microsoft.com/en-us/library/dd298108(v=exchg.150).aspx)
+**xExchPowerShellVirtualDirectory** is used to configure properties on a
+PowerShell Virtual Directory.
+
+Where no description is listed, properties correspond directly to
+[Set-PowerShellVirtualDirectory](https://docs.microsoft.com/en-us/powershell/module/exchange/client-access-servers/set-powershellvirtualdirectory)
 parameters.
 
 * **Identity**: The Identity of the PowerShell Virtual Directory.
@@ -1033,7 +1100,11 @@ parameters.
 
 ### xExchReceiveConnector
 
-Where no description is listed, properties correspond directly to [Set-ReceiveConnector](http://technet.microsoft.com/en-us/library/bb125140(v=exchg.150).aspx)
+**xExchReceiveConnector** is used to create, remove, or change properties on a
+Receive Connector.
+
+Where no description is listed, properties correspond directly to
+[Set-ReceiveConnector](https://docs.microsoft.com/en-us/powershell/module/exchange/mail-flow/set-receiveconnector)
 parameters.
 
 * **Identity**: Identity of the Receive Connector.
@@ -1099,10 +1170,11 @@ parameters.
 
 ### xExchTransportService
 
-xExchTransportService configures the Transport service settings on Mailbox servers
-or Edge Transport servers using Set-TransportService.
+**xExchTransportService** configures the Transport service settings on Mailbox
+servers or Edge Transport servers using Set-TransportService.
 
-Where no description is listed, properties correspond directly to [Set-TransportService](https://technet.microsoft.com/library/jj215682(v=exchg.150).aspx)
+Where no description is listed, properties correspond directly to
+[Set-TransportService](https://docs.microsoft.com/en-us/powershell/module/exchange/mail-flow/Set-TransportService)
 parameters.
 
 * **Identity**: Hostname of the server to configure.
@@ -1206,7 +1278,13 @@ PipelineTracingSenderAddress
 
 ### xExchUMCallRouterSettings
 
-xExchUMCallRouterSettings configures the UM Call Router service using Set-UMCallRouterSettings.
+**xExchUMCallRouterSettings** configures the UM Call Router service using
+Set-UMCallRouterSettings. This resource is NOT supported with Exchange Server
+2019 or higher.
+
+Where no description is listed, properties correspond directly to
+[Set-UMCallRouterSettings](https://docs.microsoft.com/en-us/powershell/module/exchange/unified-messaging/set-umcallroutersettings)
+parameters.
 
 * **Server**: Hostname of the UM server to configure.
 * **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
@@ -1215,7 +1293,12 @@ xExchUMCallRouterSettings configures the UM Call Router service using Set-UMCall
 
 ### xExchUMService
 
-xExchUMService configures a UM server using Set-UMService.
+**xExchUMService** configures a UM server using Set-UMService. This resource is
+NOT supported with Exchange Server 2019 or higher.
+
+Where no description is listed, properties correspond directly to
+[Set-UMService](https://docs.microsoft.com/en-us/powershell/module/exchange/unified-messaging/set-umservice)
+parameters.
 
 * **Identity**: Hostname of the UM server to configure.
 * **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
@@ -1226,24 +1309,26 @@ xExchUMService configures a UM server using Set-UMService.
 
 ### xExchWaitForADPrep
 
-xExchWaitForADPrep ensures that Active Directory has been prepared for
-Exchange 2013 or 2016 using setup /PrepareSchema, /PrepareAD, and /PrepareDomain.
-To find appropriate version values for the SchemaVersion, OrganizationVersion,
-and DomainVersion parameters, consult the 'Exchange 2013 Active Directory versions'
-section of the article [Prepare Active Directory and domains](http://technet.microsoft.com/en-us/library/bb125224(v=exchg.150).aspx).
+**xExchWaitForADPrep** ensures that Active Directory has been prepared for
+Exchange 2013, 2016, or 2019 (Preview) using setup /PrepareSchema, /PrepareAD,
+and /PrepareDomain. To find appropriate version values for the SchemaVersion,
+OrganizationVersion, and DomainVersion parameters, consult the 'Exchange 2016
+Active Directory versions' section of the article
+[Prepare Active Directory and domains](https://docs.microsoft.com/en-us/Exchange/plan-and-deploy/prepare-ad-and-domains).
 
 * **Identity**: Not actually used. Enter anything, as long as it's not null.
 * **Credential**: Credentials used to perform Active Directory lookups against
   the Schema, Configuration, and Domain naming contexts.
 * **SchemaVersion**: Specifies that the Active Directory schema should have been
-  prepared using Exchange 2013 or 2016 'setup /PrepareSchema',
+  prepared using Exchange 2013, 2016, or 2019 (Preview) 'setup /PrepareSchema',
   and should be at the specified version.
 * **OrganizationVersion**: Specifies that the Exchange Organization should have
-  been prepared using Exchange 2013 or 2016 'setup /PrepareAD',
-  and should be at the specified version.
+  been prepared using Exchange 2013, 2016, or 2019 (Preview) 'setup
+  /PrepareAD', and should be at the specified version.
 * **DomainVersion**: Specifies that the domain containing the target
-  Exchange 2013 or 2016 server was prepared using setup /PrepareAD, /PrepareDomain,
-  or /PrepareAllDomains, and should be at the specified version.
+  Exchange 2013, 2016, or 2019 (Preview) server was prepared using setup
+  /PrepareAD, /PrepareDomain, or /PrepareAllDomains, and should be at the
+  specified version.
 * **ExchangeDomains**: The FQDN's of domains that should be checked for
   DomainVersion in addition to the domain that this Exchange server belongs to.
 * **RetryIntervalSec**: How many seconds to wait between retries when checking
@@ -1255,11 +1340,11 @@ section of the article [Prepare Active Directory and domains](http://technet.mic
 
 ### xExchWaitForDAG
 
-xExchWaitForDAG is used by DAG members who are NOT maintaining the DAG configuration.
-Intended to be used as a DependsOn property by **xExchDatabaseAvailabilityGroupMember**.
-Throws an exception if the DAG still does not exist after the specified
-retry count and interval.
-If this happens, DSC configurations run in push mode will need to be re-executed.
+**xExchWaitForDAG** is used by DAG members who are NOT maintaining the DAG
+configuration. Intended to be used as a DependsOn property by
+**xExchDatabaseAvailabilityGroupMember**. Throws an exception if the DAG still
+does not exist after the specified retry count and interval. If this happens,
+DSC configurations run in push mode will need to be re-executed.
 
 * **Identity**: The name of the DAG.
 * **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
@@ -1273,11 +1358,11 @@ If this happens, DSC configurations run in push mode will need to be re-executed
 
 ### xExchWaitForMailboxDatabase
 
-xExchWaitForMailboxDatabase is used as a DependsOn property by **xExchMailboxDatabaseCopy**
-to ensure that a Mailbox Database exists prior to trying to add a copy.
-Throws an exception if the database still does not exist after the specified
-retry count and interval.
-If this happens, DSC configurations run in push mode will need to be re-executed.
+**xExchWaitForMailboxDatabase** is used as a DependsOn property by
+**xExchMailboxDatabaseCopy** to ensure that a Mailbox Database exists prior to
+trying to add a copy. Throws an exception if the database still does not exist
+after the specified retry count and interval. If this happens, DSC
+configurations run in push mode will need to be re-executed.
 
 * **Identity**: The name of the Mailbox Database.
 * **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
@@ -1291,7 +1376,11 @@ If this happens, DSC configurations run in push mode will need to be re-executed
 
 ### xExchWebServicesVirtualDirectory
 
-Where no description is listed, properties correspond directly to [Set-WebServicesVirtualDirectory](http://technet.microsoft.com/en-us/library/aa997233(v=exchg.150).aspx)
+**xExchWebServicesVirtualDirectory** is used to configure properties on an
+Exchange Web Services Virtual Directory.
+
+Where no description is listed, properties correspond directly to
+[Set-WebServicesVirtualDirectory](https://docs.microsoft.com/en-us/powershell/module/exchange/client-access-servers/set-webservicesvirtualdirectory)
 parameters.
 
 * **Identity**: The Identity of the EWS Virtual Directory.

@@ -525,14 +525,14 @@ function Set-TargetResource
     if ($serverVersion -eq '2013')
     {
       #Check for non-existent parameters in Exchange 2013
-      RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016','2019'
+      Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016','2019'
     }
     elseif ($serverVersion -in '2016','2019')
     {
       foreach ($Exchange2013Parameter in $Exchange2013Only)
       {
         #Check for non-existent parameters in Exchange 2016
-        RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "$($Exchange2013Parameter)" -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2013'
+        Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2013Parameter" -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2013'
       }
     }
     else
@@ -774,14 +774,14 @@ function Test-TargetResource
     if ($serverVersion -eq '2013')
     {
       #Check for non-existent parameters in Exchange 2013
-      RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016','2019'
+      Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016','2019'
     }
     elseif ($serverVersion -in '2016','2019')
     {
       foreach ($Exchange2013Parameter in $Exchange2013Only)
       {
         #Check for non-existent parameters in Exchange 2016
-        RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "$($Exchange2013Parameter)" -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2013'
+        Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2013Parameter" -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2013'
       }
     }
     else
