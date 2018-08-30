@@ -296,5 +296,5 @@ if ($null -ne $adModule)
 }
 else
 {
-    Write-Error -Message 'Tests in this file require that the ActiveDirectory module is installed. Run: Add-WindowsFeature RSAT-ADDS'
+    Write-Verbose -Message 'Tests in this file require that the ActiveDirectory module is installed. Run: Add-WindowsFeature RSAT-ADDS'
 }
