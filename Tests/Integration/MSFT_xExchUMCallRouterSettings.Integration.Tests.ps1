@@ -25,25 +25,30 @@ if ($exchangeInstalled)
     #Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
-    Describe 'Test Setting Properties with xExchUMCallRouterSettings' {
-        $testParams = @{
-            Server =  $env:COMPUTERNAME
-            Credential = $shellCredentials
-            UMStartupMode = 'TLS'
+    $serverVersion = Get-ExchangeVersion
+
+    if ($serverVersion -in '2013','2016')
+    {
+        Describe 'Test Setting Properties with xExchUMCallRouterSettings' {
+            $testParams = @{
+                Server =  $env:COMPUTERNAME
+                Credential = $shellCredentials
+                UMStartupMode = 'TLS'
+            }
+
+            $expectedGetResults = @{
+                Server =  $env:COMPUTERNAME
+                UMStartupMode = 'TLS'
+            }
+
+            Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Set standard parameters' -ExpectedGetResults $expectedGetResults
+
+
+            $testParams.UMStartupMode = 'Dual'
+            $expectedGetResults.UMStartupMode = 'Dual'
+
+            Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Change some parameters' -ExpectedGetResults $expectedGetResults
         }
-
-        $expectedGetResults = @{
-            Server =  $env:COMPUTERNAME
-            UMStartupMode = 'TLS'
-        }
-
-        Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Set standard parameters' -ExpectedGetResults $expectedGetResults
-
-
-        $testParams.UMStartupMode = 'Dual'
-        $expectedGetResults.UMStartupMode = 'Dual'
-
-        Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Change some parameters' -ExpectedGetResults $expectedGetResults
     }
 }
 else

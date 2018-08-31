@@ -158,9 +158,9 @@ if ($null -ne $adModule)
                     $dagExpectedGetResults.Add('AlternateWitnessDirectory', 'C:\FSW')
                 }
 
-                $serverVersion = GetExchangeVersion
+                $serverVersion = Get-ExchangeVersion
 
-                if ($serverVersion -eq '2016')
+                if ($serverVersion -in '2016','2019')
                 {
                     $dagTestParams.Add('FileSystem', 'ReFS')
                     $dagTestParams.Add('AutoDagAutoRedistributeEnabled', $true)

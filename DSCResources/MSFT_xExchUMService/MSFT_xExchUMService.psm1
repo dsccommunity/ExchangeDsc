@@ -30,6 +30,8 @@ function Get-TargetResource
 
     LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
+    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMService' -SupportedVersions '2013','2016'
+
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMService' -Verbose:$VerbosePreference
 
@@ -80,6 +82,8 @@ function Set-TargetResource
 
     LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
+    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMService' -SupportedVersions '2013','2016'
+
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMService' -Verbose:$VerbosePreference
 
@@ -119,6 +123,8 @@ function Test-TargetResource
     )
 
     LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+
+    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMService' -SupportedVersions '2013','2016'
 
     $umService = Get-TargetResource @PSBoundParameters
 

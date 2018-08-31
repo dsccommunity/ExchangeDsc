@@ -20,7 +20,13 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 
 #endregion HEADER
 
-#Removes the test DAG if it exists, and any associated databases
+<#
+    .SYNOPSIS
+        Removes the specified Mailbox Database and associated files
+
+    .PARAMETER Database
+        The name of the Mailbox Database to remove.
+#>
 function Initialize-ExchDscDatabase
 {
     [CmdletBinding()]
@@ -153,9 +159,9 @@ if ($exchangeInstalled)
         $expectedGetResults.RecoverableItemsQuota = '2 GB (2,147,483,648 bytes)'
         $expectedGetResults.RecoverableItemsWarningQuota = '1.5 GB (1,610,612,736 bytes)'
 
-        $serverVersion = GetExchangeVersion
+        $serverVersion = Get-ExchangeVersion
 
-        if ($serverVersion -eq '2016')
+        if ($serverVersion -in '2016','2019')
         {
             $testParams.Add('IsExcludedFromProvisioningReason', 'Testing Excluding the Database')
             $expectedGetResults.Add('IsExcludedFromProvisioningReason', 'Testing Excluding the Database')
@@ -261,6 +267,9 @@ if ($exchangeInstalled)
                                          -ContextLabel 'Set remaining quotas to Unlimited' `
                                          -ExpectedGetResults $expectedGetResults
     }
+
+    # Clean up the test database
+    Initialize-ExchDscDatabase -Database $TestDBName
 }
 else
 {

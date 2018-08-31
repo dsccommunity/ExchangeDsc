@@ -249,9 +249,9 @@ function Get-TargetResource
             SubjectLogForManagedFoldersEnabled       = [System.Boolean] $server.SubjectLogForManagedFoldersEnabled
         }
 
-        $serverVersion = GetExchangeVersion
+        $serverVersion = Get-ExchangeVersion
 
-        if ($serverVersion -eq '2016')
+        if ($serverVersion -in '2016','2019')
         {
             $returnValue.Add('WacDiscoveryEndpoint', [System.String]$server.WacDiscoveryEndpoint)
         }
@@ -521,18 +521,18 @@ function Set-TargetResource
     'SharingPolicyWorkCycleCheckpoint','SharingSyncWorkCycle','SharingSyncWorkCycleCheckpoint','SiteMailboxWorkCycle','SiteMailboxWorkCycleCheckpoint','TopNWorkCycle','TopNWorkCycleCheckpoint',
     'UMReportingWorkCycle','UMReportingWorkCycleCheckpoint'
 
-    $serverVersion = GetExchangeVersion
+    $serverVersion = Get-ExchangeVersion
     if ($serverVersion -eq '2013')
     {
       #Check for non-existent parameters in Exchange 2013
-      RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016'
+      Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016','2019'
     }
-    elseif ($serverVersion -eq '2016')
+    elseif ($serverVersion -in '2016','2019')
     {
       foreach ($Exchange2013Parameter in $Exchange2013Only)
       {
         #Check for non-existent parameters in Exchange 2016
-        RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "$($Exchange2013Parameter)" -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2013'
+        Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2013Parameter" -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2013'
       }
     }
     else
@@ -770,18 +770,18 @@ function Test-TargetResource
     'SharingPolicyWorkCycleCheckpoint','SharingSyncWorkCycle','SharingSyncWorkCycleCheckpoint','SiteMailboxWorkCycle','SiteMailboxWorkCycleCheckpoint','TopNWorkCycle','TopNWorkCycleCheckpoint',
     'UMReportingWorkCycle','UMReportingWorkCycleCheckpoint'
 
-    $serverVersion = GetExchangeVersion
+    $serverVersion = Get-ExchangeVersion
     if ($serverVersion -eq '2013')
     {
       #Check for non-existent parameters in Exchange 2013
-      RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016'
+      Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016','2019'
     }
-    elseif ($serverVersion -eq '2016')
+    elseif ($serverVersion -in '2016','2019')
     {
       foreach ($Exchange2013Parameter in $Exchange2013Only)
       {
         #Check for non-existent parameters in Exchange 2016
-        RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters -ParamName "$($Exchange2013Parameter)" -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2013'
+        Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2013Parameter" -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2013'
       }
     }
     else

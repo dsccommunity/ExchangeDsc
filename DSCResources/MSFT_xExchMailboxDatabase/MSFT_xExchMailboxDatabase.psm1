@@ -174,9 +174,9 @@ function Get-TargetResource
             RetainDeletedItemsUntilBackup = [System.Boolean] $db.RetainDeletedItemsUntilBackup
         }
 
-        $serverVersion = GetExchangeVersion
+        $serverVersion = Get-ExchangeVersion
 
-        if ($serverVersion -eq '2016')
+        if ($serverVersion -in '2016','2019')
         {
             $returnValue.Add('IsExcludedFromProvisioningReason', [System.String]$db.IsExcludedFromProvisioningReason)
         }
@@ -326,10 +326,10 @@ function Set-TargetResource
                              -Verbose:$VerbosePreference
 
     #Check for non-existent parameters in Exchange 2013
-    RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters `
+    Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
                                     -ParamName 'IsExcludedFromProvisioningReason' `
                                     -ResourceName 'xExchMailboxDatabase' `
-                                    -ParamExistsInVersion '2016'
+                                    -ParamExistsInVersion '2016','2019'
 
     if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
@@ -560,10 +560,10 @@ function Test-TargetResource
                              -Verbose:$VerbosePreference
 
     #Check for non-existent parameters in Exchange 2013
-    RemoveVersionSpecificParameters -PSBoundParametersIn $PSBoundParameters `
+    Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
                                     -ParamName 'IsExcludedFromProvisioningReason' `
                                     -ResourceName 'xExchMailboxDatabase' `
-                                    -ParamExistsInVersion '2016'
+                                    -ParamExistsInVersion '2016','2019'
 
     if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {

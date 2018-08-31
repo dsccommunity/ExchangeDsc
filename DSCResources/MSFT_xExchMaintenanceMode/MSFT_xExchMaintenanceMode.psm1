@@ -282,7 +282,7 @@ function Set-TargetResource
                     Verbose = $true
                 }
 
-                if ((GetExchangeVersion) -eq '2016')
+                if ((Get-ExchangeVersion) -in '2016','2019')
                 {
                     $startDagScriptParams.Add('pauseClusterNode', $true)
                 }
@@ -378,6 +378,8 @@ function Set-TargetResource
         throw "Failed to retrieve maintenance mode status of server."
     }
 
+    Remove-HelperSnapin
+
     Remove-Item Alias:Write-Host -ErrorAction SilentlyContinue
 }
 
@@ -469,6 +471,8 @@ function Test-TargetResource
 
     #Establish remote Powershell session
     GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-*" -Verbose:$VerbosePreference
+
+    $serverVersion = Get-ExchangeVersion
 
     $maintenanceModeStatus = GetMaintenanceModeStatus -EnteringMaintenanceMode $Enabled -DomainController $DomainController
 
@@ -563,10 +567,13 @@ function Test-TargetResource
                 $testResults = $false
             }
 
-            if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "UMCallRouter"}))
+            if ($serverVersion -in '2013','2016')
             {
-                Write-Verbose "Component UMCallRouter is not Active"
-                $testResults = $false
+                if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "UMCallRouter"}))
+                {
+                    Write-Verbose "Component UMCallRouter is not Active"
+                    $testResults = $false
+                }
             }
 
             if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "HubTransport"}))
@@ -618,6 +625,8 @@ function Test-TargetResource
             }
         }
     }
+
+    Remove-HelperSnapin
 
     return $testResults
 }
@@ -1433,12 +1442,21 @@ function GetUMActiveCalls
         $DomainController
     )
 
-    if ([System.String]::IsNullOrEmpty($DomainController))
+    $umActiveCalls = $null
+
+    $serverVersion = Get-ExchangeVersion
+
+    if ($serverVersion -in '2013','2016')
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
+        if ([System.String]::IsNullOrEmpty($DomainController))
+        {
+            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
+        }
+
+        $umActiveCalls = Get-UMActiveCalls @PSBoundParameters
     }
 
-    return (Get-UMActiveCalls @PSBoundParameters)
+    return $umActiveCalls
 }
 
 function MoveActiveMailboxDatabase
@@ -1560,7 +1578,7 @@ function MoveActiveMailboxDatabase
         $moveDBParams.Add("SkipMaximumActiveDatabasesChecks", $true)
     }
 
-    if ((GetExchangeVersion) -eq '2016')
+    if ((Get-ExchangeVersion) -in '2016','2019')
     {
         if ($SkipAllChecks)
         {
@@ -1585,5 +1603,42 @@ function MoveActiveMailboxDatabase
     Move-ActiveMailboxDatabase @PSBoundParameters @moveDBParams
 }
 #endregion
+
+<#
+    .SYNOPSIS
+        Removes the Exchange PowerShell snapin, which is loaded by the
+        Start/StopDagMaintennace.ps1 scripts in the $Exscripts
+        directory. Prevents an issue where if a snapin is added by multiple
+        modules during the same session, subsequent additions of the same
+        module fail with 'An item with the same key has already been added'.
+
+    .NOTES
+        This similar function exists in the files
+        MSFT_xExchAntiMalwareScanning.psm1 and MSFT_xExchMaintenanceMode.psm1.
+        This was initially attempted to be put in xExchangeHelper.psm1 instead.
+        However when xExchangeHelper.psm1 is loaded as a NestedModule from
+        xExchange.psd1, functions within xExchangeHelper.psm1 do not appear to
+        be able to detect added snapins loaded by scripts called from other
+        modules. The added snapins were only detectable when running
+        Get-PSSnapin directly from functions within
+        MSFT_xExchAntiMalwareScanning.psm1 and MSFT_xExchMaintenanceMode.psm1.
+#>
+function Remove-HelperSnapin
+{
+    [CmdletBinding()]
+    param()
+
+    $snapinsToRemove = @('Microsoft.Exchange.Management.Powershell.E2010')
+
+    foreach ($snapin in $snapinsToRemove)
+    {
+        if ($null -ne (Get-PSSnapin -Name $snapin -ErrorAction SilentlyContinue))
+        {
+            Write-Verbose -Message "'$snapin' snapin is currently loaded. Removing."
+
+            Remove-PSSnapin -Name $snapin -ErrorAction SilentlyContinue -Confirm:$false
+        }
+    }
+}
 
 Export-ModuleMember -Function *-TargetResource
