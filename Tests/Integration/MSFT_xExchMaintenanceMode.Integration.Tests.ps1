@@ -6,17 +6,17 @@
 #>
 
 #region HEADER
-[System.String]$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-[System.String]$script:DSCModuleName = 'xExchange'
-[System.String]$script:DSCResourceFriendlyName = 'xExchMaintenanceMode'
-[System.String]$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[System.String] $script:DSCModuleName = 'xExchange'
+[System.String] $script:DSCResourceFriendlyName = 'xExchMaintenanceMode'
+[System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
+[System.Boolean] $exchangeInstalled = Get-IsSetupComplete
 
 #endregion HEADER
 
@@ -30,7 +30,7 @@ function Test-ServerIsOutOfMaintenanceMode
     param()
 
     Context 'Do additional Get-TargetResource verification after taking server out of maintenance mode' {
-        [System.Collections.Hashtable]$getResult = Get-TargetResource @testParams -Verbose
+        [System.Collections.Hashtable] $getResult = Get-TargetResource @testParams -Verbose
 
         It 'ActiveComponentCount is greater than 0' {
             $getResult.ActiveComponentCount -gt 0 | Should Be $true
@@ -40,7 +40,7 @@ function Test-ServerIsOutOfMaintenanceMode
             Verify that all components in the following list are Active.
             This list comes from an Exchange 2013 CU9 machine with both the CAS and MBX roles.
         #>
-        [System.String[]]$expectedActiveComponentsList = Get-VersionSpecificComponentsToActivate
+        [System.String[]] $expectedActiveComponentsList = Get-VersionSpecificComponentsToActivate
 
         $expectedActiveComponentsList += 'ServerWideOffline','HubTransport','FrontendTransport','Monitoring','RecoveryActionsEnabled'
 
@@ -145,7 +145,7 @@ function Get-VersionSpecificComponentsToActivate
 
     $serverVersion = Get-ExchangeVersion
 
-    [System.Object[]]$componentsToActivate = @('AutoDiscoverProxy',
+    [System.String[]] $componentsToActivate = @('AutoDiscoverProxy',
                                                'ActiveSyncProxy',
                                                'EcpProxy',
                                                'EwsProxy',
@@ -188,7 +188,7 @@ function Wait-ForPrimaryHealthyIndexState
 
     $hasHealthyContentIndexes = $false
 
-    [System.Object[]]$unhealthyDBs = Get-UnhealthyPrimaryIndexesOnServer
+    [System.Object[]] $unhealthyDBs = Get-UnhealthyPrimaryIndexesOnServer
 
     if ($unhealthyDBs.Count -gt 0)
     {
@@ -239,7 +239,7 @@ function Wait-ForSecondaryHealthyIndexState
 
     $hasHealthyContentIndexes = $false
 
-    [System.Object[]]$unhealthyDBs = Get-UnhealthySecondaryPartnerIndexesInDAG
+    [System.Object[]] $unhealthyDBs = Get-UnhealthySecondaryPartnerIndexesInDAG
 
     if ($unhealthyDBs.Count -gt 0)
     {
@@ -322,7 +322,7 @@ if ($exchangeInstalled)
 
         $mbxServer = Get-MailboxServer $env:COMPUTERNAME
 
-        [System.Boolean]$isDagMember = !([System.String]::IsNullOrEmpty($mbxServer.DatabaseAvailabilityGroup))
+        [System.Boolean] $isDagMember = !([System.String]::IsNullOrEmpty($mbxServer.DatabaseAvailabilityGroup))
     }
 
     if ($isDagMember -eq $false)
@@ -343,11 +343,11 @@ if ($exchangeInstalled)
     }
 
     #Get Domain Controller
-    [System.Object[]]$foundDCs = Get-ADDomainController
+    [System.Object[]] $foundDCs = Get-ADDomainController
 
     if ($foundDCs.Count -gt 0)
     {
-        [System.String]$dcToTestAgainst = $foundDCs[0].HostName
+        [System.String] $dcToTestAgainst = $foundDCs[0].HostName
     }
     else
     {

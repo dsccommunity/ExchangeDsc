@@ -96,7 +96,7 @@ if ($null -ne $adModule)
         #Get the product key to use for testing
         if ($null -eq $productKey)
         {
-            $productKey = Read-Host -Prompt 'Enter the product key to license Exchange with, or press ENTER to skip'
+            $productKey = Read-Host -Prompt 'Enter the product key to license Exchange with, or press ENTER to skip testing the licensing of the server.'
         }
 
         Describe 'Test Setting Properties with xExchExchangeServer' {
