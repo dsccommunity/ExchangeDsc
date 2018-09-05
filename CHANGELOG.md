@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.23.0.0
+
 - Fixes issue with xExchMaintenanceMode on Exchange 2016 where the cluster
   does not get paused when going into maintenance mode. Also fixes issue
   where services fail to stop, start, pause, or resume.
