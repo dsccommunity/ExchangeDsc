@@ -16,43 +16,40 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = IsSetupComplete
+[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     #Get the Server FQDN for using in URL's
-    if ($null -eq $Global:ServerFqdn)
+    if ($null -eq $serverFqdn)
     {
-        $Global:ServerFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
+        $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
     Describe 'Test Setting Properties with xExchMapiVirtualDirectory' {
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\mapi (Default Web Site)"
-            Credential = $Global:ShellCredentials
-            ExternalUrl = "https://$($Global:ServerFqdn)/mapi"
+            Credential = $shellCredentials
+            ExternalUrl = "https://$($serverFqdn)/mapi"
             IISAuthenticationMethods = 'Ntlm', 'Oauth', 'Negotiate'
-            InternalUrl = "https://$($Global:ServerFqdn)/mapi"                              
+            InternalUrl = "https://$($serverFqdn)/mapi"
         }
 
         $expectedGetResults = @{
             Identity =  "$($env:COMPUTERNAME)\mapi (Default Web Site)"
-            ExternalUrl = "https://$($Global:ServerFqdn)/mapi"
-            InternalUrl = "https://$($Global:ServerFqdn)/mapi"   
+            ExternalUrl = "https://$($serverFqdn)/mapi"
+            InternalUrl = "https://$($serverFqdn)/mapi"
         }
 
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Set standard parameters' `
                                          -ExpectedGetResults $expectedGetResults
-        
+
         Test-ArrayContentsEqual -TestParams $testParams `
                                 -DesiredArrayContents $testParams.IISAuthenticationMethods `
                                 -GetResultParameterName 'IISAuthenticationMethods' `
@@ -61,22 +58,22 @@ if ($exchangeInstalled)
 
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\mapi (Default Web Site)"
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             ExternalUrl = ''
             IISAuthenticationMethods = 'Ntlm', 'Negotiate'
-            InternalUrl = "https://$($Global:ServerFqdn)/mapi"          
+            InternalUrl = "https://$($serverFqdn)/mapi"
         }
 
         $expectedGetResults = @{
             Identity =  "$($env:COMPUTERNAME)\mapi (Default Web Site)"
-            ExternalUrl = $null
-            InternalUrl = "https://$($Global:ServerFqdn)/mapi" 
+            ExternalUrl = ''
+            InternalUrl = "https://$($serverFqdn)/mapi"
         }
 
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Try with different values' `
                                          -ExpectedGetResults $expectedGetResults
-        
+
         Test-ArrayContentsEqual -TestParams $testParams `
                                 -DesiredArrayContents $testParams.IISAuthenticationMethods `
                                 -GetResultParameterName 'IISAuthenticationMethods' `

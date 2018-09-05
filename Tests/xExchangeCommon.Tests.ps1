@@ -21,15 +21,12 @@ function RemoveExistingPSSessions
 }
 
 # Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = IsSetupComplete
+[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
 
 if ($exchangeInstalled)
 {
     # Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     Describe 'Test Exchange Remote PowerShell Functions' {
         # Remove any existing Remote PS Sessions to Exchange before getting started
@@ -38,7 +35,7 @@ if ($exchangeInstalled)
 
         # Verify we can setup a new Remote PS Session to Exchange
         Context 'Establish new Remote PowerShell Session to Exchange' {
-            GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad 'Get-ExchangeServer'
+            GetRemoteExchangeSession -Credential $shellCredentials -CommandsToLoad 'Get-ExchangeServer'
 
             $Session = $null
             $Session = GetExistingExchangeSession
@@ -47,11 +44,11 @@ if ($exchangeInstalled)
                 ($null -ne $Session) | Should Be $true
             }
         }
-        
+
 
         # Remove sessions again before continuing
         RemoveExistingPSSessions
-        
+
 
         # Simulate that setup is running (using notepad.exe), and try to establish a new session. This should fail
         Context 'Make sure PS session is not established when setup process is running' {
@@ -61,7 +58,7 @@ if ($exchangeInstalled)
 
             try
             {
-                GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad 'Get-ExchangeServer' -SetupProcessName 'notepad'
+                GetRemoteExchangeSession -Credential $shellCredentials -CommandsToLoad 'Get-ExchangeServer' -SetupProcessName 'notepad'
             }
             catch
             {
@@ -109,4 +106,4 @@ else
 {
     Write-Verbose -Message 'Tests in this file require that Exchange is installed to be run.'
 }
-    
+

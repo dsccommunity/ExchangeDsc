@@ -50,7 +50,7 @@ Configuration Example
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.FullName)\HelperScripts\ExchangeConfigHelper.psm1"
 
     Node $AllNodes.NodeName
-    {       
+    {
         #Load the primary and copy lists from the calculator files
         $primaryDbList = DBListFromMailboxDatabasesCsv `
                             -MailboxDatabasesCsvPath "$($PSScriptRoot)\CalculatorAndScripts\MailboxDatabases.csv" `
@@ -67,7 +67,7 @@ Configuration Example
         {
             $resourceId = "MDB:$($DB.Name)" #Need to define a unique ID for each database
 
-            xExchMailboxDatabase $resourceId 
+            xExchMailboxDatabase $resourceId
             {
                 Name                     = $DB.Name
                 Credential               = $ExchangeAdminCredential
@@ -87,13 +87,13 @@ Configuration Example
         foreach ($DB in $copyDbList)
         {
             $waitResourceId = "WaitForDB_$($DB.Name)" #Unique ID for the xExchWaitForMailboxDatabase resource
-            $copyResourceId = "MDBCopy_$($DB.Name)" #Unique ID for the xExchMailboxDatabaseCopy resource 
+            $copyResourceId = "MDBCopy_$($DB.Name)" #Unique ID for the xExchMailboxDatabaseCopy resource
 
             #Need to wait for a primary copy to be created before we add a copy
             xExchWaitForMailboxDatabase $waitResourceId
             {
                 Identity   = $DB.Name
-                Credential = $ExchangeAdminCredential                
+                Credential = $ExchangeAdminCredential
             }
 
             xExchMailboxDatabaseCopy $copyResourceId
@@ -103,7 +103,7 @@ Configuration Example
                 MailboxServer        = $Node.NodeName
                 ActivationPreference = $DB.ActivationPreference
                 ReplayLagTime        = $DB.ReplayLagTime
-                AllowServiceRestart  = $true                
+                AllowServiceRestart  = $true
                 DependsOn            = "[xExchWaitForMailboxDatabase]$($waitResourceId)"
             }
         }

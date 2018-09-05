@@ -20,42 +20,14 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = IsSetupComplete
+[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
 
 #endregion HEADER
-
-function Test-ServicesInCertificate
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter()]
-        [System.Collections.Hashtable]
-        $TestParams, 
-        
-        [Parameter()]
-        [System.String]
-        $ContextLabel
-    )
-
-    Context $ContextLabel {
-        [System.Collections.Hashtable]$getResult = Get-TargetResource @TestParams
-
-        It 'Certificate Services Check' {
-            CompareCertServices -ServicesActual $getResult.Services `
-                                -ServicesDesired $TestParams.Services `
-                                -AllowExtraServices $TestParams.AllowExtraServices | Should Be $true
-        }
-    }
-}
 
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     #Get required credentials to use for the test
     $certPassword = ConvertTo-SecureString 'Password1' -AsPlainText -Force
@@ -70,7 +42,7 @@ if ($exchangeInstalled)
         #Test installing and enabling test cert 1
         $testParams = @{
             Thumbprint = $testCertThumbprint1
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             Ensure = 'Present'
             AllowExtraServices = $true
             CertCreds = $certCredentials
@@ -80,14 +52,12 @@ if ($exchangeInstalled)
 
         $expectedGetResults = @{
             Thumbprint = $testCertThumbprint1
+            Services = 'IIS','POP','IMAP','SMTP'
         }
 
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Install and Enable Test Certificate 1' `
                                          -ExpectedGetResults $expectedGetResults
-        
-        Test-ServicesInCertificate -TestParams $testParams `
-                                   -ContextLabel 'Verify Services on Test Certificate 1'
 
         #Test installing and enabling test cert2
         $testParams.Thumbprint = $testCertThumbprint2
@@ -97,18 +67,15 @@ if ($exchangeInstalled)
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Install and Enable Test Certificate 2' `
                                          -ExpectedGetResults $expectedGetResults
-   
-        Test-ServicesInCertificate -TestParams $testParams `
-                                   -ContextLabel 'Verify Services on Test Certificate 2'
 
         #Test removing test cert 1
         $testParams.Thumbprint = $testCertThumbprint1
         $testParams.Ensure = 'Absent'
         $expectedGetResults = $null
-        
+
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Remove Test Certificate 1' `
-                                         -ExpectedGetResults $expectedGetResults        
+                                         -ExpectedGetResults $expectedGetResults
     }
 }
 else

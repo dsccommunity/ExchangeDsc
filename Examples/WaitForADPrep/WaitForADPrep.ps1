@@ -11,7 +11,7 @@ Configuration Example
         [Parameter(Mandatory = $true)]
         [ValidateNotNullorEmpty()]
         [System.Management.Automation.PSCredential]
-        $ExchangeAdminCredential    
+        $ExchangeAdminCredential
     )
 
     Import-DscResource -Module xExchange

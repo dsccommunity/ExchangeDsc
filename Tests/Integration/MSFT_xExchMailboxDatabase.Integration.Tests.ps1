@@ -16,11 +16,17 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = IsSetupComplete
+[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
 
 #endregion HEADER
 
-#Removes the test DAG if it exists, and any associated databases
+<#
+    .SYNOPSIS
+        Removes the specified Mailbox Database and associated files
+
+    .PARAMETER Database
+        The name of the Mailbox Database to remove.
+#>
 function Initialize-ExchDscDatabase
 {
     [CmdletBinding()]
@@ -30,10 +36,10 @@ function Initialize-ExchDscDatabase
         [System.String]
         $Database
     )
-    
+
     Write-Verbose -Message 'Cleaning up test database'
 
-    GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad '*-MailboxDatabase'
+    GetRemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-MailboxDatabase'
     Get-MailboxDatabase | Where-Object -FilterScript {
         $_.Name -like "$($Database)"
     } | Remove-MailboxDatabase -Confirm:$false
@@ -51,26 +57,23 @@ function Initialize-ExchDscDatabase
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     $TestDBName = 'Mailbox Database Test 123'
 
     Initialize-ExchDscDatabase -Database $TestDBName
 
     #Get the test OAB
-    $testOabName = Get-TestOfflineAddressBook -ShellCredentials $Global:ShellCredentials
+    $testOabName = Get-TestOfflineAddressBook -ShellCredentials $shellCredentials
 
     Describe 'Test Creating a DB and Setting Properties with xExchMailboxDatabase' {
         #First create and set properties on a test database
         $testParams = @{
             Name = $TestDBName
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             Server = $env:COMPUTERNAME
             EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)\$($TestDBName).edb"
-            LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)"         
+            LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)"
             AllowServiceRestart = $true
             AutoDagExcludeFromMonitoring = $true
             BackgroundDatabaseMaintenance = $true
@@ -97,7 +100,7 @@ if ($exchangeInstalled)
             Name = $TestDBName
             Server = $env:COMPUTERNAME
             EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)\$($TestDBName).edb"
-            LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)"         
+            LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)"
             AutoDagExcludeFromMonitoring = $true
             BackgroundDatabaseMaintenance = $true
             CalendarLoggingQuota = 'unlimited'
@@ -112,16 +115,16 @@ if ($exchangeInstalled)
             MountAtStartup = $true
             OfflineAddressBook = "\$testOabName"
             RetainDeletedItemsUntilBackup = $false
-            IssueWarningQuota = '27 MB'
-            ProhibitSendQuota = '1GB'
-            ProhibitSendReceiveQuota = '1.5 GB'
+            IssueWarningQuota = '27 MB (28,311,552 bytes)'
+            ProhibitSendQuota = '1 GB (1,073,741,824 bytes)'
+            ProhibitSendReceiveQuota = '1.5 GB (1,610,612,736 bytes)'
             RecoverableItemsQuota = 'uNlImItEd'
-            RecoverableItemsWarningQuota = '1,000,448'
+            RecoverableItemsWarningQuota = '977 KB (1,000,448 bytes)'
         }
 
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Create Test Database' `
-                                         -ExpectedGetResults $expectedGetResults        
+                                         -ExpectedGetResults $expectedGetResults
 
         #Now change properties on the test database
         $testParams.CalendarLoggingQuota = '30mb'
@@ -140,7 +143,7 @@ if ($exchangeInstalled)
         $testParams.RecoverableItemsQuota = '2 GB'
         $testParams.RecoverableItemsWarningQuota = '1.5 GB'
 
-        $expectedGetResults.CalendarLoggingQuota = '30mb'
+        $expectedGetResults.CalendarLoggingQuota = '30 MB (31,457,280 bytes)'
         $expectedGetResults.CircularLoggingEnabled = $false
         $expectedGetResults.DeletedItemRetention = '15.00:00:00'
         $expectedGetResults.EventHistoryRetentionPeriod = '04:05:06'
@@ -150,15 +153,15 @@ if ($exchangeInstalled)
         $expectedGetResults.MailboxRetention = '31.00:00:00'
         $expectedGetResults.MountAtStartup = $false
         $expectedGetResults.RetainDeletedItemsUntilBackup = $true
-        $expectedGetResults.IssueWarningQuota = '28 MB'
-        $expectedGetResults.ProhibitSendQuota = '2GB'
-        $expectedGetResults.ProhibitSendReceiveQuota = '2.5 GB'
-        $expectedGetResults.RecoverableItemsQuota = '2 GB'
-        $expectedGetResults.RecoverableItemsWarningQuota = '1.5 GB'
+        $expectedGetResults.IssueWarningQuota = '28 MB (29,360,128 bytes)'
+        $expectedGetResults.ProhibitSendQuota = '2 GB (2,147,483,648 bytes)'
+        $expectedGetResults.ProhibitSendReceiveQuota = '2.5 GB (2,684,354,560 bytes)'
+        $expectedGetResults.RecoverableItemsQuota = '2 GB (2,147,483,648 bytes)'
+        $expectedGetResults.RecoverableItemsWarningQuota = '1.5 GB (1,610,612,736 bytes)'
 
-        $serverVersion = GetExchangeVersion
+        $serverVersion = Get-ExchangeVersion
 
-        if ($serverVersion -eq '2016')
+        if ($serverVersion -in '2016','2019')
         {
             $testParams.Add('IsExcludedFromProvisioningReason', 'Testing Excluding the Database')
             $expectedGetResults.Add('IsExcludedFromProvisioningReason', 'Testing Excluding the Database')
@@ -178,7 +181,7 @@ if ($exchangeInstalled)
 
             #First set a quota to a non-Unlimited value
             $testParams.ProhibitSendReceiveQuota = '10GB'
-            Set-TargetResource @testParams 
+            Set-TargetResource @testParams
 
             #Now test for the value and look to see if it's Unlimited
             $testParams.ProhibitSendReceiveQuota = 'Unlimited'
@@ -205,7 +208,7 @@ if ($exchangeInstalled)
         Context 'Test Looking For Non-Unlimited Value When Currently Set to Different Non-Unlimited Value' {
             #First set a quota to a non-Unlimited value
             $testParams.ProhibitSendReceiveQuota = '10GB'
-            Set-TargetResource @testParams 
+            Set-TargetResource @testParams
 
             #Now test for the value and look to see if it's a different non-unlimited value
             $testParams.ProhibitSendReceiveQuota = '11GB'
@@ -220,7 +223,7 @@ if ($exchangeInstalled)
         Context 'Test Looking For Non-Unlimited Value When Currently Set to Unlimited Value' {
             #First set a quota to an Unlimited value
             $testParams.ProhibitSendReceiveQuota = 'Unlimited'
-            Set-TargetResource @testParams 
+            Set-TargetResource @testParams
 
             #Now test for the value and look to see if it's non-Unlimited
             $testParams.ProhibitSendReceiveQuota = '11GB'
@@ -235,7 +238,7 @@ if ($exchangeInstalled)
         Context 'Test Looking For Same Value In A Different Size Format' {
             #First set a quota to a non-Unlimited value in megabytes
             $testParams.ProhibitSendReceiveQuota = '10240MB'
-            Set-TargetResource @testParams 
+            Set-TargetResource @testParams
 
             #Now test for the value and look to see if it's the same value, but in gigabytes
             $testParams.ProhibitSendReceiveQuota = '10GB'
@@ -264,6 +267,9 @@ if ($exchangeInstalled)
                                          -ContextLabel 'Set remaining quotas to Unlimited' `
                                          -ExpectedGetResults $expectedGetResults
     }
+
+    # Clean up the test database
+    Initialize-ExchDscDatabase -Database $TestDBName
 }
 else
 {

@@ -27,13 +27,13 @@ function Get-TargetResource
         $MinAchievedIOPS = 0
     )
 
-    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath; "JetstressParams" = $JetstressParams} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath; "JetstressParams" = $JetstressParams} -Verbose:$VerbosePreference
 
     $returnValue = @{
-        Type = $Type
-        JetstressPath = $JetstressPath
-        JetstressParams = $JetstressParams
-        MaxWaitMinutes = $MaxWaitMinutes        
+        Type            = [System.String] $Type
+        JetstressPath   = [System.String] $JetstressPath
+        JetstressParams = [System.String] $JetstressParams
+        MaxWaitMinutes  = [System.UInt32] $MaxWaitMinutes
     }
 
     $returnValue
@@ -73,7 +73,7 @@ function Set-TargetResource
         $MinAchievedIOPS = 0
     )
 
-    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath; "JetstressParams" = $JetstressParams} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath; "JetstressParams" = $JetstressParams} -Verbose:$VerbosePreference
 
     $jetstressRunning = IsJetstressRunning
     $jetstressSuccessful = JetstressTestSuccessful @PSBoundParameters
@@ -100,7 +100,7 @@ function Set-TargetResource
         if ($initializingESE -eq $true)
         {
             Write-Verbose -Message 'Jetstress has never initialized performance counters for ESE. Waiting a full 60 seconds for this to occurr'
-            
+
             Start-Sleep -Seconds 5
 
             for ($i = 55; $i -gt 0; $i--)
@@ -232,7 +232,7 @@ function Test-TargetResource
         $MinAchievedIOPS = 0
     )
 
-    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath; "JetstressParams" = $JetstressParams} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath; "JetstressParams" = $JetstressParams} -Verbose:$VerbosePreference
 
     $jetstressRunning = IsJetstressRunning -MaximumWaitSeconds 1
 
@@ -286,7 +286,7 @@ function StartJetstress
 
     $fullPath = Join-Path -Path "$($JetstressPath)" -ChildPath "JetstressCmd.exe"
 
-    StartScheduledTask -Path "$($fullPath)" -Arguments "$($JetstressParams)" -WorkingDirectory "$($JetstressPath)" -TaskName 'Jetstress' -MaxWaitMinutes $MaxWaitMinutes -VerbosePreference $VerbosePreference -TaskPriority 1
+    StartScheduledTask -Path "$($fullPath)" -Arguments "$($JetstressParams)" -WorkingDirectory "$($JetstressPath)" -TaskName 'Jetstress' -MaxWaitMinutes $MaxWaitMinutes -Verbose:$VerbosePreference -TaskPriority 1
 }
 
 #Looks in the latest Type*.html file to determine whether the last Jetstress run passed

@@ -64,10 +64,10 @@ function Get-TargetResource
         $WindowsAuthentication
     )
 
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OabVirtualDirectory','Set-OabVirtualDirectory','Get-OfflineAddressBook','Set-OfflineAddressBook' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OabVirtualDirectory','Set-OabVirtualDirectory','Get-OfflineAddressBook','Set-OfflineAddressBook' -Verbose:$VerbosePreference
 
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
@@ -91,17 +91,17 @@ function Get-TargetResource
         }
 
         $returnValue = @{
-            Identity = $Identity
-            OABsToDistribute = $oabNames
-            BasicAuthentication = $vdir.BasicAuthentication
-            ExtendedProtectionFlags = $vdir.ExtendedProtectionFlags
-            ExtendedProtectionSPNList = $vdir.ExtendedProtectionSPNList
-            ExtendedProtectionTokenChecking = $vdir.ExtendedProtectionTokenChecking
-            ExternalUrl = $vdir.ExternalUrl
-            InternalUrl = $vdir.InternalUrl
-            PollInterval = $vdir.PollInterval
-            RequireSSL = $vdir.RequireSSL
-            WindowsAuthentication = $vdir.WindowsAuthentication
+            Identity                        = [System.String] $Identity
+            BasicAuthentication             = [System.Boolean] $vdir.BasicAuthentication
+            ExtendedProtectionFlags         = [System.String[]] $vdir.ExtendedProtectionFlags
+            ExtendedProtectionSPNList       = [System.String[]] $vdir.ExtendedProtectionSPNList
+            ExtendedProtectionTokenChecking = [System.String] $vdir.ExtendedProtectionTokenChecking
+            ExternalUrl                     = [System.String] $vdir.ExternalUrl.AbsoluteUri
+            InternalUrl                     = [System.String] $vdir.InternalUrl.AbsoluteUri
+            OABsToDistribute                = [System.String[]] $oabNames
+            PollInterval                    = [System.Int32] $vdir.PollInterval
+            RequireSSL                      = [System.Boolean] $vdir.RequireSSL
+            WindowsAuthentication           = [System.Boolean] $vdir.WindowsAuthentication
         }
     }
 
@@ -172,7 +172,7 @@ function Set-TargetResource
         $WindowsAuthentication
     )
 
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('OABsToDistribute'))
     {
@@ -278,7 +278,7 @@ function Test-TargetResource
         $WindowsAuthentication
     )
 
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     $vdir = Get-TargetResource @PSBoundParameters
 
@@ -294,55 +294,55 @@ function Test-TargetResource
     {
         if ($PSBoundParameters.ContainsKey('OABsToDistribute') -and (Array2ContainsArray1Contents -Array1 $OABsToDistribute -Array2 $vdir.OABsToDistribute -IgnoreCase) -eq $false)
         {
-            ReportBadSetting -SettingName 'OABsToDistribute' -ExpectedValue $OABsToDistribute -ActualValue $vdir.OABsToDistribute -VerbosePreference $VerbosePreference
+            ReportBadSetting -SettingName 'OABsToDistribute' -ExpectedValue $OABsToDistribute -ActualValue $vdir.OABsToDistribute -Verbose:$VerbosePreference
         }
 
-        if (!(VerifySetting -Name 'BasicAuthentication' -Type 'Boolean' -ExpectedValue $BasicAuthentication -ActualValue $vdir.BasicAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'BasicAuthentication' -Type 'Boolean' -ExpectedValue $BasicAuthentication -ActualValue $vdir.BasicAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'ExtendedProtectionFlags' -Type 'Array' -ExpectedValue $ExtendedProtectionFlags -ActualValue $vdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ExtendedProtectionFlags' -Type 'Array' -ExpectedValue $ExtendedProtectionFlags -ActualValue $vdir.ExtendedProtectionFlags -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'ExtendedProtectionSPNList' -Type 'Array' -ExpectedValue $ExtendedProtectionSPNList -ActualValue $vdir.ExtendedProtectionSPNList -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ExtendedProtectionSPNList' -Type 'Array' -ExpectedValue $ExtendedProtectionSPNList -ActualValue $vdir.ExtendedProtectionSPNList -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'ExtendedProtectionTokenChecking' -Type 'String' -ExpectedValue $ExtendedProtectionTokenChecking -ActualValue $vdir.ExtendedProtectionTokenChecking -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ExtendedProtectionTokenChecking' -Type 'String' -ExpectedValue $ExtendedProtectionTokenChecking -ActualValue $vdir.ExtendedProtectionTokenChecking -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'ExternalUrl' -Type 'String' -ExpectedValue $ExternalUrl -ActualValue $vdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'ExternalUrl' -Type 'String' -ExpectedValue $ExternalUrl -ActualValue $vdir.ExternalUrl -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'InternalUrl' -Type 'String' -ExpectedValue $InternalUrl -ActualValue $vdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'InternalUrl' -Type 'String' -ExpectedValue $InternalUrl -ActualValue $vdir.InternalUrl -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'PollInterval' -Type 'Int' -ExpectedValue $PollInterval -ActualValue $vdir.PollInterval -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'PollInterval' -Type 'Int' -ExpectedValue $PollInterval -ActualValue $vdir.PollInterval -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'RequireSSL' -Type 'Boolean' -ExpectedValue $RequireSSL -ActualValue $vdir.RequireSSL -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'RequireSSL' -Type 'Boolean' -ExpectedValue $RequireSSL -ActualValue $vdir.RequireSSL -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'WindowsAuthentication' -Type 'Boolean' -ExpectedValue $WindowsAuthentication -ActualValue $vdir.WindowsAuthentication -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'WindowsAuthentication' -Type 'Boolean' -ExpectedValue $WindowsAuthentication -ActualValue $vdir.WindowsAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
-        }       
+        }
     }
-    
+
     return $testResults
 }
 
@@ -429,13 +429,13 @@ function AddOabDistributionPoint
         #Assemble the list of existing Virtual Directories
         [System.String[]]$allVdirs = @()
 
-      
+
         foreach ($vdir in $oab.VirtualDirectories)
         {
             $oabServer = ServerFromOABVdirDN -OabVdirDN $vdir.DistinguishedName
-            
-            [System.String]$entry = $oabServer + '\' + $vdir.Name    
-        
+
+            [System.String]$entry = $oabServer + '\' + $vdir.Name
+
             $allVdirs += $entry
         }
 
@@ -461,7 +461,7 @@ function ServerFromOABVdirDN
         [Parameter(Mandatory = $true)]
         [System.String]
         $OabVdirDN
-    )    
+    )
     $startString = 'CN=Protocols,CN='
     $endString = ',CN=Servers'
 
@@ -469,7 +469,7 @@ function ServerFromOABVdirDN
     $length = $OabVdirDN.IndexOf($endString) - $startIndex
 
     $serverName = $OabVdirDN.Substring($startIndex, $length)
-    
+
     return $serverName
 }
 

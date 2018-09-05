@@ -42,18 +42,18 @@ function Get-TargetResource
         $Services
     )
 
-    LogFunctionEntry -Parameters @{"Thumbprint" = $Thumbprint} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Thumbprint" = $Thumbprint} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -Verbose:$VerbosePreference
 
     $cert = GetExchangeCertificate @PSBoundParameters
 
     if ($null -ne $cert)
     {
         $returnValue = @{
-            Thumbprint = $Thumbprint
-            Services = $cert.Services.ToString()
+            Thumbprint = [System.String] $Thumbprint
+            Services   = [System.String[]] $cert.Services.ToString().Split(',').Trim()
         }
     }
 
@@ -102,10 +102,10 @@ function Set-TargetResource
         $Services
     )
 
-    LogFunctionEntry -Parameters @{"Thumbprint" = $Thumbprint} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Thumbprint" = $Thumbprint} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*ExchangeCertificate' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*ExchangeCertificate' -Verbose:$VerbosePreference
 
     $cert = GetExchangeCertificate @PSBoundParameters
 
@@ -170,11 +170,11 @@ function Set-TargetResource
     {
         if ($null -ne $cert)
         {
-            NotePreviousError
+            $previousError = Get-PreviousError
 
             Enable-ExchangeCertificate -Thumbprint $Thumbprint -Services $Services -Force -Server $env:COMPUTERNAME
 
-            ThrowIfNewErrorsEncountered -CmdletBeingRun 'Enable-ExchangeCertificate' -VerbosePreference $VerbosePreference
+            Assert-NoNewError -CmdletBeingRun 'Enable-ExchangeCertificate' -PreviousError $previousError -Verbose:$VerbosePreference
         }
         else
         {
@@ -240,10 +240,10 @@ function Test-TargetResource
         $Services
     )
 
-    LogFunctionEntry -Parameters @{"Thumbprint" = $Thumbprint} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Thumbprint" = $Thumbprint} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -Verbose:$VerbosePreference
 
     $cert = GetExchangeCertificate @PSBoundParameters
 
@@ -255,7 +255,7 @@ function Test-TargetResource
         {
             if (!(CompareCertServices -ServicesActual $cert.Services -ServicesDesired $Services -AllowExtraServices $AllowExtraServices))
             {
-                ReportBadSetting -SettingName 'Services' -ExpectedValue $Services -ActualValue $cert.Services -VerbosePreference $VerbosePreference
+                ReportBadSetting -SettingName 'Services' -ExpectedValue $Services -ActualValue $cert.Services -Verbose:$VerbosePreference
                 $testResults = $false
             }
         }
@@ -339,17 +339,17 @@ function CompareCertServices
     (
         [Parameter()]
         [System.String]
-        $ServicesActual, 
-        
+        $ServicesActual,
+
         [Parameter()]
         [System.String[]]
-        $ServicesDesired, 
-        
+        $ServicesDesired,
+
         [Parameter()]
         [System.Boolean]
         $AllowExtraServices
     )
-    
+
     $actual = StringToArray -StringIn $ServicesActual -Separator ','
 
     if ($AllowExtraServices -eq $true)
@@ -365,7 +365,7 @@ function CompareCertServices
     }
     else
     {
-        $result = CompareArrayContents -Array1 $actual -Array2 $ServicesDesired -IgnoreCase
+        $result = Compare-ArrayContent -Array1 $actual -Array2 $ServicesDesired -IgnoreCase
     }
 
     return $result

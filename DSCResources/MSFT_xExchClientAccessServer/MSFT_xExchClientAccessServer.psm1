@@ -41,10 +41,10 @@ function Get-TargetResource
         $RemoveAlternateServiceAccountCredentials
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ClientAccessServ*" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ClientAccessServ*" -Verbose:$VerbosePreference
 
     $cas = GetClientAccessServer @PSBoundParameters
 
@@ -54,19 +54,23 @@ function Get-TargetResource
         {
             $sites = $cas.AutoDiscoverSiteScope.ToArray()
         }
-        $returnValue = @{
-            Identity = $Identity
-            AutoDiscoverServiceInternalUri = $cas.AutoDiscoverServiceInternalUri
-            AutoDiscoverSiteScope = $sites
-            CleanUpInvalidAlternateServiceAccountCredentials = $CleanUpInvalidAlternateServiceAccountCredentials
-            DomainController = $DomainController
-            RemoveAlternateServiceAccountCredentials = $RemoveAlternateServiceAccountCredentials
+        else
+        {
+            $sites = @()
         }
+
+        $returnValue = @{
+            Identity                                         = [System.String] $Identity
+            AutoDiscoverServiceInternalUri                   = [System.String] $cas.AutoDiscoverServiceInternalUri
+            AutoDiscoverSiteScope                            = [System.String[]] $sites
+            CleanUpInvalidAlternateServiceAccountCredentials = [System.Boolean] $CleanUpInvalidAlternateServiceAccountCredentials
+            DomainController                                 = [System.String] $DomainController
+            RemoveAlternateServiceAccountCredentials         = [System.Boolean] $RemoveAlternateServiceAccountCredentials
+        }
+
         if ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials.Count -gt 0)
         {
-            $UserName = ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | Sort-Object WhenAddedUTC | Select-Object -Last 1).Credential.UserName
-            $PassWord = ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | Sort-Object WhenAddedUTC | Select-Object -Last 1).Credential.GetNetworkCredential().Password
-            $returnValue.Add("AlternateServiceAccountCredential","UserName:$UserName Password:$PassWord")
+            $returnValue.Add("AlternateServiceAccountCredential", [System.Management.Automation.PSCredential] $cas.AlternateServiceAccountConfiguration.EffectiveCredentials.Credential)
         }
     }
 
@@ -131,25 +135,63 @@ function Set-TargetResource
         }
     }
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Set-ClientAccessServ*" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Set-ClientAccessServ*" -Verbose:$VerbosePreference
 
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential"
 
     SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
-    
-    $serverVersion = GetExchangeVersion -ThrowIfUnknownVersion $true
 
-    if ($serverVersion -eq "2016")
+    $serverVersion = Get-ExchangeVersion -ThrowIfUnknownVersion $true
+
+    if ($serverVersion -in '2016','2019')
     {
-        Set-ClientAccessService @PSBoundParameters
+        $setCasCmd = 'Set-ClientAccessService'
     }
-    elseif ($serverVersion -eq "2013")
+    elseif ($serverVersion -eq '2013')
     {
-        Set-ClientAccessServer @PSBoundParameters
+        $setCasCmd = 'Set-ClientAccessServer'
     }
+
+    # The AlternateServiceAccount can't be set with parameters other than Identity and DomainController, so execute as one off
+    if ($null -ne $AlternateServiceAccountCredential)
+    {
+        $asaParams = @{
+            Identity = $Identity
+            AlternateServiceAccountCredential = $AlternateServiceAccountCredential
+        }
+
+        if (![String]::IsNullOrEmpty($DomainController))
+        {
+            $asaParams.Add('DomainController', $DomainController)
+        }
+
+        & $setCasCmd @asaParams
+
+        $PSBoundParameters.Remove('AlternateServiceAccountCredential')
+    }
+
+    # Remove AlternateServiceAccount can't be performed with parameters other than Identity and DomainController, so execute as one off
+    if ($RemoveAlternateServiceAccountCredentials)
+    {
+        $asaParams = @{
+            Identity = $Identity
+            RemoveAlternateServiceAccountCredentials = $true
+        }
+
+        if (![String]::IsNullOrEmpty($DomainController))
+        {
+            $asaParams.Add('DomainController', $DomainController)
+        }
+
+        & $setCasCmd @asaParams
+
+        $PSBoundParameters.Remove('RemoveAlternateServiceAccountCredentials')
+    }
+
+    & $setCasCmd @PSBoundParameters
 }
 
 
@@ -196,14 +238,12 @@ function Test-TargetResource
         $RemoveAlternateServiceAccountCredentials
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ClientAccessServ*" -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ClientAccessServ*" -Verbose:$VerbosePreference
 
     $cas = GetClientAccessServer @PSBoundParameters
-
-    $serverVersion = GetExchangeVersion -ThrowIfUnknownVersion $true
 
     $testResults = $true
 
@@ -215,17 +255,17 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name "AutoDiscoverServiceInternalUri" -Type "String" -ExpectedValue $AutoDiscoverServiceInternalUri -ActualValue $cas.AutoDiscoverServiceInternalUri.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "AutoDiscoverServiceInternalUri" -Type "String" -ExpectedValue $AutoDiscoverServiceInternalUri -ActualValue $cas.AutoDiscoverServiceInternalUri.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name "AutoDiscoverSiteScope" -Type "Array" -ExpectedValue $AutoDiscoverSiteScope -ActualValue $cas.AutoDiscoverSiteScope -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "AutoDiscoverSiteScope" -Type "Array" -ExpectedValue $AutoDiscoverSiteScope -ActualValue $cas.AutoDiscoverSiteScope -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name "AlternateServiceAccountCredential" -Type "PSCredential" -ExpectedValue $AlternateServiceAccountCredential -ActualValue ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | Sort-Object WhenAddedUTC | Select-Object -Last 1).Credential $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name "AlternateServiceAccountCredential" -Type "PSCredential" -ExpectedValue $AlternateServiceAccountCredential -ActualValue ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | Sort-Object WhenAddedUTC | Select-Object -Last 1).Credential $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
@@ -289,20 +329,20 @@ function GetClientAccessServer
     #Remove params we don't want to pass into the next command
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
-    $serverVersion = GetExchangeVersion -ThrowIfUnknownVersion $true
+    $serverVersion = Get-ExchangeVersion -ThrowIfUnknownVersion $true
     if (($null -ne $AlternateServiceAccountCredential) -or ($RemoveAlternateServiceAccountCredentials))
     {
         $PSBoundParameters.Add('IncludeAlternateServiceAccountCredentialPassword',$true)
     }
 
-    if ($serverVersion -eq '2016')
+    if ($serverVersion -in '2016','2019')
     {
         return (Get-ClientAccessService @PSBoundParameters)
     }
     elseif ($serverVersion -eq '2013')
     {
         return (Get-ClientAccessServer @PSBoundParameters)
-    } 
+    }
 }
 
 Export-ModuleMember -Function *-TargetResource

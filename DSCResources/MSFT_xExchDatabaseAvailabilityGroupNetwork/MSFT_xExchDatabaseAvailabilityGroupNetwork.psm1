@@ -40,21 +40,21 @@ function Get-TargetResource
         $Subnets
     )
 
-    LogFunctionEntry -Parameters @{"Name" = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Name" = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroupNetwork' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroupNetwork' -Verbose:$VerbosePreference
 
     $dagNet = GetDatabaseAvailabilityGroupNetwork @PSBoundParameters
 
     if ($null -ne $dagNet)
     {
         $returnValue = @{
-            Name = $Name
-            DatabaseAvailabilityGroup = $DatabaseAvailabilityGroup
-            IgnoreNetwork = $dagNet.IgnoreNetwork
-            ReplicationEnabled = $dagNet.ReplicationEnabled
-            Subnets = $dagNet.Subnets
+            Name                      = [System.String] $Name
+            DatabaseAvailabilityGroup = [System.String] $DatabaseAvailabilityGroup
+            IgnoreNetwork             = [System.Boolean] $dagNet.IgnoreNetwork
+            ReplicationEnabled        = [System.Boolean] $dagNet.ReplicationEnabled
+            Subnets                   = [System.String[]] $dagNet.Subnets
         }
     }
 
@@ -102,10 +102,10 @@ function Set-TargetResource
         $Subnets
     )
 
-    LogFunctionEntry -Parameters @{"Name" = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Name" = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*DatabaseAvailabilityGroup*' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*DatabaseAvailabilityGroup*' -Verbose:$VerbosePreference
 
     $dagId = "$($DatabaseAvailabilityGroup)\$($Name)"
 
@@ -142,7 +142,7 @@ function Set-TargetResource
         {
             AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $dagId}
             RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Name','DatabaseAvailabilityGroup'
-                   
+
             Set-DatabaseAvailabilityGroupNetwork @PSBoundParameters
         }
     }
@@ -190,10 +190,10 @@ function Test-TargetResource
         $Subnets
     )
 
-    LogFunctionEntry -Parameters @{"Name" = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Name" = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroupNetwork' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroupNetwork' -Verbose:$VerbosePreference
 
     $dagNet = GetDatabaseAvailabilityGroupNetwork @PSBoundParameters
 
@@ -203,7 +203,7 @@ function Test-TargetResource
     {
         if ($Ensure -eq 'Present')
         {
-            ReportBadSetting -SettingName 'Ensure' -ExpectedValue 'Present' -ActualValue 'Absent' -VerbosePreference $VerbosePreference
+            ReportBadSetting -SettingName 'Ensure' -ExpectedValue 'Present' -ActualValue 'Absent' -Verbose:$VerbosePreference
             $testResults = $false
         }
     }
@@ -211,26 +211,26 @@ function Test-TargetResource
     {
         if ($Ensure -eq 'Absent')
         {
-            ReportBadSetting -SettingName 'Ensure' -ExpectedValue 'Absent' -ActualValue 'Present' -VerbosePreference $VerbosePreference
+            ReportBadSetting -SettingName 'Ensure' -ExpectedValue 'Absent' -ActualValue 'Present' -Verbose:$VerbosePreference
             $testResults = $false
         }
         else
         {
-            if (!(VerifySetting -Name 'IgnoreNetwork' -Type 'Boolean' -ExpectedValue $IgnoreNetwork -ActualValue $dagNet.IgnoreNetwork -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'IgnoreNetwork' -Type 'Boolean' -ExpectedValue $IgnoreNetwork -ActualValue $dagNet.IgnoreNetwork -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
                 $testResults = $false
             }
 
-            if (!(VerifySetting -Name 'ReplicationEnabled' -Type 'Boolean' -ExpectedValue $ReplicationEnabled -ActualValue $dagNet.ReplicationEnabled -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'ReplicationEnabled' -Type 'Boolean' -ExpectedValue $ReplicationEnabled -ActualValue $dagNet.ReplicationEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
                 $testResults = $false
             }
 
-            if (!(VerifySetting -Name 'Subnets' -Type 'Array' -ExpectedValue $Subnets -ActualValue (SubnetsToArray -Subnets $dagNet.Subnets) -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+            if (!(VerifySetting -Name 'Subnets' -Type 'Array' -ExpectedValue $Subnets -ActualValue (SubnetsToArray -Subnets $dagNet.Subnets) -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
                 $testResults = $false
             }
-        }     
+        }
     }
 
     return $testResults

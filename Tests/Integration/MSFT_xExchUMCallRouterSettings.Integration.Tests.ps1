@@ -16,37 +16,39 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = IsSetupComplete
+[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
+    $shellCredentials = Get-TestCredential
+
+    $serverVersion = Get-ExchangeVersion
+
+    if ($serverVersion -in '2013','2016')
     {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+        Describe 'Test Setting Properties with xExchUMCallRouterSettings' {
+            $testParams = @{
+                Server =  $env:COMPUTERNAME
+                Credential = $shellCredentials
+                UMStartupMode = 'TLS'
+            }
 
-    Describe 'Test Setting Properties with xExchUMCallRouterSettings' {
-        $testParams = @{
-            Server =  $env:COMPUTERNAME
-            Credential = $Global:ShellCredentials
-            UMStartupMode = 'TLS'       
+            $expectedGetResults = @{
+                Server =  $env:COMPUTERNAME
+                UMStartupMode = 'TLS'
+            }
+
+            Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Set standard parameters' -ExpectedGetResults $expectedGetResults
+
+
+            $testParams.UMStartupMode = 'Dual'
+            $expectedGetResults.UMStartupMode = 'Dual'
+
+            Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Change some parameters' -ExpectedGetResults $expectedGetResults
         }
-
-        $expectedGetResults = @{
-            Server =  $env:COMPUTERNAME
-            UMStartupMode = 'TLS'  
-        }
-
-        Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Set standard parameters' -ExpectedGetResults $expectedGetResults
-
-
-        $testParams.UMStartupMode = 'Dual'
-        $expectedGetResults.UMStartupMode = 'Dual'
-
-        Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Change some parameters' -ExpectedGetResults $expectedGetResults
     }
 }
 else

@@ -16,25 +16,22 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = IsSetupComplete
+[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     Describe 'Test Setting Properties with xExchMailboxServer' {
-        $serverVersion = GetExchangeVersion
+        $serverVersion = Get-ExchangeVersion
 
         #Make sure DB activation is not blocked
         $testParams = @{
             Identity = $env:COMPUTERNAME
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             AutoDatabaseMountDial = 'BestAvailability'
             CalendarRepairIntervalEndWindow = '15'
             CalendarRepairLogDirectorySizeLimit = '1GB'
@@ -66,7 +63,7 @@ if ($exchangeInstalled)
             Identity = $env:COMPUTERNAME
             AutoDatabaseMountDial = 'BestAvailability'
             CalendarRepairIntervalEndWindow = '15'
-            CalendarRepairLogDirectorySizeLimit = '1GB'
+            CalendarRepairLogDirectorySizeLimit = '1 GB (1,073,741,824 bytes)'
             CalendarRepairLogEnabled = $false
             CalendarRepairLogFileAgeLimit = '30.00:00:00'
             CalendarRepairLogPath = 'C:\Program Files\Microsoft\Exchange Server\V15\Logging\Calendar Repair DSC'
@@ -79,9 +76,9 @@ if ($exchangeInstalled)
             ForceGroupMetricsGeneration = $true
             IsExcludedFromProvisioning = $true
             JournalingLogForManagedFoldersEnabled = $true
-            LogDirectorySizeLimitForManagedFolders = '10GB'
+            LogDirectorySizeLimitForManagedFolders = '10 GB (10,737,418,240 bytes)'
             LogFileAgeLimitForManagedFolders = '7.00:00:00'
-            LogFileSizeLimitForManagedFolders = '15MB'
+            LogFileSizeLimitForManagedFolders = '15 MB (15,728,640 bytes)'
             LogPathForManagedFolders = 'C:\Program Files\Microsoft\Exchange Server\V15\Logging\Managed Folder Assistant DSC'
             MAPIEncryptionRequired = $true
             MaximumActiveDatabases = '36'
@@ -91,7 +88,7 @@ if ($exchangeInstalled)
             SubjectLogForManagedFoldersEnabled = $true
         }
 
-        if ($serverVersion -eq '2016')
+        if ($serverVersion -in '2016','2019')
         {
             $testParams.Add('WacDiscoveryEndpoint', '')
             $expectedGetResults.Add('WacDiscoveryEndpoint', '')
@@ -156,7 +153,7 @@ if ($exchangeInstalled)
         $expectedGetResults.MaximumActiveDatabases = '24'
         $expectedGetResults.MaximumPreferredActiveDatabases = '12'
 
-        if ($serverVersion -eq '2016')
+        if ($serverVersion -in '2016','2019')
         {
             $testParams['WacDiscoveryEndpoint'] = 'https://localhost/hosting/discovery'
             $expectedGetResults['WacDiscoveryEndpoint'] = 'https://localhost/hosting/discovery'
@@ -169,7 +166,7 @@ if ($exchangeInstalled)
         #Make sure DB activation is not blocked
         $testParams = @{
             Identity = $env:COMPUTERNAME
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             AutoDatabaseMountDial = 'GoodAvailability'
             CalendarRepairLogDirectorySizeLimit = '500MB'
             CalendarRepairLogEnabled = $true
@@ -199,7 +196,7 @@ if ($exchangeInstalled)
         $expectedGetResults = @{
             Identity = $env:COMPUTERNAME
             AutoDatabaseMountDial = 'GoodAvailability'
-            CalendarRepairLogDirectorySizeLimit = '500MB'
+            CalendarRepairLogDirectorySizeLimit = '500 MB (524,288,000 bytes)'
             CalendarRepairLogEnabled = $true
             CalendarRepairLogFileAgeLimit = '10.00:00:00'
             CalendarRepairLogPath = 'C:\Program Files\Microsoft\Exchange Server\V15\Logging\Calendar Repair'
@@ -214,16 +211,16 @@ if ($exchangeInstalled)
             JournalingLogForManagedFoldersEnabled = $false
             LogDirectorySizeLimitForManagedFolders = 'Unlimited'
             LogFileAgeLimitForManagedFolders = '00:00:00'
-            LogFileSizeLimitForManagedFolders = '10MB'
+            LogFileSizeLimitForManagedFolders = '10 MB (10,485,760 bytes)'
             LogPathForManagedFolders = 'C:\Program Files\Microsoft\Exchange Server\V15\Logging\Managed Folder Assistant'
             MAPIEncryptionRequired = $false
-            MaximumActiveDatabases = $null
-            MaximumPreferredActiveDatabases = $null
+            MaximumActiveDatabases = ''
+            MaximumPreferredActiveDatabases = ''
             RetentionLogForManagedFoldersEnabled = $false
             SubjectLogForManagedFoldersEnabled = $false
         }
 
-        if ($serverVersion -eq '2016')
+        if ($serverVersion -in '2016','2019')
         {
             $testParams['CalendarRepairIntervalEndWindow'] = '7'
             $expectedGetResults['CalendarRepairIntervalEndWindow'] = '7'
@@ -276,7 +273,7 @@ if ($exchangeInstalled)
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Reset values to default' `
                                          -ExpectedGetResults $expectedGetResults
-        
+
         Test-ArrayContentsEqual -TestParams $testParams `
                                 -DesiredArrayContents $testParams.SharingPolicySchedule `
                                 -GetResultParameterName 'SharingPolicySchedule' `

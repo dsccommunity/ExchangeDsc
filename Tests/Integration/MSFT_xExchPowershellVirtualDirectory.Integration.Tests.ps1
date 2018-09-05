@@ -16,44 +16,41 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = IsSetupComplete
+[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     #Get the Server FQDN for using in URL's
-    if ($null -eq $Global:ServerFqdn)
+    if ($null -eq $serverFqdn)
     {
-        $Global:ServerFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
+        $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
     Describe 'Test Setting Properties with xExchPowershellVirtualDirectory' {
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\PowerShell (Default Web Site)"
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             BasicAuthentication = $false
             CertificateAuthentication = $true
-            ExternalUrl = "http://$($Global:ServerFqdn)/powershell"
-            InternalUrl = "http://$($Global:ServerFqdn)/powershell"
-            RequireSSL = $false                       
-            WindowsAuthentication = $false           
+            ExternalUrl = "http://$($serverFqdn)/powershell"
+            InternalUrl = "http://$($serverFqdn)/powershell"
+            RequireSSL = $false
+            WindowsAuthentication = $false
         }
 
         $expectedGetResults = @{
             Identity =  "$($env:COMPUTERNAME)\PowerShell (Default Web Site)"
             BasicAuthentication = $false
             CertificateAuthentication = $true
-            ExternalUrl = "http://$($Global:ServerFqdn)/powershell"
-            InternalUrl = "http://$($Global:ServerFqdn)/powershell"
-            RequireSSL = $false                       
-            WindowsAuthentication = $false  
+            ExternalUrl = "http://$($serverFqdn)/powershell"
+            InternalUrl = "http://$($serverFqdn)/powershell"
+            RequireSSL = $false
+            WindowsAuthentication = $false
         }
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Set standard parameters' -ExpectedGetResults $expectedGetResults
@@ -61,8 +58,8 @@ if ($exchangeInstalled)
 
         $testParams.ExternalUrl = ''
         $testParams.InternalUrl = ''
-        $expectedGetResults.ExternalUrl = $null
-        $expectedGetResults.InternalUrl = $null
+        $expectedGetResults.ExternalUrl = ''
+        $expectedGetResults.InternalUrl = ''
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Try with empty URLs' -ExpectedGetResults $expectedGetResults
     }
@@ -71,4 +68,4 @@ else
 {
     Write-Verbose -Message 'Tests in this file require that Exchange is installed to be run.'
 }
-    
+

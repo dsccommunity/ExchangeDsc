@@ -18,12 +18,12 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = IsSetupComplete
+[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
 
 #endregion HEADER
 
 #Sets properties retrieved by Get-ExchangeServer back to their default values
-function Initialize-ExchDscServerProperties
+function Clear-PropsForExchDscServer
 {
     [CmdletBinding()]
     param()
@@ -45,7 +45,7 @@ function Clear-ExchDscServerADProperty
         $Property
     )
 
-    Get-ADObject -SearchBase "$($Global:ExchangeServerDN)" -Filter {ObjectClass -eq 'msExchExchangeServer'} | Where-Object -FilterScript {
+    Get-ADObject -SearchBase "$($exchangeServerDN)" -Filter {ObjectClass -eq 'msExchExchangeServer'} | Where-Object -FilterScript {
         $_.ObjectClass -eq 'msExchExchangeServer'
     } | Set-ADObject -Clear "$($Property)"
 }
@@ -75,56 +75,57 @@ if ($null -ne $adModule)
     if ($exchangeInstalled)
     {
         #Get required credentials to use for the test
-        if ($null -eq $Global:ShellCredentials)
-        {
-            [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-        }
+        $shellCredentials = Get-TestCredential
 
-        if ($null -eq $Global:ExchangeServerDN)
+        if ($null -eq $exchangeServerDN)
         {
-            GetRemoteExchangeSession -Credential $Global:ShellCredentials -CommandsToLoad 'Get-ExchangeServer'
+            GetRemoteExchangeSession -Credential $shellCredentials -CommandsToLoad 'Get-ExchangeServer'
             $server = Get-ExchangeServer -Identity $env:COMPUTERNAME
 
             if ($null -ne $server)
             {
-                $Global:ExchangeServerDN = $server.DistinguishedName
+                $exchangeServerDN = $server.DistinguishedName
             }
 
-            if ($null -eq $Global:ExchangeServerDN)
+            if ($null -eq $exchangeServerDN)
             {
                 throw 'Failed to determine distinguishedName of Exchange Server object'
             }
         }
 
         #Get the product key to use for testing
-        if ($null -eq $Global:ProductKey)
+        if ($null -eq $productKey)
         {
-            $Global:ProductKey = Read-Host -Prompt 'Enter the product key to license Exchange with'
+            $productKey = Read-Host -Prompt 'Enter the product key to license Exchange with, or press ENTER to skip testing the licensing of the server.'
         }
 
         Describe 'Test Setting Properties with xExchExchangeServer' {
             #Create out initial test params
             $testParams = @{
                 Identity = $env:COMPUTERNAME
-                Credential = $Global:ShellCredentials
+                Credential = $shellCredentials
             }
 
             #First prepare the server for tests
-            Initialize-ExchDscServerProperties
+            Clear-PropsForExchDscServer
             Test-ExchDscServerPrepped
 
             #Now do tests
             $testParams = @{
                 Identity = $env:COMPUTERNAME
-                Credential = $Global:ShellCredentials
+                Credential = $shellCredentials
                 InternetWebProxy = 'http://someproxy.local/'
-                ProductKey = $Global:ProductKey
             }
 
             $expectedGetResults = @{
                 Identity = $env:COMPUTERNAME
                 InternetWebProxy = 'http://someproxy.local/'
-                ProductKey = 'Licensed'
+            }
+
+            if (![System.String]::IsNullOrEmpty($productKey))
+            {
+                $testParams.Add('ProductKey', $productKey)
+                $expectedGetResults.Add('ProductKey', 'Licensed')
             }
 
             Test-TargetResourceFunctionality -Params $testParams `

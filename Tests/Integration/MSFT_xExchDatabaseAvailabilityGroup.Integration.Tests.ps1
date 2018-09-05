@@ -20,7 +20,7 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = IsSetupComplete
+[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
 
 #endregion HEADER
 
@@ -28,92 +28,90 @@ $adModule = Get-Module -ListAvailable ActiveDirectory -ErrorAction SilentlyConti
 
 if ($null -ne $adModule)
 {
-    if ($null -eq $Global:DAGName)
+    if ($null -eq $dagName)
     {
-        $Global:DAGName = Read-Host -Prompt 'Enter the name of the DAG to use for testing'
+        $dagName = Read-Host -Prompt 'Enter the name of the DAG to use for testing'
     }
 
-    $compAccount = Get-ADComputer -Identity $Global:DAGName -ErrorAction SilentlyContinue
+    $compAccount = Get-ADComputer -Identity $dagName -ErrorAction SilentlyContinue
 
     if ($null -ne $compAccount)
     {
-        [System.String]$Global:TestDBName = 'TestDAGDB1'
+        [System.String]$testDBName = 'TestDAGDB1'
 
         if ($exchangeInstalled)
         {
             #Get required credentials to use for the test
-            if ($null -eq $Global:ShellCredentials)
-            {
-                [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-            }
+            $shellCredentials = Get-TestCredential
 
             #Get the Server FQDN for using in URL's
-            if ($null -eq $Global:ServerFqdn)
+            if ($null -eq $serverFqdn)
             {
-                $Global:ServerFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
+                $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
             }
 
-            if ($null -eq $Global:SecondDAGMember)
+            if ($null -eq $secondDAGMember)
             {
-                $Global:SecondDAGMember = Read-Host -Prompt 'Enter the host name of the second DAG member to use for testing, or press ENTER to skip.'
+                $secondDAGMember = Read-Host -Prompt 'Enter the host name of the second DAG member to use for testing, or press ENTER to skip.'
 
                 #If they didn't enter anything, set to an empty string so we don't prompt again on a re-run of the test
-                if ($null -eq $Global:SecondDAGMember)
+                if ($null -eq $secondDAGMember)
                 {
-                    $Global:SecondDAGMember = ''
+                    $secondDAGMember = ''
                 }
             }
 
             #Make sure failover clustering is installed on both nodes. Start with this node.
-            $fcNode1 = Get-WindowsFeature -Name Failover-Clustering -ComputerName $Global:ServerFqdn -ErrorAction SilentlyContinue
+            $fcNode1 = Get-WindowsFeature -Name Failover-Clustering -ComputerName $serverFqdn -ErrorAction SilentlyContinue
 
             if ($null -eq $fcNode1 -or !$fcNode1.Installed)
             {
-                Write-Error -Message ('The Failover-Clustering role must be fully installed on' + $($Global:ServerFqdn) + `
+                Write-Error -Message ('The Failover-Clustering role must be fully installed on' + $($serverFqdn) + `
                                       'before the server can be added to the cluster. Skipping all DAG tests.')
                 return
             }
 
-            if (!([System.String]::IsNullOrEmpty($Global:SecondDAGMember)))
+            if (!([System.String]::IsNullOrEmpty($secondDAGMember)))
             {
-                $fcNode2 = Get-WindowsFeature -Name Failover-Clustering -ComputerName $Global:SecondDAGMember -ErrorAction SilentlyContinue
+                $fcNode2 = Get-WindowsFeature -Name Failover-Clustering -ComputerName $secondDAGMember -ErrorAction SilentlyContinue
 
                 if ($null -eq $fcNode2 -or !$fcNode2.Installed)
                 {
-                    Write-Error -Message ('The Failover-Clustering role must be fully installed on' + $($Global:SecondDAGMember) + `
+                    Write-Error -Message ('The Failover-Clustering role must be fully installed on' + $($secondDAGMember) + `
                                           'before the server can be added to the cluster. Skipping tests that would utilize this DAG member.')
-                                        
-                    $Global:SecondDAGMember = ''
+
+                    $secondDAGMember = ''
                 }
             }
 
-            while (([System.String]::IsNullOrEmpty($Global:Witness1)))
+            while (([System.String]::IsNullOrEmpty($witness1)))
             {
-                $Global:Witness1 = Read-Host -Prompt 'Enter the FQDN of the first File Share Witness for testing'
+                $witness1 = Read-Host -Prompt 'Enter the FQDN of the first File Share Witness for testing'
             }
 
             #Allow for the second witness to not be specified
-            if ($null -eq $Global:Witness2)
+            if ($null -eq $witness2)
             {
-                $Global:Witness2 = Read-Host -Prompt 'Enter the FQDN of the second File Share Witness for testing, or press ENTER to skip.'
+                $witness2 = Read-Host -Prompt 'Enter the FQDN of the second File Share Witness for testing, or press ENTER to skip.'
 
                 #If they didn't enter anything, set to an empty string so we don't prompt again on a re-run of the test
-                if ($null -eq $Global:Witness2)
+                if ($null -eq $witness2)
                 {
-                    $Global:Witness2 = ''
+                    $witness2 = ''
                 }
             }
 
             #Remove the existing DAG
-            Initialize-TestForDAG -ServerName @($env:COMPUTERNAME,$Global:SecondDAGMember) `
-                                  -DAGName $Global:DAGName `
-                                  -DatabaseName $Global:TestDBName
+            Initialize-TestForDAG -ServerName @($env:COMPUTERNAME,$secondDAGMember) `
+                                  -DAGName $dagName `
+                                  -DatabaseName $testDBName `
+                                  -ShellCredentials $shellCredentials
 
             Describe 'Test Creating and Modifying a DAG, adding DAG members, creating a DAG database, and adding database copies' {
                 #Create a new DAG
-                $dagTestParams = @{            
-                    Name = $Global:DAGName
-                    Credential = $Global:ShellCredentials
+                $dagTestParams = @{
+                    Name = $dagName
+                    Credential = $shellCredentials
                     AutoDagAutoReseedEnabled = $true
                     AutoDagDatabaseCopiesPerDatabase = 2
                     AutoDagDatabaseCopiesPerVolume = 2
@@ -130,12 +128,12 @@ if ($null -ne $adModule)
                     ReplayLagManagerEnabled = $true
                     SkipDagValidation = $true
                     WitnessDirectory = 'C:\FSW'
-                    WitnessServer = $Global:Witness1
+                    WitnessServer = $witness1
                 }
 
                 #Skip checking DatacenterActivationMode until we have DAG members
                 $dagExpectedGetResults = @{
-                    Name = $Global:DAGName
+                    Name = $dagName
                     AutoDagAutoReseedEnabled = $true
                     AutoDagDatabaseCopiesPerDatabase = 2
                     AutoDagDatabaseCopiesPerVolume = 2
@@ -143,26 +141,26 @@ if ($null -ne $adModule)
                     AutoDagDiskReclaimerEnabled = $true
                     AutoDagTotalNumberOfServers = 2
                     AutoDagTotalNumberOfDatabases = 2
-                    AutoDagVolumesRootFolderPath = 'C:\ExchangeVolumes'      
+                    AutoDagVolumesRootFolderPath = 'C:\ExchangeVolumes'
                     ManualDagNetworkConfiguration = $true
                     NetworkCompression = 'Enabled'
                     NetworkEncryption = 'InterSubnetOnly'
                     ReplayLagManagerEnabled = $true
                     WitnessDirectory = 'C:\FSW'
-                    WitnessServer = $Global:Witness1
+                    WitnessServer = $witness1
                 }
 
-                if (!([System.String]::IsNullOrEmpty($Global:Witness2)))
+                if (!([System.String]::IsNullOrEmpty($witness2)))
                 {
-                    $dagTestParams.Add('AlternateWitnessServer', $Global:Witness2)
+                    $dagTestParams.Add('AlternateWitnessServer', $witness2)
                     $dagTestParams.Add('AlternateWitnessDirectory', 'C:\FSW')
-                    $dagExpectedGetResults.Add('AlternateWitnessServer', $Global:Witness2)
+                    $dagExpectedGetResults.Add('AlternateWitnessServer', $witness2)
                     $dagExpectedGetResults.Add('AlternateWitnessDirectory', 'C:\FSW')
                 }
 
-                $serverVersion = GetExchangeVersion
+                $serverVersion = Get-ExchangeVersion
 
-                if ($serverVersion -eq '2016')
+                if ($serverVersion -in '2016','2019')
                 {
                     $dagTestParams.Add('FileSystem', 'ReFS')
                     $dagTestParams.Add('AutoDagAutoRedistributeEnabled', $true)
@@ -175,7 +173,7 @@ if ($null -ne $adModule)
                 Test-TargetResourceFunctionality -Params $dagTestParams `
                                                  -ContextLabel 'Create the test DAG' `
                                                  -ExpectedGetResults $dagExpectedGetResults
-                
+
                 Test-ArrayContentsEqual -TestParams $dagTestParams `
                                         -DesiredArrayContents $dagTestParams.DatabaseAvailabilityGroupIpAddresses `
                                         -GetResultParameterName 'DatabaseAvailabilityGroupIpAddresses' `
@@ -185,17 +183,17 @@ if ($null -ne $adModule)
                 #Add this server as a DAG member
                 Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
                 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "MSFT_xExchDatabaseAvailabilityGroupMember" -ChildPath "MSFT_xExchDatabaseAvailabilityGroupMember.psm1")))
-        
+
                 $dagMemberTestParams = @{
                     MailboxServer = $env:COMPUTERNAME
-                    Credential = $Global:ShellCredentials
-                    DAGName = $Global:DAGName
+                    Credential = $shellCredentials
+                    DAGName = $dagName
                     SkipDagValidation = $true
                 }
 
                 $dagMemberExpectedGetResults = @{
                     MailboxServer = $env:COMPUTERNAME
-                    DAGName = $Global:DAGName
+                    DAGName = $dagName
                 }
 
                 Test-TargetResourceFunctionality -Params $dagMemberTestParams `
@@ -203,19 +201,19 @@ if ($null -ne $adModule)
                                                  -ExpectedGetResults $dagMemberExpectedGetResults
 
                 #Do second DAG member tests if a second member was specified
-                if (([System.String]::IsNullOrEmpty($Global:SecondDAGMember)) -eq $false)
-                {               
+                if (([System.String]::IsNullOrEmpty($secondDAGMember)) -eq $false)
+                {
                     #Add second DAG member
                     $dagMemberTestParams = @{
-                        MailboxServer = $Global:SecondDAGMember
-                        Credential = $Global:ShellCredentials
-                        DAGName = $Global:DAGName
+                        MailboxServer = $secondDAGMember
+                        Credential = $shellCredentials
+                        DAGName = $dagName
                         SkipDagValidation = $true
                     }
 
                     $dagMemberExpectedGetResults = @{
-                        MailboxServer = $Global:SecondDAGMember
-                        DAGName = $Global:DAGName
+                        MailboxServer = $secondDAGMember
+                        DAGName = $dagName
                     }
 
                     Test-TargetResourceFunctionality -Params $dagMemberTestParams `
@@ -231,7 +229,7 @@ if ($null -ne $adModule)
                     Test-TargetResourceFunctionality -Params $dagTestParams `
                                                      -ContextLabel 'Set remaining props on the test DAG' `
                                                      -ExpectedGetResults $dagExpectedGetResults
-                    
+
                     Test-ArrayContentsEqual -TestParams $dagTestParams `
                                             -DesiredArrayContents $dagTestParams.DatabaseAvailabilityGroupIpAddresses `
                                             -GetResultParameterName 'DatabaseAvailabilityGroupIpAddresses' `
@@ -243,19 +241,19 @@ if ($null -ne $adModule)
                     Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "MSFT_xExchMailboxDatabase" -ChildPath "MSFT_xExchMailboxDatabase.psm1")))
 
                     $dagDBTestParams = @{
-                        Name = $Global:TestDBName
-                        Credential = $Global:ShellCredentials
+                        Name = $testDBName
+                        Credential = $shellCredentials
                         AllowServiceRestart = $true
-                        DatabaseCopyCount = 2        
-                        EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($Global:TestDBName)\$($Global:TestDBName).edb"
-                        LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($Global:TestDBName)"
+                        DatabaseCopyCount = 2
+                        EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($testDBName)\$($testDBName).edb"
+                        LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($testDBName)"
                         Server = $env:COMPUTERNAME
                     }
 
                     $dagDBExpectedGetResults = @{
-                        Name = $Global:TestDBName    
-                        EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($Global:TestDBName)\$($Global:TestDBName).edb"
-                        LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($Global:TestDBName)"
+                        Name = $testDBName
+                        EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($testDBName)\$($testDBName).edb"
+                        LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($testDBName)"
                         Server = $env:COMPUTERNAME
                     }
 
@@ -268,15 +266,15 @@ if ($null -ne $adModule)
                     Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "MSFT_xExchMailboxDatabaseCopy" -ChildPath "MSFT_xExchMailboxDatabaseCopy.psm1")))
 
                     $dagDBCopyTestParams = @{
-                        Identity = $Global:TestDBName
-                        MailboxServer = $Global:SecondDAGMember
-                        Credential = $Global:ShellCredentials
+                        Identity = $testDBName
+                        MailboxServer = $secondDAGMember
+                        Credential = $shellCredentials
                         ActivationPreference = 2
                     }
 
                     $dagDBCopyExpectedGetResults = @{
-                        Identity = $Global:TestDBName
-                        MailboxServer = $Global:SecondDAGMember
+                        Identity = $testDBName
+                        MailboxServer = $secondDAGMember
                         ActivationPreference = 2
                     }
 

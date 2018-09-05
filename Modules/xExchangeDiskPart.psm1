@@ -3,7 +3,7 @@ function StartDiskpart
 {
     [CmdletBinding()]
     [OutputType([System.String])]
-    Param ([Array]$Commands, [System.Boolean]$ShowOutput = $true, $VerbosePreference)
+    Param ([Array]$Commands, [System.Boolean]$ShowOutput = $true)
 
     $Tempfile = [System.IO.Path]::GetTempFileName()
 

@@ -1,6 +1,6 @@
 @{
     # Version number of this module.
-    moduleVersion = '1.22.0.0'
+    moduleVersion = '1.23.0.0'
 
     # ID used to uniquely identify this module
     GUID = '9a908ca3-8a67-485c-a014-66ba37fcc2a4'
@@ -48,23 +48,26 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-        ReleaseNotes = '- Fixed issue in xExchInstall where winrm config command fails to execute
-- Fixed issue in xExchInstall where a failed Exchange setup run is not
-  reported, and subsequent DSC resources are allowed to run
-- Fixed issue in xExchAutoMountPoint where Test-TargetResource fails
-  after mount points have been successfully configured.
-- Fixed issue in xExchAutoMountPoint where Set-TargetResource fails
-  if EnsureExchangeVolumeMountPointIsLast parameter is specified.
-- Updated xExchAutoMountPoint, xExchJetstressCleanup, and related DiskPart
-  functions to not use global variables.
-- Fixes broken tests in:
-  MSFT_xExchDatabaseAvailabilityGroup.Integration.Tests.ps1,
-  MSFT_xExchExchangeCertificate.Integration.Tests.ps1,
-  MSFT_xExchOutlookAnywhere.Integration.Tests.ps1,
-  MSFT_xExchPopSettings.Integration.Tests.ps1,
-  xExchangeConfigHelper.Unit.Tests.ps1
-- Update most Test-TargetResource functions to output all invalid settings,
-  instead of just the first detected invalid setting
+        ReleaseNotes = '- Fixes issue with xExchMaintenanceMode on Exchange 2016 where the cluster
+  does not get paused when going into maintenance mode. Also fixes issue
+  where services fail to stop, start, pause, or resume.
+- Explicitly cast member types in Get-DscConfiguration return hashtables to
+  align with the types defined in the resource schemas. Fixes an issue where
+  Get-DscConfiguration fails to return a value.
+- xExchClientAccessServer: Fixes issue where AlternateServiceAccountConfiguration
+  or RemoveAlternateServiceAccountCredentials parameters can"t be used at the
+  same time as other optional parameters.
+- xExchInstall: Fixes issue where Test-TargetResource returns true if setup is
+  running. Fixes issue where setup is not detected as having been successfully
+  completed even if setup was successful. Adds initial set of unit tests for
+  xExchInstall and related functions.
+- Remove VerbosePreference from function parameters and update all calls to
+  changed functions.
+- Fixes multiple PSScriptAnalyzer issues. Specifically, fixes all instances of
+  PSAvoidTrailingWhitespace, PSAvoidGlobalVars,
+  PSAvoidUsingConvertToSecureStringWithPlainText, PSUseSingularNouns, and
+  fixes many instances of PSUseDeclaredVarsMoreThanAssignments.
+- Add support for Exchange Server 2019 - Preview
 
 '
 
@@ -72,5 +75,6 @@
 
     } # End of PrivateData hashtable
 }
+
 
 

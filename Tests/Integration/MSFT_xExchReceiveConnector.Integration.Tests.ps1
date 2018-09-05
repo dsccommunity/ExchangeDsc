@@ -16,26 +16,26 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = IsSetupComplete
+[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     Describe 'Set and modify a Receive Connector' {
     #Set configuration with default values
+
+    $extendedRightAllowEntries = $(New-CimInstance -ClassName MSFT_KeyValuePair -Namespace root/microsoft/Windows/DesiredStateConfiguration  -ClientOnly -Property @{
+                                        Key = 'NT AUTHORITY\ANONYMOUS LOGON'; `
+                                        Value = 'Ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-Bypass-Anti-Spam'})
     $testParams = @{
          Identity                                = "$($env:computername)\AnonymousRelay $($env:computername)"
-         Credential                              = $Global:ShellCredentials
+         Credential                              = $shellCredentials
          Ensure                                  = 'Present'
-         ExtendedRightAllowEntries               = $(New-CimInstance -ClassName MSFT_KeyValuePair -Namespace root/microsoft/Windows/DesiredStateConfiguration -Property @{Key = 'NT AUTHORITY\ANONYMOUS LOGON'; `
-                                                    Value = 'Ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-Bypass-Anti-Spam'} -ClientOnly)
+         ExtendedRightAllowEntries               = $extendedRightAllowEntries
          AdvertiseClientSettings                 = $false
          AuthMechanism                           = 'Tls', 'ExternalAuthoritative'
          Banner                                  = '220 Pester'
@@ -88,7 +88,7 @@ if ($exchangeInstalled)
     }
 
     $expectedGetResults = @{
-         ExtendedRightAllowEntries               = 'NT AUTHORITY\ANONYMOUS LOGON=Ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-Bypass-Anti-Spam'
+         ExtendedRightAllowEntries               = $extendedRightAllowEntries
          AdvertiseClientSettings                 = $false
          AuthMechanism                           = 'Tls', 'ExternalAuthoritative'
          Banner                                  = '220 Pester'
@@ -99,7 +99,7 @@ if ($exchangeInstalled)
          Comment                                 = 'Connector for relaying'
          ConnectionInactivityTimeout             = '00:05:00'
          ConnectionTimeout                       = '00:10:00'
-         DefaultDomain                           = $null
+         DefaultDomain                           = ''
          #DomainController                        = ''
          DeliveryStatusNotificationEnabled       = $true
          DomainSecureEnabled                     = $false
@@ -111,43 +111,45 @@ if ($exchangeInstalled)
          Fqdn                                    = "$($env:computername).pester.com"
          LongAddressesEnabled                    = $false
          MaxAcknowledgementDelay                 = '00:00:00'
-         MaxHeaderSize                           = '128KB'
+         MaxHeaderSize                           = '128 KB (131,072 bytes)'
          MaxHopCount                             = '60'
          MaxInboundConnection                    = '5000'
          MaxInboundConnectionPercentagePerSource = '100'
          MaxInboundConnectionPerSource           = '50'
          MaxLocalHopCount                        = '12'
          MaxLogonFailures                        = '3'
-         MaxMessageSize                          = '35MB'
+         MaxMessageSize                          = '35 MB (36,700,160 bytes)'
          MaxProtocolErrors                       = '5'
          MaxRecipientsPerMessage                 = '5000'
          MessageRateLimit                        = 'Unlimited'
          MessageRateSource                       = 'IPAddress'
          OrarEnabled                             = $false
-         PermissionGroups                        = 'AnonymousUsers','ExchangeServers','Custom'
+         PermissionGroups                        = [System.String[]]@('AnonymousUsers','ExchangeServers','Custom')
          PipeliningEnabled                       = $true
          ProtocolLoggingLevel                    = 'Verbose'
          RemoteIPRanges                          = '192.16.7.99'
          RequireEHLODomain                       = $false
          RequireTLS                              = $false
-         ServiceDiscoveryFqdn                    = $null
+         ServiceDiscoveryFqdn                    = ''
          SizeEnabled                             = 'EnabledwithoutValue'
          SuppressXAnonymousTls                   = $false
          TarpitInterval                          = '00:00:00'
-         TlsCertificateName                      = $null
+         TlsCertificateName                      = ''
          TlsDomainCapabilities                   = 'contoso.com:AcceptOorgProtocol'
          TransportRole                           = 'FrontendTransport'
     }
 
      Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Create Receive Connector' -ExpectedGetResults $expectedGetResults
-     
+
      #modify configuration
-     $testParams.ExtendedRightDenyEntries = $(New-CimInstance -ClassName MSFT_KeyValuePair -Namespace root/microsoft/Windows/DesiredStateConfiguration `
+     $extendedRightDenyEntries = $(New-CimInstance -ClassName MSFT_KeyValuePair -Namespace root/microsoft/Windows/DesiredStateConfiguration `
                                             -Property @{Key = 'Domain Users'; Value = 'ms-Exch-Bypass-Anti-Spam'} -ClientOnly)
-     $expectedGetResults.ExtendedRightDenyEntries = 'Domain Users=ms-Exch-Bypass-Anti-Spam'
+
+     $testParams.ExtendedRightDenyEntries = $extendedRightDenyEntries
+     $expectedGetResults.ExtendedRightDenyEntries = $extendedRightDenyEntries
 
      Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Modify Receive Connector' -ExpectedGetResults $expectedGetResults
-     
+
      #modify configuration
      $testParams.Ensure = 'Absent'
      $expectedGetResults = $null

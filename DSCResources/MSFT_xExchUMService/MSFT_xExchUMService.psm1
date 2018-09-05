@@ -18,20 +18,22 @@ function Get-TargetResource
         [ValidateSet('TCP','TLS','Dual')]
         [System.String]
         $UMStartupMode,
-        
+
         [Parameter()]
         [System.String[]]
         $DialPlans,
-        
+
         [Parameter()]
         [System.String]
         $DomainController
     )
 
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+
+    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMService' -SupportedVersions '2013','2016'
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMService' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMService' -Verbose:$VerbosePreference
 
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
@@ -40,9 +42,9 @@ function Get-TargetResource
     if ($null -ne $umService)
     {
         $returnValue = @{
-            Identity = $Identity
-            UMStartupMode = $umService.UMStartupMode
-            DialPlans = $umService.DialPlans.Name
+            Identity      = [System.String] $Identity
+            UMStartupMode = [System.String] $umService.UMStartupMode
+            DialPlans     = [System.String[]] $umService.DialPlans
         }
     }
 
@@ -68,7 +70,7 @@ function Set-TargetResource
         [ValidateSet('TCP','TLS','Dual')]
         [System.String]
         $UMStartupMode,
-                
+
         [Parameter()]
         [System.String[]]
         $DialPlans,
@@ -78,10 +80,12 @@ function Set-TargetResource
         $DomainController
     )
 
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+
+    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMService' -SupportedVersions '2013','2016'
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMService' -VerbosePreference $VerbosePreference
+    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMService' -Verbose:$VerbosePreference
 
     RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential'
 
@@ -108,17 +112,19 @@ function Test-TargetResource
         [ValidateSet('TCP','TLS','Dual')]
         [System.String]
         $UMStartupMode,
-        
+
         [Parameter()]
         [System.String[]]
         $DialPlans,
-        
+
         [Parameter()]
         [System.String]
         $DomainController
     )
 
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+
+    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMService' -SupportedVersions '2013','2016'
 
     $umService = Get-TargetResource @PSBoundParameters
 
@@ -132,11 +138,11 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name 'UMStartupMode' -Type 'String' -ExpectedValue $UMStartupMode -ActualValue $umService.UMStartupMode -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'UMStartupMode' -Type 'String' -ExpectedValue $UMStartupMode -ActualValue $umService.UMStartupMode -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
-        if (!(VerifySetting -Name 'DialPlans' -Type 'Array' -ExpectedValue $DialPlans -ActualValue $umService.DialPlans -PSBoundParametersIn $PSBoundParameters -VerbosePreference $VerbosePreference))
+        if (!(VerifySetting -Name 'DialPlans' -Type 'Array' -ExpectedValue $DialPlans -ActualValue $umService.DialPlans -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }

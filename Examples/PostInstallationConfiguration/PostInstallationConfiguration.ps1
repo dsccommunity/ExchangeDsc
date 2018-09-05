@@ -29,17 +29,17 @@ $ConfigurationData = @{
             <#
                 The location of the exported public certifcate which will be used to encrypt
                 credentials during compilation.
-                CertificateFile = 'C:\public-certificate.cer' 
+                CertificateFile = 'C:\public-certificate.cer'
             #>
-            
+
             #Thumbprint of the certificate being used for decrypting credentials
-            Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673' 
+            Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673'
         }
 
         #Individual target nodes are defined next
         @{
             NodeName      = 'e15-1'
-            Fqdn          = 'e15-1.mikelab.local'
+            Fqdn          = 'e15-1.contoso.local'
             Role          = 'FirstDAGMember'
             DAGId         = 'DAG1' #Used to determine which DAG settings the servers should use. Corresponds to DAG1 hashtable entry below.
             CASId         = 'Site1CAS' #Used to determine which CAS settings the server should use. Corresponds to Site1CAS hashtable entry below.
@@ -62,7 +62,7 @@ $ConfigurationData = @{
 
         @{
             NodeName      = 'e15-2'
-            Fqdn          = 'e15-2.mikelab.local'
+            Fqdn          = 'e15-2.contoso.local'
             Role          = 'AdditionalDAGMember'
             DAGId         = 'DAG1'
             CASID         = 'Site1CAS'
@@ -85,14 +85,14 @@ $ConfigurationData = @{
     DAG1 = @(
         @{
             ###DAG Settings###
-            DAGName                              = 'TestDAG1'           
-            AutoDagTotalNumberOfServers          = 4     
+            DAGName                              = 'TestDAG1'
+            AutoDagTotalNumberOfServers          = 4
             AutoDagDatabaseCopiesPerVolume       = 2
-            DatabaseAvailabilityGroupIPAddresses = '192.168.1.99','192.168.2.99'     
+            DatabaseAvailabilityGroupIPAddresses = '192.168.1.99','192.168.2.99'
             ManualDagNetworkConfiguration        = $true
             ReplayLagManagerEnabled              = $true
             SkipDagValidation                    = $true
-            WitnessServer                        = 'e14-1.mikelab.local'
+            WitnessServer                        = 'e14-1.contoso.local'
 
             #xDatabaseAvailabilityGroupNetwork params
             #New network params
@@ -117,8 +117,8 @@ $ConfigurationData = @{
     #CAS settings that are unique per site will go in separate hash table entries as well.
     Site1CAS = @(
         @{
-            InternalNLBFqdn            = 'mail-site1.mikelab.local'
-            ExternalNLBFqdn            = 'mail.mikelab.local'
+            InternalNLBFqdn            = 'mail-site1.contoso.local'
+            ExternalNLBFqdn            = 'mail.contoso.local'
 
             #ClientAccessServer Settings
             AutoDiscoverSiteScope      = 'Site1'
@@ -127,14 +127,14 @@ $ConfigurationData = @{
             OABsToDistribute           = 'Default Offline Address Book - Site1'
 
             #OWA Settings
-            InstantMessagingServerName = 'lync-site1.mikelab.local'
+            InstantMessagingServerName = 'lync-site1.contoso.local'
         }
     );
 
     Site2CAS = @(
         @{
-            InternalNLBFqdn            = 'mail-site2.mikelab.local'
-            ExternalNLBFqdn            = 'mail.mikelab.local'
+            InternalNLBFqdn            = 'mail-site2.contoso.local'
+            ExternalNLBFqdn            = 'mail.contoso.local'
 
             #ClientAccessServer Settings
             AutoDiscoverSiteScope      = 'Site2'
@@ -143,7 +143,7 @@ $ConfigurationData = @{
             OABsToDistribute           = 'Default Offline Address Book - Site2'
 
             #OWA Settings
-            InstantMessagingServerName = 'lync-site2.mikelab.local'
+            InstantMessagingServerName = 'lync-site2.contoso.local'
         }
     );
 }
@@ -154,7 +154,7 @@ Configuration Example
     (
         [Parameter(Mandatory = $true)]
         [ValidateNotNullorEmpty()]
-        [System.Management.Automation.PSCredential]    
+        [System.Management.Automation.PSCredential]
         $ExchangeAdminCredential,
 
         [Parameter(Mandatory = $true)]
@@ -181,9 +181,9 @@ Configuration Example
             AutoDagDatabasesRootFolderPath       = 'C:\ExchangeDatabases'
             AutoDagVolumesRootFolderPath         = 'C:\ExchangeVolumes'
             DatacenterActivationMode             = 'DagOnly'
-            DatabaseAvailabilityGroupIPAddresses = $dagSettings.DatabaseAvailabilityGroupIPAddresses 
+            DatabaseAvailabilityGroupIPAddresses = $dagSettings.DatabaseAvailabilityGroupIPAddresses
             ManualDagNetworkConfiguration        = $dagSettings.ManualDagNetworkConfiguration
-            ReplayLagManagerEnabled              = $dagSettings.ReplayLagManagerEnabled 
+            ReplayLagManagerEnabled              = $dagSettings.ReplayLagManagerEnabled
             SkipDagValidation                    = $true
             WitnessDirectory                     = 'C:\FSW'
             WitnessServer                        = $dagSettings.WitnessServer
@@ -218,7 +218,7 @@ Configuration Example
             DatabaseAvailabilityGroup = $dagSettings.DAGName
             Ensure                    = 'Present'
             ReplicationEnabled        = $dagSettings.DAGNet2ReplicationEnabled
-            Subnets                   = $dagSettings.DAGNet2Subnets            
+            Subnets                   = $dagSettings.DAGNet2Subnets
             DependsOn                 = '[xExchDatabaseAvailabilityGroupMember]DAGMember' #Can't do work on DAG networks until at least one member is in the DAG...
         }
 
@@ -284,7 +284,7 @@ Configuration Example
             Thumbprint          = $dagSettings.Thumbprint
             Credential          = $ExchangeAdminCredential
             Ensure              = 'Present'
-            AllowExtraServices  = $false        
+            AllowExtraServices  = $false
             CertCreds           = $ExchangeCertCredential
             CertFilePath        = $dagSettings.CertFilePath
             Services            = $dagSettings.Services
@@ -321,10 +321,10 @@ Configuration Example
             AutoCertBasedAuthThumbprint = $dagSettings.Thumbprint
             BasicAuthEnabled            = $false
             ClientCertAuth              = 'Required'
-            ExternalUrl                 = "https://$($casSettings.ExternalNLBFqdn)/Microsoft-Server-ActiveSync"  
-            InternalUrl                 = "https://$($casSettings.InternalNLBFqdn)/Microsoft-Server-ActiveSync"  
+            ExternalUrl                 = "https://$($casSettings.ExternalNLBFqdn)/Microsoft-Server-ActiveSync"
+            InternalUrl                 = "https://$($casSettings.InternalNLBFqdn)/Microsoft-Server-ActiveSync"
             WindowsAuthEnabled          = $false
-            AllowServiceRestart         = $true            
+            AllowServiceRestart         = $true
             DependsOn                   = '[WindowsFeature]WebClientAuth','[WindowsFeature]WebCertAuth','[xExchExchangeCertificate]Certificate' #Can't configure CBA until we have a valid cert, and have required features
         }
 
@@ -337,7 +337,7 @@ Configuration Example
             ExternalAuthenticationMethods = 'Fba'
             ExternalUrl                   = "https://$($casSettings.ExternalNLBFqdn)/ecp"
             FormsAuthentication           = $true
-            InternalUrl                   = "https://$($casSettings.InternalNLBFqdn)/ecp"           
+            InternalUrl                   = "https://$($casSettings.InternalNLBFqdn)/ecp"
             WindowsAuthentication         = $false
             AllowServiceRestart           = $true
         }
@@ -349,7 +349,7 @@ Configuration Example
             Credential               = $ExchangeAdminCredential
             ExternalUrl              = "https://$($casSettings.ExternalNLBFqdn)/mapi"
             IISAuthenticationMethods = 'NTLM','Negotiate'
-            InternalUrl              = "https://$($casSettings.InternalNLBFqdn)/mapi" 
+            InternalUrl              = "https://$($casSettings.InternalNLBFqdn)/mapi"
             AllowServiceRestart      = $true
         }
 
@@ -359,7 +359,7 @@ Configuration Example
             Identity            = "$($Node.NodeName)\OAB (Default Web Site)"
             Credential          = $ExchangeAdminCredential
             ExternalUrl         = "https://$($casSettings.ExternalNLBFqdn)/oab"
-            InternalUrl         = "https://$($casSettings.InternalNLBFqdn)/oab"     
+            InternalUrl         = "https://$($casSettings.InternalNLBFqdn)/oab"
             OABsToDistribute    = $casSettings.OABsToDistribute
             AllowServiceRestart = $true
         }
@@ -392,9 +392,9 @@ Configuration Example
             InstantMessagingCertificateThumbprint = $dagSettings.Thumbprint
             InstantMessagingServerName            = $casSettings.InstantMessagingServerName
             InstantMessagingType                  = 'Ocs'
-            InternalUrl                           = "https://$($casSettings.InternalNLBFqdn)/owa"    
+            InternalUrl                           = "https://$($casSettings.InternalNLBFqdn)/owa"
             WindowsAuthentication                 = $false
-            AllowServiceRestart                   = $true            
+            AllowServiceRestart                   = $true
             DependsOn                             = '[xExchExchangeCertificate]Certificate' #Can't configure the IM cert until it's valid
         }
 
@@ -412,9 +412,9 @@ Configuration Example
         {
             Identity            = "$($Node.NodeName)\EWS (Default Web Site)"
             Credential          = $ExchangeAdminCredential
-            ExternalUrl         = "https://$($casSettings.ExternalNLBFqdn)/ews/exchange.asmx" 
+            ExternalUrl         = "https://$($casSettings.ExternalNLBFqdn)/ews/exchange.asmx"
             InternalUrl         = "https://$($casSettings.InternalNLBFqdn)/ews/exchange.asmx"
-            AllowServiceRestart = $true         
+            AllowServiceRestart = $true
         }
 
         ###Transport specific settings###
@@ -439,7 +439,7 @@ Configuration Example
             Enabled    = $true
             Credential = $ExchangeAdminCredential
         }
-        
+
         ###Mailbox Server settings###
         #Create database and volume mount points for AutoReseed
         xExchAutoMountPoint AMP
@@ -457,7 +457,7 @@ Configuration Example
         {
             $resourceId = "MDB_$($DB.Name)" #Need to define a unique ID for each database
 
-            xExchMailboxDatabase $resourceId 
+            xExchMailboxDatabase $resourceId
             {
                 Name                     = $DB.Name
                 Credential               = $ExchangeAdminCredential
@@ -479,13 +479,13 @@ Configuration Example
         foreach ($DB in $Node.CopyDBList.Values)
         {
             $waitResourceId = "WaitForDB_$($DB.Name)" #Unique ID for the xWaitForMailboxDatabase resource
-            $copyResourceId = "MDBCopy_$($DB.Name)" #Unique ID for the xMailboxDatabaseCopy resource 
+            $copyResourceId = "MDBCopy_$($DB.Name)" #Unique ID for the xMailboxDatabaseCopy resource
 
             #Need to wait for a primary copy to be created before we add a copy
             xExchWaitForMailboxDatabase $waitResourceId
             {
                 Identity   = $DB.Name
-                Credential = $ExchangeAdminCredential                
+                Credential = $ExchangeAdminCredential
             }
 
             xExchMailboxDatabaseCopy $copyResourceId
@@ -495,7 +495,7 @@ Configuration Example
                 MailboxServer        = $Node.NodeName
                 ActivationPreference = $DB.ActivationPreference
                 ReplayLagTime        = $DB.ReplayLagTime
-                AllowServiceRestart  = $true                
+                AllowServiceRestart  = $true
                 DependsOn            = "[xExchWaitForMailboxDatabase]$($waitResourceId)"
             }
         }

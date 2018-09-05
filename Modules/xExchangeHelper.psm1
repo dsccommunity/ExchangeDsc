@@ -13,17 +13,15 @@ function GetRemoteExchangeSession
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
-        
+
         [System.String[]]
         $CommandsToLoad,
-        
-        $VerbosePreference,
-        
+
         $SetupProcessName = "ExSetup*"
     )
 
     #Check if Exchange Setup is running. If so, we need to throw an exception, as a running Exchange DSC resource will block Exchange Setup from working properly.
-    if (IsSetupRunning -SetupProcessName $SetupProcessName)
+    if (Get-IsSetupRunning -SetupProcessName $SetupProcessName)
     {
         throw "Exchange Setup is currently running. Preventing creation of new Remote PowerShell session to Exchange."
     }
@@ -49,7 +47,10 @@ function GetRemoteExchangeSession
     if ($null -eq $Session)
     {
         #First make sure we are on a valid server version, and that Exchange is fully installed
-        VerifyServerVersion -VerbosePreference $VerbosePreference
+        if (!(Get-IsSetupComplete -Verbose:$VerbosePreference))
+        {
+            throw 'A supported version of Exchange is either not present, or not fully installed on this machine.'
+        }
 
         Write-Verbose "Creating new Remote Powershell session to Exchange"
 
@@ -67,7 +68,7 @@ function GetRemoteExchangeSession
         $remoteExchange = Join-Path -Path "$($exbin)" -ChildPath "RemoteExchange.ps1"
         . $remoteExchange
         $Session = _NewExchangeRunspace -fqdn $serverFQDN -credential $Credential -UseWIA $false -AllowRedirection $false
-        
+
         #Remove the aliases we created earlier
         Remove-Item Alias:Get-ExBanner
         Remove-Item Alias:Get-Tip
@@ -77,7 +78,7 @@ function GetRemoteExchangeSession
             $Session.Name = "DSCExchangeSession"
         }
     }
-    
+
     #If the session is still null here, things went wrong. Throw exception
     if ($null -eq $Session)
     {
@@ -102,14 +103,14 @@ function GetRemoteExchangeSession
 
         #Set Verbose back
         $VerbosePreference = $oldVerbose
-    }   
+    }
 }
 
 #Removes any Remote Sessions that have been setup by us
 function RemoveExistingRemoteSession
 {
     [CmdletBinding()]
-    param($VerbosePreference)
+    param()
 
     $sessions = GetExistingExchangeSession
 
@@ -121,58 +122,12 @@ function RemoveExistingRemoteSession
     }
 }
 
-#Ensures that Exchange is installed, and that it is the correct version (2013 or 2016)
-function VerifyServerVersion
-{
-    [CmdletBinding()]
-    param($VerbosePreference)
-
-    $unsupportedMsg = "A supported version of Exchange is either not present, or not fully installed on this machine."
-
-    if ($Global:ServerVersionGood -eq $true)
-    {
-        #Do nothing
-    }
-    elseif ($Global:ServerVersionGood -eq $false)
-    {
-        throw $unsupportedMsg
-    }
-    else
-    {
-        $setupComplete = IsSetupComplete
-
-        if ($setupComplete -eq $false)
-        {
-            $Global:ServerVersionGood = $false
-
-            throw $unsupportedMsg
-        }
-        else
-        {
-            $Global:ServerVersionGood = $true
-        }
-    }
-}
-
-#Gets the WMI object corresponding to the Exchange Product
-function GetExchangeProduct
-{
-    if ($null -eq $Global:CheckedExchangeProduct -or $Global:CheckedExchangeProduct -eq $false)
-    {
-        $Global:ExchangeProduct = Get-CimInstance -ClassName Win32_Product -Filter 'Name like "Microsoft Exchange Server"'
-
-        $Global:CheckedExchangeProduct = $true
-    }
-
-    return $Global:ExchangeProduct
-}
-
 #Checks whether a supported version of Exchange is at least partially installed by looking for Exchange's product GUID
-function IsExchangePresent
-{   
-    $version = GetExchangeVersion
+function Get-IsExchangePresent
+{
+    $version = Get-ExchangeVersion
 
-    if ($version -eq "2013" -or $version -eq "2016")
+    if ($version -in '2013','2016','2019')
     {
         return $true
     }
@@ -185,44 +140,57 @@ function IsExchangePresent
 #Gets the installed Exchange Version, and returns the number as a string.
 #Returns N/A if the version cannot be found, and will optionally throw an exception
 #if ThrowIfUnknownVersion was set to $true.
-function GetExchangeVersion
+function Get-ExchangeVersion
 {
     param ([bool]$ThrowIfUnknownVersion = $false)
-    
+
     $version = "N/A"
 
-    $product = GetExchangeProduct
-    
-    if ($null -ne $product)
-    {
-        if ($product.IdentifyingNumber -eq '{4934D1EA-BE46-48B1-8847-F1AF20E892C1}') #Exchange 2013
-        {
-            return "2013"
-        }
-        elseif($product.IdentifyingNumber -eq '{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}') #Exchange 2016
-        {
-            return "2016"
-        }     
-    }
+    $uninstall20162019Key = Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}' -ErrorAction SilentlyContinue
 
-    if ($version -eq "N/A" -and $ThrowIfUnknownVersion)
+    if ($null -ne $uninstall20162019Key)
+    {
+        if ($uninstall20162019Key.GetValue('VersionMajor') -eq 15 -and $uninstall20162019Key.GetValue('VersionMinor') -eq 2)
+        {
+            $version = '2019'
+        }
+        else
+        {
+            $version = '2016'
+        }
+    }
+    elseif ($null -ne (Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4934D1EA-BE46-48B1-8847-F1AF20E892C1}' -ErrorAction SilentlyContinue))
+    {
+        $version = '2013'
+    }
+    elseif ($ThrowIfUnknownVersion)
     {
         throw "Failed to discover a known Exchange Version"
     }
+
+    return $version
 }
 
 #Checks whether Setup fully completed
-function IsSetupComplete
+function Get-IsSetupComplete
 {
-    $exchangePresent = IsExchangePresent
-    $setupPartiallyCompleted = IsSetupPartiallyCompleted
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param()
+
+    $exchangePresent = Get-IsExchangePresent
+    $setupPartiallyCompleted = Get-IsSetupPartiallyCompleted -Verbose:$VerbosePreference
 
     if ($exchangePresent -eq $true -and $setupPartiallyCompleted -eq $false)
     {
+        Write-Verbose -Message 'Exchange is present and setup is detected as being fully complete.'
+
         $isSetupComplete = $true
     }
     else
     {
+        Write-Verbose -Message "Exchange setup detected as not being fully complete. Exchange Present: $exchangePresent. Setup Partially Complete: $setupPartiallyCompleted."
+
         $isSetupComplete = $false
     }
 
@@ -230,8 +198,13 @@ function IsSetupComplete
 }
 
 #Checks whether any Setup watermark keys exist which means that a previous installation of setup had already started but not completed
-function IsSetupPartiallyCompleted
+function Get-IsSetupPartiallyCompleted
 {
+    [CmdletBinding()]
+    param()
+
+    Write-Verbose -Message 'Checking if setup is partially complete'
+
     $isPartiallyCompleted = $false
 
     #Now check if setup actually completed successfully
@@ -240,27 +213,169 @@ function IsSetupPartiallyCompleted
     foreach ($key in $roleKeys)
     {
         $values = $null
-        $values = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\$($key)" -ErrorAction SilentlyContinue
+        $values = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\$key" -ErrorAction SilentlyContinue
 
         if ($null -ne $values)
         {
+            Write-Verbose -Message "Checking values at key 'HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\$key'"
+
             if ($null -ne $values.UnpackedVersion)
             {
                 #If ConfiguredVersion is missing, or Action or Watermark or present, setup needs to be resumed
-                if ($null -eq $values.ConfiguredVersion -or $null -ne $values.Action -or $null -ne $values.Watermark)
+                if ($null -eq $values.ConfiguredVersion)
                 {
+                    Write-Warning -Message "Registry value missing. Setup considered partially complete. Location: 'HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\$key\ConfiguredVersion'."
+
                     $isPartiallyCompleted = $true
-                    break
                 }
+
+                if ($null -ne $values.Action)
+                {
+                    Write-Warning -Message "Registry value present. Setup considered partially complete. Location: 'HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\$key\Action'. Value: '$($values.Action)'."
+
+                    $isPartiallyCompleted = $true
+                }
+
+                if ($null -ne $values.Watermark)
+                {
+                    Write-Warning -Message "Registry value present. Setup considered partially complete. Location: 'HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\$key\Watermark'. Value: '$($values.Watermark)'."
+
+                    $isPartiallyCompleted = $true
+                }
+            }
+            else
+            {
+                Write-Verbose -Message "Value not present 'HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\$key\UnpackedVersion'. Skipping remaining value checks for key."
             }
         }
     }
-    
+
     return $isPartiallyCompleted
 }
 
+#Checks for the exact status of Exchange setup and returns the results in a Hashtable
+function Get-InstallStatus
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $Arguments
+    )
+
+    Write-Verbose -Message 'Checking Exchange Install Status'
+
+    $shouldStartInstall = $false
+
+    $shouldInstallLanguagePack = Get-ShouldInstallLanguagePack -Arguments $Arguments
+    $setupRunning = Get-IsSetupRunning
+    $setupComplete = Get-IsSetupComplete -Verbose:$VerbosePreference
+    $exchangePresent = Get-IsExchangePresent
+
+    if ($setupRunning -or $setupComplete)
+    {
+        if($shouldInstallLanguagePack -and $setupComplete)
+        {
+            $shouldStartInstall = $true
+        }
+        else
+        {
+            #Do nothing. Either Install is already running, or it's already finished successfully
+        }
+    }
+    elseif (!$setupComplete)
+    {
+        $shouldStartInstall = $true
+    }
+
+    Write-Verbose -Message "Finished Checking Exchange Install Status. ShouldInstallLanguagePack: $shouldInstallLanguagePack. SetupRunning: $setupRunning. SetupComplete: $setupComplete. ExchangePresent: $exchangePresent. ShouldStartInstall: $shouldStartInstall."
+
+    $returnValue = @{
+        ShouldInstallLanguagePack = $shouldInstallLanguagePack
+        SetupRunning = $setupRunning
+        SetupComplete = $setupComplete
+        ExchangePresent = $exchangePresent
+        ShouldStartInstall = $shouldStartInstall
+    }
+
+    $returnValue
+}
+
+#Check for missing registry keys that may cause Exchange setup to try to restart WinRM mid setup , which will in turn cause the DSC resource to fail
+#If any required keys are missing, configure WinRM, then force a reboot
+function Set-WSManConfigStatus
+{
+    # Suppressing this rule because $global:DSCMachineStatus is used to trigger a reboot.
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
+    <#
+        Suppressing this rule because $global:DSCMachineStatus is only set,
+        never used (by design of Desired State Configuration).
+    #>
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function', Target='DSCMachineStatus')]
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    ()
+
+    $needReboot = $false
+
+    $wsmanKey = Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN' -ErrorAction SilentlyContinue
+
+    if ($null -ne $wsmanKey)
+    {
+        if ($null -eq $wsmanKey.UpdatedConfig)
+        {
+            $needReboot = $true
+
+            Write-Verbose "Value 'UpdatedConfig' missing from registry key HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN. Running: winrm i restore winrm/config"
+
+            Set-Location "$($env:windir)\System32\inetsrv"
+            winrm i restore winrm/config | Out-Null
+
+            Write-Verbose -Message 'Machine needs to be rebooted before Exchange setup can proceed'
+
+            $global:DSCMachineStatus = 1
+        }
+    }
+    else
+    {
+        throw 'Unable to find registry key: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN'
+    }
+
+    return $needReboot
+}
+
+function Get-ShouldInstallLanguagePack
+{
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $Arguments
+    )
+
+    if($Arguments -match '(?<=/AddUMLanguagePack:)(([a-z]{2}-[A-Z]{2},?)+)(?=\s)')
+    {
+        $Cultures = $Matches[0]
+        Write-Verbose "AddUMLanguagePack parameters detected: $Cultures"
+        $Cultures = $Cultures -split ','
+
+        foreach($Culture in $Cultures)
+        {
+            if((IsUMLanguagePackInstalled -Culture $Culture) -eq $false)
+            {
+                Write-Verbose "UM Language Pack: $Culture is not installed"
+                return $true
+            }
+        }
+    }
+    return $false
+}
+
 #Checks whether setup is running by looking for if the ExSetup.exe process currently exists
-function IsSetupRunning
+function Get-IsSetupRunning
 {
     param([System.String]$SetupProcessName = "ExSetup*")
 
@@ -379,7 +494,7 @@ function CompareADObjectIdWithEmailAddressString
         Write-Error "CompareADObjectIdWithEmailAddressString requires the Get-Mailbox cmdlert"
 
         return $false
-    }  
+    }
 }
 
 #Takes a string containing a given separator, and breaks it into a string array
@@ -401,7 +516,7 @@ function StringToArray
 function StringArrayToLower
 {
     param([System.String[]]$Array)
-    
+
     for ($i = 0; $i -lt $Array.Count; $i++)
     {
         if (!([System.String]::IsNullOrEmpty($Array[$i])))
@@ -414,7 +529,7 @@ function StringArrayToLower
 }
 
 #Checks whether two arrays have the same contents, where element order doesn't matter
-function CompareArrayContents
+function Compare-ArrayContent
 {
     param([System.String[]]$Array1, [System.String[]]$Array2, [switch]$IgnoreCase)
 
@@ -452,8 +567,8 @@ function Array2ContainsArray1Contents
 
     $hasContents = $true
 
-    if ($Array1.Length -eq 0) #Do nothing, as Array2 at a minimum contains nothing    
-    {} 
+    if ($Array1.Length -eq 0) #Do nothing, as Array2 at a minimum contains nothing
+    {}
     elseif ($Array2.Length -eq 0) #Array2 is empty and Array1 is not. Return false
     {
         $hasContents = $false
@@ -528,15 +643,47 @@ function RemoveParameters
     }
 }
 
-function RemoveVersionSpecificParameters
+<#
+    .SYNOPSIS
+        Inspects the input $PSBoundParametersIn hashtable, and removes any
+        parameters that do not work with the version of Exchange on this
+        server.
+
+    .PARAMETER PSBoundParametersIn
+        The $PSBoundParameters hashtable from the calling function.
+
+    .PARAMETER ParamName
+        The parameter to check for and remove if not applicable to this
+        server version.
+
+    .PARAMETER ParamExistsInVersion
+        The parameter to check for and remove if not applicable to this
+        server version.
+#>
+function Remove-NotApplicableParamsForVersion
 {
-    param($PSBoundParametersIn, [System.String]$ParamName, [System.String]$ResourceName, [ValidateSet("2013","2016")][System.String]$ParamExistsInVersion)
+    [CmdletBinding()]
+    param
+    (
+        [System.Collections.Hashtable]
+        $PSBoundParametersIn,
+
+        [System.String]
+        $ParamName,
+
+        [System.String]
+        $ResourceName,
+
+        [ValidateSet('2013','2016','2019')]
+        [System.String[]]
+        $ParamExistsInVersion
+    )
 
     if ($PSBoundParametersIn.ContainsKey($ParamName))
     {
-        $serverVersion = GetExchangeVersion
+        $serverVersion = Get-ExchangeVersion
 
-        if ($serverVersion -ne $ParamExistsInVersion)
+        if ($serverVersion -notin $ParamExistsInVersion)
         {
             Write-Warning "$($ParamName) is not a valid parameter for $($ResourceName) in Exchange $($serverVersion). Skipping usage."
             RemoveParameters -PSBoundParametersIn $PSBoundParametersIn -ParamsToRemove $ParamName
@@ -570,7 +717,7 @@ function VerifySetting
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param([System.String]$Name, [System.String]$Type, $ExpectedValue, $ActualValue, $PSBoundParametersIn, $VerbosePreference)
+    param([System.String]$Name, [System.String]$Type, $ExpectedValue, $ActualValue, $PSBoundParametersIn)
 
     $returnValue = $true
 
@@ -592,7 +739,7 @@ function VerifySetting
         }
         elseif ($Type -like "Array")
         {
-            if ((CompareArrayContents -Array1 $ExpectedValue -Array2 $ActualValue -IgnoreCase) -eq $false)
+            if ((Compare-ArrayContent -Array1 $ExpectedValue -Array2 $ActualValue -IgnoreCase) -eq $false)
             {
                 $returnValue = $false
             }
@@ -658,7 +805,7 @@ function VerifySetting
             if ((Compare-PSCredential -Cred1 $ActualValue -Cred2 $ExpectedValue ) -eq $false)
             {
                 $returnValue = $false
-            }        
+            }
         }
         elseif ($Type -like "ExtendedProtection")
         {
@@ -671,7 +818,7 @@ function VerifySetting
             }
             else
             {
-                if ((CompareArrayContents -Array1 $ExpectedValue -Array2 $ActualValue -IgnoreCase) -eq $false)
+                if ((Compare-ArrayContent -Array1 $ExpectedValue -Array2 $ActualValue -IgnoreCase) -eq $false)
                 {
                     $returnValue = $false
                 }
@@ -685,7 +832,7 @@ function VerifySetting
 
     if ($returnValue -eq $false)
     {
-        ReportBadSetting -SettingName $Name -ExpectedValue $ExpectedValue -ActualValue $ActualValue -VerbosePreference $VerbosePreference
+        ReportBadSetting -SettingName $Name -ExpectedValue $ExpectedValue -ActualValue $ActualValue -Verbose:$VerbosePreference
     }
 
     return $returnValue
@@ -693,14 +840,15 @@ function VerifySetting
 
 function ReportBadSetting
 {
-    param($SettingName, $ExpectedValue, $ActualValue, $VerbosePreference)
+    param($SettingName, $ExpectedValue, $ActualValue)
 
     Write-Verbose "Invalid setting '$($SettingName)'. Expected value: '$($ExpectedValue)'. Actual value: '$($ActualValue)'"
 }
 
 function LogFunctionEntry
 {
-    param([Hashtable]$Parameters, $VerbosePreference)
+    [CmdletBinding()]
+    param([Hashtable]$Parameters)
 
     $callingFunction = (Get-PSCallStack)[1].FunctionName
 
@@ -718,7 +866,7 @@ function LogFunctionEntry
             }
 
             $parametersString += "$($key) = '$($value)'"
-        }    
+        }
 
         Write-Verbose "Entering function '$($callingFunction)'. Notable parameters: $($parametersString)"
     }
@@ -754,9 +902,7 @@ function StartScheduledTask
         $MaxWaitMinutes = 0,
 
         [System.UInt32]
-        $TaskPriority = 4,
-
-        $VerbosePreference
+        $TaskPriority = 4
     )
 
     $tName = "$([guid]::NewGuid().ToString())"
@@ -767,7 +913,7 @@ function StartScheduledTask
     }
 
     $action = New-ScheduledTaskAction -Execute "$($Path)" -Argument "$($Arguments)"
-    
+
     if ($PSBoundParameters.ContainsKey("WorkingDirectory"))
     {
         $action.WorkingDirectory = $WorkingDirectory
@@ -830,27 +976,59 @@ function CheckForCmdletParameter
     return $hasParameter
 }
 
-function NotePreviousError
+<#
+    .SYNOPSIS
+        Returns the most recent error in the $Global:Error Variable
+#>
+function Get-PreviousError
 {
-    $Global:previousError = $null
+    # Suppressing this rule to allow use of the built-in Global:Error variable
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.ErrorRecord])]
+    param()
 
-    if ($Global:error.Count -gt 0)
+    $previousError = $null
+
+    if ($Global:Error.Count -gt 0)
     {
-        $Global:previousError = $Global:error[0]
-    }    
+        $previousError = $Global:Error[0]
+    }
+
+    return $previousError
 }
 
-function ThrowIfNewErrorsEncountered
+<#
+    .SYNOPSIS
+        Compares the most recent error in the $Global:Error variable to the input
+        $PreviousError variable. If they are not the same, throws an exception.
+
+    .PARAMETER CmdletBeingRun
+        The name of the cmdlet that was run immediately prior to calling
+        this function.
+
+    .PARAMETER PreviousError
+        The previous known error variable to compare against the most recent
+        error that has occurred.
+#>
+function Assert-NoNewError
 {
+    # Suppressing this rule to allow use of the built-in Global:Error variable
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
     [CmdletBinding()]
-    param([System.String]$CmdletBeingRun, $VerbosePreference)
+    param
+    (
+        [System.String]
+        $CmdletBeingRun,
+
+        [System.Management.Automation.ErrorRecord]
+        $PreviousError
+    )
 
     #Throw an exception if errors were encountered
-    if ($Global:error.Count -gt 0 -and $Global:previousError -ne $Global:error[0])
+    if ($Global:Error.Count -gt 0 -and $PreviousError -ne $Global:Error[0])
     {
-        [System.String]$errorMsg = "Failed to run $($CmdletBeingRun) with: " + $Global:error[0]
-        Write-Error $errorMsg
-        throw $errorMsg
+        throw "Failed to run $CmdletBeingRun with: $($Global:Error[0])"
     }
 }
 
@@ -902,10 +1080,10 @@ function CompareIPAddresseWithString
     {
         $returnValue =($IPAddress.Equals([System.Net.IPAddress]::Parse($string)))
     }
-    
+
     if ($returnValue -eq $false)
     {
-        ReportBadSetting -SettingName $IPAddress -ExpectedValue $ExpectedValue -ActualValue $IPAddress -VerbosePreference $VerbosePreference
+        ReportBadSetting -SettingName $IPAddress -ExpectedValue $ExpectedValue -ActualValue $IPAddress -Verbose:$VerbosePreference
     }
     return $returnValue
 }
@@ -959,11 +1137,11 @@ function CompareIPAddressesWithArray
     }
     else
     {
-        CompareArrayContents -Array1 $IPAddresses -Array2 $Array
+        Compare-ArrayContent -Array1 $IPAddresses -Array2 $Array
     }
     if ($returnValue -eq $false)
     {
-        ReportBadSetting -SettingName $IPAddresses -ExpectedValue $ExpectedValue -ActualValue $IPAddress -VerbosePreference $VerbosePreference
+        ReportBadSetting -SettingName $IPAddresses -ExpectedValue $ExpectedValue -ActualValue $IPAddress -Verbose:$VerbosePreference
     }
     return $returnValue
 }
@@ -1007,28 +1185,6 @@ Process {
 End {
     return $returnValue
 }
-}
-
-#helper function to convert Microsoft.Exchange.Data.MultiValuedPropertyBase to System.Array
-function ConvertTo-Array
-{
-    [CmdletBinding()]
-    [OutputType([System.Array])]
-    param(
-        [Object[]]$InputObject
-    )
-    Begin
-    {
-        $output = @()
-    }
-    Process
-    {
-        $InputObject | ForEach-Object -Process {$output += $_}
-    }
-    End
-    {
-        return $output 
-    }
 }
 
 #helper function to check SPN for Dotless name
@@ -1111,5 +1267,37 @@ function Test-ExtendedProtectionSPNList
     }
 }
 
+<#
+    .SYNOPSIS
+        Checks if the current Exchange Server version is contained within the
+        $SupportedVersions parameter. If it is not, throws an exception.
+
+    .PARAMETER ObjectOrOperationName
+        The name of object type or operation name that is about to be utilized
+        if the call to this function does not throw an exception.
+
+    .PARAMETER SupportedVersions
+        The allowed Exchange Server versions that the object or operation is
+        allowed to be utilized on.
+#>
+function Assert-IsSupportedWithExchangeVersion
+{
+    [CmdletBinding()]
+    param
+    (
+        [System.String]
+        $ObjectOrOperationName,
+
+        [System.String[]]
+        $SupportedVersions
+    )
+
+    $serverVersion = Get-ExchangeVersion
+
+    if ($serverVersion -notin $SupportedVersions)
+    {
+        throw "$ObjectOrOperationName is not supported in Exchange Server $serverVersion"
+    }
+}
 
 Export-ModuleMember -Function *

@@ -16,52 +16,49 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = IsSetupComplete
+[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     #Get the Server FQDN for using in URL's
-    if ($null -eq $Global:ServerFqdn)
+    if ($null -eq $serverFqdn)
     {
-        $Global:ServerFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
+        $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
-    if ($null -eq $Global:WebCertAuthInstalled)
+    if ($null -eq $webCertAuthInstalled)
     {
         $webCertAuth = Get-WindowsFeature -Name Web-Cert-Auth
 
         if ($webCertAuth.InstallState -ne 'Installed')
         {
-            $Global:WebCertAuthInstalled = $false
+            $webCertAuthInstalled = $false
             Write-Verbose -Message 'Web-Cert-Auth is not installed. Skipping certificate based authentication tests.'
         }
         else
         {
-            $Global:WebCertAuthInstalled = $true
+            $webCertAuthInstalled = $true
         }
     }
 
-    if ($Global:WebCertAuthInstalled -eq $true)
+    if ($webCertAuthInstalled -eq $true)
     {
         #Get the thumbprint to use for ActiveSync Cert Based Auth
-        if ($null -eq $Global:CBACertThumbprint)
+        if ($null -eq $cbaCertThumbprint)
         {
-            $Global:CBACertThumbprint = Read-Host -Prompt 'Enter the thumbprint of an Exchange certificate to use when enabling Certificate Based Authentication'
+            $cbaCertThumbprint = Read-Host -Prompt 'Enter the thumbprint of an Exchange certificate to use when enabling Certificate Based Authentication'
         }
     }
 
     Describe 'Test Setting Properties with xExchActiveSyncVirtualDirectory' {
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\Microsoft-Server-ActiveSync (Default Web Site)"
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             AutoCertBasedAuth = $false
             AutoCertBasedAuthThumbprint = ''
             BadItemReportingEnabled = $false
@@ -72,10 +69,10 @@ if ($exchangeInstalled)
             ExtendedProtectionSPNList = @('http/mail.fabrikam.com','http/mail.fabrikam.local','http/wxweqc')
             ExtendedProtectionTokenChecking = 'Allow'
             ExternalAuthenticationMethods = @('Basic','Kerberos')
-            ExternalUrl = "https://$($Global:ServerFqdn)/Microsoft-Server-ActiveSync"
+            ExternalUrl = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
             InstallIsapiFilter = $true
             InternalAuthenticationMethods = @('Basic','Kerberos')
-            InternalUrl = "https://$($Global:ServerFqdn)/Microsoft-Server-ActiveSync"
+            InternalUrl = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
             MobileClientCertificateAuthorityURL = 'http://whatever.com/CA'
             MobileClientCertificateProvisioningEnabled = $true
             MobileClientCertTemplateName = 'MyTemplateforEAS'
@@ -95,16 +92,16 @@ if ($exchangeInstalled)
             ClientCertAuth = 'Ignore'
             CompressionEnabled = $true
             ExtendedProtectionTokenChecking = 'Allow'
-            ExternalUrl = "https://$($Global:ServerFqdn)/Microsoft-Server-ActiveSync"
+            ExternalUrl = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
             InternalAuthenticationMethods = @('Basic','Kerberos')
-            InternalUrl = "https://$($Global:ServerFqdn)/Microsoft-Server-ActiveSync"
+            InternalUrl = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
             MobileClientCertificateAuthorityURL = 'http://whatever.com/CA'
             MobileClientCertificateProvisioningEnabled = $true
             MobileClientCertTemplateName = 'MyTemplateforEAS'
             #Name = "$($Node.NodeName) EAS Site"
             RemoteDocumentsActionForUnknownServers = 'Block'
             SendWatsonReport = $false
-            WindowsAuthEnabled = $false 
+            WindowsAuthEnabled = $false
         }
 
         Test-TargetResourceFunctionality -Params $testParams `
@@ -122,31 +119,31 @@ if ($exchangeInstalled)
                                 -GetResultParameterName 'ExtendedProtectionSPNList' `
                                 -ContextLabel 'Verify ExtendedProtectionSPNList' `
                                 -ItLabel 'ExtendedProtectionSPNList should contain three values'
-        
+
         Test-ArrayContentsEqual -TestParams $testParams `
                                 -DesiredArrayContents $testParams.ExternalAuthenticationMethods `
                                 -GetResultParameterName 'ExternalAuthenticationMethods' `
                                 -ContextLabel 'Verify ExternalAuthenticationMethods' `
                                 -ItLabel 'ExternalAuthenticationMethods should contain two values'
-        
+
         Test-ArrayContentsEqual -TestParams $testParams `
                                 -DesiredArrayContents $testParams.InternalAuthenticationMethods `
                                 -GetResultParameterName 'InternalAuthenticationMethods' `
                                 -ContextLabel 'Verify InternalAuthenticationMethods' `
                                 -ItLabel 'InternalAuthenticationMethods should contain two values'
-        
+
         Test-ArrayContentsEqual -TestParams $testParams `
                                 -DesiredArrayContents $testParams.RemoteDocumentsAllowedServers `
                                 -GetResultParameterName 'RemoteDocumentsAllowedServers' `
                                 -ContextLabel 'Verify RemoteDocumentsAllowedServers' `
                                 -ItLabel 'RemoteDocumentsAllowedServers should contain two values'
-        
+
         Test-ArrayContentsEqual -TestParams $testParams `
                                 -DesiredArrayContents $testParams.RemoteDocumentsBlockedServers `
                                 -GetResultParameterName 'RemoteDocumentsBlockedServers' `
                                 -ContextLabel 'Verify RemoteDocumentsBlockedServers' `
                                 -ItLabel 'RemoteDocumentsBlockedServers should contain two values'
-        
+
         Test-ArrayContentsEqual -TestParams $testParams `
                                 -DesiredArrayContents $testParams.RemoteDocumentsInternalDomainSuffixList `
                                 -GetResultParameterName 'RemoteDocumentsInternalDomainSuffixList' `
@@ -155,17 +152,17 @@ if ($exchangeInstalled)
 
         $testParams.ExternalUrl = ''
         $testParams.InternalUrl = ''
-        $expectedGetResults.ExternalUrl = $null
-        $expectedGetResults.InternalUrl = $null
+        $expectedGetResults.ExternalUrl = ''
+        $expectedGetResults.InternalUrl = ''
 
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Try with empty URLs' `
                                          -ExpectedGetResults $expectedGetResults
 
-        if ($Global:WebCertAuthInstalled -eq $true)
+        if ($webCertAuthInstalled -eq $true)
         {
             $testParams.AutoCertBasedAuth = $true
-            $testParams.AutoCertBasedAuthThumbprint = $Global:CBACertThumbprint
+            $testParams.AutoCertBasedAuthThumbprint = $cbaCertThumbprint
             $testParams.ClientCertAuth = 'Required'
             $expectedGetResults.ClientCertAuth = 'Required'
 
@@ -179,7 +176,7 @@ if ($exchangeInstalled)
             $testParams.ExtendedProtectionFlags = @('NoServicenameCheck')
             try
             {
-                $SetResults = Set-TargetResource @testParams
+                Set-TargetResource @testParams | Out-Null
             }
             catch
             {
@@ -203,7 +200,7 @@ if ($exchangeInstalled)
             $testParams.ExtendedProtectionFlags = @('NoServicenameCheck','None')
             try
             {
-                $SetResults = Set-TargetResource @testParams
+                Set-TargetResource @testParams | Out-Null
             }
             catch
             {
@@ -234,7 +231,7 @@ if ($exchangeInstalled)
         #Set values back to default
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\Microsoft-Server-ActiveSync (Default Web Site)"
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             BadItemReportingEnabled = $true
             BasicAuthEnabled = $false
             ClientCertAuth = 'Ignore'
@@ -262,10 +259,10 @@ if ($exchangeInstalled)
             ClientCertAuth = 'Ignore'
             CompressionEnabled = $false
             ExtendedProtectionTokenChecking = 'None'
-            ExtendedProtectionFlags = $null
-            ExtendedProtectionSPNList = $null
-            ExternalAuthenticationMethods = $null
-            InternalAuthenticationMethods = $null
+            ExtendedProtectionFlags = [System.String[]]@()
+            ExtendedProtectionSPNList = [System.String[]]@()
+            ExternalAuthenticationMethods = [System.String[]]@()
+            InternalAuthenticationMethods = [System.String[]]@()
             MobileClientCertificateAuthorityURL = ''
             MobileClientCertificateProvisioningEnabled = $false
             MobileClientCertTemplateName = ''

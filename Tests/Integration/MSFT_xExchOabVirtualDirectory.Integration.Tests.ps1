@@ -16,52 +16,49 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = IsSetupComplete
+[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     #Get the Server FQDN for using in URL's
-    if ($null -eq $Global:ServerFqdn)
+    if ($null -eq $serverFqdn)
     {
-        $Global:ServerFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
+        $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
     #Get the test OAB
-    $testOabName = Get-TestOfflineAddressBook -ShellCredentials $Global:ShellCredentials
+    $testOabName = Get-TestOfflineAddressBook -ShellCredentials $shellCredentials
 
     Describe 'Test Setting Properties with xExchOabVirtualDirectory' {
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\OAB (Default Web Site)"
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             OABsToDistribute = $testOabName
             BasicAuthentication = $false
             ExtendedProtectionFlags = 'Proxy','ProxyCoHosting'
             ExtendedProtectionSPNList = @()
             ExtendedProtectionTokenChecking = 'Allow'
-            InternalUrl = "http://$($Global:ServerFqdn)/OAB"
+            InternalUrl = "http://$($serverFqdn)/OAB"
             ExternalUrl = ''
             RequireSSL = $false
             WindowsAuthentication = $true
-            PollInterval = 481                           
+            PollInterval = 481
         }
 
         $expectedGetResults = @{
             Identity =  "$($env:COMPUTERNAME)\OAB (Default Web Site)"
             BasicAuthentication = $false
             ExtendedProtectionTokenChecking = 'Allow'
-            InternalUrl = "http://$($Global:ServerFqdn)/OAB"
-            ExternalUrl = $null
+            InternalUrl = "http://$($serverFqdn)/OAB"
+            ExternalUrl = ''
             RequireSSL = $false
             WindowsAuthentication = $true
-            PollInterval = 481   
+            PollInterval = 481
         }
 
         Test-TargetResourceFunctionality -Params $testParams `

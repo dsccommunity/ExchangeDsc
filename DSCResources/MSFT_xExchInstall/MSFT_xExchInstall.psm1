@@ -1,4 +1,4 @@
-function Get-TargetResource 
+function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
@@ -12,7 +12,7 @@ function Get-TargetResource
         [Parameter(Mandatory=$true)]
         [System.String]
         $Arguments,
-        
+
         [Parameter(Mandatory=$true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
@@ -22,11 +22,11 @@ function Get-TargetResource
     LogFunctionEntry -Parameters @{
         'Path' = $Path
         'Arguments' = $Arguments
-    } -VerbosePreference $VerbosePreference
+    } -Verbose:$VerbosePreference
 
     $returnValue = @{
-        Path = $Path
-        Arguments = $Arguments
+        Path      = [System.String] $Path
+        Arguments = [System.String] $Arguments
     }
 
     $returnValue
@@ -44,23 +44,23 @@ function Set-TargetResource
         [Parameter(Mandatory=$true)]
         [System.String]
         $Arguments,
-        
+
         [Parameter(Mandatory=$true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential
     )
 
-    LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -Verbose:$VerbosePreference
 
-    $installStatus = GetInstallStatus -Arguments $Arguments
+    $installStatus = Get-InstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
 
     $waitingForSetup = $false
 
     if ($installStatus.ShouldStartInstall -eq $true)
     {
         #Check if WSMan needs to be configured, as it will require an immediate reboot
-        $needReboot = CheckWSManConfig
+        $needReboot = Set-WSManConfigStatus
 
         if ($needReboot -eq $true)
         {
@@ -70,7 +70,7 @@ function Set-TargetResource
 
         Write-Verbose "Initiating Exchange Setup. Command: $($Path) $($Arguments)"
 
-        StartScheduledTask -Path "$($Path)" -Arguments "$($Arguments)" -Credential $Credential -TaskName 'Install Exchange' -VerbosePreference $VerbosePreference
+        StartScheduledTask -Path "$($Path)" -Arguments "$($Arguments)" -Credential $Credential -TaskName 'Install Exchange' -Verbose:$VerbosePreference
 
         $detectedExsetup = $false
 
@@ -97,19 +97,16 @@ function Set-TargetResource
 
         $waitingForSetup = $true
     }
-    else
+    elseif ($installStatus.SetupRunning)
     {
-        if ($installStatus.SetupComplete)
-        {
-            Write-Verbose -Message 'Exchange setup has already successfully completed.'
-            return
-        }
-        else
-        {
-            Write-Verbose -Message 'Exchange setup is already in progress.'
+        Write-Verbose -Message 'Exchange setup is already in progress.'
 
-            $waitingForSetup = $true
-        }         
+        $waitingForSetup = $true
+    }
+    elseif ($installStatus.SetupComplete)
+    {
+        Write-Verbose -Message 'Exchange setup has already successfully completed.'
+        return
     }
 
     if ($waitingForSetup)
@@ -123,7 +120,7 @@ function Set-TargetResource
     }
 
     #Check install status one more time and see if setup was successful
-    $installStatus = GetInstallStatus -Arguments $Arguments
+    $installStatus = Get-InstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
 
     if ($installStatus.SetupComplete)
     {
@@ -135,7 +132,7 @@ function Set-TargetResource
     }
 }
 
-function Test-TargetResource 
+function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
@@ -148,16 +145,18 @@ function Test-TargetResource
         [Parameter(Mandatory=$true)]
         [System.String]
         $Arguments,
-        
+
         [Parameter(Mandatory=$true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential
     )
 
-    LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -Verbose:$VerbosePreference
 
-    $installStatus = GetInstallStatus -Arguments $Arguments
+    $installStatus = Get-InstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
+
+    [System.Boolean]$shouldStartOrWaitForInstall = $false
 
     if ($installStatus.ShouldStartInstall -eq $true)
     {
@@ -169,6 +168,8 @@ function Test-TargetResource
         {
             Write-Verbose -Message 'Exchange is either not installed, or a previous install only partially completed.'
         }
+
+        $shouldStartOrWaitForInstall = $true
     }
     else
     {
@@ -179,127 +180,12 @@ function Test-TargetResource
         else
         {
             Write-Verbose -Message 'Exchange setup is already in progress.'
+
+            $shouldStartOrWaitForInstall = $true
         }
     }
 
-    return (!($installStatus.ShouldStartInstall))
-}
-
-#Checks for the exact status of Exchange setup and returns the results in a Hashtable
-function GetInstallStatus
-{
-    param
-    (
-        [Parameter()]    
-        [System.String]
-        $Arguments
-    )
-
-    $shouldStartInstall = $false
-
-    $shouldInstallLanguagePack = ShouldInstallLanguagePack -Arguments $Arguments
-    $setupRunning = IsSetupRunning
-    $setupComplete = IsSetupComplete
-    $exchangePresent = IsExchangePresent
-    $setupPartiallyComplete = IsSetupPartiallyCompleted
-
-    if ($setupRunning -eq $true -or $setupComplete -eq $true)
-    {
-        if($shouldInstallLanguagePack -eq $true -and $setupComplete -eq $true)
-        {
-            $shouldStartInstall = $true
-        }
-        else
-        {
-            #Do nothing. Either Install is already running, or it's already finished successfully
-        }
-    }
-    elseif ($exchangePresent -eq $false -or $setupPartiallyComplete -eq $true)
-    {
-        $shouldStartInstall = $true
-    }
-
-    $returnValue = @{
-        ShouldInstallLanguagePack = $shouldInstallLanguagePack
-        SetupRunning = $setupRunning
-        SetupComplete = $setupComplete
-        ExchangePresent = $exchangePresent
-        SetupPartiallyComplete = $setupPartiallyComplete
-        ShouldStartInstall = $shouldStartInstall
-    }
-
-    $returnValue
-}
-
-#Check for missing registry keys that may cause Exchange setup to try to restart WinRM mid setup , which will in turn cause the DSC resource to fail
-#If any required keys are missing, configure WinRM, then force a reboot
-function CheckWSManConfig
-{
-    # Suppressing this rule because $global:DSCMachineStatus is used to trigger a reboot.
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
-    <#
-        Suppressing this rule because $global:DSCMachineStatus is only set,
-        never used (by design of Desired State Configuration).
-    #>
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function', Target='DSCMachineStatus')]
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    ()
-
-    $needReboot = $false
-
-    $wsmanKey = Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN' -ErrorAction SilentlyContinue
-
-    if ($null -ne $wsmanKey)
-    {
-        if ($null -eq $wsmanKey.UpdatedConfig)
-        {
-            $needReboot = $true
-
-            Write-Verbose "Value 'UpdatedConfig' missing from registry key HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN. Running: winrm i restore winrm/config"
-
-            Set-Location "$($env:windir)\System32\inetsrv"
-            winrm i restore winrm/config | Out-Null
-
-            Write-Verbose -Message 'Machine needs to be rebooted before Exchange setup can proceed'
-
-            $global:DSCMachineStatus = 1
-        }
-    }
-    else
-    {
-        throw 'Unable to find registry key: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN'
-    }
-
-    return $needReboot
-}
-
-function ShouldInstallLanguagePack
-{
-    param
-    (
-        [Parameter()]    
-        [System.String]
-        $Arguments
-    )
-
-    if($Arguments -match '(?<=/AddUMLanguagePack:)(([a-z]{2}-[A-Z]{2},?)+)(?=\s)')
-    {
-        $Cultures = $Matches[0]
-        Write-Verbose "AddUMLanguagePack parameters detected: $Cultures"
-        $Cultures = $Cultures -split ','
-
-        foreach($Culture in $Cultures)
-        {
-            if((IsUMLanguagePackInstalled -Culture $Culture) -eq $false)
-            {
-                Write-Verbose "UM Language Pack: $Culture is not installed"
-                return $true
-            }
-        }
-    }
-    return $false
+    return !$shouldStartOrWaitForInstall
 }
 
 Export-ModuleMember -Function *-TargetResource

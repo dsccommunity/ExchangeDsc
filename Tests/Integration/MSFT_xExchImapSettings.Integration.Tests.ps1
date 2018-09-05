@@ -16,36 +16,33 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = IsSetupComplete
+[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
     #Get required credentials to use for the test
-    if ($null -eq $Global:ShellCredentials)
-    {
-        [PSCredential]$Global:ShellCredentials = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
-    }
+    $shellCredentials = Get-TestCredential
 
     #Get the Server FQDN for using in URL's
-    if ($null -eq $Global:ServerFqdn)
+    if ($null -eq $serverFqdn)
     {
-        $Global:ServerFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
+        $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
     Describe 'Test Setting Properties with xExchImapSettings' {
         $testParams = @{
             Server =  $env:COMPUTERNAME
-            Credential = $Global:ShellCredentials
+            Credential = $shellCredentials
             LoginType = 'PlainTextLogin'
-            ExternalConnectionSettings = @("$($Global:ServerFqdn):143:TLS")
-            X509CertificateName = "$($Global:ServerFqdn)"     
+            ExternalConnectionSettings = @("$($serverFqdn):143:TLS")
+            X509CertificateName = "$($serverFqdn)"
         }
 
         $expectedGetResults = @{
             LoginType = 'PlainTextLogin'
-            X509CertificateName = "$($Global:ServerFqdn)"    
+            X509CertificateName = "$($serverFqdn)"
         }
 
         Test-TargetResourceFunctionality -Params $testParams `

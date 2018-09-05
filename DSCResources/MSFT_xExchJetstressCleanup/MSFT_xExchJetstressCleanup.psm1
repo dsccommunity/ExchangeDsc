@@ -36,10 +36,10 @@ function Get-TargetResource
         $RemoveBinaries
     )
 
-    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -Verbose:$VerbosePreference
 
     $returnValue = @{
-        JetstressPath = $JetstressPath
+        JetstressPath = [System.String] $JetstressPath
     }
 
     $returnValue
@@ -86,11 +86,11 @@ function Set-TargetResource
         $RemoveBinaries
     )
 
-    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -Verbose:$VerbosePreference
 
     VerifyParameters @PSBoundParameters
 
-    $jetstressInstalled = IsJetstressInstalled
+    $jetstressInstalled = Get-IsJetstressInstalled
 
     if ($jetstressInstalled)
     {
@@ -137,7 +137,7 @@ function Set-TargetResource
 
                 if ($volNum -ge 0)
                 {
-                    StartDiskpart -Commands "select volume $($volNum)","remove mount=`"$($parent)`"" -VerbosePreference $VerbosePreference | Out-Null
+                    StartDiskpart -Commands "select volume $($volNum)","remove mount=`"$($parent)`"" -Verbose:$VerbosePreference | Out-Null
 
                     RemoveFolder -Path "$($parent)"
                 }
@@ -164,7 +164,7 @@ function Set-TargetResource
                 mkdir -Path "$($OutputSaveLocation)"
             }
 
-            $outputFiles = Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object -FilterScript { 
+            $outputFiles = Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object -FilterScript {
                 $_.Name -like 'Performance*' -or `
                 $_.Name -like 'Stress*' -or `
                 $_.Name -like 'DBChecksum*' -or `
@@ -186,7 +186,7 @@ function Set-TargetResource
         else #No config file in this directory. Remove the whole thing
         {
             RemoveFolder -Path "$($JetstressPath)"
-        }  
+        }
     }
 
     #Test if we successfully cleaned up Jetstress. If so, flag or initiate a reboot
@@ -235,11 +235,11 @@ function Test-TargetResource
         $RemoveBinaries
     )
 
-    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -VerbosePreference $VerbosePreference
+    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -Verbose:$VerbosePreference
 
     VerifyParameters @PSBoundParameters
-    
-    $jetstressInstalled = IsJetstressInstalled
+
+    $jetstressInstalled = Get-IsJetstressInstalled
 
     $testResults = $true
 
@@ -304,7 +304,7 @@ function Test-TargetResource
             {
                 Write-Verbose -Message "Folder '$($JetstressPath)' still exists."
                 $testResults = $false
-            }  
+            }
         }
     }
 
@@ -473,9 +473,9 @@ function LoadConfigXml
 }
 
 #Checks whether Jetstress is installed by looking for Jetstress 2013's Product GUID
-function IsJetstressInstalled
+function Get-IsJetstressInstalled
 {
-    return ($null -ne (Get-CimInstance -ClassName Win32_Product -Filter "IdentifyingNumber = '{75189587-0D84-4404-8F02-79C39728FA64}'"))
+    return ($null -ne (Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{75189587-0D84-4404-8F02-79C39728FA64}' -ErrorAction SilentlyContinue))
 }
 
 Export-ModuleMember -Function *-TargetResource
