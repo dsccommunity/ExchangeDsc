@@ -32,6 +32,8 @@ about: If you have a problem, bug, or enhancement with a resource in this resour
 # insert configuration here
 ```
 
+#### Exchange Server edition and version the target node is running
+
 #### The operating system the target node is running
 <!--
     Please provide as much as possible about the target node, for example
@@ -55,3 +57,7 @@ about: If you have a problem, bug, or enhancement with a resource in this resour
 -->
 
 #### Version of the DSC module that was used ('dev' if using current dev branch)
+<!--
+    To help with this information, please run this command:
+    Get-Module -Name 'xExchange' -ListAvailable | ft Name,Version,Path
+-->
