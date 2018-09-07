@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- xExchangeHelper.psm1: Renamed common functions to use proper Verb-Noun
+  format. Also addresses many common style issues in functions in the file, as
+  well as in calls to these functions from other files.
+- MSFT_xExchTransportService: Removed functions that were duplicates of helper
+  functions in xExchangeHelper.psm1.
+
 ## 1.23.0.0
 
 - Fixes issue with xExchMaintenanceMode on Exchange 2016 where the cluster

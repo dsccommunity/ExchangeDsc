@@ -1428,7 +1428,7 @@ function ExtendedRightExists
                 if (!($ShouldbeTrue))
                 {
                     Write-Verbose -Message 'Should report exist!'
-                    Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$($Value)" -ActualValue 'Present' -Verbose:$VerbosePreference
+                    Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue 'Present' -Verbose:$VerbosePreference
                     return $returnvalue
                     exit;
                 }
@@ -1438,7 +1438,7 @@ function ExtendedRightExists
                 $returnvalue = $false
                 if ($ShouldbeTrue)
                 {
-                    Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$($Value)" -ActualValue 'Absent' -Verbose:$VerbosePreference
+                    Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue 'Absent' -Verbose:$VerbosePreference
                     return $returnvalue
                     exit;
                 }

@@ -103,7 +103,7 @@ function Set-TargetResource
 
     if ($AllowServiceRestart -eq $true)
     {
-        Write-Verbose "Recycling MSExchangeMapiFrontEndAppPool and MSExchangeMapiMailboxAppPool"
+        Write-Verbose -Message 'Recycling MSExchangeMapiFrontEndAppPool and MSExchangeMapiMailboxAppPool'
 
         Restart-ExistingAppPool -Name MSExchangeMapiFrontEndAppPool
         Restart-ExistingAppPool -Name MSExchangeMapiMailboxAppPool

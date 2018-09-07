@@ -264,7 +264,7 @@ function Test-TargetResource
             {
                 if ((DBHasMountPoint -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -Database $db -DiskInfo $diskInfo) -eq $false)
                 {
-                    Write-InvalidSettingVerbose -SettingName "DB '$($db)' Has Mount Point" -ExpectedValue $true -ActualValue $false -Verbose:$VerbosePreference
+                    Write-InvalidSettingVerbose -SettingName "DB '$db' Has Mount Point" -ExpectedValue $true -ActualValue $false -Verbose:$VerbosePreference
                     $testResults = $false
                 }
             }

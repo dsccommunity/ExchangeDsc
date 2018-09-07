@@ -215,7 +215,7 @@ function Set-TargetResource
 
     if ($setupRunning -eq $true)
     {
-        Write-Verbose "Exchange Setup is currently running. Skipping maintenance mode checks."
+        Write-Verbose -Message 'Exchange Setup is currently running. Skipping maintenance mode checks.'
         return
     }
 
@@ -227,7 +227,7 @@ function Set-TargetResource
 
     if ($Enabled -eq $true -and $atDesiredVersion -eq $true)
     {
-        Write-Verbose "Server is already at or above the desired upgrade version of '$($UpgradedServerVersion)'. Skipping putting server into maintenance mode."
+        Write-Verbose -Message "Server is already at or above the desired upgrade version of '$UpgradedServerVersion'. Skipping putting server into maintenance mode."
         return
     }
 
@@ -246,7 +246,7 @@ function Set-TargetResource
             #Block DB activation on this server
             if ($maintenanceModeStatus.MailboxServer.DatabaseCopyAutoActivationPolicy -ne "Blocked")
             {
-                Write-Verbose "Setting DatabaseCopyAutoActivationPolicy to Blocked"
+                Write-Verbose -Message 'Setting DatabaseCopyAutoActivationPolicy to Blocked'
                 SetMailboxServer -Identity $env:COMPUTERNAME -DomainController $DomainController -AdditionalParams @{"DatabaseCopyAutoActivationPolicy" = "Blocked"}
             }
 
@@ -256,7 +256,7 @@ function Set-TargetResource
             #Start HT maintenance if required
             if ($htStatus.State -ne "Inactive")
             {
-                Write-Verbose "Entering Transport Maintenance"
+                Write-Verbose -Message 'Entering Transport Maintenance'
                 [System.String[]]$transportExclusions = GetMessageRedirectionExclusions -DomainController $DomainController
                 Start-TransportMaintenance -LoadLocalShell $false -MessageRedirectExclusions $transportExclusions -Verbose
             }
@@ -272,7 +272,7 @@ function Set-TargetResource
                 $maintenanceModeStatus.MailboxServer.DatabaseCopyAutoActivationPolicy -ne "Blocked" -or
                 (GetActiveDBCount -MaintenanceModeStatus $maintenanceModeStatus -DomainController $DomainController) -ne 0)
             {
-                Write-Verbose "Running StartDagServerMaintenance.ps1"
+                Write-Verbose -Message 'Running StartDagServerMaintenance.ps1'
 
                 $dagMemberCount = GetDAGMemberCount
 
@@ -324,7 +324,7 @@ function Set-TargetResource
                 $maintenanceModeStatus.MailboxServer.DatabaseCopyAutoActivationPolicy -ne "Unrestricted" -or`
                 $haStatus.State -ne "Active")
             {
-                Write-Verbose "Running StopDagServerMaintenance.ps1"
+                Write-Verbose -Message 'Running StopDagServerMaintenance.ps1'
 
                 #Run StopDagServerMaintenance.ps1 in try/catch, so if an exception occurs, we can at least finish
                 #doing the rest of the steps to take the server out of maintenance mode
@@ -341,7 +341,7 @@ function Set-TargetResource
             #End Transport Maintenance
             if ($htStatus.State -ne "Active")
             {
-                Write-Verbose "Ending Transport Maintenance"
+                Write-Verbose -Message 'Ending Transport Maintenance'
                 Stop-TransportMaintenance -LoadLocalShell $false -Verbose
             }
 
@@ -465,7 +465,7 @@ function Test-TargetResource
 
     if ($setupRunning -eq $true)
     {
-        Write-Verbose "Exchange Setup is currently running. Skipping maintenance mode checks."
+        Write-Verbose -Message 'Exchange Setup is currently running. Skipping maintenance mode checks.'
         return $true
     }
 
@@ -493,32 +493,32 @@ function Test-TargetResource
 
             if ($atDesiredVersion -eq $true)
             {
-                Write-Verbose "Server is already at or above the desired upgrade version of '$($UpgradedServerVersion)'. Skipping putting server into maintenance mode."
+                Write-Verbose -Message "Server is already at or above the desired upgrade version of '$UpgradedServerVersion'. Skipping putting server into maintenance mode."
                 return $true
             }
             else
             {
                 if ($maintenanceModeStatus.MailboxServer.DatabaseCopyAutoActivationPolicy -ne "Blocked")
                 {
-                    Write-Verbose "DatabaseCopyAutoActivationPolicy is not set to Blocked"
+                    Write-Verbose -Message 'DatabaseCopyAutoActivationPolicy is not set to Blocked'
                     $testResults = $false
                 }
 
                 if ($null -ne ($MaintenanceModeStatus.ServerComponentState | Where-Object {$_.State -ne "Inactive" -and $_.Component -ne "Monitoring" -and $_.Component -ne "RecoveryActionsEnabled"}))
                 {
-                    Write-Verbose "One or more components have a status other than Inactive"
+                    Write-Verbose -Message 'One or more components have a status other than Inactive'
                     $testResults = $false
                 }
 
                 if ($maintenanceModeStatus.ClusterNode.State -eq "Up")
                 {
-                    Write-Verbose "Cluster node has a status of Up"
+                    Write-Verbose -Message 'Cluster node has a status of Up'
                     $testResults = $false
                 }
 
                 if ((IsServerPAM -DomainController $DomainController) -eq $true)
                 {
-                    Write-Verbose "Server still has the Primary Active Manager role"
+                    Write-Verbose -Message 'Server still has the Primary Active Manager role'
                     $testResults = $false
                 }
 
@@ -527,7 +527,7 @@ function Test-TargetResource
 
                 if ($messagesQueued -gt 0)
                 {
-                    Write-Verbose "Found $($messagesQueued) messages still in queue"
+                    Write-Verbose -Message "Found $messagesQueued messages still in queue"
                     $testResults = $false
                 }
 
@@ -536,7 +536,7 @@ function Test-TargetResource
 
                 if ($activeDBCount -gt 0)
                 {
-                    Write-Verbose "Found $($activeDBCount) replicated databases still activated on this server"
+                    Write-Verbose -Message "Found $activeDBCount replicated databases still activated on this server"
                     $testResults = $false
                 }
 
@@ -545,7 +545,7 @@ function Test-TargetResource
 
                 if ($umCallCount -gt 0)
                 {
-                    Write-Verbose "Found $($umCallCount) active UM calls on this server"
+                    Write-Verbose -Message "Found $umCallCount active UM calls on this server"
                     $testResults = $false
                 }
             }
@@ -557,13 +557,13 @@ function Test-TargetResource
 
             if ($null -eq $activeComponents)
             {
-                Write-Verbose "No Components found with a status of Active"
+                Write-Verbose -Message 'No Components found with a status of Active'
                 $testResults = $false
             }
 
             if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "ServerWideOffline"}))
             {
-                Write-Verbose "Component ServerWideOffline is not Active"
+                Write-Verbose -Message 'Component ServerWideOffline is not Active'
                 $testResults = $false
             }
 
@@ -571,38 +571,38 @@ function Test-TargetResource
             {
                 if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "UMCallRouter"}))
                 {
-                    Write-Verbose "Component UMCallRouter is not Active"
+                    Write-Verbose -Message 'Component UMCallRouter is not Active'
                     $testResults = $false
                 }
             }
 
             if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "HubTransport"}))
             {
-                Write-Verbose "Component HubTransport is not Active"
+                Write-Verbose -Message 'Component HubTransport is not Active'
                 $testResults = $false
             }
 
             if ($maintenanceModeStatus.ClusterNode.State -ne "Up")
             {
-                Write-Verbose "Cluster node has a status of $($maintenanceModeStatus.ClusterNode.State)"
+                Write-Verbose -Message "Cluster node has a status of $($maintenanceModeStatus.ClusterNode.State)"
                 $testResults = $false
             }
 
             if ($maintenanceModeStatus.MailboxServer.DatabaseCopyAutoActivationPolicy -ne "Unrestricted")
             {
-                Write-Verbose "DatabaseCopyAutoActivationPolicy is set to $($maintenanceModeStatus.MailboxServer.DatabaseCopyAutoActivationPolicy)"
+                Write-Verbose -Message "DatabaseCopyAutoActivationPolicy is set to $($maintenanceModeStatus.MailboxServer.DatabaseCopyAutoActivationPolicy)"
                 $testResults = $false
             }
 
             if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "Monitoring"}))
             {
-                Write-Verbose "Component Monitoring is not Active"
+                Write-Verbose -Message 'Component Monitoring is not Active'
                 $testResults = $false
             }
 
             if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "RecoveryActionsEnabled"}))
             {
-                Write-Verbose "Component RecoveryActionsEnabled is not Active"
+                Write-Verbose -Message 'Component RecoveryActionsEnabled is not Active'
                 $testResults = $false
             }
 
@@ -617,7 +617,7 @@ function Test-TargetResource
 
                         if ($null -ne $status -and $Status.State -ne "Active")
                         {
-                            Write-Verbose "Component $($component) is not set to Active"
+                            Write-Verbose -Message "Component $component is not set to Active"
                             $testResults = $false
                         }
                     }
@@ -661,7 +661,7 @@ function GetMaintenanceModeStatus
     {
         $endTime = [DateTime]::Now.AddMinutes(5)
 
-        Write-Verbose "Waiting up to 5 minutes for the Transport Bootloader to be ready before running Get-Queue. Wait started at $([DateTime]::Now)."
+        Write-Verbose -Message "Waiting up to 5 minutes for the Transport Bootloader to be ready before running Get-Queue. Wait started at $([DateTime]::Now)."
 
         while ($null -eq $queues -and [DateTime]::Now -lt $endTime)
         {
@@ -700,7 +700,7 @@ function GetQueueMessageCount
     {
         foreach ($queue in $MaintenanceModeStatus.Queues | Where-Object {$_.Identity -notlike "*\Shadow\*"})
         {
-            Write-Verbose "Found queue '$($queue.Identity)' with a message count of '$($queue.MessageCount)'."
+            Write-Verbose -Message "Found queue '$($queue.Identity)' with a message count of '$($queue.MessageCount)'."
             $messageCount += $queue.MessageCount
         }
     }
@@ -740,7 +740,7 @@ function GetActiveDBCount
 
         if ($dbProps.ReplicationType -ne "None")
         {
-            Write-Verbose "Found database '$($db.DatabaseName)' with a replication type of '$($dbProps.ReplicationType)' and a status of '$($db.Status)'."
+            Write-Verbose -Message "Found database '$($db.DatabaseName)' with a replication type of '$($dbProps.ReplicationType)' and a status of '$($db.Status)'."
             $activeDBCount++
         }
     }
@@ -883,7 +883,7 @@ function IsExchangeAtDesiredVersion
                 }
                 else
                 {
-                    Write-Verbose "Desired server version '$($UpgradedServerVersion)' is greater than the actual server version '$($server.AdminDisplayVersion)'"
+                    Write-Verbose -Message "Desired server version '$UpgradedServerVersion' is greater than the actual server version '$($server.AdminDisplayVersion)'"
                 }
             }
             else
@@ -999,11 +999,11 @@ function WaitForUMToDrain
 
     $endTime = [DateTime]::Now.AddMinutes($WaitMinutes)
 
-    Write-Verbose "Waiting up to $($WaitMinutes) minutes for active UM calls to finish"
+    Write-Verbose -Message "Waiting up to $WaitMinutes minutes for active UM calls to finish"
 
     while ($fullyInMaintenanceMode -eq $false -and [DateTime]::Now -lt $endTime)
     {
-        Write-Verbose "Checking whether all UM calls are finished at $([DateTime]::Now)."
+        Write-Verbose -Message "Checking whether all UM calls are finished at $([DateTime]::Now)."
 
         $umCalls = $null
 
@@ -1015,7 +1015,7 @@ function WaitForUMToDrain
         }
         else
         {
-            Write-Verbose "There are still active UM calls as of $([DateTime]::Now). Sleeping for $($SleepSeconds) seconds. Will continue checking until $($endTime)."
+            Write-Verbose -Message "There are still active UM calls as of $([DateTime]::Now). Sleeping for $SleepSeconds seconds. Will continue checking until $endTime."
             Start-Sleep -Seconds $SleepSeconds
         }
     }
@@ -1068,7 +1068,7 @@ function ChangeComponentState
         }
         elseif ($componentState.State -notlike "$($State)")
         {
-            Write-Verbose "Setting $($componentState.Component) component to $($State) for requester $($Requester)"
+            Write-Verbose -Message "Setting $($componentState.Component) component to $State for requester $Requester"
 
             SetServerComponentState -Component $componentState.Component -State $State -Requester $Requester -DomainController $DomainController
 
@@ -1083,7 +1083,7 @@ function ChangeComponentState
                 {
                     foreach ($additionalRequester in $additionalRequesters)
                     {
-                        Write-Verbose "Setting $($componentState.Component) component to Active for requester $($additionalRequester.Requester)"
+                        Write-Verbose -Message "Setting $($componentState.Component) component to Active for requester $($additionalRequester.Requester)"
 
                         SetServerComponentState -Component $componentState.Component -State Active -Requester $additionalRequester.Requester -DomainController $DomainController
                     }
@@ -1172,11 +1172,11 @@ function MovePrimaryDatabasesBack
 
     if ($databasesWithActivationPrefOneNotOnThisServer.Count -gt 0)
     {
-        Write-Verbose "Found $($databasesWithActivationPrefOneNotOnThisServer.Count) Healthy databases with Activation Preference 1 that should be moved to this server."
+        Write-Verbose -Message "Found $($databasesWithActivationPrefOneNotOnThisServer.Count) Healthy databases with Activation Preference 1 that should be moved to this server."
 
         foreach ($database in $databasesWithActivationPrefOneNotOnThisServer)
         {
-            Write-Verbose "Attempting to move database '$($database)' back to this server."
+            Write-Verbose -Message "Attempting to move database '$database' back to this server."
 
             #Do the move in a try/catch block so we can log the error, but not have it prevent other databases from attempting to move
             try
@@ -1191,7 +1191,7 @@ function MovePrimaryDatabasesBack
     }
     else
     {
-        Write-Verbose "Found 0 Healthy databases with Activation Preference 1 for this server that are currently not hosted on this server"
+        Write-Verbose -Message 'Found 0 Healthy databases with Activation Preference 1 for this server that are currently not hosted on this server'
     }
 }
 

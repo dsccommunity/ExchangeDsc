@@ -68,9 +68,9 @@ function Set-TargetResource
             return
         }
 
-        Write-Verbose "Initiating Exchange Setup. Command: $($Path) $($Arguments)"
+        Write-Verbose -Message "Initiating Exchange Setup. Command: $Path $Arguments"
 
-        Start-ExchangeScheduledTask -Path "$($Path)" -Arguments "$($Arguments)" -Credential $Credential -TaskName 'Install Exchange' -Verbose:$VerbosePreference
+        Start-ExchangeScheduledTask -Path "$Path" -Arguments "$Arguments" -Credential $Credential -TaskName 'Install Exchange' -Verbose:$VerbosePreference
 
         $detectedExsetup = $false
 
@@ -114,7 +114,7 @@ function Set-TargetResource
         #Now wait for setup to finish
         while ($null -ne (Get-Process -Name ExSetup -ErrorAction SilentlyContinue))
         {
-            Write-Verbose "Setup is still running at $([DateTime]::Now). Sleeping for 1 minute."
+            Write-Verbose -Message "Setup is still running at $([DateTime]::Now). Sleeping for 1 minute."
             Start-Sleep -Seconds 60
         }
     }

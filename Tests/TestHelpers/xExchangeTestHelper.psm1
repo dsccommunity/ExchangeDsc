@@ -184,7 +184,7 @@ function Test-Array2ContainsArray1
         [System.Collections.Hashtable]$getResult = Get-TargetResource @TestParams
 
         It $ItLabel {
-            Test-ArrayElementsInSecondArray -Array1 $DesiredArrayContents -Array2 $getResult."$($GetResultParameterName)" -IgnoreCase | Should Be $true
+            Test-ArrayElementsInSecondArray -Array1 $DesiredArrayContents -Array2 $getResult."$GetResultParameterName" -IgnoreCase | Should Be $true
         }
     }
 }

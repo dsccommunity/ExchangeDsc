@@ -178,7 +178,7 @@ function Set-TargetResource
 
     if ($null -eq $copy) #We need to add a new copy
     {
-        Write-Verbose "A copy of database '$($Identity)' does not exist on server '$($MailboxServer)'. Adding."
+        Write-Verbose -Message "A copy of database '$Identity' does not exist on server '$MailboxServer'. Adding."
 
         #Increment the copy count to what it will be when this copy is added
         $copyCount++

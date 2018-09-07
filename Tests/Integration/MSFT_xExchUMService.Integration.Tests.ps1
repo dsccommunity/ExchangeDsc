@@ -16,7 +16,7 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = Test-ExchangeSetupComplete
+[System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
@@ -36,7 +36,7 @@ if ($exchangeInstalled)
 
         if ($null -eq (Get-UMDialPlan -Identity $testUMDPName -ErrorAction SilentlyContinue))
         {
-            Write-Verbose "Test UM Dial Plan does not exist. Creating UM Dial Plan with name '$testUMDPName'."
+            Write-Verbose -Message "Test UM Dial Plan does not exist. Creating UM Dial Plan with name '$testUMDPName'."
 
             $testUMDP = New-UMDialPlan -Name $testUMDPName -URIType SipName -CountryOrRegionCode 1 -NumberOfDigitsInExtension 10
 

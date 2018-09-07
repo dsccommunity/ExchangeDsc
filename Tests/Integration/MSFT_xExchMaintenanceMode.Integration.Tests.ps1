@@ -197,7 +197,7 @@ function Wait-ForPrimaryHealthyIndexState
         {
             if ($null -ne (Get-MailboxDatabaseCopyStatus -Identity $db.DatabaseName | Where-Object {$_.MailboxServer -notlike "$($env:COMPUTERNAME)" -and $_.ContentIndexState -like "Healthy"}))
             {
-                Write-Verbose "Reseeding content index of copy $($db.Identity)"
+                Write-Verbose -Message "Reseeding content index of copy $($db.Identity)"
 
                 Update-MailboxDatabaseCopy -Identity $db.Identity -CatalogOnly -BeginSeed -Confirm:$false -Force
             }
@@ -248,7 +248,7 @@ function Wait-ForSecondaryHealthyIndexState
         {
             if ($null -ne (Get-MailboxDatabaseCopyStatus -Identity $db.DatabaseName | Where-Object {$_.MailboxServer -like "$($env:COMPUTERNAME)" -and $_.ContentIndexState -like "Healthy"}))
             {
-                Write-Verbose "Reseeding content index of copy $($db.Identity)"
+                Write-Verbose -Message "Reseeding content index of copy $($db.Identity)"
 
                 Update-MailboxDatabaseCopy -Identity $db.Identity -CatalogOnly -BeginSeed -Confirm:$false -Force
             }

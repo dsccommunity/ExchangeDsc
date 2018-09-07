@@ -190,7 +190,7 @@ function Set-TargetResource
     {
         if ($testResults -eq $false)
         {
-            Write-Verbose "AD has still not been fully prepped as of $([DateTime]::Now). Sleeping for $($RetryIntervalSec) seconds."
+            Write-Verbose -Message "AD has still not been fully prepped as of $([DateTime]::Now). Sleeping for $($RetryIntervalSec) seconds."
             Start-Sleep -Seconds $RetryIntervalSec
 
             $testResults = Test-TargetResource @PSBoundParameters
