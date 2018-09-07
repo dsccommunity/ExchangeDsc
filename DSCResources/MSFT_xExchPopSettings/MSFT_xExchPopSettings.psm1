@@ -36,10 +36,10 @@ function Get-TargetResource
         $X509CertificateName
     )
 
-    LogFunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PopSettings' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PopSettings' -Verbose:$VerbosePreference
 
     $pop = GetPopSettings @PSBoundParameters
 
@@ -92,12 +92,12 @@ function Set-TargetResource
         $X509CertificateName
     )
 
-    LogFunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-PopSettings' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-PopSettings' -Verbose:$VerbosePreference
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
 
     Set-PopSettings @PSBoundParameters
 
@@ -151,12 +151,12 @@ function Test-TargetResource
         $X509CertificateName
     )
 
-    LogFunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PopSettings' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PopSettings' -Verbose:$VerbosePreference
 
-    SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
+    Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     $pop = GetPopSettings @PSBoundParameters
 
@@ -171,17 +171,17 @@ function Test-TargetResource
     else
     {
 
-        if (!(VerifySetting -Name 'LoginType' -Type 'String' -ExpectedValue $LoginType -ActualValue $pop.LoginType -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'LoginType' -Type 'String' -ExpectedValue $LoginType -ActualValue $pop.LoginType -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'ExternalConnectionSettings' -Type 'Array' -ExpectedValue $ExternalConnectionSettings -ActualValue $pop.ExternalConnectionSettings -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'ExternalConnectionSettings' -Type 'Array' -ExpectedValue $ExternalConnectionSettings -ActualValue $pop.ExternalConnectionSettings -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'X509CertificateName' -Type 'String' -ExpectedValue $X509CertificateName -ActualValue $pop.X509CertificateName -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'X509CertificateName' -Type 'String' -ExpectedValue $X509CertificateName -ActualValue $pop.X509CertificateName -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
@@ -226,7 +226,7 @@ function GetPopSettings
         $X509CertificateName
     )
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Server','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Server','DomainController'
 
     return (Get-PopSettings @PSBoundParameters)
 }

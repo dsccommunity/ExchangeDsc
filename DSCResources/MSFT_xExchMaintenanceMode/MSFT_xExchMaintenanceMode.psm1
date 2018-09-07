@@ -72,13 +72,13 @@ function Get-TargetResource
         $UpgradedServerVersion
     )
 
-    LogFunctionEntry -Parameters @{"Enabled" = $Enabled} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Enabled' = $Enabled} -Verbose:$VerbosePreference
 
     #Load TransportMaintenanceMode Helper
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)"))\TransportMaintenance.psm1" -Verbose:0
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-*" -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-*' -Verbose:$VerbosePreference
 
     $maintenanceModeStatus = GetMaintenanceModeStatus -EnteringMaintenanceMode $Enabled -DomainController $DomainController
     $atDesiredVersion = IsExchangeAtDesiredVersion -DomainController $DomainController -UpgradedServerVersion $UpgradedServerVersion
@@ -197,7 +197,7 @@ function Set-TargetResource
         $UpgradedServerVersion
     )
 
-    LogFunctionEntry -Parameters @{"Enabled" = $Enabled} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Enabled' = $Enabled} -Verbose:$VerbosePreference
 
     #Load TransportMaintenanceMode Helper
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)"))\TransportMaintenance.psm1" -Verbose:0
@@ -211,7 +211,7 @@ function Set-TargetResource
     New-Alias Write-Host Write-Verbose
 
     #Check if setup is running.
-    $setupRunning = Get-IsSetupRunning
+    $setupRunning = Test-ExchangeSetupRunning
 
     if ($setupRunning -eq $true)
     {
@@ -220,7 +220,7 @@ function Set-TargetResource
     }
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "*" -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*' -Verbose:$VerbosePreference
 
     #If the request is to put the server in maintenance mode, make sure we aren't already at the (optional) requested Exchange Server version
     $atDesiredVersion = IsExchangeAtDesiredVersion -DomainController $DomainController -UpgradedServerVersion $UpgradedServerVersion
@@ -456,12 +456,12 @@ function Test-TargetResource
         $UpgradedServerVersion
     )
 
-    LogFunctionEntry -Parameters @{"Enabled" = $Enabled} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Enabled' = $Enabled} -Verbose:$VerbosePreference
 
     #Load TransportMaintenanceMode Helper
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)"))\TransportMaintenance.psm1" -Verbose:0
 
-    $setupRunning = Get-IsSetupRunning
+    $setupRunning = Test-ExchangeSetupRunning
 
     if ($setupRunning -eq $true)
     {
@@ -470,7 +470,7 @@ function Test-TargetResource
     }
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-*" -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-*' -Verbose:$VerbosePreference
 
     $serverVersion = Get-ExchangeVersion
 
@@ -647,7 +647,7 @@ function GetMaintenanceModeStatus
         $EnteringMaintenanceMode = $true
     )
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'DomainController'
 
     $serverComponentState = GetServerComponentState -Identity $env:COMPUTERNAME -DomainController $DomainController
     $clusterNode = Get-ClusterNode -Name $env:COMPUTERNAME
@@ -864,7 +864,7 @@ function IsExchangeAtDesiredVersion
 
     if (!([System.String]::IsNullOrEmpty($UpgradedServerVersion)))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'DomainController'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'DomainController'
 
         $server = GetExchangeServer -Identity $env:COMPUTERNAME -DomainController $DomainController
 
@@ -1212,7 +1212,7 @@ function GetExchangeServer
 
     if ([System.String]::IsNullOrEmpty($DomainController))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
 
     return (Get-ExchangeServer @PSBoundParameters)
@@ -1234,7 +1234,7 @@ function GetDatabaseAvailabilityGroup
 
     if ([System.String]::IsNullOrEmpty($DomainController))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
 
     return (Get-DatabaseAvailabilityGroup @PSBoundParameters -Status)
@@ -1260,12 +1260,12 @@ function GetServerComponentState
 
     if ([System.String]::IsNullOrEmpty($Component))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Component'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Component'
     }
 
     if ([System.String]::IsNullOrEmpty($DomainController))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
 
     return (Get-ServerComponentState @PSBoundParameters)
@@ -1295,7 +1295,7 @@ function SetServerComponentState
 
     if ([System.String]::IsNullOrEmpty($DomainController))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
 
     Set-ServerComponentState -Identity $env:COMPUTERNAME @PSBoundParameters
@@ -1325,17 +1325,17 @@ function GetMailboxDatabase
 
     if ([System.String]::IsNullOrEmpty($Identity))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Identity'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Identity'
     }
 
     if ([System.String]::IsNullOrEmpty($DomainController))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
 
     if ([System.String]::IsNullOrEmpty($Server))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server'
     }
 
     return (Get-MailboxDatabase @PSBoundParameters)
@@ -1361,17 +1361,17 @@ function GetMailboxDatabaseCopyStatus
 
     if ([System.String]::IsNullOrEmpty($Identity))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Identity'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Identity'
     }
 
     if ([System.String]::IsNullOrEmpty($DomainController))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
 
     if ([System.String]::IsNullOrEmpty($Server))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server'
     }
 
     return (Get-MailboxDatabaseCopyStatus @PSBoundParameters)
@@ -1393,7 +1393,7 @@ function GetMailboxServer
 
     if ([System.String]::IsNullOrEmpty($DomainController))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
 
     return (Get-MailboxServer @PSBoundParameters)
@@ -1419,11 +1419,11 @@ function SetMailboxServer
 
     if ([System.String]::IsNullOrEmpty($DomainController))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
 
-    AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $AdditionalParams
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'AdditionalParams'
+    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $AdditionalParams
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'AdditionalParams'
 
     Set-MailboxServer @PSBoundParameters
 }
@@ -1450,7 +1450,7 @@ function GetUMActiveCalls
     {
         if ([System.String]::IsNullOrEmpty($DomainController))
         {
-            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
         }
 
         $umActiveCalls = Get-UMActiveCalls @PSBoundParameters
@@ -1524,27 +1524,27 @@ function MoveActiveMailboxDatabase
 
     if ([System.String]::IsNullOrEmpty($ActivateOnServer))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'ActivateOnServer'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'ActivateOnServer'
     }
 
     if ([System.String]::IsNullOrEmpty($DomainController))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DomainController'
     }
 
     if ([System.String]::IsNullOrEmpty($Identity))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Identity'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Identity'
     }
 
     if ([System.String]::IsNullOrEmpty($MoveComment))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'MoveComment'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'MoveComment'
     }
 
     if ([System.String]::IsNullOrEmpty($Server))
     {
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server'
     }
 
     #Setup parameters in a format Move-ActiveMailboxDatabase expects
@@ -1597,7 +1597,7 @@ function MoveActiveMailboxDatabase
     }
 
     #Remove the PSBoundParameters we just re-formatted
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'SkipActiveCopyChecks','SkipClientExperienceChecks','SkipLagChecks','SkipMaximumActiveDatabasesChecks','SkipMoveSuppressionChecks','SkipHealthChecks','SkipCpuChecks','SkipAllChecks'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'SkipActiveCopyChecks','SkipClientExperienceChecks','SkipLagChecks','SkipMaximumActiveDatabasesChecks','SkipMoveSuppressionChecks','SkipHealthChecks','SkipCpuChecks','SkipAllChecks'
 
     #Execute mailbox DB move
     Move-ActiveMailboxDatabase @PSBoundParameters @moveDBParams

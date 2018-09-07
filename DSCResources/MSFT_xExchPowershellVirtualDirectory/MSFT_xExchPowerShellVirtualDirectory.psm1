@@ -47,10 +47,10 @@ function Get-TargetResource
         $WindowsAuthentication
     )
 
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PowerShellVirtualDirectory' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PowerShellVirtualDirectory' -Verbose:$VerbosePreference
 
     $vdir = GetPowerShellVirtualDirectory @PSBoundParameters
 
@@ -117,26 +117,26 @@ function Set-TargetResource
         $WindowsAuthentication
     )
 
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-PowerShellVirtualDirectory' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-PowerShellVirtualDirectory' -Verbose:$VerbosePreference
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
 
-    SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
+    Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     Set-PowerShellVirtualDirectory @PSBoundParameters
 
     if ($AllowServiceRestart -eq $true)
     {
         #Remove existing PS sessions, as we're about to break them
-        RemoveExistingRemoteSession -Verbose:$VerbosePreference
+        Remove-RemoteExchangeSession -Verbose:$VerbosePreference
 
         Write-Verbose -Message 'Recycling MSExchangePowerShellAppPool and MSExchangePowerShellFrontEndAppPool'
 
-        RestartAppPoolIfExists -Name MSExchangePowerShellAppPool
-        RestartAppPoolIfExists -Name MSExchangePowerShellFrontEndAppPool
+        Restart-ExistingAppPool -Name MSExchangePowerShellAppPool
+        Restart-ExistingAppPool -Name MSExchangePowerShellFrontEndAppPool
     }
     else
     {
@@ -193,10 +193,10 @@ function Test-TargetResource
         $WindowsAuthentication
     )
 
-    LogFunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PowerShellVirtualDirectory' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PowerShellVirtualDirectory' -Verbose:$VerbosePreference
 
     $vdir = GetPowerShellVirtualDirectory @PSBoundParameters
 
@@ -210,32 +210,32 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name 'BasicAuthentication' -Type 'Boolean' -ExpectedValue $BasicAuthentication -ActualValue $vdir.BasicAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'BasicAuthentication' -Type 'Boolean' -ExpectedValue $BasicAuthentication -ActualValue $vdir.BasicAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'CertificateAuthentication' -Type 'Boolean' -ExpectedValue $CertificateAuthentication -ActualValue $vdir.CertificateAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'CertificateAuthentication' -Type 'Boolean' -ExpectedValue $CertificateAuthentication -ActualValue $vdir.CertificateAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'ExternalUrl' -Type 'String' -ExpectedValue $ExternalUrl -ActualValue $vdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'ExternalUrl' -Type 'String' -ExpectedValue $ExternalUrl -ActualValue $vdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'InternalUrl' -Type 'String' -ExpectedValue $InternalUrl -ActualValue $vdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'InternalUrl' -Type 'String' -ExpectedValue $InternalUrl -ActualValue $vdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'RequireSSL' -Type 'Boolean' -ExpectedValue $RequireSSL -ActualValue $vdir.RequireSSL -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'RequireSSL' -Type 'Boolean' -ExpectedValue $RequireSSL -ActualValue $vdir.RequireSSL -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'WindowsAuthentication' -Type 'Boolean' -ExpectedValue $WindowsAuthentication -ActualValue $vdir.WindowsAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'WindowsAuthentication' -Type 'Boolean' -ExpectedValue $WindowsAuthentication -ActualValue $vdir.WindowsAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
@@ -291,7 +291,7 @@ function GetPowerShellVirtualDirectory
         $WindowsAuthentication
     )
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
     return (Get-PowerShellVirtualDirectory @PSBoundParameters)
 }

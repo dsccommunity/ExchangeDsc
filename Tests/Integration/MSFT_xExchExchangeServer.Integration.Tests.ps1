@@ -18,7 +18,7 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
+[System.Boolean]$exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
@@ -79,7 +79,7 @@ if ($null -ne $adModule)
 
         if ($null -eq $exchangeServerDN)
         {
-            GetRemoteExchangeSession -Credential $shellCredentials -CommandsToLoad 'Get-ExchangeServer'
+            Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad 'Get-ExchangeServer'
             $server = Get-ExchangeServer -Identity $env:COMPUTERNAME
 
             if ($null -ne $server)

@@ -35,10 +35,10 @@ function Get-TargetResource
         $InternalUrl
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MapiVirtualDirectory" -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MapiVirtualDirectory' -Verbose:$VerbosePreference
 
     $vdir = GetMapiVirtualDirectory @PSBoundParameters
 
@@ -90,14 +90,14 @@ function Set-TargetResource
         $InternalUrl
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Set-MapiVirtualDirectory" -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-MapiVirtualDirectory' -Verbose:$VerbosePreference
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential","AllowServiceRestart"
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential","AllowServiceRestart"
 
-    SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
+    Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     Set-MapiVirtualDirectory @PSBoundParameters
 
@@ -105,8 +105,8 @@ function Set-TargetResource
     {
         Write-Verbose "Recycling MSExchangeMapiFrontEndAppPool and MSExchangeMapiMailboxAppPool"
 
-        RestartAppPoolIfExists -Name MSExchangeMapiFrontEndAppPool
-        RestartAppPoolIfExists -Name MSExchangeMapiMailboxAppPool
+        Restart-ExistingAppPool -Name MSExchangeMapiFrontEndAppPool
+        Restart-ExistingAppPool -Name MSExchangeMapiMailboxAppPool
     }
     else
     {
@@ -151,10 +151,10 @@ function Test-TargetResource
         $InternalUrl
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-MapiVirtualDirectory" -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MapiVirtualDirectory' -Verbose:$VerbosePreference
 
     $vdir = GetMapiVirtualDirectory @PSBoundParameters
 
@@ -168,17 +168,17 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name "IISAuthenticationMethods" -Type "Array" -ExpectedValue $IISAuthenticationMethods -ActualValue $vdir.IISAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'IISAuthenticationMethods' -Type 'Array' -ExpectedValue $IISAuthenticationMethods -ActualValue $vdir.IISAuthenticationMethods -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name "ExternalUrl" -Type "String" -ExpectedValue $ExternalUrl -ActualValue $vdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'ExternalUrl' -Type 'String' -ExpectedValue $ExternalUrl -ActualValue $vdir.ExternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name "InternalUrl" -Type "String" -ExpectedValue $InternalUrl -ActualValue $vdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'InternalUrl' -Type 'String' -ExpectedValue $InternalUrl -ActualValue $vdir.InternalUrl.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
@@ -223,7 +223,7 @@ function GetMapiVirtualDirectory
         $InternalUrl
     )
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Identity","DomainController"
 
     return (Get-MapiVirtualDirectory @PSBoundParameters)
 }

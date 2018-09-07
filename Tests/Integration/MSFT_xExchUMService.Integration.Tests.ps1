@@ -16,7 +16,7 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
+[System.Boolean]$exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
@@ -32,7 +32,7 @@ if ($exchangeInstalled)
     if ($serverVersion -in '2013','2016')
     {
         #Check if the test UM Dial Plan exists, and if not, create it
-        GetRemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-UMDialPlan'
+        Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-UMDialPlan'
 
         if ($null -eq (Get-UMDialPlan -Identity $testUMDPName -ErrorAction SilentlyContinue))
         {

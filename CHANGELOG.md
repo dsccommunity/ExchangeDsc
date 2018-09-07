@@ -184,7 +184,7 @@
 
 ## 1.12.0.0
 
-- xExchangeCommon : In StartScheduledTask corrected throw error check to throw
+- xExchangeCommon : In Start-ExchangeScheduledTask corrected throw error check to throw
   last error when errorRegister has more than 0 errors instead of throwing error
   if errorRegister was not null, which would otherwise always be true.
 - Fix PSAvoidUsingWMICmdlet issues from PSScriptAnalyzer
@@ -305,7 +305,7 @@
 - Fixed issue with reading MailboxDatabases.csv in xExchangeConfigHelper.psm1
   caused by a column name changed introduced in v7.7 of the Exchange Server Role
   Requirements Calculator.
-- Changed function GetRemoteExchangeSession so that it will throw an exception
+- Changed function Get-RemoteExchangeSession so that it will throw an exception
   if Exchange setup is in progress. This will prevent resources from trying to
   execute while setup is running.
 - Fixed issue where VirtualDirectory resources would incorrectly try to restart
@@ -338,7 +338,7 @@
   - Added `ExternalConnectionSettings` parameter
   - Added `X509CertificateName` parameter
 - Added EndToEndExample
-- Fixed bug where StartScheduledTask would throw an error message and fail to
+- Fixed bug where Start-ExchangeScheduledTask would throw an error message and fail to
   set ExecutionTimeLimit and Priority when using domain credentials
 
 ## 1.1.0.0

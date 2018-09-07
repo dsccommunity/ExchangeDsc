@@ -58,7 +58,7 @@ function Get-TargetResource
         $VolumePrefix = 'EXVOL'
     )
 
-    LogFunctionEntry -Verbose:$VerbosePreference
+    Write-FunctionEntry -Verbose:$VerbosePreference
 
     $diskInfo = GetDiskInfo
 
@@ -137,7 +137,7 @@ function Set-TargetResource
         $VolumePrefix = 'EXVOL'
     )
 
-    LogFunctionEntry -Verbose:$VerbosePreference
+    Write-FunctionEntry -Verbose:$VerbosePreference
 
     #First see if we need to assign any disks to ExVol's
     $diskInfo = GetDiskInfo
@@ -242,7 +242,7 @@ function Test-TargetResource
         $VolumePrefix = 'EXVOL'
     )
 
-    LogFunctionEntry -Verbose:$VerbosePreference
+    Write-FunctionEntry -Verbose:$VerbosePreference
 
     $diskInfo = GetDiskInfo
 
@@ -253,7 +253,7 @@ function Test-TargetResource
 
     if ($mountPointCount -lt ($DiskToDBMap.Count + $SpareVolumeCount))
     {
-        ReportBadSetting -SettingName 'MountPointCount' -ExpectedValue ($DiskToDBMap.Count + $SpareVolumeCount) -ActualValue $mountPointCount -Verbose:$VerbosePreference
+        Write-InvalidSettingVerbose -SettingName 'MountPointCount' -ExpectedValue ($DiskToDBMap.Count + $SpareVolumeCount) -ActualValue $mountPointCount -Verbose:$VerbosePreference
         $testResults = $false
     }
     else #Loop through all requested DB's and see if they have a mount point yet
@@ -264,7 +264,7 @@ function Test-TargetResource
             {
                 if ((DBHasMountPoint -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -Database $db -DiskInfo $diskInfo) -eq $false)
                 {
-                    ReportBadSetting -SettingName "DB '$($db)' Has Mount Point" -ExpectedValue $true -ActualValue $false -Verbose:$VerbosePreference
+                    Write-InvalidSettingVerbose -SettingName "DB '$($db)' Has Mount Point" -ExpectedValue $true -ActualValue $false -Verbose:$VerbosePreference
                     $testResults = $false
                 }
             }
