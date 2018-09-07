@@ -190,7 +190,8 @@
 
 ## 1.12.0.0
 
-- xExchangeCommon : In Start-ExchangeScheduledTask corrected throw error check to throw
+- xExchangeCommon : In Start-ExchangeScheduledTask corrected throw error check
+  to throw
   last error when errorRegister has more than 0 errors instead of throwing error
   if errorRegister was not null, which would otherwise always be true.
 - Fix PSAvoidUsingWMICmdlet issues from PSScriptAnalyzer
@@ -344,7 +345,8 @@
   - Added `ExternalConnectionSettings` parameter
   - Added `X509CertificateName` parameter
 - Added EndToEndExample
-- Fixed bug where Start-ExchangeScheduledTask would throw an error message and fail to
+- Fixed bug where Start-ExchangeScheduledTask would throw an error message and
+  fail to
   set ExecutionTimeLimit and Priority when using domain credentials
 
 ## 1.1.0.0
