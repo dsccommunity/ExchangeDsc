@@ -495,9 +495,11 @@ function Compare-ADObjectIdWithSmtpAddressString
 {
     param
     (
-        [Object]
+        [Parameter()]
+        [System.Object]
         $ADObjectId,
 
+        [Parameter()]
         [System.String]
         $AddressString
     )
@@ -802,7 +804,7 @@ function VerifySetting
         }
         elseif ($Type -like "ADObjectID")
         {
-            if ((Compare-ADObjectIdWithSmtpAddressString -ADObjectId $ActualValue -String $ExpectedValue) -eq $false)
+            if ((Compare-ADObjectIdWithSmtpAddressString -ADObjectId $ActualValue -AddressString $ExpectedValue) -eq $false)
             {
                 $returnValue = $false
             }

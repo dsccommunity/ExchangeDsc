@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Fixes an issue where only objects of type Mailbox can be specified as a
+  Journal Recipient. Now MailUser and MailContact types can be used as well.
+
 ## 1.23.0.0
 
 - Fixes issue with xExchMaintenanceMode on Exchange 2016 where the cluster

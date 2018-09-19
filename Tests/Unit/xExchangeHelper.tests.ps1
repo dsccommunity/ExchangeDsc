@@ -282,18 +282,19 @@ try
 
         Describe 'xExchangeHelper\Compare-ADObjectIdWithSmtpAddressString' -Tag 'Helper' {
             <#
-                Define an empty function for Get-Recipient, so pester has something to Mock
+                Define an empty function for Get-Recipient, so Pester has something to Mock.
                 This cmdlet is normally loaded as part of GetRemoteExchangeSession.
             #>
             function Get-Recipient {}
 
             AfterEach {
-                Assert-MockCalled -CommandName Get-Command -Exactly -Times 1 -Scope It
+                Assert-VerifiableMock
             }
 
-            $testADObjectID = New-Object -TypeName PSObject -Property @{DistinguishedName="CN=TestUser,DC=contoso,DC=local"}
-            $testAddress = "testuser@contoso.local"
-            $testBadAddress = "baduser@contoso.local"
+            # Setup test objects for calls to Compare-ADObjectIdWithSmtpAddressString
+            $testADObjectID = New-Object -TypeName PSObject -Property @{DistinguishedName='CN=TestUser,DC=contoso,DC=local'}
+            $testAddress = 'testuser@contoso.local'
+            $testBadAddress = 'baduser@contoso.local'
 
             $testRecipient = New-Object -TypeName PSObject -Property @{
                 EmailAddresses = New-Object -TypeName PSObject -Property @{
@@ -303,8 +304,8 @@ try
 
             Context 'When comparing an ADObjectID to a corresponding SMTP address' {
                 It 'Should return $true' {
-                    Mock -CommandName Get-Command -MockWith { return "" }
-                    Mock -CommandName Get-Recipient -MockWith { return $testRecipient }
+                    Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
+                    Mock -CommandName Get-Recipient -Verifiable -MockWith { return $testRecipient }
 
                     $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testADObjectID -AddressString $testAddress
 
@@ -314,8 +315,8 @@ try
 
             Context 'When comparing an ADObjectID to a non-corresponding SMTP address' {
                 It 'Should return $false' {
-                    Mock -CommandName Get-Command -MockWith { return "" }
-                    Mock -CommandName Get-Recipient -MockWith { return $testRecipient }
+                    Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
+                    Mock -CommandName Get-Recipient -Verifiable -MockWith { return $testRecipient }
 
                     $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testADObjectID -AddressString $testBadAddress
 
@@ -325,7 +326,7 @@ try
 
             Context 'When comparing an ADObjectID to an empty SMTP address' {
                 It 'Should return $false' {
-                    Mock -CommandName Get-Command -MockWith { return "" }
+                    Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
 
                     $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testADObjectID -AddressString ''
 
@@ -335,7 +336,7 @@ try
 
             Context 'When comparing an ADObjectID to a null SMTP address' {
                 It 'Should return $false' {
-                    Mock -CommandName Get-Command -MockWith { return "" }
+                    Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
 
                     $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testADObjectID -AddressString $null
 
@@ -345,7 +346,7 @@ try
 
             Context 'When comparing a null ADObjectID to an empty SMTP address' {
                 It 'Should return $true' {
-                    Mock -CommandName Get-Command -MockWith { return "" }
+                    Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
 
                     $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $null -AddressString ''
 
@@ -355,7 +356,7 @@ try
 
             Context 'When comparing a null ADObjectID to a null SMTP address' {
                 It 'Should return $true' {
-                    Mock -CommandName Get-Command -MockWith { return "" }
+                    Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
 
                     $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $null -AddressString $null
 
@@ -365,7 +366,7 @@ try
 
             Context 'When comparing a null ADObjectID to any SMTP address' {
                 It 'Should return $false' {
-                    Mock -CommandName Get-Command -MockWith { return "" }
+                    Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
 
                     $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $null -AddressString $testAddress
 
@@ -375,14 +376,14 @@ try
 
             Context 'When Get-Recipient returns $null' {
                 It 'Should throw an exception' {
-                    Mock -CommandName Get-Command -MockWith { return "" }
-                    Mock -CommandName Get-Recipient -MockWith { return $null }
+                    Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
+                    Mock -CommandName Get-Recipient -Verifiable -MockWith { return $null }
 
                     $caughtException = $false
 
                     try
                     {
-                        $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testADObjectID -AddressString $testBadAddress
+                        Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testADObjectID -AddressString $testBadAddress | Out-Null
                     }
                     catch
                     {
@@ -395,13 +396,13 @@ try
 
             Context 'When Get-Command returns $null' {
                 It 'Should throw an exception' {
-                    Mock -CommandName Get-Command -MockWith { return $null }
+                    Mock -CommandName Get-Command -Verifiable -MockWith { return $null }
 
                     $caughtException = $false
 
                     try
                     {
-                        $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testADObjectID -AddressString $testBadAddress
+                        Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testADObjectID -AddressString $testBadAddress | Out-Null
                     }
                     catch
                     {
