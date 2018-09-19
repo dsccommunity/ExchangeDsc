@@ -477,23 +477,58 @@ function CompareUnlimitedWithString
     }
 }
 
-#Takes an ADObjectId, gets a mailbox from it, and checks if it's EmailAddresses property contains the given string.
-#The Get-Mailbox cmdlet must be loaded for this function to succeed.
-function CompareADObjectIdWithEmailAddressString
+<#
+    .SYNOPSIS
+        Takes an ADObjectId, gets a recipient from it using Get-Recipient, and
+        checks if the EmailAddresses property contains the given AddressString.
+        The Get-Recipient cmdlet must be loaded for this function to succeed.
+
+    .PARAMETER ADObjectId
+        The ADObjectID to run Get-Recipient against and compare against the
+        given AddressString.
+
+    .PARAMETER AddressString
+        The AddressString to compare against the EmailAddresses property of the
+        Get-Recipient results.
+#>
+function Compare-ADObjectIdWithSmtpAddressString
 {
-    param([Microsoft.Exchange.Data.Directory.ADObjectId]$ADObjectId, [System.String]$String)
+    param
+    (
+        [Object]
+        $ADObjectId,
 
-    if ($null -ne (Get-Command Get-Mailbox -ErrorAction SilentlyContinue))
+        [System.String]
+        $AddressString
+    )
+
+    if ($null -ne (Get-Command -Name 'Get-Recipient' -ErrorAction SilentlyContinue))
     {
-        $mailbox = $ADObjectId | Get-Mailbox -ErrorAction SilentlyContinue
+        if ($null -eq $ADObjectId -and ![System.String]::IsNullOrEmpty($AddressString))
+        {
+            return $false
+        }
+        elseif ($null -ne $ADObjectId -and [System.String]::IsNullOrEmpty($AddressString))
+        {
+            return $false
+        }
+        elseif ($null -eq $ADObjectId -and [System.String]::IsNullOrEmpty($AddressString))
+        {
+            return $true
+        }
 
-        return ($mailbox.EmailAddresses.Contains($String))
+        $recipient = Get-Recipient -Identity $ADObjectId.DistinguishedName -ErrorAction SilentlyContinue
+
+        if ($null -eq $recipient)
+        {
+            throw "Failed to Get-Recipient for ADObjectID with distinguishedName: $($ADObjectId.DistinguishedName)"
+        }
+
+        return ($null -ne ($recipient.EmailAddresses | Where-Object {$_.AddressString -like $AddressString}))
     }
     else
     {
-        Write-Error "CompareADObjectIdWithEmailAddressString requires the Get-Mailbox cmdlert"
-
-        return $false
+        throw 'Compare-ADObjectIdWithSmtpAddressString requires the Get-Recipient cmdlet. Make sure this is in the RBAC scope of the executing user account.'
     }
 }
 
@@ -767,7 +802,7 @@ function VerifySetting
         }
         elseif ($Type -like "ADObjectID")
         {
-            if ((CompareADObjectIdWithEmailAddressString -ADObjectId $ActualValue -String $ExpectedValue) -eq $false)
+            if ((Compare-ADObjectIdWithSmtpAddressString -ADObjectId $ActualValue -String $ExpectedValue) -eq $false)
             {
                 $returnValue = $false
             }
