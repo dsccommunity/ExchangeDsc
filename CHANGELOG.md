@@ -7,6 +7,8 @@
   well as in calls to these functions from other files.
 - MSFT_xExchTransportService: Removed functions that were duplicates of helper
   functions in xExchangeHelper.psm1.
+- Fixes an issue where only objects of type Mailbox can be specified as a
+  Journal Recipient. Now MailUser and MailContact types can be used as well.
 
 ## 1.23.0.0
 

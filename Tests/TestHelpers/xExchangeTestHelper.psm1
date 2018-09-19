@@ -327,13 +327,19 @@ function Get-TestCredential
     return $Global:TestCredential
 }
 
-function Get-TestDomain
+<#
+    .SYNOPSIS
+        Gets all configured Accepted Domains, and returns the Domain name of
+        the first retrieved Accepted Domain. Throws an exception if no
+        Accepted Domains are configured.
+#>
+function Get-TestAcceptedDomainName
 {
     [CmdletBinding()]
     [OutputType([System.String])]
     param()
 
-    [System.Object[]]$acceptedDomains = Get-AcceptedDomain
+    [System.Object[]] $acceptedDomains = Get-AcceptedDomain
 
     if ($acceptedDomains.Count -gt 0)
     {
@@ -345,21 +351,26 @@ function Get-TestDomain
     }
 }
 
-function Get-TestMailbox
+<#
+    .SYNOPSIS
+        Returns a Mailbox object corresponding to a DSC Test Mailbox. Creates
+        the Mailbox if it does not already exist.
+#>
+function Get-DSCTestMailbox
 {
     [CmdletBinding()]
     [OutputType([Microsoft.Exchange.Data.Directory.Management.Mailbox])]
     param()
 
-    $testMailboxName = "DSCTestMailbox"
+    $testMailboxName = 'DSCTestMailbox'
 
-    $testDomain = Get-TestDomain
+    $testDomain = Get-TestAcceptedDomainName
     $testCreds = Get-TestCredential
 
     $testMailbox = Get-Mailbox $testMailboxName -ErrorAction SilentlyContinue
     $primarySMTP = "$testMailboxName@$testDomain"
     $secondarySMTP = "$($testMailboxName)2@$testDomain"
-    [System.Object[]]$dbsOnServer = Get-MailboxDatabase -Server $env:COMPUTERNAME -ErrorAction SilentlyContinue
+    [System.Object[]] $dbsOnServer = Get-MailboxDatabase -Server $env:COMPUTERNAME -ErrorAction SilentlyContinue
 
     $changedMailbox = $false
 
@@ -417,13 +428,18 @@ function Get-TestMailbox
     return $testMailbox
 }
 
-function Get-TestMailUser
+<#
+    .SYNOPSIS
+        Returns a MailUser object corresponding to a DSC Test MailUser. Creates
+        the MailUser if it does not already exist.
+#>
+function Get-DSCTestMailUser
 {
     [CmdletBinding()]
     [OutputType([Microsoft.Exchange.Data.Directory.Management.MailUser])]
     param()
 
-    $testMailUserName = "DSCTestMailUser"
+    $testMailUserName = 'DSCTestMailUser'
 
     $testMailUser = Get-MailUser $testMailUserName -ErrorAction SilentlyContinue
     $primarySMTP = "$testMailUserName@contoso.local"
@@ -467,13 +483,18 @@ function Get-TestMailUser
     return $testMailUser
 }
 
-function Get-TestMailContact
+<#
+    .SYNOPSIS
+        Returns a MailContact object corresponding to a DSC Test MailContact.
+        Creates the MailContact if it does not already exist.
+#>
+function Get-DSCTestMailContact
 {
     [CmdletBinding()]
     [OutputType([Microsoft.Exchange.Data.Directory.Management.MailContact])]
     param()
 
-    $testMailContactName = "DSCTestMailContact"
+    $testMailContactName = 'DSCTestMailContact'
 
     $testMailContact = Get-MailContact $testMailContactName -ErrorAction SilentlyContinue
     $primarySMTP = "$testMailContactName@contoso.local"

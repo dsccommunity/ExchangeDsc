@@ -710,9 +710,14 @@ function Compare-ADObjectIdToSmtpAddressString
 {
     param
     (
+<<<<<<< HEAD
+=======
+        [Parameter()]
+>>>>>>> Change Get-Mailbox to Get-Recipient in CompareADObjectIdWithEmailAddressString
         [System.Object]
         $ADObjectId,
 
+        [Parameter()]
         [System.String]
         $AddressString
     )
@@ -1223,7 +1228,11 @@ function Test-ExchangeSetting
         }
         elseif ($Type -like 'ADObjectID')
         {
+<<<<<<< HEAD
             if ((Compare-ADObjectIdToSmtpAddressString -ADObjectId $ActualValue -AddressString $ExpectedValue) -eq $false)
+=======
+            if ((Compare-ADObjectIdWithSmtpAddressString -ADObjectId $ActualValue -AddressString $ExpectedValue) -eq $false)
+>>>>>>> Change Get-Mailbox to Get-Recipient in CompareADObjectIdWithEmailAddressString
             {
                 $returnValue = $false
             }
