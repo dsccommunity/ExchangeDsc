@@ -388,7 +388,7 @@ function Get-DSCTestMailbox
 
         if ($dbsOnServer.Count -gt 0)
         {
-            $newMailboxParams.Add("Database",$dbsOnServer[0].Name)
+            $newMailboxParams.Add('Database',$dbsOnServer[0].Name)
         }
 
         $testMailbox = New-Mailbox @newMailboxParams
