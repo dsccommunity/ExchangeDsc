@@ -95,7 +95,7 @@ if ($exchangeInstalled)
                                 -DesiredArrayContents $testParams.AutoDiscoverSiteScope `
                                 -GetResultParameterName 'AutoDiscoverSiteScope' `
                                 -ContextLabel 'Verify AutoDiscoverSiteScope' `
-                                -ItLabel 'AutoDiscoverSiteScope Should -Be empty'
+                                -ItLabel 'AutoDiscoverSiteScope should be empty'
 
         #create AlternateServiceAccount credentials
         if ($null -eq $asaCredentials)
