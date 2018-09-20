@@ -10,107 +10,90 @@ $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
 
-# Remove any existing Remote PowerShell sessions created by xExchange and verify they are gone
-function Remove-TestPSSession
+<#
+    .SYNOPSIS
+        Remove any existing Remote PowerShell sessions created by xExchange and
+        verify they are gone.
+#>
+function Remove-ExistingPSSession
 {
-    Context 'After removing an existing Remote PowerShell Session to Exchange' {
-        RemoveExistingRemoteSession
+    [CmdletBinding()]
+    param ()
+
+    Context 'Remove existing Remote PowerShell Session to Exchange' {
+        Remove-RemoteExchangeSession
 
         $Session = $null
-        $Session = GetExistingExchangeSession
+        $Session = Get-ExistingRemoteExchangeSession
 
-        It 'GetExistingExchangeSession should return Null' {
+        It 'Get-ExistingRemoteExchangeSession should return Null' {
             $Session | Should BeNullOrEmpty
         }
     }
 }
 
 # Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
+[System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 if ($exchangeInstalled)
 {
     # Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
-    Describe 'xExchangeHelper\GetRemoteExchangeSession' -Tag 'Helper' {
+    Describe 'xExchangeHelper\Get-RemoteExchangeSession' -Tag 'Helper' {
         # Remove any existing Remote PS Sessions to Exchange before getting started
-        Remove-TestPSSession
+        Remove-ExistingPSSession
 
         # Verify we can setup a new Remote PS Session to Exchange
         Context 'When establishing a new Remote PowerShell Session to Exchange' {
-            GetRemoteExchangeSession -Credential $shellCredentials -CommandsToLoad 'Get-ExchangeServer'
+            Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad 'Get-ExchangeServer'
 
             $Session = $null
-            $Session = GetExistingExchangeSession
+            $Session = Get-ExistingRemoteExchangeSession
 
             It 'The Session Should Not Be Null' {
                 ($null -ne $Session) | Should Be $true
             }
         }
 
-
         # Remove sessions again before continuing
-        Remove-TestPSSession
-
+        Remove-ExistingPSSession
 
         # Simulate that setup is running (using notepad.exe), and try to establish a new session. This should fail
         Context 'When requesting a new Remote PowerShell Session to Exchange and Exchange setup is running' {
             Start-Process Notepad.exe
 
-            $caughtException = $false
-
-            try
-            {
-                GetRemoteExchangeSession -Credential $shellCredentials -CommandsToLoad 'Get-ExchangeServer' -SetupProcessName 'notepad'
-            }
-            catch
-            {
-                $caughtException = $true
+            It 'Get-RemoteExchangeSession Should Throw Exception When Setup Process Is Specified and Detected' {
+                { Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad 'Get-ExchangeServer' -SetupProcessName 'notepad' } | Should -Throw
             }
 
-            It 'GetRemoteExchangeSession Should Throw Exception When Setup Process Is Specified and Detected' {
-                $caughtException | Should Be $true
-            }
+            It 'Get-ExistingRemoteExchangeSession should return Null' {
+                $Session = $null
+                $Session = Get-ExistingRemoteExchangeSession
 
-            $Session = $null
-            $Session = GetExistingExchangeSession
-
-            It 'GetExistingExchangeSession should return Null' {
                 ($null -eq $Session) | Should Be $true
             }
         }
     }
 
-    Describe 'xExchangeHelper\CompareUnlimitedWithString' -Tag 'Helper' {
+    Describe 'xExchangeHelper\Compare-UnlimitedToString' -Tag 'Helper' {
         <#
             Test for issue (https://github.com/PowerShell/xExchange/issues/211)
-            Calling CompareUnlimitedWithString when the Unlimited is of type [Microsoft.Exchange.Data.Unlimited`1[System.Int32]]
+            Calling Compare-UnlimitedToString when the Unlimited is of type [Microsoft.Exchange.Data.Unlimited`1[System.Int32]]
             and the string value contains a number throws an exception.
         #>
-        Context 'When CompareUnlimitedWithString is called using an Int32 Unlimited and a String Containing a Number' {
-            $caughtException = $false
-
-            [Microsoft.Exchange.Data.Unlimited`1[System.Int32]]$unlimitedInt32 = 1000
-
-            try
-            {
-                CompareUnlimitedWithString -Unlimited $unlimitedInt32 -String '1000'
-            }
-            catch
-            {
-                $caughtException = $true
-            }
-
+        Context 'When Compare-UnlimitedToString is called using an Int32 Unlimited and a String Containing a Number' {
             It 'Should not throw an exception' {
-                $caughtException | Should Be $false
+                [Microsoft.Exchange.Data.Unlimited`1[System.Int32]]$unlimitedInt32 = 1000
+
+                { Compare-UnlimitedToString -Unlimited $unlimitedInt32 -String '1000' } | Should -Not -Throw
             }
         }
     }
 
-    Describe 'xExchangeHelper\Compare-ADObjectIdWithSmtpAddressString' -Tag 'Helper' {
+    Describe 'xExchangeHelper\Compare-ADObjectIdToSmtpAddressString' -Tag 'Helper' {
         # Get test PS Session and setup test variables
-        GetRemoteExchangeSession -Credential $shellCredentials -CommandsToLoad 'Get-AcceptedDomain','*-Mailbox','*-MailUser','*-MailContact','Get-Recipient','Get-MailboxDatabase'
+        Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad 'Get-AcceptedDomain','*-Mailbox','*-MailUser','*-MailContact','Get-Recipient','Get-MailboxDatabase'
 
         $testMailbox = Get-DSCTestMailbox -Verbose
         $testMailboxADObjectID = [Microsoft.Exchange.Data.Directory.ADObjectId]::ParseDnOrGuid($testMailbox.DistinguishedName)
@@ -146,7 +129,7 @@ if ($exchangeInstalled)
         # Start testing
         Context 'When comparing the ADObjectID of a mailbox to its PrimarySmtpAddress' {
             It 'Should return $true' {
-                $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testMailboxADObjectID -AddressString $testMailbox.PrimarySmtpAddress.Address
+                $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $testMailboxADObjectID -AddressString $testMailbox.PrimarySmtpAddress.Address
 
                 $compareResults | Should -Be $true
             }
@@ -154,7 +137,7 @@ if ($exchangeInstalled)
 
         Context 'When comparing the ADObjectID of a mailbox to one of its secondary SMTP addresses' {
             It 'Should return $true' {
-                $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testMailboxADObjectID -AddressString $testMailboxSecondaryAddress
+                $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $testMailboxADObjectID -AddressString $testMailboxSecondaryAddress
 
                 $compareResults | Should -Be $true
             }
@@ -162,7 +145,7 @@ if ($exchangeInstalled)
 
         Context 'When comparing the ADObjectID of a mailbox to an empty string' {
             It 'Should return $false' {
-                $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testMailboxADObjectID -AddressString ''
+                $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $testMailboxADObjectID -AddressString ''
 
                 $compareResults | Should -Be $false
             }
@@ -170,7 +153,7 @@ if ($exchangeInstalled)
 
         Context 'When comparing the ADObjectID of a mailbox to a null string' {
             It 'Should return $false' {
-                $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testMailboxADObjectID -AddressString $null
+                $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $testMailboxADObjectID -AddressString $null
 
                 $compareResults | Should -Be $false
             }
@@ -178,7 +161,7 @@ if ($exchangeInstalled)
 
         Context 'When comparing a null ADObjectID to a valid SMTP address' {
             It 'Should return $false' {
-                $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $null -AddressString $testMailbox.PrimarySmtpAddress.Address
+                $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $null -AddressString $testMailbox.PrimarySmtpAddress.Address
 
                 $compareResults | Should -Be $false
             }
@@ -186,7 +169,7 @@ if ($exchangeInstalled)
 
         Context 'When comparing the ADObjectID of a mail user to its ExternalEmailAddress' {
             It 'Should return $true' {
-                $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testMailUserADObjectID -AddressString $testMailUser.ExternalEmailAddress.AddressString
+                $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $testMailUserADObjectID -AddressString $testMailUser.ExternalEmailAddress.AddressString
 
                 $compareResults | Should -Be $true
             }
@@ -194,7 +177,7 @@ if ($exchangeInstalled)
 
         Context 'When comparing the ADObjectID of a mail user to an empty string' {
             It 'Should return $false' {
-                $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testMailUserADObjectID -AddressString ''
+                $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $testMailUserADObjectID -AddressString ''
 
                 $compareResults | Should -Be $false
             }
@@ -202,39 +185,39 @@ if ($exchangeInstalled)
 
         Context 'When comparing the ADObjectID of a mail user to a null string' {
             It 'Should return $false' {
-                $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testMailUserADObjectID -AddressString $null
+                $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $testMailUserADObjectID -AddressString $null
 
                 $compareResults | Should -Be $false
             }
         }
 
         Context 'When comparing the ADObjectID of a mail contact to its ExternalEmailAddress' {
-            $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testMailContactADObjectID -AddressString $testMailContact.ExternalEmailAddress.AddressString
-
             It 'Should return $true' {
+                $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $testMailContactADObjectID -AddressString $testMailContact.ExternalEmailAddress.AddressString
+
                 $compareResults | Should -Be $true
             }
         }
 
         Context 'When comparing the ADObjectID of a mail contact to an empty string' {
             It 'Should return $false' {
-                $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testMailContactADObjectID -AddressString ''
+                $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $testMailContactADObjectID -AddressString ''
 
                 $compareResults | Should -Be $false
             }
         }
 
         Context 'When comparing the ADObjectID of a mail contact to a null string' {
-            $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testMailContactADObjectID -AddressString $null
-
             It 'Should return $false' {
+                $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $testMailContactADObjectID -AddressString $null
+
                 $compareResults | Should -Be $false
             }
         }
 
         Context 'When comparing a null ADObjectID to an empty string' {
             It 'Should return $true' {
-                $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $null -AddressString ''
+                $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $null -AddressString ''
 
                 $compareResults | Should -Be $true
             }
@@ -242,7 +225,7 @@ if ($exchangeInstalled)
 
         Context 'When comparing a null ADObjectID to a null string' {
             It 'Should return $true' {
-                $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $null -AddressString $null
+                $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $null -AddressString $null
 
                 $compareResults | Should -Be $true
             }

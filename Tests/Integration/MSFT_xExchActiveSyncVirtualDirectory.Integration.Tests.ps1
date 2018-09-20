@@ -172,50 +172,32 @@ if ($exchangeInstalled)
         }
 
         Context 'Test missing ExtendedProtectionFlags for ExtendedProtectionSPNList' {
-            $caughtException = $false
             $testParams.ExtendedProtectionFlags = @('NoServicenameCheck')
-            try
-            {
-                Set-TargetResource @testParams | Out-Null
-            }
-            catch
-            {
-                $caughtException = $true
-            }
 
             It 'Should hit exception for missing ExtendedProtectionFlags AllowDotlessSPN' {
-                $caughtException | Should Be $true
+                { Set-TargetResource @testParams } | Should -Throw
             }
 
-            It 'Test results should be true after adding missing ExtendedProtectionFlags' {
+            It 'Test results Should -Be true after adding missing ExtendedProtectionFlags' {
                 $testParams.ExtendedProtectionFlags = @('AllowDotlessSPN')
                 Set-TargetResource @testParams
                 $testResults = Test-TargetResource @testParams
-                $testResults | Should Be $true
+                $testResults | Should -Be $true
             }
         }
 
         Context 'Test invalid combination in ExtendedProtectionFlags' {
-            $caughtException = $false
             $testParams.ExtendedProtectionFlags = @('NoServicenameCheck','None')
-            try
-            {
-                Set-TargetResource @testParams | Out-Null
-            }
-            catch
-            {
-                $caughtException = $true
-            }
 
             It 'Should hit exception for invalid combination ExtendedProtectionFlags' {
-                $caughtException | Should Be $true
+                { Set-TargetResource @testParams } | Should -Throw
             }
 
-            It 'Test results should be true after correction of ExtendedProtectionFlags' {
+            It 'Test results Should -Be true after correction of ExtendedProtectionFlags' {
                 $testParams.ExtendedProtectionFlags = @('AllowDotlessSPN')
                 Set-TargetResource @testParams
                 $testResults = Test-TargetResource @testParams
-                $testResults | Should Be $true
+                $testResults | Should -Be $true
             }
         }
 

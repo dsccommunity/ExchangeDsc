@@ -187,18 +187,7 @@ try
                     # Cause an error by trying to get a non-existent item
                     Get-ChildItem $guid1 -ErrorAction SilentlyContinue
 
-                    $caughtException = $false
-
-                    try
-                    {
-                        Assert-NoNewError -CmdletBeingRun "Get-ChildItem" -PreviousError $initialError
-                    }
-                    catch
-                    {
-                        $caughtException = $true
-                    }
-
-                    $caughtException | Should -Be $true
+                    { Assert-NoNewError -CmdletBeingRun "Get-ChildItem" -PreviousError $initialError } | Should -Throw
                 }
             }
 
@@ -210,18 +199,7 @@ try
                     # Run a command that should always succeed
                     Get-ChildItem | Out-Null
 
-                    $caughtException = $false
-
-                    try
-                    {
-                        Assert-NoNewError -CmdletBeingRun "Get-ChildItem" -PreviousError $initialError
-                    }
-                    catch
-                    {
-                        $caughtException = $true
-                    }
-
-                    $caughtException | Should -Be $false
+                    { Assert-NoNewError -CmdletBeingRun "Get-ChildItem" -PreviousError $initialError } | Should -Not -Throw
                 }
             }
         }
@@ -243,18 +221,7 @@ try
 
                     Mock -CommandName Get-ExchangeVersion -MockWith { return $ExchangeVersion }
 
-                    $caughtException = $false
-
-                    try
-                    {
-                        Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName $Name -SupportedVersions $SupportedVersions
-                    }
-                    catch
-                    {
-                        $caughtException = $true
-                    }
-
-                    $caughtException | Should -Be $false
+                    { Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName $Name -SupportedVersions $SupportedVersions } | Should -Not -Throw
                 }
             }
 
@@ -264,23 +231,12 @@ try
 
                     Mock -CommandName Get-ExchangeVersion -MockWith { return $ExchangeVersion }
 
-                    $caughtException = $false
-
-                    try
-                    {
-                        Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName $Name -SupportedVersions $SupportedVersions
-                    }
-                    catch
-                    {
-                        $caughtException = $true
-                    }
-
-                    $caughtException | Should -Be $true
+                    { Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName $Name -SupportedVersions $SupportedVersions } | Should -Throw
                 }
             }
         }
 
-        Describe 'xExchangeHelper\Compare-ADObjectIdWithSmtpAddressString' -Tag 'Helper' {
+        Describe 'xExchangeHelper\Compare-ADObjectIdToSmtpAddressString' -Tag 'Helper' {
             <#
                 Define an empty function for Get-Recipient, so Pester has something to Mock.
                 This cmdlet is normally loaded as part of GetRemoteExchangeSession.
@@ -291,7 +247,7 @@ try
                 Assert-VerifiableMock
             }
 
-            # Setup test objects for calls to Compare-ADObjectIdWithSmtpAddressString
+            # Setup test objects for calls to Compare-ADObjectIdToSmtpAddressString
             $testADObjectID = New-Object -TypeName PSObject -Property @{DistinguishedName='CN=TestUser,DC=contoso,DC=local'}
             $testAddress = 'testuser@contoso.local'
             $testBadAddress = 'baduser@contoso.local'
@@ -307,7 +263,7 @@ try
                     Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
                     Mock -CommandName Get-Recipient -Verifiable -MockWith { return $testRecipient }
 
-                    $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testADObjectID -AddressString $testAddress
+                    $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $testADObjectID -AddressString $testAddress
 
                     $compareResults | Should -Be $true
                 }
@@ -318,7 +274,7 @@ try
                     Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
                     Mock -CommandName Get-Recipient -Verifiable -MockWith { return $testRecipient }
 
-                    $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testADObjectID -AddressString $testBadAddress
+                    $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $testADObjectID -AddressString $testBadAddress
 
                     $compareResults | Should -Be $false
                 }
@@ -328,7 +284,7 @@ try
                 It 'Should return $false' {
                     Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
 
-                    $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testADObjectID -AddressString ''
+                    $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $testADObjectID -AddressString ''
 
                     $compareResults | Should -Be $false
                 }
@@ -338,7 +294,7 @@ try
                 It 'Should return $false' {
                     Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
 
-                    $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testADObjectID -AddressString $null
+                    $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $testADObjectID -AddressString $null
 
                     $compareResults | Should -Be $false
                 }
@@ -348,7 +304,7 @@ try
                 It 'Should return $true' {
                     Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
 
-                    $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $null -AddressString ''
+                    $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $null -AddressString ''
 
                     $compareResults | Should -Be $true
                 }
@@ -358,7 +314,7 @@ try
                 It 'Should return $true' {
                     Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
 
-                    $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $null -AddressString $null
+                    $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $null -AddressString $null
 
                     $compareResults | Should -Be $true
                 }
@@ -368,7 +324,7 @@ try
                 It 'Should return $false' {
                     Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
 
-                    $compareResults = Compare-ADObjectIdWithSmtpAddressString -ADObjectId $null -AddressString $testAddress
+                    $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $null -AddressString $testAddress
 
                     $compareResults | Should -Be $false
                 }
@@ -379,18 +335,7 @@ try
                     Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
                     Mock -CommandName Get-Recipient -Verifiable -MockWith { return $null }
 
-                    $caughtException = $false
-
-                    try
-                    {
-                        Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testADObjectID -AddressString $testBadAddress | Out-Null
-                    }
-                    catch
-                    {
-                        $caughtException = $true
-                    }
-
-                    $caughtException | Should -Be $true
+                    { Compare-ADObjectIdToSmtpAddressString -ADObjectId $testADObjectID -AddressString $testBadAddress | Out-Null } | Should -Throw
                 }
             }
 
@@ -398,18 +343,7 @@ try
                 It 'Should throw an exception' {
                     Mock -CommandName Get-Command -Verifiable -MockWith { return $null }
 
-                    $caughtException = $false
-
-                    try
-                    {
-                        Compare-ADObjectIdWithSmtpAddressString -ADObjectId $testADObjectID -AddressString $testBadAddress | Out-Null
-                    }
-                    catch
-                    {
-                        $caughtException = $true
-                    }
-
-                    $caughtException | Should -Be $true
+                    { Compare-ADObjectIdToSmtpAddressString -ADObjectId $testADObjectID -AddressString $testBadAddress | Out-Null } | Should -Throw
                 }
             }
         }

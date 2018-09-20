@@ -667,6 +667,7 @@ function Compare-UnlimitedToString
     param
     (
         [Parameter()]
+        [System.Object]
         $Unlimited,
 
         [Parameter()]
@@ -708,12 +709,11 @@ function Compare-UnlimitedToString
 #>
 function Compare-ADObjectIdToSmtpAddressString
 {
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param
     (
-<<<<<<< HEAD
-=======
         [Parameter()]
->>>>>>> Change Get-Mailbox to Get-Recipient in CompareADObjectIdWithEmailAddressString
         [System.Object]
         $ADObjectId,
 
@@ -748,7 +748,7 @@ function Compare-ADObjectIdToSmtpAddressString
     }
     else
     {
-        throw 'Compare-ADObjectIdWithSmtpAddressString requires the Get-Recipient cmdlet. Make sure this is in the RBAC scope of the executing user account.'
+        throw 'Compare-ADObjectIdToSmtpAddressString requires the Get-Recipient cmdlet. Make sure this is in the RBAC scope of the executing user account.'
     }
 }
 
@@ -1228,11 +1228,7 @@ function Test-ExchangeSetting
         }
         elseif ($Type -like 'ADObjectID')
         {
-<<<<<<< HEAD
             if ((Compare-ADObjectIdToSmtpAddressString -ADObjectId $ActualValue -AddressString $ExpectedValue) -eq $false)
-=======
-            if ((Compare-ADObjectIdWithSmtpAddressString -ADObjectId $ActualValue -AddressString $ExpectedValue) -eq $false)
->>>>>>> Change Get-Mailbox to Get-Recipient in CompareADObjectIdWithEmailAddressString
             {
                 $returnValue = $false
             }
