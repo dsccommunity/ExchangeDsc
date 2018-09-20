@@ -27,7 +27,7 @@ function Get-TargetResource
         $MinAchievedIOPS = 0
     )
 
-    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath; "JetstressParams" = $JetstressParams} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'JetstressPath' = $JetstressPath; 'JetstressParams' = $JetstressParams} -Verbose:$VerbosePreference
 
     $returnValue = @{
         Type            = [System.String] $Type
@@ -73,7 +73,7 @@ function Set-TargetResource
         $MinAchievedIOPS = 0
     )
 
-    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath; "JetstressParams" = $JetstressParams} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'JetstressPath' = $JetstressPath; 'JetstressParams' = $JetstressParams} -Verbose:$VerbosePreference
 
     $jetstressRunning = IsJetstressRunning
     $jetstressSuccessful = JetstressTestSuccessful @PSBoundParameters
@@ -167,7 +167,7 @@ function Set-TargetResource
 
     while ($jetstressRunning -eq $true)
     {
-        Write-Verbose "Jetstress is still running at '$([DateTime]::Now)'."
+        Write-Verbose -Message "Jetstress is still running at '$([DateTime]::Now)'."
 
         #Wait for 5 minutes before logging to the screen again, but actually check every 5 seconds whether Jetstress has completed.
         for ($i = 0; $i -lt 300 -and $jetstressRunning -eq $true; $i += 5)
@@ -184,7 +184,7 @@ function Set-TargetResource
     #Check the final status on the Jetstress run
     if ($jetstressRunning -eq $false)
     {
-        Write-Verbose "Jetstress testing finished at '$([DateTime]::Now)'."
+        Write-Verbose -Message "Jetstress testing finished at '$([DateTime]::Now)'."
 
         $overallTestSuccessful = JetstressTestSuccessful @PSBoundParameters
 
@@ -232,7 +232,7 @@ function Test-TargetResource
         $MinAchievedIOPS = 0
     )
 
-    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath; "JetstressParams" = $JetstressParams} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'JetstressPath' = $JetstressPath; 'JetstressParams' = $JetstressParams} -Verbose:$VerbosePreference
 
     $jetstressRunning = IsJetstressRunning -MaximumWaitSeconds 1
 
@@ -286,7 +286,7 @@ function StartJetstress
 
     $fullPath = Join-Path -Path "$($JetstressPath)" -ChildPath "JetstressCmd.exe"
 
-    StartScheduledTask -Path "$($fullPath)" -Arguments "$($JetstressParams)" -WorkingDirectory "$($JetstressPath)" -TaskName 'Jetstress' -MaxWaitMinutes $MaxWaitMinutes -Verbose:$VerbosePreference -TaskPriority 1
+    Start-ExchangeScheduledTask -Path "$fullPath" -Arguments "$JetstressParams" -WorkingDirectory "$JetstressPath" -TaskName 'Jetstress' -MaxWaitMinutes $MaxWaitMinutes -Verbose:$VerbosePreference -TaskPriority 1
 }
 
 #Looks in the latest Type*.html file to determine whether the last Jetstress run passed
@@ -347,7 +347,7 @@ function JetstressTestSuccessful
                 {
                     $foundOverallResults = $true
 
-                    Write-Verbose "File $($latest.FullName)'' has an 'Overall Test Result' of '$($result)'"
+                    Write-Verbose -Message "File '$($latest.FullName)' has an 'Overall Test Result' of '$result'"
 
                     if ($result -like 'Pass')
                     {
@@ -360,7 +360,7 @@ function JetstressTestSuccessful
 
                     if ([System.String]::IsNullOrEmpty($result) -eq $false)
                     {
-                        Write-Verbose "File $($latest.FullName)'' has an 'Achieved Transactional I/O per Second' value of '$($result)'"
+                        Write-Verbose -Message "File '$($latest.FullName)' has an 'Achieved Transactional I/O per Second' value of '$result'"
 
                         [Decimal]$decResult = [Decimal]::Parse($result)
 

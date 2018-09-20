@@ -16,7 +16,7 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
+[System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
@@ -39,7 +39,7 @@ function Initialize-ExchDscDatabase
 
     Write-Verbose -Message 'Cleaning up test database'
 
-    GetRemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-MailboxDatabase'
+    Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-MailboxDatabase'
     Get-MailboxDatabase | Where-Object -FilterScript {
         $_.Name -like "$($Database)"
     } | Remove-MailboxDatabase -Confirm:$false

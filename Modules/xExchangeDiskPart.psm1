@@ -17,8 +17,8 @@ function StartDiskpart
 
     if ($ShowOutput)
     {
-        Write-Verbose "Executed Diskpart commands: $(StringArrayToCommaSeparatedString -Array $Commands). Result:"
-        Write-Verbose "$($Output)"
+        Write-Verbose -Message "Executed Diskpart commands: $(StringArrayToCommaSeparatedString -Array $Commands). Result:"
+        Write-Verbose -Message "$Output"
     }
 
     Remove-Item $Tempfile

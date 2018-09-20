@@ -57,12 +57,12 @@ try
 
         Describe 'MSFT_xExchInstall\Test-TargetResource' -Tag 'Test' {
             AfterEach {
-                Assert-MockCalled -CommandName Get-InstallStatus -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Get-ExchangeInstallStatus -Exactly -Times 1 -Scope It
             }
 
             Context 'When Exchange is not present on the system' {
                 It 'Should return $false' {
-                    Mock -CommandName Get-InstallStatus -MockWith {
+                    Mock -CommandName Get-ExchangeInstallStatus -MockWith {
                         return @{
                             ShouldInstallLanguagePack = $false
                             SetupRunning              = $false
@@ -78,7 +78,7 @@ try
 
             Context 'When Exchange Setup has fully completed' {
                 It 'Should return $true' {
-                    Mock -CommandName Get-InstallStatus -MockWith {
+                    Mock -CommandName Get-ExchangeInstallStatus -MockWith {
                         return @{
                             ShouldInstallLanguagePack = $false
                             SetupRunning              = $false
@@ -94,7 +94,7 @@ try
 
             Context 'When Exchange Setup has partially completed' {
                 It 'Should return $false' {
-                    Mock -CommandName Get-InstallStatus -MockWith {
+                    Mock -CommandName Get-ExchangeInstallStatus -MockWith {
                         return @{
                             ShouldInstallLanguagePack = $false
                             SetupRunning              = $false
@@ -110,7 +110,7 @@ try
 
             Context 'When Exchange Setup is currently running' {
                 It 'Should return $false' {
-                    Mock -CommandName Get-InstallStatus -MockWith {
+                    Mock -CommandName Get-ExchangeInstallStatus -MockWith {
                         return @{
                             ShouldInstallLanguagePack = $false
                             SetupRunning              = $true
@@ -126,7 +126,7 @@ try
 
             Context 'When a Language Pack install is requested, and the Language Pack has not been installed' {
                 It 'Should return $false' {
-                    Mock -CommandName Get-InstallStatus -MockWith {
+                    Mock -CommandName Get-ExchangeInstallStatus -MockWith {
                         return @{
                             ShouldInstallLanguagePack = $true
                             SetupRunning              = $false

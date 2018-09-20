@@ -36,7 +36,7 @@ function Get-TargetResource
         $RemoveBinaries
     )
 
-    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'JetstressPath' = $JetstressPath} -Verbose:$VerbosePreference
 
     $returnValue = @{
         JetstressPath = [System.String] $JetstressPath
@@ -86,7 +86,7 @@ function Set-TargetResource
         $RemoveBinaries
     )
 
-    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'JetstressPath' = $JetstressPath} -Verbose:$VerbosePreference
 
     VerifyParameters @PSBoundParameters
 
@@ -235,7 +235,7 @@ function Test-TargetResource
         $RemoveBinaries
     )
 
-    LogFunctionEntry -Parameters @{"JetstressPath" = $JetstressPath} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'JetstressPath' = $JetstressPath} -Verbose:$VerbosePreference
 
     VerifyParameters @PSBoundParameters
 

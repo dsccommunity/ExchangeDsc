@@ -19,7 +19,7 @@ function Get-TargetResource
         $Credential
     )
 
-    LogFunctionEntry -Parameters @{
+    Write-FunctionEntry -Parameters @{
         'Path' = $Path
         'Arguments' = $Arguments
     } -Verbose:$VerbosePreference
@@ -51,9 +51,9 @@ function Set-TargetResource
         $Credential
     )
 
-    LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Path' = $Path; 'Arguments' = $Arguments} -Verbose:$VerbosePreference
 
-    $installStatus = Get-InstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
+    $installStatus = Get-ExchangeInstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
 
     $waitingForSetup = $false
 
@@ -68,9 +68,9 @@ function Set-TargetResource
             return
         }
 
-        Write-Verbose "Initiating Exchange Setup. Command: $($Path) $($Arguments)"
+        Write-Verbose -Message "Initiating Exchange Setup. Command: $Path $Arguments"
 
-        StartScheduledTask -Path "$($Path)" -Arguments "$($Arguments)" -Credential $Credential -TaskName 'Install Exchange' -Verbose:$VerbosePreference
+        Start-ExchangeScheduledTask -Path "$Path" -Arguments "$Arguments" -Credential $Credential -TaskName 'Install Exchange' -Verbose:$VerbosePreference
 
         $detectedExsetup = $false
 
@@ -114,13 +114,13 @@ function Set-TargetResource
         #Now wait for setup to finish
         while ($null -ne (Get-Process -Name ExSetup -ErrorAction SilentlyContinue))
         {
-            Write-Verbose "Setup is still running at $([DateTime]::Now). Sleeping for 1 minute."
+            Write-Verbose -Message "Setup is still running at $([DateTime]::Now). Sleeping for 1 minute."
             Start-Sleep -Seconds 60
         }
     }
 
     #Check install status one more time and see if setup was successful
-    $installStatus = Get-InstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
+    $installStatus = Get-ExchangeInstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
 
     if ($installStatus.SetupComplete)
     {
@@ -152,9 +152,9 @@ function Test-TargetResource
         $Credential
     )
 
-    LogFunctionEntry -Parameters @{"Path" = $Path; "Arguments" = $Arguments} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Path' = $Path; 'Arguments' = $Arguments} -Verbose:$VerbosePreference
 
-    $installStatus = Get-InstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
+    $installStatus = Get-ExchangeInstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
 
     [System.Boolean]$shouldStartOrWaitForInstall = $false
 

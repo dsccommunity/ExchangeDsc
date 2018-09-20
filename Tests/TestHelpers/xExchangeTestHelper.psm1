@@ -184,7 +184,7 @@ function Test-Array2ContainsArray1
         [System.Collections.Hashtable]$getResult = Get-TargetResource @TestParams
 
         It $ItLabel {
-            Array2ContainsArray1Contents -Array1 $DesiredArrayContents -Array2 $getResult."$($GetResultParameterName)" -IgnoreCase | Should Be $true
+            Test-ArrayElementsInSecondArray -Array1 $DesiredArrayContents -Array2 $getResult."$GetResultParameterName" -IgnoreCase | Should Be $true
         }
     }
 }
@@ -204,7 +204,7 @@ function Get-TestOfflineAddressBook
 
     [System.String]$testOabName = 'Offline Address Book (DSC Test)'
 
-    GetRemoteExchangeSession -Credential $ShellCredentials -CommandsToLoad '*-OfflineAddressBook'
+    Get-RemoteExchangeSession -Credential $ShellCredentials -CommandsToLoad '*-OfflineAddressBook'
 
     if ($null -eq (Get-OfflineAddressBook -Identity $testOabName -ErrorAction SilentlyContinue))
     {
@@ -246,7 +246,7 @@ function Initialize-TestForDAG
 
     Write-Verbose -Message 'Cleaning up test DAG and related resources'
 
-    GetRemoteExchangeSession -Credential $ShellCredentials -CommandsToLoad '*-MailboxDatabase',`
+    Get-RemoteExchangeSession -Credential $ShellCredentials -CommandsToLoad '*-MailboxDatabase',`
                                                                                   '*-DatabaseAvailabilityGroup',`
                                                                                   'Remove-DatabaseAvailabilityGroupServer',`
                                                                                   'Get-MailboxDatabaseCopyStatus',`

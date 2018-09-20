@@ -16,7 +16,7 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
+[System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
@@ -31,7 +31,7 @@ if ($exchangeInstalled)
         $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
-    GetRemoteExchangeSession -Credential $shellCredentials -CommandsToLoad 'Get-ExchangeCertificate'
+    Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad 'Get-ExchangeCertificate'
 
     #Get the thumbprint to use for Lync integration
     [System.Object[]]$exCerts = Get-ExchangeCertificate

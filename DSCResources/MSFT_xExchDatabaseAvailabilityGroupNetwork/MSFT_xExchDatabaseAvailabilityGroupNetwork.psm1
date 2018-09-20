@@ -40,10 +40,10 @@ function Get-TargetResource
         $Subnets
     )
 
-    LogFunctionEntry -Parameters @{"Name" = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Name' = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroupNetwork' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroupNetwork' -Verbose:$VerbosePreference
 
     $dagNet = GetDatabaseAvailabilityGroupNetwork @PSBoundParameters
 
@@ -102,10 +102,10 @@ function Set-TargetResource
         $Subnets
     )
 
-    LogFunctionEntry -Parameters @{"Name" = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Name' = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*DatabaseAvailabilityGroup*' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*DatabaseAvailabilityGroup*' -Verbose:$VerbosePreference
 
     $dagId = "$($DatabaseAvailabilityGroup)\$($Name)"
 
@@ -129,9 +129,9 @@ function Set-TargetResource
     else
     {
         #Remove Credential and Ensure so we don't pass it into the next command
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','Ensure'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','Ensure'
 
-        SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
+        Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
         if ($null -eq $dagNet) #Need to create a new network
         {
@@ -140,8 +140,8 @@ function Set-TargetResource
         }
         else #Set props on the existing network
         {
-            AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $dagId}
-            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Name','DatabaseAvailabilityGroup'
+            Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $dagId}
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Name','DatabaseAvailabilityGroup'
 
             Set-DatabaseAvailabilityGroupNetwork @PSBoundParameters
         }
@@ -190,10 +190,10 @@ function Test-TargetResource
         $Subnets
     )
 
-    LogFunctionEntry -Parameters @{"Name" = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Name' = $Name; 'DatabaseAvailabilityGroup' = $DatabaseAvailabilityGroup} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroupNetwork' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroupNetwork' -Verbose:$VerbosePreference
 
     $dagNet = GetDatabaseAvailabilityGroupNetwork @PSBoundParameters
 
@@ -203,7 +203,7 @@ function Test-TargetResource
     {
         if ($Ensure -eq 'Present')
         {
-            ReportBadSetting -SettingName 'Ensure' -ExpectedValue 'Present' -ActualValue 'Absent' -Verbose:$VerbosePreference
+            Write-InvalidSettingVerbose -SettingName 'Ensure' -ExpectedValue 'Present' -ActualValue 'Absent' -Verbose:$VerbosePreference
             $testResults = $false
         }
     }
@@ -211,22 +211,22 @@ function Test-TargetResource
     {
         if ($Ensure -eq 'Absent')
         {
-            ReportBadSetting -SettingName 'Ensure' -ExpectedValue 'Absent' -ActualValue 'Present' -Verbose:$VerbosePreference
+            Write-InvalidSettingVerbose -SettingName 'Ensure' -ExpectedValue 'Absent' -ActualValue 'Present' -Verbose:$VerbosePreference
             $testResults = $false
         }
         else
         {
-            if (!(VerifySetting -Name 'IgnoreNetwork' -Type 'Boolean' -ExpectedValue $IgnoreNetwork -ActualValue $dagNet.IgnoreNetwork -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+            if (!(Test-ExchangeSetting -Name 'IgnoreNetwork' -Type 'Boolean' -ExpectedValue $IgnoreNetwork -ActualValue $dagNet.IgnoreNetwork -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
                 $testResults = $false
             }
 
-            if (!(VerifySetting -Name 'ReplicationEnabled' -Type 'Boolean' -ExpectedValue $ReplicationEnabled -ActualValue $dagNet.ReplicationEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+            if (!(Test-ExchangeSetting -Name 'ReplicationEnabled' -Type 'Boolean' -ExpectedValue $ReplicationEnabled -ActualValue $dagNet.ReplicationEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
                 $testResults = $false
             }
 
-            if (!(VerifySetting -Name 'Subnets' -Type 'Array' -ExpectedValue $Subnets -ActualValue (SubnetsToArray -Subnets $dagNet.Subnets) -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+            if (!(Test-ExchangeSetting -Name 'Subnets' -Type 'Array' -ExpectedValue $Subnets -ActualValue (SubnetsToArray -Subnets $dagNet.Subnets) -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
                 $testResults = $false
             }
@@ -277,11 +277,11 @@ function GetDatabaseAvailabilityGroupNetwork
         $Subnets
     )
 
-    AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
+    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
         'Identity' = "$($DatabaseAvailabilityGroup)\$($Name)"
         'ErrorAction' = 'SilentlyContinue'
     }
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','ErrorAction','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','ErrorAction','DomainController'
 
     return (Get-DatabaseAvailabilityGroupNetwork @PSBoundParameters)
 }
