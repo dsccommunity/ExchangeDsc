@@ -232,7 +232,7 @@ if ($exchangeInstalled)
 
             $testResults = Test-TargetResource @testParams
 
-            It 'Test results Should -Be false after testing for new quota' {
+            It 'Test results should be false after testing for new quota' {
                 $testResults | Should -Be $false
             }
         }
@@ -247,7 +247,7 @@ if ($exchangeInstalled)
 
             $testResults = Test-TargetResource @testParams
 
-            It 'Test results Should -Be false after testing for new quota' {
+            It 'Test results should be false after testing for new quota' {
                 $testResults | Should -Be $false
             }
         }
@@ -262,7 +262,7 @@ if ($exchangeInstalled)
 
             $testResults = Test-TargetResource @testParams
 
-            It 'Test results Should -Be true after testing for new quota' {
+            It 'Test results should be true after testing for new quota' {
                 $testResults | Should -Be $true
             }
         }

@@ -132,7 +132,7 @@ if ($exchangeInstalled)
                 { Set-TargetResource @testParams } | Should -Throw
             }
 
-            It 'Test results Should -Be false after adding invalid AlternateServiceAccount account' {
+            It 'Test results should be false after adding invalid AlternateServiceAccount account' {
                 $testResults = Test-TargetResource @testParams
                 $testResults | Should -Be $false
             }

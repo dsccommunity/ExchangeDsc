@@ -77,7 +77,7 @@ if ($exchangeInstalled)
                 { Set-TargetResource @testParams } | Should -Throw
             }
 
-            It 'Test results Should -Be true after adding missing ExtendedProtectionFlags' {
+            It 'Test results should be true after adding missing ExtendedProtectionFlags' {
                 $testParams.ExtendedProtectionFlags = @('AllowDotlessSPN')
                 Set-TargetResource @testParams
                 $testResults = Test-TargetResource @testParams
@@ -92,7 +92,7 @@ if ($exchangeInstalled)
                 { Set-TargetResource @testParams } | Should -Throw
             }
 
-            It 'Test results Should -Be true after correction of ExtendedProtectionFlags' {
+            It 'Test results should be true after correction of ExtendedProtectionFlags' {
                 $testParams.ExtendedProtectionFlags = @('AllowDotlessSPN')
                 Set-TargetResource @testParams
                 $testResults = Test-TargetResource @testParams
