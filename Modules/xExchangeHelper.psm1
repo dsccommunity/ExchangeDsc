@@ -4,6 +4,7 @@
 #>
 function Get-ExistingRemoteExchangeSession
 {
+    [CmdletBinding()]
     param ()
 
     return (Get-PSSession -Name 'DSCExchangeSession' -ErrorAction SilentlyContinue)
@@ -11,8 +12,20 @@ function Get-ExistingRemoteExchangeSession
 
 <#
     .SYNOPSIS
-        Establishes an Exchange remote powershell session to the local server.
+        Establishes an Exchange remote PowerShell session to the local server.
         Reuses the session if it already exists.
+
+    .PARAMETER Credential
+        The Credentials to use when creating a remote PowerShell session to
+        Exchange.
+
+    .PARAMETER CommandsToLoad
+        A list of the cmdlets that should be imported in the remote PowerShell
+        session.
+
+    .PARAMETER SetupProcessName
+        The name of the primary Exchange Setup process. If this process is
+        detected by this function, an exception will be thrown.
 #>
 function Get-RemoteExchangeSession
 {
@@ -29,6 +42,7 @@ function Get-RemoteExchangeSession
         $CommandsToLoad,
 
         [Parameter()]
+        [System.String]
         $SetupProcessName = 'ExSetup*'
     )
 
@@ -145,6 +159,8 @@ function Remove-RemoteExchangeSession
 #>
 function Test-ExchangePresent
 {
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param ()
 
     $version = Get-ExchangeVersion
@@ -172,6 +188,8 @@ function Test-ExchangePresent
 #>
 function Get-ExchangeVersion
 {
+    [CmdletBinding()]
+    [OutputType([System.String])]
     param
     (
         [Parameter()]
@@ -243,6 +261,7 @@ function Test-ExchangeSetupComplete
 function Test-ExchangeSetupPartiallyCompleted
 {
     [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param ()
 
     Write-Verbose -Message 'Checking if setup is partially complete'
@@ -410,6 +429,8 @@ function Set-WSManConfigStatus
 #>
 function Test-ShouldInstallUMLanguagePack
 {
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param
     (
         [Parameter()]
@@ -432,6 +453,7 @@ function Test-ShouldInstallUMLanguagePack
             }
         }
     }
+
     return $false
 }
 
@@ -445,6 +467,8 @@ function Test-ShouldInstallUMLanguagePack
 #>
 function Test-ExchangeSetupRunning
 {
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param
     (
         [Parameter()]
@@ -474,6 +498,8 @@ function Test-ExchangeSetupRunning
 #>
 function Compare-StringToString
 {
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param
     (
         [Parameter()]
@@ -519,6 +545,8 @@ function Compare-StringToString
 #>
 function Compare-BoolToBool
 {
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param
     (
         [Parameter()]
@@ -554,6 +582,8 @@ function Compare-BoolToBool
 #>
 function Compare-TimespanToString
 {
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param
     (
         [Parameter()]
@@ -593,6 +623,8 @@ function Compare-TimespanToString
 #>
 function Compare-ByteQuantifiedSizeToString
 {
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param
     (
         [Parameter()]
@@ -630,6 +662,8 @@ function Compare-ByteQuantifiedSizeToString
 #>
 function Compare-UnlimitedToString
 {
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param
     (
         [Parameter()]
@@ -676,6 +710,8 @@ function Compare-UnlimitedToString
 #>
 function Compare-ADObjectIdToSmtpAddressString
 {
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param
     (
         [Parameter()]
@@ -715,6 +751,8 @@ function Compare-ADObjectIdToSmtpAddressString
 #>
 function Convert-StringToArray
 {
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
     param
     (
         [Parameter()]
@@ -746,6 +784,8 @@ function Convert-StringToArray
 #>
 function Convert-StringArrayToLowerCase
 {
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
     param
     (
         [Parameter()]
@@ -780,6 +820,8 @@ function Convert-StringArrayToLowerCase
 #>
 function Compare-ArrayContent
 {
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param
     (
         [Parameter()]
@@ -841,6 +883,8 @@ function Compare-ArrayContent
 #>
 function Test-ArrayElementsInSecondArray
 {
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param
     (
         [Parameter()]
@@ -899,6 +943,7 @@ function Test-ArrayElementsInSecondArray
 #>
 function Add-ToPSBoundParametersFromHashtable
 {
+    [CmdletBinding()]
     param
     (
         [Parameter()]
@@ -943,6 +988,7 @@ function Add-ToPSBoundParametersFromHashtable
 #>
 function Remove-FromPSBoundParametersUsingHashtable
 {
+    [CmdletBinding()]
     param
     (
         [Parameter()]
@@ -994,6 +1040,9 @@ function Remove-FromPSBoundParametersUsingHashtable
         The parameter to check for and remove if not applicable to this
         server version.
 
+    .PARAMETER ResourceName
+        The name of the DSC resource from which parameters are being checked.
+
     .PARAMETER ParamExistsInVersion
         The parameter to check for and remove if not applicable to this
         server version.
@@ -1044,6 +1093,7 @@ function Remove-NotApplicableParamsForVersion
 #>
 function Set-EmptyStringParamsToNull
 {
+    [CmdletBinding()]
     param
     (
         [Parameter()]
@@ -1103,12 +1153,15 @@ function Test-ExchangeSetting
         $Type,
 
         [Parameter()]
+        [System.Object]
         $ExpectedValue,
 
         [Parameter()]
+        [System.Object]
         $ActualValue,
 
         [Parameter()]
+        [System.Collections.Hashtable]
         $PSBoundParametersIn
     )
 
@@ -1247,15 +1300,19 @@ function Test-ExchangeSetting
 #>
 function Write-InvalidSettingVerbose
 {
+    [CmdletBinding()]
     param
     (
         [Parameter()]
+        [System.String]
         $SettingName,
 
         [Parameter()]
+        [System.Object]
         $ExpectedValue,
 
         [Parameter()]
+        [System.Object]
         $ActualValue
     )
 
@@ -1565,7 +1622,9 @@ function Restart-ExistingAppPool
 #>
 function Test-UMLanguagePackInstalled
 {
-    Param
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
     (
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -1615,11 +1674,6 @@ function Compare-IPAddressToString
         $returnValue =($IPAddress.Equals([System.Net.IPAddress]::Parse($string)))
     }
 
-    if ($returnValue -eq $false)
-    {
-        Write-InvalidSettingVerbose -SettingName $IPAddress -ExpectedValue $ExpectedValue -ActualValue $IPAddress -Verbose:$VerbosePreference
-    }
-
     return $returnValue
 }
 
@@ -1641,6 +1695,7 @@ function Compare-SmtpAddressToString
     param
     (
         [Parameter()]
+        [Nullable[Microsoft.Exchange.Data.SmtpAddress]]
         $SmtpAddress,
 
         [Parameter()]
@@ -1693,6 +1748,7 @@ function Compare-IPAddressesToArray
     param
     (
         [Parameter()]
+        [System.Net.IPAddress[]]
         $IPAddresses,
 
         [Parameter()]
@@ -1711,11 +1767,6 @@ function Compare-IPAddressesToArray
     else
     {
         Compare-ArrayContent -Array1 $IPAddresses -Array2 $Array
-    }
-
-    if ($returnValue -eq $false)
-    {
-        Write-InvalidSettingVerbose -SettingName $IPAddresses -ExpectedValue $ExpectedValue -ActualValue $IPAddress -Verbose:$VerbosePreference
     }
 
     return $returnValue
@@ -1738,9 +1789,11 @@ function Compare-PSCredential
     param
     (
         [Parameter()]
+        [System.Management.Automation.PSCredential]
         $Cred1,
 
         [Parameter()]
+        [System.Management.Automation.PSCredential]
         $Cred2
     )
 
