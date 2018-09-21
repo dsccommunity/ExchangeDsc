@@ -369,6 +369,14 @@ try
                     ($processes | Where-Object {$_.ProcessName -like $testProcess}).Count | Should -BeGreaterThan 0
                 }
             }
+
+            Context 'When Invoke-DotSourcedScript is called with SnapinsToRemove' {
+                It 'Should call Remove-HelperSnapin' {
+                    Mock -CommandName Remove-HelperSnapin -Verifiable -MockWith {}
+
+                    Invoke-DotSourcedScript -ScriptPath 'Get-Process' | Out-Null
+                }
+            }
         }
 
         Describe 'xExchangeHelper\Remove-HelperSnapin' -Tag 'Helper' {
