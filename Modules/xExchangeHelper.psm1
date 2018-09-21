@@ -2000,6 +2000,7 @@ function Invoke-DotSourcedScript
         [System.Collections.Hashtable]
         $ScriptParams = @{},
 
+        [Parameter()]
         [System.String[]]
         $SnapinsToRemove
     )
@@ -2022,6 +2023,7 @@ function Remove-HelperSnapin
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [System.String[]]
         $SnapinsToRemove
     )
