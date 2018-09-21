@@ -378,7 +378,7 @@ try
                 It 'Should call Remove-HelperSnapin' {
                     Mock -CommandName Remove-HelperSnapin -Verifiable -MockWith {}
 
-                    Invoke-DotSourcedScript -ScriptPath 'Get-Process' | Out-Null
+                    Invoke-DotSourcedScript -ScriptPath 'Get-Process' -SnapinsToRemove 'SomeSnapin' | Out-Null
                 }
             }
         }
