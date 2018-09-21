@@ -347,6 +347,29 @@ try
                 }
             }
         }
+
+        Describe 'xExchangeHelper\Invoke-DotSourcedScript' -Tag 'Helper' {
+            Context 'When Invoke-DotSourcedScript is called with no parameters' {
+                It 'Should execute fine' {
+                    $processes = Invoke-DotSourcedScript -ScriptPath 'Get-Process'
+
+                    $processes.Count | Should -BeGreaterThan 0
+                }
+            }
+
+            Context 'When Invoke-DotSourcedScript is called with parameters' {
+                It 'Should execute fine' {
+                    $testProcess = 'svchost'
+                    $scriptParams = @{
+                        Name = $testProcess
+                    }
+
+                    $processes = Invoke-DotSourcedScript -ScriptPath 'Get-Process' -ScriptParams $scriptParams
+
+                    ($processes | Where-Object {$_.ProcessName -like $testProcess}).Count | Should -BeGreaterThan 0
+                }
+            }
+        }
     }
 }
 finally
