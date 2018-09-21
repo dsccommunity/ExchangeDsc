@@ -25,11 +25,6 @@ try
     Invoke-TestSetup
 
     InModuleScope $script:DSCHelperName {
-        # Used for calls to Get-ExchangeInstallStatus
-        $getInstallStatusParams = @{
-            Arguments = '/mode:Install /role:Mailbox /Iacceptexchangeserverlicenseterms'
-        }
-
         # Get a unique Guid that doesn't resolve to a local path
         # Use System.Guid, as New-Guid isn't available in PS4 and below
         do
@@ -44,6 +39,11 @@ try
         } while ((Test-Path -Path $guid2) -or $guid1 -like $guid2)
 
         Describe 'xExchangeHelper\Get-ExchangeInstallStatus' -Tag 'Helper' {
+            # Used for calls to Get-InstallStatus
+            $getInstallStatusParams = @{
+                Arguments = '/mode:Install /role:Mailbox /Iacceptexchangeserverlicenseterms'
+            }
+
             AfterEach {
                 Assert-MockCalled -CommandName Test-ShouldInstallUMLanguagePack -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Test-ExchangeSetupRunning -Exactly -Times 1 -Scope It
@@ -187,18 +187,7 @@ try
                     # Cause an error by trying to get a non-existent item
                     Get-ChildItem $guid1 -ErrorAction SilentlyContinue
 
-                    $caughtException = $false
-
-                    try
-                    {
-                        Assert-NoNewError -CmdletBeingRun "Get-ChildItem" -PreviousError $initialError
-                    }
-                    catch
-                    {
-                        $caughtException = $true
-                    }
-
-                    $caughtException | Should -Be $true
+                    { Assert-NoNewError -CmdletBeingRun "Get-ChildItem" -PreviousError $initialError } | Should -Throw
                 }
             }
 
@@ -210,18 +199,7 @@ try
                     # Run a command that should always succeed
                     Get-ChildItem | Out-Null
 
-                    $caughtException = $false
-
-                    try
-                    {
-                        Assert-NoNewError -CmdletBeingRun "Get-ChildItem" -PreviousError $initialError
-                    }
-                    catch
-                    {
-                        $caughtException = $true
-                    }
-
-                    $caughtException | Should -Be $false
+                    { Assert-NoNewError -CmdletBeingRun "Get-ChildItem" -PreviousError $initialError } | Should -Not -Throw
                 }
             }
         }
@@ -243,18 +221,7 @@ try
 
                     Mock -CommandName Get-ExchangeVersion -MockWith { return $ExchangeVersion }
 
-                    $caughtException = $false
-
-                    try
-                    {
-                        Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName $Name -SupportedVersions $SupportedVersions
-                    }
-                    catch
-                    {
-                        $caughtException = $true
-                    }
-
-                    $caughtException | Should -Be $false
+                    { Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName $Name -SupportedVersions $SupportedVersions } | Should -Not -Throw
                 }
             }
 
@@ -264,18 +231,119 @@ try
 
                     Mock -CommandName Get-ExchangeVersion -MockWith { return $ExchangeVersion }
 
-                    $caughtException = $false
+                    { Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName $Name -SupportedVersions $SupportedVersions } | Should -Throw
+                }
+            }
+        }
 
-                    try
-                    {
-                        Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName $Name -SupportedVersions $SupportedVersions
-                    }
-                    catch
-                    {
-                        $caughtException = $true
-                    }
+        Describe 'xExchangeHelper\Compare-ADObjectIdToSmtpAddressString' -Tag 'Helper' {
+            <#
+                Define an empty function for Get-Recipient, so Pester has something to Mock.
+                This cmdlet is normally loaded as part of GetRemoteExchangeSession.
+            #>
+            function Get-Recipient {}
 
-                    $caughtException | Should -Be $true
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            # Setup test objects for calls to Compare-ADObjectIdToSmtpAddressString
+            $testADObjectID = New-Object -TypeName PSObject -Property @{DistinguishedName='CN=TestUser,DC=contoso,DC=local'}
+            $testAddress = 'testuser@contoso.local'
+            $testBadAddress = 'baduser@contoso.local'
+
+            $testRecipient = New-Object -TypeName PSObject -Property @{
+                EmailAddresses = New-Object -TypeName PSObject -Property @{
+                    AddressString = $testAddress
+                }
+            }
+
+            Context 'When comparing an ADObjectID to a corresponding SMTP address' {
+                It 'Should return $true' {
+                    Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
+                    Mock -CommandName Get-Recipient -Verifiable -MockWith { return $testRecipient }
+
+                    $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $testADObjectID -AddressString $testAddress
+
+                    $compareResults | Should -Be $true
+                }
+            }
+
+            Context 'When comparing an ADObjectID to a non-corresponding SMTP address' {
+                It 'Should return $false' {
+                    Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
+                    Mock -CommandName Get-Recipient -Verifiable -MockWith { return $testRecipient }
+
+                    $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $testADObjectID -AddressString $testBadAddress
+
+                    $compareResults | Should -Be $false
+                }
+            }
+
+            Context 'When comparing an ADObjectID to an empty SMTP address' {
+                It 'Should return $false' {
+                    Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
+
+                    $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $testADObjectID -AddressString ''
+
+                    $compareResults | Should -Be $false
+                }
+            }
+
+            Context 'When comparing an ADObjectID to a null SMTP address' {
+                It 'Should return $false' {
+                    Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
+
+                    $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $testADObjectID -AddressString $null
+
+                    $compareResults | Should -Be $false
+                }
+            }
+
+            Context 'When comparing a null ADObjectID to an empty SMTP address' {
+                It 'Should return $true' {
+                    Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
+
+                    $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $null -AddressString ''
+
+                    $compareResults | Should -Be $true
+                }
+            }
+
+            Context 'When comparing a null ADObjectID to a null SMTP address' {
+                It 'Should return $true' {
+                    Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
+
+                    $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $null -AddressString $null
+
+                    $compareResults | Should -Be $true
+                }
+            }
+
+            Context 'When comparing a null ADObjectID to any SMTP address' {
+                It 'Should return $false' {
+                    Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
+
+                    $compareResults = Compare-ADObjectIdToSmtpAddressString -ADObjectId $null -AddressString $testAddress
+
+                    $compareResults | Should -Be $false
+                }
+            }
+
+            Context 'When Get-Recipient returns $null' {
+                It 'Should throw an exception' {
+                    Mock -CommandName Get-Command -Verifiable -MockWith { return '' }
+                    Mock -CommandName Get-Recipient -Verifiable -MockWith { return $null }
+
+                    { Compare-ADObjectIdToSmtpAddressString -ADObjectId $testADObjectID -AddressString $testBadAddress | Out-Null } | Should -Throw
+                }
+            }
+
+            Context 'When Get-Command returns $null' {
+                It 'Should throw an exception' {
+                    Mock -CommandName Get-Command -Verifiable -MockWith { return $null }
+
+                    { Compare-ADObjectIdToSmtpAddressString -ADObjectId $testADObjectID -AddressString $testBadAddress | Out-Null } | Should -Throw
                 }
             }
         }

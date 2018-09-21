@@ -39,7 +39,6 @@ function Initialize-ExchDscDatabase
 
     Write-Verbose -Message 'Cleaning up test database'
 
-    Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-MailboxDatabase'
     Get-MailboxDatabase | Where-Object -FilterScript {
         $_.Name -like "$($Database)"
     } | Remove-MailboxDatabase -Confirm:$false
@@ -59,12 +58,19 @@ if ($exchangeInstalled)
     #Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
+    Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-MailboxDatabase','*-Mailbox','*-Recipient','Get-AcceptedDomain'
+
     $TestDBName = 'Mailbox Database Test 123'
 
     Initialize-ExchDscDatabase -Database $TestDBName
 
     #Get the test OAB
     $testOabName = Get-TestOfflineAddressBook -ShellCredentials $shellCredentials
+
+    # Get Test Mailbox Information
+    $testMailbox = Get-DSCTestMailbox -Verbose
+    $testMailboxADObjectIDString = ([Microsoft.Exchange.Data.Directory.ADObjectId]::ParseDnOrGuid($testMailbox.DistinguishedName)).ToString()
+    $testMailboxSecondaryAddress = ($testMailbox.EmailAddresses | Where-Object {$_.IsPrimaryAddress -eq $false -and $_.Prefix -like 'SMTP'} | Select-Object -First 1).AddressString
 
     Describe 'Test Creating a DB and Setting Properties with xExchMailboxDatabase' {
         #First create and set properties on a test database
@@ -85,6 +91,7 @@ if ($exchangeInstalled)
             IndexEnabled = $true
             IsExcludedFromProvisioning = $false
             IsSuspendedFromProvisioning = $false
+            JournalRecipient = $testMailbox.PrimarySmtpAddress.Address
             MailboxRetention = '30.00:00:00'
             MountAtStartup = $true
             OfflineAddressBook = $testOabName
@@ -111,6 +118,7 @@ if ($exchangeInstalled)
             IndexEnabled = $true
             IsExcludedFromProvisioning = $false
             IsSuspendedFromProvisioning = $false
+            JournalRecipient = $testMailboxADObjectIDString
             MailboxRetention = '30.00:00:00'
             MountAtStartup = $true
             OfflineAddressBook = "\$testOabName"
@@ -126,6 +134,13 @@ if ($exchangeInstalled)
                                          -ContextLabel 'Create Test Database' `
                                          -ExpectedGetResults $expectedGetResults
 
+        # Try changing Journal Recipient address to secondary address
+        $testParams.JournalRecipient = $testMailboxSecondaryAddress
+
+        Test-TargetResourceFunctionality -Params $testParams `
+                                         -ContextLabel 'Use secondary journaling address test' `
+                                         -ExpectedGetResults $expectedGetResults
+
         #Now change properties on the test database
         $testParams.CalendarLoggingQuota = '30mb'
         $testParams.CircularLoggingEnabled = $false
@@ -134,6 +149,7 @@ if ($exchangeInstalled)
         $testParams.IndexEnabled = $false
         $testParams.IsExcludedFromProvisioning = $true
         $testParams.IsSuspendedFromProvisioning = $true
+        $testParams.JournalRecipient = $null
         $testParams.MailboxRetention = '31.00:00:00'
         $testParams.MountAtStartup = $false
         $testParams.RetainDeletedItemsUntilBackup = $true
@@ -150,6 +166,7 @@ if ($exchangeInstalled)
         $expectedGetResults.IndexEnabled = $false
         $expectedGetResults.IsExcludedFromProvisioning = $true
         $expectedGetResults.IsSuspendedFromProvisioning = $true
+        $expectedGetResults.JournalRecipient = ''
         $expectedGetResults.MailboxRetention = '31.00:00:00'
         $expectedGetResults.MountAtStartup = $false
         $expectedGetResults.RetainDeletedItemsUntilBackup = $true
@@ -216,7 +233,7 @@ if ($exchangeInstalled)
             $testResults = Test-TargetResource @testParams
 
             It 'Test results should be false after testing for new quota' {
-                $testResults | Should Be $false
+                $testResults | Should -Be $false
             }
         }
 
@@ -231,7 +248,7 @@ if ($exchangeInstalled)
             $testResults = Test-TargetResource @testParams
 
             It 'Test results should be false after testing for new quota' {
-                $testResults | Should Be $false
+                $testResults | Should -Be $false
             }
         }
 
@@ -246,7 +263,7 @@ if ($exchangeInstalled)
             $testResults = Test-TargetResource @testParams
 
             It 'Test results should be true after testing for new quota' {
-                $testResults | Should Be $true
+                $testResults | Should -Be $true
             }
         }
 

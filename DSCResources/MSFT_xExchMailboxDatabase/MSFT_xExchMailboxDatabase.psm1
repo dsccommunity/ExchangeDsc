@@ -331,6 +331,8 @@ function Set-TargetResource
                                     -ResourceName 'xExchMailboxDatabase' `
                                     -ParamExistsInVersion '2016','2019'
 
+    Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
+
     if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
         Set-ADServerSettings -PreferredServer "$($AdServerSettingsPreferredServer)"

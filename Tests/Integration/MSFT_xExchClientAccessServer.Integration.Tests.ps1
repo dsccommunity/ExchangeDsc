@@ -38,7 +38,7 @@ if ($exchangeInstalled)
     Describe 'Test Setting Properties with xExchClientAccessServer' {
         # Confirm that the AlternateServiceAccount was actually cleared before doing any tests
         It 'AlternateServiceAccount has been cleared' {
-            ($null -ne $getResults -and $null -eq $getResults.AlternateServiceAccountCredential) | Should Be $true
+            ($null -ne $getResults -and $null -eq $getResults.AlternateServiceAccountCredential) | Should -Be $true
         }
 
         #Do standard URL and scope tests
@@ -120,7 +120,6 @@ if ($exchangeInstalled)
 
         #Test for invalid AlternateServiceAccount account format
         Context 'Test looking for invalid format of AlternateServiceAccount account' {
-            $caughtException = $false
             $UserASA = 'Fabrikam/ASA'
             $PWordASA = New-Object -TypeName System.Security.SecureString
             $asaCredentials = New-Object -TypeName System.Management.Automation.PSCredential `
@@ -129,22 +128,13 @@ if ($exchangeInstalled)
             #Set the invalid credentials
             $testParams['AlternateServiceAccountCredential'] = $asaCredentials
 
-            try
-            {
-                Set-TargetResource @testParams
-            }
-            catch
-            {
-                $caughtException = $true
-            }
-
             It 'Should hit exception for invalid AlternateServiceAccount account format' {
-                $caughtException | Should Be $true
+                { Set-TargetResource @testParams } | Should -Throw
             }
 
             It 'Test results should be false after adding invalid AlternateServiceAccount account' {
                 $testResults = Test-TargetResource @testParams
-                $testResults | Should Be $false
+                $testResults | Should -Be $false
             }
         }
 
