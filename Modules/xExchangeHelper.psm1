@@ -1977,4 +1977,31 @@ function Assert-IsSupportedWithExchangeVersion
     }
 }
 
+<#
+    .SYNOPSIS
+        Function used for invoking a Dot Sources script file.
+
+    .PARAMETER ScriptPath
+        The full path of the script to execute via Dot Sourcing.
+
+    .PARAMETER ScriptParams
+        Parameters to pass, if any, to the dot sourced script.
+#>
+function Invoke-DotSourcedScript
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ScriptPath,
+
+        [Parameter()]
+        [System.Collections.Hashtable]
+        $ScriptParams = @{}
+    )
+
+    . $ScriptPath @ScriptParams
+}
+
 Export-ModuleMember -Function *
