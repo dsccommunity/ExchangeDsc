@@ -1986,6 +1986,10 @@ function Assert-IsSupportedWithExchangeVersion
 
     .PARAMETER ScriptParams
         Parameters to pass, if any, to the dot-sourced script or cmdlet.
+
+    .PARAMETER SnapinsToRemove
+        An optional list of PowerShell Snapins to check for and remove after
+        executing the script or cmdlet.
 #>
 function Invoke-DotSourcedScript
 {
@@ -2017,13 +2021,16 @@ function Invoke-DotSourcedScript
     .SYNOPSIS
         Detects whether the specified PowerShell snapins have been loaded, and
         if so, removes them.
+
+    .PARAMETER SnapinsToRemove
+        A list of PowerShell Snapins to check for and remove if loaded.
 #>
 function Remove-HelperSnapin
 {
     [CmdletBinding()]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String[]]
         $SnapinsToRemove
     )
