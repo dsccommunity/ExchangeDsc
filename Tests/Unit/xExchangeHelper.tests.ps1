@@ -370,6 +370,32 @@ try
                 }
             }
         }
+
+        Describe 'xExchangeHelper\Remove-HelperSnapin' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Remove-HelperSnapin is called and a snapin is loaded' {
+                It 'Should remove the snapin' {
+                    Mock -CommandName Get-PSSnapin -Verifiable -MockWith { return $true }
+                    Mock -CommandName Remove-PSSnapin -Verifiable -MockWith {}
+
+                    Remove-HelperSnapin -SnapinsToRemove 'FakeSnapin'
+                }
+            }
+
+            Context 'When Remove-HelperSnapin is called and a snapin is not loaded' {
+                It 'Should do nothing' {
+                    Mock -CommandName Get-PSSnapin -Verifiable -MockWith {}
+                    Mock -CommandName Remove-PSSnapin -MockWith {}
+
+                    Remove-HelperSnapin -SnapinsToRemove 'FakeSnapin'
+
+                    Assert-MockCalled -CommandName Remove-PSSnapin -Times 0
+                }
+            }
+        }
     }
 }
 finally
