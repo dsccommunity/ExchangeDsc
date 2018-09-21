@@ -349,6 +349,10 @@ try
         }
 
         Describe 'xExchangeHelper\Invoke-DotSourcedScript' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
             Context 'When Invoke-DotSourcedScript is called with no parameters' {
                 It 'Should execute fine' {
                     $processes = Invoke-DotSourcedScript -ScriptPath 'Get-Process'
