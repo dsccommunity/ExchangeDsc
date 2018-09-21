@@ -64,7 +64,7 @@ function Start-TransportMaintenance
 
     if ($LoadLocalShell -eq $true)
     {
-        AddExchangeSnapinIfRequired
+        Add-ExchangeSnapin
     }
 
     $Script:LogInfo = @{
@@ -92,6 +92,8 @@ function Start-TransportMaintenance
     }
     finally
     {
+        Remove-ExchangeSnapin
+
         if ($beginTMLog)
         {
             Write-EventOfEntry -Event Completed -Entry $beginTMLog -Reason $Script:LogInfo
@@ -100,9 +102,11 @@ function Start-TransportMaintenance
 }
 
 <#
-.DESCRIPTION
-Performs End Maintenance of HubTransport
+    .SYNOPSIS
+        Performs End Maintenance of HubTransport
 
+    .PARAMETER LoadLocalShell
+        Whether the Exchange snapin should be loaded. Defaults to False.
 #>
 function Stop-TransportMaintenance
 {
@@ -118,19 +122,37 @@ function Stop-TransportMaintenance
 
     if ($LoadLocalShell -eq $true)
     {
-        AddExchangeSnapinIfRequired
+        Add-ExchangeSnapin
     }
 
     $ServiceState = 'Online'
 
     Start-HUBEndMaintenance
+
+    Remove-ExchangeSnapin
 }
 
-function AddExchangeSnapinIfRequired
+<#
+    .SYNOPSIS
+        Adds the Exchange PowerShell snapin if it hasn't already been loaded.
+#>
+function Add-ExchangeSnapin
 {
-    if ($null -eq (Get-PSSnapin Microsoft.Exchange.Management.PowerShell.E2010 -ErrorAction SilentlyContinue))
+    if ($null -eq (Get-PSSnapin -Name 'Microsoft.Exchange.Management.PowerShell.E2010' -ErrorAction SilentlyContinue))
     {
-        Add-PSSnapin Microsoft.Exchange.Management.PowerShell.E2010 -ErrorAction SilentlyContinue
+        Add-PSSnapin -Name 'Microsoft.Exchange.Management.PowerShell.E2010' -ErrorAction SilentlyContinue
+    }
+}
+
+<#
+    .SYNOPSIS
+        Removes the Exchange PowerShell snapin if it is loaded.
+#>
+function Remove-ExchangeSnapin
+{
+    if ($null -ne (Get-PSSnapin -Name 'Microsoft.Exchange.Management.PowerShell.E2010' -ErrorAction SilentlyContinue))
+    {
+        Remove-PSSnapin -Name 'Microsoft.Exchange.Management.PowerShell.E2010' -ErrorAction SilentlyContinue
     }
 }
 #endregion

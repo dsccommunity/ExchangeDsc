@@ -1979,13 +1979,13 @@ function Assert-IsSupportedWithExchangeVersion
 
 <#
     .SYNOPSIS
-        Function used for invoking a Dot Sources script file.
+        Function used for invoking a dot-sourced script file or cmdlet.
 
     .PARAMETER ScriptPath
-        The full path of the script to execute via Dot Sourcing.
+        The path of the script, or cmdlet, to execute via dot-sourcing.
 
     .PARAMETER ScriptParams
-        Parameters to pass, if any, to the dot sourced script.
+        Parameters to pass, if any, to the dot-sourced script or cmdlet.
 #>
 function Invoke-DotSourcedScript
 {
@@ -1998,10 +1998,43 @@ function Invoke-DotSourcedScript
 
         [Parameter()]
         [System.Collections.Hashtable]
-        $ScriptParams = @{}
+        $ScriptParams = @{},
+
+        [System.String[]]
+        $SnapinsToRemove
     )
 
     . $ScriptPath @ScriptParams
+
+    if ($SnapinsToRemove.Count -gt 0)
+    {
+        Remove-HelperSnapin -SnapinsToRemove $SnapinsToRemove -Verbose:$VerbosePreference
+    }
+}
+
+<#
+    .SYNOPSIS
+        Detects whether the specified PowerShell snapins have been loaded, and
+        if so, removes them.
+#>
+function Remove-HelperSnapin
+{
+    [CmdletBinding()]
+    param
+    (
+        [System.String[]]
+        $SnapinsToRemove
+    )
+
+    foreach ($snapin in $SnapinsToRemove)
+    {
+        if ($null -ne (Get-PSSnapin -Name $snapin -ErrorAction SilentlyContinue))
+        {
+            Write-Verbose -Message "'$snapin' snapin is currently loaded. Removing."
+
+            Remove-PSSnapin -Name $snapin -ErrorAction SilentlyContinue -Confirm:$false
+        }
+    }
 }
 
 Export-ModuleMember -Function *
