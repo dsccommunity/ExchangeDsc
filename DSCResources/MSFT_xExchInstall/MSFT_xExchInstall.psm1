@@ -124,7 +124,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Path' = $Path; 'Arguments' = $Arguments} -Verbose:$VerbosePreference
 
-    $installStatus = Get-ExchangeInstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
+    $installStatus = Get-ExchangeInstallStatus -Path $Path -Arguments $Arguments -Verbose:$VerbosePreference
 
     [System.Boolean]$shouldStartOrWaitForInstall = $false
 
