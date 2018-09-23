@@ -225,6 +225,52 @@ function Get-ExchangeVersion
 }
 
 <#
+.SYNOPSIS
+Gets the installed Exchange Display Version, which refers to the installed updates / CU,
+and returns the number as a string. Returns N/A if the version cannot be found, and will
+optionally throw an exception if ThrowIfUnknownVersion was set to
+$true.
+
+Function currently only supports 2016
+
+.PARAMETER ThrowIfUnknownVersion
+Whether the function should throw an exception if the version cannot
+be found. Defauls to $false.
+#>
+
+function Get-ExchangeDisplayVersion
+{
+[CmdletBinding()]
+[OutputType([System.String])]
+param
+(
+[Parameter()]
+[System.Boolean]
+$ThrowIfUnknownVersion = $false
+)
+
+$displayVersion = 'N/A'
+
+$uninstall20162019Key = Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}' -ErrorAction SilentlyContinue
+
+if ($null -ne $uninstall20162019Key)
+{
+    if ($uninstall20162019Key.GetValue('VersionMajor') -eq 15 -and $uninstall20162019Key.GetValue('VersionMinor') -eq 1)
+    {
+        # case of E2016 is installed
+        $displayVersion = $uninstall20162019Key.GetValue('DisplayVersion')
+    }
+}
+elseif ($ThrowIfUnknownVersion)
+{
+    throw 'Failed to discover a known Exchange Version'
+}
+
+return $displayVersion
+
+}
+
+<#
     .SYNOPSIS
         Returns whether Exchange Setup has fully and successfully completed.
 #>
@@ -326,6 +372,10 @@ function Get-ExchangeInstallStatus
     (
         [Parameter()]
         [System.String]
+        $Path,
+
+        [Parameter()]
+        [System.String]
         $Arguments
     )
 
@@ -337,6 +387,9 @@ function Get-ExchangeInstallStatus
     $setupRunning = Test-ExchangeSetupRunning
     $setupComplete = Test-ExchangeSetupComplete -Verbose:$VerbosePreference
     $exchangePresent = Test-ExchangePresent
+    $shouldUpgradeExchange = $false # this is only supported with E2016 for now
+
+    
 
     if ($setupRunning -or $setupComplete)
     {
@@ -352,6 +405,28 @@ function Get-ExchangeInstallStatus
     elseif (!$setupComplete)
     {
         $shouldStartInstall = $true
+    }
+
+    # E2016 CU install / update support
+    if($Arguments -match "/mode:Upgrade")
+    {
+        $exchangeVersion = Get-ExchangeVersion
+
+        if($exchangeVersion -eq '2016')
+        {
+            Write-Verbose "Comparing setup.exe version and installed Exchange's version."
+
+            $setupVersion = (Get-ChildItem -Path $Path).VersionInfo.ProductVersionRaw
+            $exchangeDisplayVersion = Get-ExchangeDisplayVersion
+            
+            if($exchangeDisplayVersion -ne $setupVersion)
+            {
+                Write-Verbose "Version upgrader is requested."
+                # executing with the upgrade.
+                $shouldStartInstall = $true
+            }
+        }
+
     }
 
     Write-Verbose -Message "Finished Checking Exchange Install Status. ShouldInstallLanguagePack: $shouldInstallLanguagePack. SetupRunning: $setupRunning. SetupComplete: $setupComplete. ExchangePresent: $exchangePresent. ShouldStartInstall: $shouldStartInstall."
