@@ -9,12 +9,16 @@
   functions in xExchangeHelper.psm1.
 - Fixes an issue where only objects of type Mailbox can be specified as a
   Journal Recipient. Now MailUser and MailContact types can be used as well.
+<<<<<<< HEAD
 - Update appveyor.yml to use the default template.
 - Added default template files .codecov.yml, .gitattributes, and .gitignore, and
   .vscode folder.
 - Add Unit Tests for xExchAntiMalwareScanning
 - Add remaining Unit Tests for xExchInstall, and for most common setup
   functions
+=======
+- Added Cumulative Update / Exchange update support to xExchInstall resource.
+>>>>>>> Editing necessary files for a PR.
 
 ## 1.23.0.0
 
