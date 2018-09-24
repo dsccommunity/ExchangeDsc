@@ -268,7 +268,7 @@ if ($null -ne $uninstall20162019Key)
                 VersionMajor    =   [int]$Matches.VersionMajor
                 VersionMinor    =   [int]$Matches.VersionMinor
                 VersionUpdate   =   [int]$Matches.VersionUpdate
-                
+
             }
         }
         else {
@@ -427,25 +427,28 @@ function Get-ExchangeInstallStatus
     # E2016 CU install / update support
     if(($Arguments -match "/mode:upgrade") -or ($Arguments -match "/m:upgrade"))
     {
+        # get Exchange setup.exe version
+        $setupexeVersionString = (Get-ChildItem -Path $Path).VersionInfo.ProductVersionRaw
+
+        Write-Verbose "Setup.exe version is: '$setupexeVersionString'"    
+        $setupexeVersionString -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionUpdate>\d+)'
+        if($Matches)
+        {
+            $setupExeVersion = @{
+
+                VersionMajor    =   [int]$Matches.VersionMajor
+                VersionMinor    =   [int]$Matches.VersionMinor
+                VersionUpdate   =   [int]$Matches.VersionUpdate
+
+            }
+        }
+
         $exchangeVersion = Get-ExchangeVersion -ThrowIfUnknownVersion $true
 
+        # currently only E2016 is supported
         if($exchangeVersion -eq '2016')
         {
             Write-Verbose "Comparing setup.exe version and installed Exchange's version."
-
-            $setupexeVersionString = (Get-ChildItem -Path $Path).VersionInfo.ProductVersionRaw
-            
-            $setupexeVersionString -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionUpdate>\d+)'
-            if($Matches)
-            {
-                $setupExeVersion = @{
-
-                    VersionMajor    =   [int]$Matches.VersionMajor
-                    VersionMinor    =   [int]$Matches.VersionMinor
-                    VersionUpdate   =   [int]$Matches.VersionUpdate
-
-                }
-            }
 
             $exchangeDisplayVersion = Get-ExchangeDisplayVersion -ThrowIfUnknownDisplayVersion $true
             
