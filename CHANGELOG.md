@@ -16,6 +16,8 @@
 - Add remaining Unit Tests for xExchInstall, and for most common setup
   functions
 - Updated .gitattributes to allow test .pfx files to be saved as binary
+- Added Cumulative Update / Exchange update support to xExchInstall resource.
+
 
 ## 1.23.0.0
 
