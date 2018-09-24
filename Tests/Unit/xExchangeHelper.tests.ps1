@@ -370,13 +370,13 @@ try
 
                     $processes = Invoke-DotSourcedScript -ScriptPath 'Get-Process' -ScriptParams $scriptParams
 
-                    ($processes | Where-Object {$_.ProcessName -like $testProcess}).Count | Should -BeGreaterThan 0
+                    ($processes | Where-Object -FilterScript {$_.ProcessName -like $testProcess}).Count | Should -BeGreaterThan 0
                 }
             }
 
             Context 'When Invoke-DotSourcedScript is called with SnapinsToRemove' {
                 It 'Should call Remove-HelperSnapin' {
-                    Mock -CommandName Remove-HelperSnapin -Verifiable -MockWith {}
+                    Mock -CommandName Remove-HelperSnapin -Verifiable
 
                     Invoke-DotSourcedScript -ScriptPath 'Get-Process' -SnapinsToRemove 'SomeSnapin' | Out-Null
                 }
@@ -391,7 +391,7 @@ try
             Context 'When Remove-HelperSnapin is called and a snapin is loaded' {
                 It 'Should remove the snapin' {
                     Mock -CommandName Get-PSSnapin -Verifiable -MockWith { return $true }
-                    Mock -CommandName Remove-PSSnapin -Verifiable -MockWith {}
+                    Mock -CommandName Remove-PSSnapin -Verifiable
 
                     Remove-HelperSnapin -SnapinsToRemove 'FakeSnapin'
                 }
@@ -399,8 +399,8 @@ try
 
             Context 'When Remove-HelperSnapin is called and a snapin is not loaded' {
                 It 'Should do nothing' {
-                    Mock -CommandName Get-PSSnapin -Verifiable -MockWith {}
-                    Mock -CommandName Remove-PSSnapin -MockWith {}
+                    Mock -CommandName Get-PSSnapin -Verifiable
+                    Mock -CommandName Remove-PSSnapin
 
                     Remove-HelperSnapin -SnapinsToRemove 'FakeSnapin'
 
