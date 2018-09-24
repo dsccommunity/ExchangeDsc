@@ -226,8 +226,8 @@ function Get-ExchangeVersion
 
 <#
 .SYNOPSIS
-Gets the installed Exchange Display Version, which refers to the installed updates / CU,
-and returns the number as a string. Returns N/A if the version cannot be found, and will
+Gets the installed Exchange buildnumber, which refers to the installed updates / CU,
+and returns a hashtable with Major, Minor, Update versions. Returns NULL if the version cannot be found, and will
 optionally throw an exception if ThrowIfUnknownVersion was set to
 $true.
 
@@ -246,10 +246,10 @@ param
 (
 [Parameter()]
 [System.Boolean]
-$ThrowIfUnknownVersion = $false
+$ThrowIfUnknownDisplayVersion = $false
 )
 
-$displayVersion = 'N/A'
+$displayVersion = $null
 
 $uninstall20162019Key = Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}' -ErrorAction SilentlyContinue
 
@@ -258,10 +258,26 @@ if ($null -ne $uninstall20162019Key)
     if ($uninstall20162019Key.GetValue('VersionMajor') -eq 15 -and $uninstall20162019Key.GetValue('VersionMinor') -eq 1)
     {
         # case of E2016 is installed
-        $displayVersion = $uninstall20162019Key.GetValue('DisplayVersion')
+        $displayVersionString = $uninstall20162019Key.GetValue('DisplayVersion')
+
+        $displayVersionString -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionUpdate>\d+)'
+        if($Matches)
+        {
+            $displayVersion = @{
+
+                VersionMajor    =   [int]$Matches.VersionMajor
+                VersionMinor    =   [int]$Matches.VersionMinor
+                VersionUpdate   =   [int]$Matches.VersionUpdate
+                
+            }
+        }
+        else {
+            Writer-Error "Get-ExchangeDisplayVersion: Major, Minor, Update versions cannot be parsed."
+        }
+
     }
 }
-elseif ($ThrowIfUnknownVersion)
+elseif ($ThrowIfUnknownDisplayVersion)
 {
     throw 'Failed to discover a known Exchange Version'
 }
@@ -386,10 +402,7 @@ function Get-ExchangeInstallStatus
     $shouldInstallLanguagePack = Test-ShouldInstallUMLanguagePack -Arguments $Arguments
     $setupRunning = Test-ExchangeSetupRunning
     $setupComplete = Test-ExchangeSetupComplete -Verbose:$VerbosePreference
-    $exchangePresent = Test-ExchangePresent
-    $shouldUpgradeExchange = $false # this is only supported with E2016 for now
-
-    
+    $exchangePresent = Test-ExchangePresent    
 
     if ($setupRunning -or $setupComplete)
     {
@@ -408,18 +421,33 @@ function Get-ExchangeInstallStatus
     }
 
     # E2016 CU install / update support
-    if($Arguments -match "/mode:Upgrade")
+    if(($Arguments -match "/mode:upgrade") -or ($Arguments -match "/m:upgrade"))
     {
-        $exchangeVersion = Get-ExchangeVersion
+        $exchangeVersion = Get-ExchangeVersion -ThrowIfUnknownVersion $true
 
         if($exchangeVersion -eq '2016')
         {
             Write-Verbose "Comparing setup.exe version and installed Exchange's version."
 
-            $setupVersion = (Get-ChildItem -Path $Path).VersionInfo.ProductVersionRaw
-            $exchangeDisplayVersion = Get-ExchangeDisplayVersion
+            $setupexeVersionString = (Get-ChildItem -Path $Path).VersionInfo.ProductVersionRaw
             
-            if($exchangeDisplayVersion -ne $setupVersion)
+            $setupexeVersionString -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionUpdate>\d+)'
+            if($Matches)
+            {
+                $setupExeVersion = @{
+
+                    VersionMajor    =   [int]$Matches.VersionMajor
+                    VersionMinor    =   [int]$Matches.VersionMinor
+                    VersionUpdate   =   [int]$Matches.VersionUpdate
+
+                }
+            }
+
+            $exchangeDisplayVersion = Get-ExchangeDisplayVersion -ThrowIfUnknownDisplayVersion $true
+            
+            if(($exchangeDisplayVersion.VersionMajor -eq $setupExeVersion.VersionMajor)`
+                -and ($exchangeDisplayVersion.VersionMinor -eq $setupExeVersion.VersionMinor)`
+                -and ($exchangeDisplayVersion.VersionMinor -le $setupExeVersion.VersionMinor) ) # if server has lower version of CU installed
             {
                 Write-Verbose "Version upgrader is requested."
                 # executing with the upgrade.
