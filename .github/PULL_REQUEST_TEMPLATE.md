@@ -12,12 +12,18 @@
     keep the headers and the task list.
 -->
 #### Pull Request (PR) description
-Adding support of Exchange CU installation to xExchInstall resource.
-Added new function Get-ExchangeDisplayVersion to xExchangeHelper.psm1.
-Modified Get-ExchangeInstallStatus function in xExchangeHelper.psm1 in order to check for CU install / update scenario.
+<!--
+    Replace this comment block with a description of your PR.
+-->
 
 #### This Pull Request (PR) fixes the following issues
-None.
+<!--
+    If this PR does not fix an open issue, replace this comment block with None.
+    If this PR resolves one or more open issues, replace this comment block with
+    a list the issues using a GitHub closing keyword, e.g.:
+    - Fixes #123
+    - Fixes #124
+-->
 
 #### Task list
 <!--
@@ -28,9 +34,9 @@ None.
     Change to [x] for each task in the task list that applies to your PR.
     For those task that don't apply to you PR, leave those as is.
 -->
-- [x] Added an entry under the Unreleased section of the change log in the CHANGELOG.md.
+- [ ] Added an entry under the Unreleased section of the change log in the CHANGELOG.md.
       Entry should say what was changed, and how that affects users (if applicable).
-- [x] Resource documentation added/updated in README.md.
+- [ ] Resource documentation added/updated in README.md.
 - [ ] Resource parameter descriptions added/updated in README.md, schema.mof
       and comment-based help.
 - [ ] Comment-based help added/updated.
