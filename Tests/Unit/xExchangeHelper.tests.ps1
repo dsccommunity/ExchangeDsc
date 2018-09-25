@@ -347,6 +347,67 @@ try
                 }
             }
         }
+
+        Describe 'xExchangeHelper\Invoke-DotSourcedScript' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Invoke-DotSourcedScript is called with no parameters' {
+                It 'Should execute fine' {
+                    $processes = Invoke-DotSourcedScript -ScriptPath 'Get-Process'
+
+                    $processes.Count | Should -BeGreaterThan 0
+                }
+            }
+
+            Context 'When Invoke-DotSourcedScript is called with parameters' {
+                It 'Should execute fine' {
+                    $testProcess = 'svchost'
+                    $scriptParams = @{
+                        Name = $testProcess
+                    }
+
+                    $processes = Invoke-DotSourcedScript -ScriptPath 'Get-Process' -ScriptParams $scriptParams
+
+                    ($processes | Where-Object -FilterScript {$_.ProcessName -like $testProcess}).Count | Should -BeGreaterThan 0
+                }
+            }
+
+            Context 'When Invoke-DotSourcedScript is called with SnapinsToRemove' {
+                It 'Should call Remove-HelperSnapin' {
+                    Mock -CommandName Remove-HelperSnapin -Verifiable
+
+                    Invoke-DotSourcedScript -ScriptPath 'Get-Process' -SnapinsToRemove 'SomeSnapin' | Out-Null
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Remove-HelperSnapin' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Remove-HelperSnapin is called and a snapin is loaded' {
+                It 'Should remove the snapin' {
+                    Mock -CommandName Get-PSSnapin -Verifiable -MockWith { return $true }
+                    Mock -CommandName Remove-PSSnapin -Verifiable
+
+                    Remove-HelperSnapin -SnapinsToRemove 'FakeSnapin'
+                }
+            }
+
+            Context 'When Remove-HelperSnapin is called and a snapin is not loaded' {
+                It 'Should do nothing' {
+                    Mock -CommandName Get-PSSnapin -Verifiable
+                    Mock -CommandName Remove-PSSnapin
+
+                    Remove-HelperSnapin -SnapinsToRemove 'FakeSnapin'
+
+                    Assert-MockCalled -CommandName Remove-PSSnapin -Times 0
+                }
+            }
+        }
     }
 }
 finally

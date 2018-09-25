@@ -1977,4 +1977,73 @@ function Assert-IsSupportedWithExchangeVersion
     }
 }
 
+<#
+    .SYNOPSIS
+        Function used for invoking a dot-sourced script file or cmdlet.
+
+    .PARAMETER ScriptPath
+        The path of the script, or cmdlet, to execute via dot-sourcing.
+
+    .PARAMETER ScriptParams
+        Parameters to pass, if any, to the dot-sourced script or cmdlet.
+
+    .PARAMETER SnapinsToRemove
+        An optional list of PowerShell Snapins to check for and remove after
+        executing the script or cmdlet.
+#>
+function Invoke-DotSourcedScript
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ScriptPath,
+
+        [Parameter()]
+        [System.Collections.Hashtable]
+        $ScriptParams = @{},
+
+        [Parameter()]
+        [System.String[]]
+        $SnapinsToRemove
+    )
+
+    . $ScriptPath @ScriptParams
+
+    if ($SnapinsToRemove.Count -gt 0)
+    {
+        Remove-HelperSnapin -SnapinsToRemove $SnapinsToRemove -Verbose:$VerbosePreference
+    }
+}
+
+<#
+    .SYNOPSIS
+        Detects whether the specified PowerShell snapins have been loaded, and
+        if so, removes them.
+
+    .PARAMETER SnapinsToRemove
+        A list of PowerShell Snapins to check for and remove if loaded.
+#>
+function Remove-HelperSnapin
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String[]]
+        $SnapinsToRemove
+    )
+
+    foreach ($snapin in $SnapinsToRemove)
+    {
+        if ($null -ne (Get-PSSnapin -Name $snapin -ErrorAction SilentlyContinue))
+        {
+            Write-Verbose -Message "'$snapin' snapin is currently loaded. Removing."
+
+            Remove-PSSnapin -Name $snapin -ErrorAction SilentlyContinue -Confirm:$false
+        }
+    }
+}
+
 Export-ModuleMember -Function *
