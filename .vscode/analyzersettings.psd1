@@ -1,7 +1,7 @@
 @{
     <#
         For the custom rules to work, the DscResource.Tests repo must be
-        cloned. It is automatically clone as soon as any unit or
+        cloned. It is automatically cloned as soon as any unit or
         integration tests are run.
     #>
     CustomRulePath = '.\DSCResource.Tests\DscResource.AnalyzerRules'
