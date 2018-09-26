@@ -408,6 +408,392 @@ try
                 }
             }
         }
+
+        Describe 'xExchangeHelper\Test-ExchangePresent' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            $validExchangeYears = @(
+                @{Year='2013'}
+                @{Year='2016'}
+                @{Year='2019'}
+            )
+
+            $inValidExchangeYears = @(
+                @{Year='2012'}
+                @{Year=''}
+                @{Year='N/A'}
+                @{Year=$null}
+            )
+
+            Context 'When Test-ExchangePresent is called with a valid Exchange Version' {
+                It 'Should return True' -TestCases $validExchangeYears {
+                    param
+                    (
+                        [System.Object]
+                        $Year
+                    )
+
+                    Mock -CommandName Get-ExchangeVersion -Verifiable -MockWith { return $Year }
+
+                    Test-ExchangePresent | Should -Be $true
+                }
+            }
+
+            Context 'When Test-ExchangePresent is called with an invalid Exchange Version' {
+                It 'Should return False' -TestCases $inValidExchangeYears {
+                    param
+                    (
+                        [System.Object]
+                        $Year
+                    )
+
+                    Mock -CommandName Get-ExchangeVersion -Verifiable -MockWith { return $Year }
+
+                    Test-ExchangePresent | Should -Be $false
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Test-ExchangeSetupComplete' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            $setupCompleteCases = @(
+                @{
+                    ExchangePresent   = $true
+                    PartiallyComplete = $false
+                }
+            )
+
+            Context 'When Test-ExchangeSetupComplete is called and setup is fully complete' {
+                It 'Should return true' -TestCases $setupCompleteCases {
+                    param
+                    (
+                        [System.Boolean]
+                        $ExchangePresent,
+
+                        [System.Boolean]
+                        $PartiallyComplete
+                    )
+
+                    Mock -CommandName Test-ExchangePresent -Verifiable -MockWith { return $ExchangePresent }
+                    Mock -CommandName Test-ExchangeSetupPartiallyCompleted -Verifiable -MockWith { return $PartiallyComplete }
+
+                    Test-ExchangeSetupComplete | Should -Be $true
+                }
+            }
+
+            $setupIncompleteCases = @(
+                @{
+                    ExchangePresent   = $false
+                    PartiallyComplete = $false
+                }
+                @{
+                    ExchangePresent   = $true
+                    PartiallyComplete = $true
+                }
+                @{ # This last one shouldn't be possible, but let's test for it anyways
+                    ExchangePresent   = $false
+                    PartiallyComplete = $true
+                }
+            )
+
+            Context 'When Test-ExchangeSetupComplete is called and setup is not fully complete' {
+                It 'Should return false' -TestCases $setupIncompleteCases {
+                    param
+                    (
+                        [System.Boolean]
+                        $ExchangePresent,
+
+                        [System.Boolean]
+                        $PartiallyComplete
+                    )
+
+                    Mock -CommandName Test-ExchangePresent -Verifiable -MockWith { return $ExchangePresent }
+                    Mock -CommandName Test-ExchangeSetupPartiallyCompleted -Verifiable -MockWith { return $PartiallyComplete }
+
+                    Test-ExchangeSetupComplete | Should -Be $false
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Test-ExchangeSetupPartiallyCompleted' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Test-ExchangeSetupPartiallyCompleted is called and no setup progress related registry keys remain' {
+                It 'Should return false' {
+                    Mock -CommandName Get-ItemProperty -Verifiable -MockWith {
+                        return @{
+                            UnpackedVersion   = 1
+                            ConfiguredVersion = 1
+                        }
+                    }
+
+                    Test-ExchangeSetupPartiallyCompleted | Should -Be $false
+                }
+            }
+
+            $partiallyCompletedTestCases = @(
+                @{
+                    UnpackedVersion   = 1
+                    ConfiguredVersion = 1
+                    Action            = 1
+                }
+                @{
+                    UnpackedVersion   = 1
+                    ConfiguredVersion = 1
+                    Watermark         = 1
+                }
+                @{
+                    UnpackedVersion   = 1
+                    ConfiguredVersion = 1
+                    Action            = 1
+                    Watermark         = 1
+                }
+                @{
+                    UnpackedVersion   = 1
+                    Action            = 1
+                    Watermark         = 1
+                }
+            )
+
+            Context 'When Test-ExchangeSetupPartiallyCompleted is called and setup progress related registry keys remain' {
+                It 'Should return true' -TestCases $partiallyCompletedTestCases {
+                    param
+                    (
+                        [Nullable[System.Int32]]
+                        $UnpackedVersion,
+
+                        [Nullable[System.Int32]]
+                        $ConfiguredVersion,
+
+                        [Nullable[System.Int32]]
+                        $Action,
+
+                        [Nullable[System.Int32]]
+                        $Watermark
+                    )
+
+                    Mock -CommandName Get-ItemProperty -Verifiable -MockWith {
+                        return @{
+                            UnpackedVersion   = $UnpackedVersion
+                            ConfiguredVersion = $ConfiguredVersion
+                            Action            = $Action
+                            Watermark         = $Watermark
+                        }
+                    }
+
+                    Test-ExchangeSetupPartiallyCompleted | Should -Be $true
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Set-WSManConfigStatus' -Tag 'Helper' {
+            # Define an empty winrm function so we can Mock calls to the winrm executable
+            function winrm {}
+
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Set-WSManConfigStatus is called and the UpdatedConfig key does not exist' {
+                It 'Should attempt to configure WinRM' {
+                    Mock -CommandName Get-ItemProperty -Verifiable -MockWith { return @{SomeOtherProp = 'SomeOtherValue'} }
+                    Mock -CommandName Set-Location -Verifiable
+                    Mock -CommandName winrm -Verifiable
+
+                    Set-WSManConfigStatus
+                }
+            }
+
+            Context 'When Set-WSManConfigStatus is called and the UpdatedConfig key exists' {
+                It 'Should do nothing' {
+                    Mock -CommandName Get-ItemProperty -Verifiable -MockWith { return @{UpdatedConfig = 'SomeValue'} }
+                    Mock -CommandName winrm
+
+                    Set-WSManConfigStatus
+
+                    Assert-MockCalled -CommandName winrm -Times 0
+                }
+            }
+
+            Context 'When Set-WSManConfigStatus is called and the WSMan key does not exist' {
+                It 'Should throw an exception' {
+                    Mock -CommandName Get-ItemProperty -Verifiable -MockWith { return $null }
+
+                    { Set-WSManConfigStatus } | Should -Throw -ExpectedMessage 'Unable to find registry key: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN'
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Test-UMLanguagePackInstalled' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            $testCultureName = 'TestCulture'
+
+            Context 'When Test-UMLanguagePackInstalled is called and the specified Culture key exists' {
+                It 'Should return true' {
+                    Mock -CommandName Get-ItemProperty -Verifiable -MockWith { return @{TestCulture = $testCultureName} }
+
+                    Test-UMLanguagePackInstalled -Culture $testCultureName | Should -Be $true
+                }
+            }
+
+            Context 'When Test-UMLanguagePackInstalled is called and the specified Culture key does not exist' {
+                It 'Should return false' {
+                    Mock -CommandName Get-ItemProperty -Verifiable -MockWith { return @{SomeOtherCulture = 'SomeOtherCulture'} }
+
+                    Test-UMLanguagePackInstalled -Culture $testCultureName | Should -Be $false
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Test-ShouldInstallUMLanguagePack' -Tag 'Helper' {
+            $noLanguagePackArgs     = '/IAcceptExchangeServerLicenseTerms /mode:Install /r:MB'
+            $singleLanguagePackArgs = '/AddUmLanguagePack:ja-JP /s:d:\Exchange\UMLanguagePacks /IAcceptExchangeServerLicenseTerms'
+            $multiLanguagePackArgs  = '/AddUmLanguagePack:es-MX,de-DE /s:d:\Exchange\UMLanguagePacks /IAcceptExchangeServerLicenseTerms'
+
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Test-ShouldInstallUMLanguagePack is called and AddUMLanguagePack is not specified' {
+                It 'Should return false' {
+                    Test-ShouldInstallUMLanguagePack -Arguments $noLanguagePackArgs | Should -Be $false
+                }
+            }
+
+            Context 'When Test-ShouldInstallUMLanguagePack is called with AddUMLanguagePack, a language is specified, and the language pack is not installed' {
+                It 'Should return true' {
+                    Mock -CommandName Test-UMLanguagePackInstalled -Verifiable -MockWith { return $false }
+
+                    Test-ShouldInstallUMLanguagePack -Arguments $singleLanguagePackArgs | Should -Be $true
+                }
+
+                It 'Should return true' {
+                    Mock -CommandName Test-UMLanguagePackInstalled -Verifiable -MockWith { return $false }
+
+                    Test-ShouldInstallUMLanguagePack -Arguments $multiLanguagePackArgs | Should -Be $true
+                }
+            }
+
+            Context 'When Test-ShouldInstallUMLanguagePack is called with AddUMLanguagePack, a language is specified, and the language pack is installed' {
+                It 'Should return false' {
+                    Mock -CommandName Test-UMLanguagePackInstalled -Verifiable -MockWith { return $true }
+
+                    Test-ShouldInstallUMLanguagePack -Arguments $singleLanguagePackArgs | Should -Be $false
+                }
+
+                It 'Should return false' {
+                    Mock -CommandName Test-UMLanguagePackInstalled -Verifiable -MockWith { return $true }
+
+                    Test-ShouldInstallUMLanguagePack -Arguments $multiLanguagePackArgs | Should -Be $false
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Test-ExchangeSetupRunning' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Test-ExchangeSetupRunning is called and the setup process is running' {
+                It 'Should return true' {
+                    Mock -CommandName Get-Process -Verifiable -MockWith { return 'SomeProcess' }
+
+                    Test-ExchangeSetupRunning | Should -Be $true
+                }
+            }
+
+            Context 'When Test-ExchangeSetupRunning is called and the setup process is not running' {
+                It 'Should return false' {
+                    Mock -CommandName Get-Process -Verifiable -MockWith { return $null }
+
+                    Test-ExchangeSetupRunning | Should -Be $false
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Wait-ForProcessStart' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Wait-ForProcessStart is called and the given process is detected' {
+                It 'Should return true' {
+                    Mock -CommandName Get-Process -Verifiable -MockWith { return 'SomeProcess' }
+
+                    Wait-ForProcessStart -ProcessName 'SomeProcess' | Should -Be $true
+                }
+            }
+
+            Context 'When Wait-ForProcessStart is called and the given process is not detected' {
+                It 'Should return false' {
+                    Mock -CommandName Get-Process -Verifiable -MockWith { return $null }
+
+                    Wait-ForProcessStart -ProcessName 'SomeProcess' -SecondsPerSleep 0 -MaxSleepCycles 1 | Should -Be $false
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Wait-ForProcessStop' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Wait-ForProcessStop is called and the given process stops' {
+                It 'Should return true' {
+                    Mock -CommandName Get-Process -Verifiable -MockWith { return $null }
+
+                    Wait-ForProcessStop -ProcessName 'SomeProcess' | Should -Be $true
+                }
+            }
+
+            Context 'When Wait-ForProcessStop is called and the given process does not stop' {
+                It 'Should return false' {
+                    Mock -CommandName Get-Process -Verifiable -MockWith { return 'SomeProcess' }
+
+                    Wait-ForProcessStop -ProcessName 'SomeProcess' -SecondsPerSleep 0 -MaxSleepCycles 1 | Should -Be $false
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Assert-IsSetupComplete' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Assert-IsSetupComplete is called and setup is complete' {
+                It 'Should do nothing' {
+                    Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
+                        return @{
+                            SetupComplete = $true
+                        }
+                    }
+
+                    { Assert-IsSetupComplete -Arguments 'SetupArgs' } | Should -Not -Throw
+                }
+            }
+
+            Context 'When Assert-IsSetupComplete is called and setup is not complete' {
+                It 'Should throw an exception' {
+                    Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
+                        return @{
+                            SetupComplete = $false
+                        }
+                    }
+
+                    { Assert-IsSetupComplete -Arguments 'SetupArgs' } | Should -Throw -ExpectedMessage 'Exchange setup did not complete successfully. See "<system drive>\ExchangeSetupLogs\ExchangeSetup.log" for details.'
+                }
+            }
+        }
     }
 }
 finally

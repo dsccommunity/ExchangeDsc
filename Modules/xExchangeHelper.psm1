@@ -274,7 +274,7 @@ function Test-ExchangeSetupPartiallyCompleted
     foreach ($key in $roleKeys)
     {
         $values = $null
-        $values = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\$key" -ErrorAction SilentlyContinue
+        $values = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\$key" -ErrorAction SilentlyContinue
 
         if ($null -ne $values)
         {
@@ -303,10 +303,6 @@ function Test-ExchangeSetupPartiallyCompleted
 
                     $isPartiallyCompleted = $true
                 }
-            }
-            else
-            {
-                Write-Verbose -Message "Value not present 'HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\$key\UnpackedVersion'. Skipping remaining value checks for key."
             }
         }
     }
@@ -393,7 +389,7 @@ function Set-WSManConfigStatus
 
     $needReboot = $false
 
-    $wsmanKey = Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN' -ErrorAction SilentlyContinue
+    $wsmanKey = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN' -ErrorAction SilentlyContinue
 
     if ($null -ne $wsmanKey)
     {
@@ -2043,6 +2039,143 @@ function Remove-HelperSnapin
 
             Remove-PSSnapin -Name $snapin -ErrorAction SilentlyContinue -Confirm:$false
         }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Waits a specified amount of time for a process to start, and returns
+        whether or not the process started.
+
+    .PARAMETER ProcessName
+        The process name to wait for to start.
+
+    .PARAMETER SecondsPerSleep
+        How many seconds to sleep between process checks.
+
+    .PARAMETER MaxSleepCycles
+        The maximum number of times to sleep without detecting the process
+        before returning.
+#>
+function Wait-ForProcessStart
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ProcessName,
+
+        [Parameter()]
+        [System.String]
+        $SecondsPerSleep = 1,
+
+        [Parameter()]
+        [System.String]
+        $MaxSleepCycles = 60
+    )
+
+    $detectedProcess = $false
+
+    Write-Verbose -Message "Waiting up to $($SecondsPerSleep * $MaxSleepCycles) seconds before exiting to give time for $ProcessName to start"
+
+    for ($i = 0; $i -lt $MaxSleepCycles; $i++)
+    {
+        if ($null -eq (Get-Process -Name $ProcessName -ErrorAction SilentlyContinue))
+        {
+            Start-Sleep -Seconds $SecondsPerSleep
+        }
+        else
+        {
+            Write-Verbose -Message "Detected that $ProcessName is running"
+            $detectedProcess = $true
+            break
+        }
+    }
+
+    return $detectedProcess
+}
+
+<#
+    .SYNOPSIS
+        Waits indefinitely for the specified process to be not running.
+
+    .PARAMETER ProcessName
+        The process name to wait for to stop.
+
+    .PARAMETER SecondsPerSleep
+        How many seconds to sleep between process checks.
+
+    .PARAMETER MaxSleepCycles
+        The maximum number of times to sleep without detecting the process
+        stopping before returning.
+#>
+function Wait-ForProcessStop
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ProcessName,
+
+        [Parameter()]
+        [System.String]
+        $SecondsPerSleep = 60,
+
+        [Parameter()]
+        [System.String]
+        $MaxSleepCycles = 1440
+    )
+
+    $processStopped = $false
+
+    for ($i = 0; $i -lt $MaxSleepCycles; $i++)
+    {
+        if ($null -ne (Get-Process -Name $ProcessName -ErrorAction SilentlyContinue))
+        {
+            Write-Verbose -Message "$ProcessName is still running at $([DateTime]::Now). Sleeping for $SecondsPerSleep seconds."
+            Start-Sleep -Seconds $SecondsPerSleep
+        }
+        else
+        {
+            $processStopped = $true
+            break
+        }
+    }
+
+    return $processStopped
+}
+
+<#
+    .SYNOPSIS
+        Checks whether Exchange Setup has completed successfully according to
+        the input Setup Arguments, and throws an exception if it has not.
+
+    .PARAMETER Arguments
+        The command line arguments passed to Exchange Setup.
+#>
+function Assert-IsSetupComplete
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [System.String]
+        $Arguments
+    )
+
+    $installStatus = Get-ExchangeInstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
+
+    if ($installStatus.SetupComplete)
+    {
+        Write-Verbose -Message 'Exchange setup completed successfully'
+    }
+    else
+    {
+        throw 'Exchange setup did not complete successfully. See "<system drive>\ExchangeSetupLogs\ExchangeSetup.log" for details.'
     }
 }
 
