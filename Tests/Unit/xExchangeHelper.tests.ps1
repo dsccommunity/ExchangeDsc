@@ -420,13 +420,6 @@ try
                 @{Year='2019'}
             )
 
-            $inValidExchangeYears = @(
-                @{Year='2012'}
-                @{Year=''}
-                @{Year='N/A'}
-                @{Year=$null}
-            )
-
             Context 'When Test-ExchangePresent is called with a valid Exchange Version' {
                 It 'Should return True' -TestCases $validExchangeYears {
                     param
@@ -440,6 +433,13 @@ try
                     Test-ExchangePresent | Should -Be $true
                 }
             }
+
+            $inValidExchangeYears = @(
+                @{Year='2012'}
+                @{Year=''}
+                @{Year='N/A'}
+                @{Year=$null}
+            )
 
             Context 'When Test-ExchangePresent is called with an invalid Exchange Version' {
                 It 'Should return False' -TestCases $inValidExchangeYears {

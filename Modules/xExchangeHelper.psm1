@@ -2099,7 +2099,8 @@ function Wait-ForProcessStart
 
 <#
     .SYNOPSIS
-        Waits indefinitely for the specified process to be not running.
+        Waits a specified amount of time to detect that the given process is
+        not running.
 
     .PARAMETER ProcessName
         The process name to wait for to stop.
