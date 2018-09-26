@@ -219,7 +219,7 @@ try
                 It 'Should not throw an exception' -TestCases $supportedVersionTestCases {
                     param($Name, $ExchangeVersion, $SupportedVersions)
 
-                    Mock -CommandName Get-ExchangeVersion -MockWith { return $ExchangeVersion }
+                    Mock -CommandName Get-ExchangeVersionYear -MockWith { return $ExchangeVersion }
 
                     { Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName $Name -SupportedVersions $SupportedVersions } | Should -Not -Throw
                 }
@@ -229,7 +229,7 @@ try
                 It 'Should throw an exception' -TestCases $notSupportedVersionTestCases {
                     param($Name, $ExchangeVersion, $SupportedVersions)
 
-                    Mock -CommandName Get-ExchangeVersion -MockWith { return $ExchangeVersion }
+                    Mock -CommandName Get-ExchangeVersionYear -MockWith { return $ExchangeVersion }
 
                     { Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName $Name -SupportedVersions $SupportedVersions } | Should -Throw
                 }

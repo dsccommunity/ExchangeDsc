@@ -143,7 +143,7 @@ function Get-VersionSpecificComponentsToActivate
     [OutputType([System.String[]])]
     param()
 
-    $serverVersion = Get-ExchangeVersion
+    $serverVersion = Get-ExchangeVersionYear
 
     [System.String[]] $componentsToActivate = @('AutoDiscoverProxy',
                                                'ActiveSyncProxy',

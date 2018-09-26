@@ -26,7 +26,7 @@ if ($exchangeInstalled)
     $shellCredentials = Get-TestCredential
 
     Describe 'Test Setting Properties with xExchMailboxServer' {
-        $serverVersion = Get-ExchangeVersion
+        $serverVersion = Get-ExchangeVersionYear
 
         #Make sure DB activation is not blocked
         $testParams = @{
