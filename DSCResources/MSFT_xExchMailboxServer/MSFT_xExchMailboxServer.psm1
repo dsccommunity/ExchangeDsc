@@ -249,7 +249,7 @@ function Get-TargetResource
             SubjectLogForManagedFoldersEnabled       = [System.Boolean] $server.SubjectLogForManagedFoldersEnabled
         }
 
-        $serverVersion = Get-ExchangeVersion
+        $serverVersion = Get-ExchangeVersionYear
 
         if ($serverVersion -in '2016','2019')
         {
@@ -521,7 +521,7 @@ function Set-TargetResource
     'SharingPolicyWorkCycleCheckpoint','SharingSyncWorkCycle','SharingSyncWorkCycleCheckpoint','SiteMailboxWorkCycle','SiteMailboxWorkCycleCheckpoint','TopNWorkCycle','TopNWorkCycleCheckpoint',
     'UMReportingWorkCycle','UMReportingWorkCycleCheckpoint'
 
-    $serverVersion = Get-ExchangeVersion
+    $serverVersion = Get-ExchangeVersionYear
     if ($serverVersion -eq '2013')
     {
       #Check for non-existent parameters in Exchange 2013
@@ -770,7 +770,7 @@ function Test-TargetResource
     'SharingPolicyWorkCycleCheckpoint','SharingSyncWorkCycle','SharingSyncWorkCycleCheckpoint','SiteMailboxWorkCycle','SiteMailboxWorkCycleCheckpoint','TopNWorkCycle','TopNWorkCycleCheckpoint',
     'UMReportingWorkCycle','UMReportingWorkCycleCheckpoint'
 
-    $serverVersion = Get-ExchangeVersion
+    $serverVersion = Get-ExchangeVersionYear
     if ($serverVersion -eq '2013')
     {
       #Check for non-existent parameters in Exchange 2013
