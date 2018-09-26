@@ -163,7 +163,7 @@ function Test-ExchangePresent
     [OutputType([System.Boolean])]
     param ()
 
-    $version = Get-ExchangeVersion
+    $version = Get-ExchangeVersionYear
 
     if ($version -in '2013','2016','2019')
     {
@@ -186,7 +186,7 @@ function Test-ExchangePresent
         Whether the function should throw an exception if the version cannot
         be found. Defauls to $false.
 #>
-function Get-ExchangeVersion
+function Get-ExchangeVersionYear
 {
     [CmdletBinding()]
     [OutputType([System.String])]
@@ -225,80 +225,76 @@ function Get-ExchangeVersion
 }
 
 <#
-.SYNOPSIS
-Gets the installed Exchange buildnumber, which refers to the installed updates / CU,
-and returns a hashtable with Major, Minor, Update versions. Returns NULL if the version cannot be found, and will
-optionally throw an exception if ThrowIfUnknownVersion was set to
-$true.
+    .SYNOPSIS
+        Gets the installed Exchange buildnumber, which refers to the installed updates / CU,
+        and returns a hashtable with Major, Minor, Update versions. Returns NULL if the version cannot be found, and will
+        optionally throw an exception if ThrowIfUnknownVersion was set to $true.
 
-Function currently only supports 2016
-
-.PARAMETER ThrowIfUnknownVersion
-Whether the function should throw an exception if the version cannot
-be found. Defauls to $false.
+    .PARAMETER ThrowIfUnknownVersion
+        Whether the function should throw an exception if the version cannot
+        be found. Defauls to $false.
 #>
 
-function Get-ExchangeDisplayVersion
+function Get-ExchangeVersionDetailed
 {
-[CmdletBinding()]
-[OutputType([System.String])]
-param
-(
-[Parameter()]
-[System.Boolean]
-$ThrowIfUnknownDisplayVersion = $false
-)
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter()]
+        [System.Boolean]
+        $ThrowIfUnknownDisplayVersion = $false
+    )
 
-$displayVersion = $null
+    $displayVersion = $null
 
-$uninstall20162019Key = Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}' -ErrorAction SilentlyContinue
+    $uninstall20162019Key = Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}' -ErrorAction SilentlyContinue
 
-$uninstall2013Key = Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4934D1EA-BE46-48B1-8847-F1AF20E892C1}' -ErrorAction SilentlyContinue
+    $uninstall2013Key = Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4934D1EA-BE46-48B1-8847-F1AF20E892C1}' -ErrorAction SilentlyContinue
 
-if ($null -ne $uninstall20162019Key)
-{
-    if ($uninstall20162019Key.GetValue('VersionMajor') -eq 15 -and $uninstall20162019Key.GetValue('VersionMinor') -eq 1)
+    if ($null -ne $uninstall20162019Key)
     {
-        # case of E2016 is installed
-        $displayVersionString = $uninstall20162019Key.GetValue('DisplayVersion')
-
-    }
-}
-elseif ($null -ne $uninstall2013Key)
-{
-    $displayVersionString = $uninstall2013Key.GetValue('DisplayVersion')
-
-}
-elseif ($ThrowIfUnknownDisplayVersion)
-{
-    throw 'Failed to discover a known Exchange Version'
-}
-
-if($null -ne $displayVersionString)
-{
-    $displayVersionString -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionBuild>\d+)'
-    if($Matches)
-    {
-        $displayVersion = @{
-
-            VersionMajor    =   [int]$Matches.VersionMajor
-            VersionMinor    =   [int]$Matches.VersionMinor
-            VersionBuild    =   [int]$Matches.VersionBuild
+        if ($uninstall20162019Key.GetValue('VersionMajor') -eq 15 -and $uninstall20162019Key.GetValue('VersionMinor') -eq 1)
+        {
+            # Case of E2016 is installed
+            $displayVersionString = $uninstall20162019Key.GetValue('DisplayVersion')
 
         }
     }
-    else {
-
-        Write-Error "Get-ExchangeDisplayVersion: Major, Minor, Update versions cannot be parsed."
-
+    elseif ($null -ne $uninstall2013Key)
+    {
+        $displayVersionString = $uninstall2013Key.GetValue('DisplayVersion')
     }
-}
-else
-{
-    Write-Error "Get-ExchangeDisplayVersion function could not read the 'DisplayVersion' of Exchange from registry."
-}
+    elseif ($ThrowIfUnknownDisplayVersion)
+    {
+        throw 'Failed to discover a known Exchange Version'
+    }
 
-return $displayVersion
+    if($null -ne $displayVersionString)
+    {
+        $displayVersionString -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionBuild>\d+)'
+        if($Matches)
+        {
+            $displayVersion = @{
+
+                VersionMajor = [int]$Matches.VersionMajor
+                VersionMinor = [int]$Matches.VersionMinor
+                VersionBuild = [int]$Matches.VersionBuild
+
+            }
+        }
+        else {
+
+            Write-Error -Message 'Get-ExchangeVersionDetailed: Major, Minor, Update versions cannot be parsed.'
+
+        }
+    }
+    else
+    {
+        Write-Error -Message "Get-ExchangeVersionDetailed function could not read the 'DisplayVersion' of Exchange from registry."
+    }
+
+    return $displayVersion
 
 }
 
@@ -441,46 +437,49 @@ function Get-ExchangeInstallStatus
     }
 
     # Exchange CU install / update support
-    if(($Arguments -match "/mode:upgrade") -or ($Arguments -match "/m:upgrade"))
+    if(($Arguments -match '/mode:upgrade') -or ($Arguments -match '/m:upgrade'))
     {
         # get Exchange setup.exe version
         $setupexeVersionString = (Get-ChildItem -Path $Path).VersionInfo.ProductVersionRaw
 
-        Write-Verbose "Setup.exe version is: '$setupexeVersionString'"    
+        Write-Verbose -Message "Setup.exe version is: '$setupexeVersionString'"    
         $setupexeVersionString -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionBuild>\d+)'
+        
         if($Matches)
         {
             $setupExeVersion = @{
 
-                VersionMajor    =   [int]$Matches.VersionMajor
-                VersionMinor    =   [int]$Matches.VersionMinor
-                VersionBuild    =   [int]$Matches.VersionBuild
+                VersionMajor = [int]$Matches.VersionMajor
+                VersionMinor = [int]$Matches.VersionMinor
+                VersionBuild = [int]$Matches.VersionBuild
 
             }
         }
 
-        $exchangeVersion = Get-ExchangeVersion -ThrowIfUnknownVersion $true
+        $exchangeVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
 
         if($null -ne $exchangeVersion)
-        { # if we have an exchange installed
+        { # If we have an exchange installed
 
-            Write-Verbose "Comparing setup.exe version and installed Exchange's version."
+            Write-Verbose -Message "Comparing setup.exe version and installed Exchange's version."
 
-            $exchangeDisplayVersion = Get-ExchangeDisplayVersion -ThrowIfUnknownDisplayVersion $true
+            $exchangeDisplayVersion = Get-ExchangeVersionDetailed -ThrowIfUnknownDisplayVersion $true
             
             if(($exchangeDisplayVersion.VersionMajor -eq $setupExeVersion.VersionMajor)`
                 -and ($exchangeDisplayVersion.VersionMinor -eq $setupExeVersion.VersionMinor)`
                 -and ($exchangeDisplayVersion.VersionBuild -le $setupExeVersion.VersionBuild) ) # if server has lower version of CU installed
             {
-                Write-Verbose "Version upgrader is requested."
-                # executing with the upgrade.
+
+                Write-Verbose -Message 'Version upgrade is requested.'
+                # Executing with the upgrade.
                 $shouldStartInstall = $true
+
             }
 
         }
         else {
 
-            Write-Error "Get-ExchangeInstallStatus: Script cannot determin installed Exchange's version. Please check if Exchange is installed."
+            Write-Error -Message "Get-ExchangeInstallStatus: Script cannot determin installed Exchange's version. Please check if Exchange is installed."
 
         }
     
@@ -1215,7 +1214,7 @@ function Remove-NotApplicableParamsForVersion
 
     if ($PSBoundParametersIn.ContainsKey($ParamName))
     {
-        $serverVersion = Get-ExchangeVersion
+        $serverVersion = Get-ExchangeVersionYear
 
         if ($serverVersion -notin $ParamExistsInVersion)
         {
@@ -2097,7 +2096,7 @@ function Assert-IsSupportedWithExchangeVersion
         $SupportedVersions
     )
 
-    $serverVersion = Get-ExchangeVersion
+    $serverVersion = Get-ExchangeVersionYear
 
     if ($serverVersion -notin $SupportedVersions)
     {

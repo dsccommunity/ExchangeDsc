@@ -158,7 +158,7 @@ if ($null -ne $adModule)
                     $dagExpectedGetResults.Add('AlternateWitnessDirectory', 'C:\FSW')
                 }
 
-                $serverVersion = Get-ExchangeVersion
+                $serverVersion = Get-ExchangeVersionYear
 
                 if ($serverVersion -in '2016','2019')
                 {

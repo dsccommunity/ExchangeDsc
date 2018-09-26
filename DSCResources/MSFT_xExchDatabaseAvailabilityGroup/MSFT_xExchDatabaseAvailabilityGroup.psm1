@@ -147,7 +147,7 @@ function Get-TargetResource
             WitnessServer                        = [System.String] $dag.WitnessServer
         }
 
-        $serverVersion = Get-ExchangeVersion
+        $serverVersion = Get-ExchangeVersionYear
 
         if ($serverVersion -in '2016','2019')
         {
@@ -284,7 +284,7 @@ function Set-TargetResource
     #create array of Exchange 2016 only parameters
     [array]$Exchange2016Only = 'AutoDagAutoRedistributeEnabled','FileSystem','PreferenceMoveFrequency'
 
-    $serverVersion = Get-ExchangeVersion
+    $serverVersion = Get-ExchangeVersionYear
 
     if ($serverVersion -eq '2013')
     {
@@ -476,7 +476,7 @@ function Test-TargetResource
     #create array of Exchange 2016 only parameters
     [array]$Exchange2016Only = 'AutoDagAutoRedistributeEnabled','FileSystem','PreferenceMoveFrequency'
 
-    $serverVersion = Get-ExchangeVersion
+    $serverVersion = Get-ExchangeVersionYear
 
     if ($serverVersion -eq '2013')
     {
