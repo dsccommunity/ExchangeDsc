@@ -397,6 +397,80 @@ function Test-ExchangeSetupPartiallyCompleted
     .PARAMETER Arguments
         The command line arguments to be passed to Exchange Setup.
 #>
+function Test-ShouldUpgradeExchange
+{
+
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $Path
+    )
+
+    $shouldUpgrade = $false
+
+    # Get Exchange setup.exe version
+    if(-Not (Test-Path -Path $Path -ErrorAction SilentlyContinue))
+    {
+        throw -Message "Get-ExchangeInstallStatus: Script couldn't find the file specified: '$Path'"
+    }
+
+    $setupexeVersionInfo = (Get-ChildItem -Path $Path).VersionInfo.ProductVersionRaw
+
+    Write-Verbose -Message "Setup.exe version is: '$($setupexeVersion.ToString())'"    
+    
+    $setupExeVersion = @{
+
+        VersionMajor =  [System.Int32]$setupexeVersionInfo.Major
+        VersionMinor =  [System.Int32]$setupexeVersionInfo.Minor
+        VersionBuild =  [System.Int32]$setupexeVersionInfo.Build
+
+    }
+
+    $exchangeVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
+
+    if($null -ne $exchangeVersion)
+    { # If we have an exchange installed
+
+        Write-Verbose -Message "Comparing setup.exe version and installed Exchange's version."
+
+        $exchangeDisplayVersion = Get-ExchangeVersionDetailed -ThrowIfUnknownDisplayVersion $true
+        
+        if(($exchangeDisplayVersion.VersionMajor -eq $setupExeVersion.VersionMajor)`
+            -and ($exchangeDisplayVersion.VersionMinor -eq $setupExeVersion.VersionMinor)`
+            -and ($exchangeDisplayVersion.VersionBuild -lt $setupExeVersion.VersionBuild) ) 
+        { # If server has lower version of CU installed
+
+            Write-Verbose -Message 'Version upgrade is requested.'
+            # Executing with the upgrade.
+            $shouldUpgrade = $true
+
+        }
+        else
+        {
+            Write-Verbose -Message 'Exchange with same or newer version was found.'
+        }
+
+    }
+    else {
+
+        Write-Error -Message "Get-ExchangeInstallStatus: Script cannot determin installed Exchange's version. Please check if Exchange is installed."
+
+    }
+
+    return $shouldUpgrade
+}
+
+<#
+    .SYNOPSIS
+        Checks for the exact status of Exchange setup and returns the results
+        in a Hashtable.
+
+    .PARAMETER Arguments
+        The command line arguments to be passed to Exchange Setup.
+#>
 function Get-ExchangeInstallStatus
 {
     [CmdletBinding()]
@@ -419,7 +493,7 @@ function Get-ExchangeInstallStatus
     $shouldInstallLanguagePack = Test-ShouldInstallUMLanguagePack -Arguments $Arguments
     $setupRunning = Test-ExchangeSetupRunning
     $setupComplete = Test-ExchangeSetupComplete -Verbose:$VerbosePreference
-    $exchangePresent = Test-ExchangePresent    
+    $exchangePresent = Test-ExchangePresent
 
     if ($setupRunning -or $setupComplete)
     {
@@ -439,47 +513,8 @@ function Get-ExchangeInstallStatus
 
     # Exchange CU install / update support
     if(($Arguments -match '/mode:upgrade') -or ($Arguments -match '/m:upgrade'))
-    {
-        # get Exchange setup.exe version
-        $setupexeVersionInfo = (Get-ChildItem -Path $Path).VersionInfo.ProductVersionRaw
-
-        Write-Verbose -Message "Setup.exe version is: '$($setupexeVersion.ToString())'"    
-        
-        $setupExeVersion = @{
-
-            VersionMajor =  [System.Int32]$setupexeVersionInfo.Major
-            VersionMinor =  [System.Int32]$setupexeVersionInfo.Minor
-            VersionBuild =  [System.Int32]$setupexeVersionInfo.Build
-
-        }
-
-        $exchangeVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
-
-        if($null -ne $exchangeVersion)
-        { # If we have an exchange installed
-
-            Write-Verbose -Message "Comparing setup.exe version and installed Exchange's version."
-
-            $exchangeDisplayVersion = Get-ExchangeVersionDetailed -ThrowIfUnknownDisplayVersion $true
-            
-            if(($exchangeDisplayVersion.VersionMajor -eq $setupExeVersion.VersionMajor)`
-                -and ($exchangeDisplayVersion.VersionMinor -eq $setupExeVersion.VersionMinor)`
-                -and ($exchangeDisplayVersion.VersionBuild -le $setupExeVersion.VersionBuild) ) 
-            { # If server has lower version of CU installed
-
-                Write-Verbose -Message 'Version upgrade is requested.'
-                # Executing with the upgrade.
-                $shouldStartInstall = $true
-
-            }
-
-        }
-        else {
-
-            Write-Error -Message "Get-ExchangeInstallStatus: Script cannot determin installed Exchange's version. Please check if Exchange is installed."
-
-        }
-    
+    { # In case of an upgrade
+        $shouldStartInstall = Test-ShouldUpgradeExchange -Path $Path
     }
 
     Write-Verbose -Message "Finished Checking Exchange Install Status. ShouldInstallLanguagePack: $shouldInstallLanguagePack. SetupRunning: $setupRunning. SetupComplete: $setupComplete. ExchangePresent: $exchangePresent. ShouldStartInstall: $shouldStartInstall."
