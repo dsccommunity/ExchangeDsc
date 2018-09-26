@@ -391,11 +391,12 @@ function Test-ExchangeSetupPartiallyCompleted
 
 <#
     .SYNOPSIS
-        Checks for the exact status of Exchange setup and returns the results
-        in a Hashtable.
+        Checks if installed Exchange version is older then the version of the setup.exe used
+        within the xExchInstall DSC Resource call.
+        Will return Boolean.
 
-    .PARAMETER Arguments
-        The command line arguments to be passed to Exchange Setup.
+    .PARAMETER Path
+        The path of the setup.exe which is used within the xExchInstall DSC resource.
 #>
 function Test-ShouldUpgradeExchange
 {
@@ -404,7 +405,7 @@ function Test-ShouldUpgradeExchange
     [OutputType([System.Boolean])]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory=$true)]
         [System.String]
         $Path
     )
