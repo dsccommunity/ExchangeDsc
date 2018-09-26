@@ -74,8 +74,6 @@ function Set-TargetResource
 
         $detectedExsetup = Wait-ForProcessStart -ProcessName 'ExSetup' -Verbose:$VerbosePreference
 
-        Write-Verbose -Message 'Waiting up to 60 seconds before exiting to give time for ExSetup.exe to start'
-
         if ($detectedExsetup -eq $false)
         {
             throw 'Waited 60 seconds, but was unable to detect that ExSetup.exe was started'
