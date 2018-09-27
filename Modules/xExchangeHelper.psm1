@@ -199,35 +199,56 @@ function Get-ExchangeVersionYear
 
     $version = 'N/A'
 
-    try
-    {
-        $displayVersion = Get-ExchangeVersionDetailed -ThrowIfUnknownDisplayVersion -ErrorAction Stop
-    }
-    catch
-    {
-        throw $_.Exception
-    }
+    $installedVersionDetails = Get-DetailedInstalledVersion
 
-    if($null -ne $displayVersion)
-    {
-        if($displayVersion.VersionMajor -eq 15)
+    if ($null -ne $installedVersionDetails)
+    { # if Exchange is installed
+
+        switch ($installedVersionDetails.VersionMajor)
         {
-            switch ( $displayVersion.VersionMinor )
+            15
             {
-                0 { $version = '2013' }
-                1 { $version = '2016' }
-                2 { $version = '2019' }
+                switch ($installedVersionDetails.VersionMinor)
+                {
+                    0 {$version = '2013'}
+                    1 {$version = '2016'}
+                    2 {$version = '2019'}
+                }
             }
         }
+
     }
-    else
+
+    if ($version -eq 'N/A' -and $ThrowIfUnknownVersion)
     {
-        throw -Message "Get-ExchangeVersionYear: Get-ExchangeVersionDetailed could not determine the version of installed Exchange instance."
+        throw 'Failed to discover a known Exchange Version'
     }
-    
+
     return $version
 }
 
+<#
+    .SYNOPSIS
+        Function to read installed Exchange's Uninstall information from registry.
+        The function returns with the Uninstall registry key object.
+#>
+function Get-ExchangeUninstallKey
+{
+    [CmdletBinding()]
+    [OutputType([Microsoft.Win32.RegistryKey])]
+    param()
+
+    # First try to get the Exchange 2016 / 2019 uninstall key.
+    $uninstallKey = Get-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}' -ErrorAction SilentlyContinue
+
+    # If the first key attempt is NULL, this may be a 2013 server. Try the 2013 key.
+    if ($null -eq $uninstallKey)
+    {
+        $uninstallKey = Get-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4934D1EA-BE46-48B1-8847-F1AF20E892C1}' -ErrorAction SilentlyContinue
+    }
+
+    return $uninstallKey
+}
 
 <#
     .SYNOPSIS
@@ -239,68 +260,28 @@ function Get-ExchangeVersionYear
         Whether the function should throw an exception if the version cannot
         be found. Defauls to $false.
 #>
-
-function Get-ExchangeVersionDetailed
+function Get-DetailedInstalledVersion
 {
     [CmdletBinding()]
-    [OutputType([System.String])]
-    param
-    (
-        [Parameter()]
-        [System.Boolean]
-        $ThrowIfUnknownDisplayVersion = $false
-    )
+    [OutputType([System.Management.Automation.PSCustomObject])]
+    param()
 
-    $displayVersion = $null
+    $installedVersionDetails = $null
 
-    $uninstall20162019Key = Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}' -ErrorAction SilentlyContinue
+    $uninstallKey = Get-ExchangeUninstallKey
 
-    $uninstall2013Key = Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4934D1EA-BE46-48B1-8847-F1AF20E892C1}' -ErrorAction SilentlyContinue
-
-    if ($null -ne $uninstall20162019Key)
+    if ($null -ne $uninstallKey)
     {
-        if ($uninstall20162019Key.GetValue('VersionMajor') -eq 15 -and $uninstall20162019Key.GetValue('VersionMinor') -eq 1)
-        {
-            # Case of E2016 is installed
-            $displayVersionString = $uninstall20162019Key.GetValue('DisplayVersion')
-
+        $versionDetails = @{
+            VersionMajor   = Get-ItemProperty -Path $uninstallKey.Name -Name 'VersionMajor' -ErrorAction SilentlyContinue
+            VersionMinor   = Get-ItemProperty -Path $uninstallKey.Name -Name 'VersionMinor' -ErrorAction SilentlyContinue
+            DisplayVersion = Get-ItemProperty -Path $uninstallKey.Name -Name 'DisplayVersion' -ErrorAction SilentlyContinue
         }
-    }
-    elseif ($null -ne $uninstall2013Key)
-    {
-        $displayVersionString = $uninstall2013Key.GetValue('DisplayVersion')
-    }
-    elseif ($ThrowIfUnknownDisplayVersion)
-    {
-        throw 'Failed to discover a known Exchange Version'
+
+        $installedVersionDetails = New-Object -TypeName PSCustomObject -Property $versionDetails
     }
 
-    if($null -ne $displayVersionString)
-    {
-        $displayVersionString -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionBuild>\d+)'
-        if($Matches)
-        {
-            $displayVersion = @{
-
-                VersionMajor =  [System.Int32]$Matches.VersionMajor
-                VersionMinor =  [System.Int32]$Matches.VersionMinor
-                VersionBuild =  [System.Int32]$Matches.VersionBuild
-
-            }
-        }
-        else {
-
-            throw -Message 'Get-ExchangeVersionDetailed: Major, Minor, Update versions cannot be parsed from registry.'
-
-        }
-    }
-    else
-    {
-        throw -Message "Get-ExchangeVersionDetailed function could not read the 'DisplayVersion' of Exchange from registry."
-    }
-
-    return $displayVersion
-
+    return $installedVersionDetails
 }
 
 <#
@@ -430,15 +411,13 @@ function Test-ShouldUpgradeExchange
 
     }
 
-    $exchangeVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
+    $exchangeDisplayVersion = Get-DetailedInstalledVersion
 
-    if($null -ne $exchangeVersion)
+    if($null -ne $exchangeDisplayVersion)
     { # If we have an exchange installed
 
         Write-Verbose -Message "Comparing setup.exe version and installed Exchange's version."
 
-        $exchangeDisplayVersion = Get-ExchangeVersionDetailed -ThrowIfUnknownDisplayVersion $true
-        
         if(($exchangeDisplayVersion.VersionMajor -eq $setupExeVersion.VersionMajor)`
             -and ($exchangeDisplayVersion.VersionMinor -eq $setupExeVersion.VersionMinor)`
             -and ($exchangeDisplayVersion.VersionBuild -lt $setupExeVersion.VersionBuild) ) 
