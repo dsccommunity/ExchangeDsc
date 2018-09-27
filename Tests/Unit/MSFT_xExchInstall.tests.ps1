@@ -81,7 +81,7 @@ try
                     Mock -CommandName Start-ExchangeScheduledTask -Verifiable
                     Mock -CommandName Wait-ForProcessStart -Verifiable -MockWith {return $true}
                     Mock -CommandName Wait-ForProcessStop -Verifiable
-                    Mock -CommandName Assert-IsSetupComplete -Verifiable
+                    Mock -CommandName Assert-ExchangeSetupArgumentsComplete -Verifiable
 
                     Set-TargetResource @targetResourceParams
                 }
@@ -111,7 +111,7 @@ try
                         }
                     }
                     Mock -CommandName Wait-ForProcessStop -Verifiable
-                    Mock -CommandName Assert-IsSetupComplete -Verifiable
+                    Mock -CommandName Assert-ExchangeSetupArgumentsComplete -Verifiable
 
                     Set-TargetResource @targetResourceParams
                 }
@@ -126,11 +126,11 @@ try
                         }
                     }
                     Mock -CommandName Wait-ForProcessStop
-                    Mock -CommandName Assert-IsSetupComplete
+                    Mock -CommandName Assert-ExchangeSetupArgumentsComplete
 
                     Set-TargetResource @targetResourceParams
 
-                    Assert-MockCalled -CommandName Assert-IsSetupComplete -Times 0
+                    Assert-MockCalled -CommandName Assert-ExchangeSetupArgumentsComplete -Times 0
                 }
             }
         }

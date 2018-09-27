@@ -765,12 +765,12 @@ try
             }
         }
 
-        Describe 'xExchangeHelper\Assert-IsSetupComplete' -Tag 'Helper' {
+        Describe 'xExchangeHelper\Assert-ExchangeSetupArgumentsComplete' -Tag 'Helper' {
             AfterEach {
                 Assert-VerifiableMock
             }
 
-            Context 'When Assert-IsSetupComplete is called and setup is complete' {
+            Context 'When Assert-ExchangeSetupArgumentsComplete is called and setup is complete' {
                 It 'Should do nothing' {
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
                         return @{
@@ -778,11 +778,11 @@ try
                         }
                     }
 
-                    { Assert-IsSetupComplete -Arguments 'SetupArgs' } | Should -Not -Throw
+                    { Assert-ExchangeSetupArgumentsComplete -Arguments 'SetupArgs' } | Should -Not -Throw
                 }
             }
 
-            Context 'When Assert-IsSetupComplete is called and setup is not complete' {
+            Context 'When Assert-ExchangeSetupArgumentsComplete is called and setup is not complete' {
                 It 'Should throw an exception' {
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
                         return @{
@@ -790,7 +790,7 @@ try
                         }
                     }
 
-                    { Assert-IsSetupComplete -Arguments 'SetupArgs' } | Should -Throw -ExpectedMessage 'Exchange setup did not complete successfully. See "<system drive>\ExchangeSetupLogs\ExchangeSetup.log" for details.'
+                    { Assert-ExchangeSetupArgumentsComplete -Arguments 'SetupArgs' } | Should -Throw -ExpectedMessage 'Exchange setup did not complete successfully. See "<system drive>\ExchangeSetupLogs\ExchangeSetup.log" for details.'
                 }
             }
         }

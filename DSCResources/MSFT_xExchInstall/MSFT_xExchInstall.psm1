@@ -99,7 +99,7 @@ function Set-TargetResource
         Wait-ForProcessStop -ProcessName 'ExSetup' -Verbose:$VerbosePreference
     }
 
-    Assert-IsSetupComplete -Arguments $Arguments -Verbose:$VerbosePreference
+    Assert-ExchangeSetupArgumentsComplete -Arguments $Arguments -Verbose:$VerbosePreference
 }
 
 function Test-TargetResource

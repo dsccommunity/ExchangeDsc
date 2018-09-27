@@ -2158,7 +2158,7 @@ function Wait-ForProcessStop
     .PARAMETER Arguments
         The command line arguments passed to Exchange Setup.
 #>
-function Assert-IsSetupComplete
+function Assert-ExchangeSetupArgumentsComplete
 {
     [CmdletBinding()]
     param
