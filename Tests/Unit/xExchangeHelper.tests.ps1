@@ -347,6 +347,178 @@ try
                 }
             }
         }
+    
+        Describe 'xExchangeHelper\Get-ExchangeVersionYear' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            $validProductVersions = @(
+                @{
+                    VersionMajor = 15
+                    VersionMinor = 0
+                    Year         = '2013'
+                }
+                @{
+                    VersionMajor = 15
+                    VersionMinor = 1
+                    Year         = '2016'
+                }
+                @{
+                    VersionMajor = 15
+                    VersionMinor = 2
+                    Year         = '2019'
+                }
+            )
+
+            $invalidProductVersions = @(
+                @{
+                    VersionMajor = 15
+                    VersionMinor = 7
+                    Year         = 'N/A'
+                }
+                @{
+                    VersionMajor = 14
+                    VersionMinor = 0
+                    Year         = 'N/A'
+                }
+            )
+
+            Context 'When Get-ExchangeVersionYear is called and finds a valid VersionMajor and VersionMinor' {
+                It 'Should return the correct Exchange year' -TestCases $validProductVersions {
+                    param
+                    (
+                        [System.Int32]
+                        $VersionMajor,
+
+                        [System.Int32]
+                        $VersionMinor,
+
+                        [System.String]
+                        $Year
+                    )
+
+                    Mock -CommandName Get-DetailedInstalledVersion -Verifiable -MockWith {
+                        return @{
+                            VersionMajor = $VersionMajor
+                            VersionMinor = $VersionMinor
+                        }
+                    }
+
+                    Get-ExchangeVersionYear | Should -Be $Year
+                }
+            }
+
+            Context 'When Get-ExchangeVersionYear is called and finds an invalid VersionMajor or VersionMinor without ThrowIfUnknownVersion' {
+                It 'Should return N/A' -TestCases $invalidProductVersions {
+                    param
+                    (
+                        [System.Int32]
+                        $VersionMajor,
+
+                        [System.Int32]
+                        $VersionMinor,
+
+                        [System.String]
+                        $Year
+                    )
+
+                    Mock -CommandName Get-DetailedInstalledVersion -Verifiable -MockWith {
+                        return @{
+                            VersionMajor = $VersionMajor
+                            VersionMinor = $VersionMinor
+                        }
+                    }
+
+                    Get-ExchangeVersionYear | Should -Be $Year
+                }
+            }
+
+            Context 'When Get-ExchangeVersionYear is called and finds an invalid VersionMajor or VersionMinor and ThrowIfUnknownVersion is specified' {
+                It 'Should throw an exception' -TestCases $invalidProductVersions {
+                    param
+                    (
+                        [System.Int32]
+                        $VersionMajor,
+
+                        [System.Int32]
+                        $VersionMinor,
+
+                        [System.String]
+                        $Year
+                    )
+
+                    Mock -CommandName Get-DetailedInstalledVersion -Verifiable -MockWith {
+                        return @{
+                            VersionMajor = $VersionMajor
+                            VersionMinor = $VersionMinor
+                        }
+                    }
+
+                    { Get-ExchangeVersionYear -ThrowIfUnknownVersion $true } | Should -Throw -ExpectedMessage 'Failed to discover a known Exchange Version'
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Get-ExchangeUninstallKey' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Get-ExchangeUninstallKey is called and Exchange 2016 or 2019 is installed' {
+                It 'Should return the 2016/2019 uninstall key' {
+                    Mock -CommandName Get-Item -Verifiable -ParameterFilter {$Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}'} -MockWith { return $true }
+
+                    Get-ExchangeUninstallKey | Should -Be -Not $Null
+                }
+            }
+
+            Context 'When Get-ExchangeUninstallKey is called and Exchange 2013 is installed' {
+                It 'Should return the 2016/2019 uninstall key' {
+                    Mock -CommandName Get-Item -Verifiable -ParameterFilter {$Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}'} -MockWith { return $null }
+                    Mock -CommandName Get-Item -Verifiable -ParameterFilter {$Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4934D1EA-BE46-48B1-8847-F1AF20E892C1}'} -MockWith { return $true }
+
+                    Get-ExchangeUninstallKey | Should -Be -Not $Null
+                }
+            }
+
+            Context 'When Get-ExchangeUninstallKey is called and no Exchange is installed' {
+                It 'Should return NULL' {
+                    Mock -CommandName Get-Item -Verifiable -ParameterFilter {$Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}'} -MockWith { return $null }
+                    Mock -CommandName Get-Item -Verifiable -ParameterFilter {$Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4934D1EA-BE46-48B1-8847-F1AF20E892C1}'} -MockWith { return $null }
+
+                    Get-ExchangeUninstallKey | Should -Be $Null
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Get-DetailedInstalledVersion' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When DetailedInstalledVersion is called and a valid key is returned by Get-ExchangeUninstallKey' {
+                It 'Should return custom object with VersionMajor and VersionMinor properties' {
+                    Mock -CommandName Get-ExchangeUninstallKey -Verifiable -MockWith { return @{Name = 'SomeKeyName'} }
+                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter {$Name -eq 'VersionMajor'} -MockWith { return 15 }
+                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter {$Name -eq 'VersionMinor'} -MockWith { return 1 }
+
+                    $installedVersionDetails = Get-DetailedInstalledVersion
+
+                    $installedVersionDetails.VersionMajor | Should -Be 15
+                    $installedVersionDetails.VersionMinor | Should -Be 1
+                }
+            }
+
+            Context 'When DetailedInstalledVersion is called and no valid key is returned by Get-ExchangeUninstallKey' {
+                It 'Should return NULL' {
+                    Mock -CommandName Get-ExchangeUninstallKey -Verifiable -MockWith { return $null }
+
+                    Get-DetailedInstalledVersion | Should -Be $null
+                }
+            }
+        }
+    
     }
 }
 finally
