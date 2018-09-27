@@ -398,7 +398,7 @@ try
             }
 
             Context 'When Remove-HelperSnapin is called and a snapin is not loaded' {
-                It 'Should do nothing' {
+                It 'Should execute without attempting to remove a snapin' {
                     Mock -CommandName Get-PSSnapin -Verifiable
                     Mock -CommandName Remove-PSSnapin
 
@@ -612,7 +612,7 @@ try
             }
 
             Context 'When Set-WSManConfigStatus is called and the UpdatedConfig key exists' {
-                It 'Should do nothing' {
+                It 'Should execute without attempting to configure WinRM' {
                     Mock -CommandName Get-ItemProperty -Verifiable -MockWith { return @{UpdatedConfig = 'SomeValue'} }
                     Mock -CommandName winrm
 
@@ -771,7 +771,7 @@ try
             }
 
             Context 'When Assert-ExchangeSetupArgumentsComplete is called and setup is complete' {
-                It 'Should do nothing' {
+                It 'Should execute without throwing an exception' {
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
                         return @{
                             SetupComplete = $true

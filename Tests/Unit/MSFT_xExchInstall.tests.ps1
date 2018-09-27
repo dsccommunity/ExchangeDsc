@@ -56,6 +56,10 @@ try
         }
 
         Describe 'MSFT_xExchInstall\Set-TargetResource' -Tag 'Set' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
             Context 'When Set-TargetResource is called, ShouldStartInstall is true, and Set-WSManConfigStatus requires a reboot' {
                 It 'Should force a reboot' {
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
