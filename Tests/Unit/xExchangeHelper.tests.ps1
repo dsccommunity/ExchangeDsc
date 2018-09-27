@@ -519,6 +519,105 @@ try
             }
         }
     
+        Describe 'Test-ShouldUpgradeExchange' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+        
+            $cases = @(
+                        @{
+                            Case = "Setup.exe is newer."
+                            SetupVersionMajor = 15
+                            SetupVersionMinor = 1
+                            SetupVersionBuild = 2000
+                            ExchangeVersionMajor = 15
+                            ExchangeVersionMinor = 1
+                            ExchangeVersionBuild = 1800
+                            Result            = $true
+                        }
+                        @{
+                            Case = "Setup.exe and installed Exchange version is the same."
+                            SetupVersionMajor = 15
+                            SetupVersionMinor = 1
+                            SetupVersionBuild = 2000
+                            ExchangeVersionMajor = 15
+                            ExchangeVersionMinor = 1
+                            ExchangeVersionBuild = 2000
+                            Result            = $false
+                        }
+                        @{
+                            Case = "Installed Exchange version is different than the setup.exe. e.g. 2013, 2016"
+                            SetupVersionMajor = 15
+                            SetupVersionMinor = 1
+                            SetupVersionBuild = 2000
+                            ExchangeVersionMajor = 15
+                            ExchangeVersionMinor = 0
+                            ExchangeVersionBuild = 2000
+                            Result            = $false
+                        }
+                        @{
+                            Case = "Setup.exe version is different than the installed Exchange. e.g. 2013, 2016"
+                            SetupVersionMajor = 15
+                            SetupVersionMinor = 0
+                            SetupVersionBuild = 2000
+                            ExchangeVersionMajor = 15
+                            ExchangeVersionMinor = 1
+                            ExchangeVersionBuild = 2000
+                            Result            = $false
+                        }
+                    )
+        
+            Context 'When Test-ShouldUpgradeExchange is called for different cases.' {
+                It 'For case <Case> should return <Result>' -TestCases $cases {
+        
+                    Param(
+                        [System.String]
+                        $Case,
+        
+                        [System.Int32]
+                        $SetupVersionMajor,
+        
+                        [System.Int32]
+                        $SetupVersionMinor,
+        
+                        [System.Int32]
+                        $SetupVersionBuild,
+        
+                        [System.Int32]
+                        $ExchangeVersionMajor,
+        
+                        [System.Int32]
+                        $ExchangeVersionMinor,
+        
+                        [System.Int32]
+                        $ExchangeVersionBuild,
+        
+                        [System.Boolean]
+                        $Result
+        
+                    )
+                    
+                    Mock -CommandName Get-SetupExeVersion -MockWith { 
+                        return [PSCustomObject]@{
+                            VersionMajor = $SetupVersionMajor
+                            VersionMinor = $SetupVersionMinor
+                            VersionBuild = $SetupVersionBuild
+                        }                
+                    }
+        
+                    Mock -CommandName Get-DetailedInstalledVersion -MockWith {
+                        return [PSCustomObject]@{
+                            VersionMajor = $ExchangeVersionMajor
+                            VersionMinor = $ExchangeVersionMinor
+                            VersionBuild = $ExchangeVersionBuild
+                        }
+                    }
+        
+                    Test-ShouldUpgradeExchange -Path 'test' | Should -Be $Result
+                }
+            }
+        
+        }
     }
 }
 finally
