@@ -72,23 +72,7 @@ function Set-TargetResource
 
         Start-ExchangeScheduledTask -Path "$Path" -Arguments "$Arguments" -Credential $Credential -TaskName 'Install Exchange' -Verbose:$VerbosePreference
 
-        $detectedExsetup = $false
-
-        Write-Verbose -Message 'Waiting up to 60 seconds before exiting to give time for ExSetup.exe to start'
-
-        for ($i = 0; $i -lt 60; $i++)
-        {
-            if ($null -eq (Get-Process -Name ExSetup -ErrorAction SilentlyContinue))
-            {
-                Start-Sleep -Seconds 1
-            }
-            else
-            {
-                Write-Verbose -Message 'Detected that ExSetup.exe is running'
-                $detectedExsetup = $true
-                break
-            }
-        }
+        $detectedExsetup = Wait-ForProcessStart -ProcessName 'ExSetup' -Verbose:$VerbosePreference
 
         if ($detectedExsetup -eq $false)
         {
@@ -112,24 +96,10 @@ function Set-TargetResource
     if ($waitingForSetup)
     {
         #Now wait for setup to finish
-        while ($null -ne (Get-Process -Name ExSetup -ErrorAction SilentlyContinue))
-        {
-            Write-Verbose -Message "Setup is still running at $([DateTime]::Now). Sleeping for 1 minute."
-            Start-Sleep -Seconds 60
-        }
+        Wait-ForProcessStop -ProcessName 'ExSetup' -Verbose:$VerbosePreference
     }
 
-    #Check install status one more time and see if setup was successful
-    $installStatus = Get-ExchangeInstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
-
-    if ($installStatus.SetupComplete)
-    {
-        Write-Verbose -Message 'Exchange setup completed successfully'
-    }
-    else
-    {
-        throw 'Exchange setup did not complete successfully. See "<system drive>\ExchangeSetupLogs\ExchangeSetup.log" for details.'
-    }
+    Assert-ExchangeSetupArgumentsComplete -Arguments $Arguments -Verbose:$VerbosePreference
 }
 
 function Test-TargetResource
