@@ -1231,6 +1231,175 @@ try
                 }
             }
         }
+
+        Describe 'xExchangeHelper\Get-ExistingRemoteExchangeSession' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Get-ExistingRemoteExchangeSession is called and there is an existing Remote Exchange Session in an Opened state' {
+                It 'Should return the session' {
+                    Mock -CommandName Get-PSSession -Verifiable -MockWith {
+                        return @{
+                            State = 'Opened'
+                        }
+                    }
+
+                    Get-ExistingRemoteExchangeSession | Should -Be -Not $null
+                }
+            }
+
+            Context 'When Get-ExistingRemoteExchangeSession is called and there is an existing Remote Exchange Session in a state other than Opened' {
+                It 'Should return null' {
+                    Mock -CommandName Get-PSSession -Verifiable -MockWith {
+                        return @{
+                            State = 'Broken'
+                        }
+                    }
+                    Mock -CommandName Remove-RemoteExchangeSession -Verifiable
+
+                    Get-ExistingRemoteExchangeSession | Should -Be $null
+                }
+            }
+
+            Context 'When Get-ExistingRemoteExchangeSession is called and there is not an existing Remote Exchange Session' {
+                It 'Should return null' {
+                    Mock -CommandName Get-PSSession -Verifiable -MockWith { return $null }
+
+                    Get-ExistingRemoteExchangeSession | Should -Be $null
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Get-RemoteExchangeSession' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Get-RemoteExchangeSession is called and Exchange setup is running' {
+                It 'Should throw an exception' {
+                    Mock -CommandName Test-ExchangeSetupRunning -Verifiable -MockWith { return $true }
+
+                    { Get-RemoteExchangeSession } | Should -Throw -ExpectedMessage 'Exchange Setup is currently running. Preventing creation of new Remote PowerShell session to Exchange.'
+                }
+            }
+
+            Context 'When Get-RemoteExchangeSession is called, setup is not running, and an existing session exists' {
+                It 'Should return the existing session' {
+                    Mock -CommandName Test-ExchangeSetupRunning -Verifiable -MockWith { return $false }
+                    Mock -CommandName Get-ExistingRemoteExchangeSession -Verifiable -MockWith {
+                        return @{
+                            State = 'Opened'
+                        }
+                    }
+                    Mock -CommandName New-RemoteExchangeSession
+                    Mock -CommandName Import-RemoteExchangeSession
+
+                    Get-RemoteExchangeSession
+
+                    Assert-MockCalled -CommandName New-RemoteExchangeSession -Times 0
+                }
+            }
+
+            Context 'When Get-RemoteExchangeSession is called, setup is not running, and no existing session exists' {
+                It 'Should create and return the existing session' {
+                    Mock -CommandName Test-ExchangeSetupRunning -Verifiable -MockWith { return $false }
+                    Mock -CommandName Get-ExistingRemoteExchangeSession -Verifiable -MockWith { return $null }
+                    Mock -CommandName New-RemoteExchangeSession -Verifiable -MockWith {
+                        return @{
+                            State = 'Opened'
+                        }
+                    }
+                    Mock -CommandName Import-RemoteExchangeSession -Verifiable
+
+                    Get-RemoteExchangeSession
+                }
+            }
+
+            Context 'When Get-RemoteExchangeSession is called, setup is not running, no existing session exists, and creation of the session fails' {
+                It 'Should throw an exception' {
+                    Mock -CommandName Test-ExchangeSetupRunning -Verifiable -MockWith { return $false }
+                    Mock -CommandName Get-ExistingRemoteExchangeSession -Verifiable -MockWith { return $null }
+                    Mock -CommandName New-RemoteExchangeSession -Verifiable -MockWith { return $null }
+
+                    { Get-RemoteExchangeSession } | Should -Throw -ExpectedMessage 'Failed to establish remote Powershell session to local server.'
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\New-RemoteExchangeSession' -Tag 'Helper' {
+            # Define empty function _NewExchangeRunspace so Mock can override it
+            function _NewExchangeRunspace {}
+
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When New-RemoteExchangeSession is called and Exchange is not installed' {
+                It 'Should throw an exception' {
+                    Mock -CommandName Test-ExchangeSetupComplete -Verifiable -MockWith { return $false }
+
+                    { New-RemoteExchangeSession } | Should -Throw -ExpectedMessage 'A supported version of Exchange is either not present, or not fully installed on this machine.'
+                }
+            }
+
+            Context 'When New-RemoteExchangeSession is called and Exchange is installed' {
+                It 'Should create and return a PSSession' {
+                    Mock -CommandName Test-ExchangeSetupComplete -Verifiable -MockWith { return $true }
+                    Mock -CommandName Get-CimInstance -Verifiable -MockWith {
+                        return @{
+                            Domain = 'contoso.local'
+                        }
+                    }
+                    Mock -CommandName Get-ItemProperty -Verifiable -MockWith {
+                        return @{
+                            MsiInstallPath = 'C:\Program Files\Microsoft\Exchange Server\V15\'
+                        }
+                    }
+                    Mock -CommandName Invoke-DotSourcedScript -Verifiable
+                    Mock -CommandName _NewExchangeRunspace -Verifiable -MockWith {
+                        return @{
+                            Name = 'SomeSession'
+                        }
+                    }
+
+                    New-RemoteExchangeSession | Should -Be -Not $null
+                }
+            }
+        }
+
+        <#Describe 'xExchangeHelper\Import-RemoteExchangeSession' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+                    $commandToLoad = 'Get-ExchangeServer'
+                    $commandsToLoad = @($commandToLoad)
+
+            Context 'When Import-RemoteExchangeSession is called and CommandsToLoad is passed' {
+                It 'Should import the session and load the commands' {
+                    Mock -CommandName Import-PSSession -Verifiable -MockWith { return $true }
+                    Mock -CommandName Import-Module
+
+                    Import-RemoteExchangeSession -Session 'SomeSession' -CommandsToLoad $commandsToLoad
+                }
+            }
+        }#>
+
+        Describe 'xExchangeHelper\Remove-RemoteExchangeSession' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Remove-RemoteExchangeSession is called and sessions exist' {
+                It 'Should remove the sessions' {
+                    Mock -CommandName Get-ExistingRemoteExchangeSession -Verifiable -MockWith { return 'SomeSession' }
+                    Mock -CommandName Remove-PSSession
+
+                    Remove-RemoteExchangeSession
+                }
+            }
+        }
     }
 }
 finally

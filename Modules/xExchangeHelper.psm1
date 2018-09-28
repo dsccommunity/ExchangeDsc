@@ -1,19 +1,37 @@
 <#
     .SYNOPSIS
         Gets the existing Remote PowerShell session to Exchange, if it exists
+        and is in an Opened state.
 #>
 function Get-ExistingRemoteExchangeSession
 {
     [CmdletBinding()]
+    [OutputType([System.Management.Automation.Runspaces.PSSession])]
     param ()
 
-    return (Get-PSSession -Name 'DSCExchangeSession' -ErrorAction SilentlyContinue)
+    $session = Get-PSSession -Name 'DSCExchangeSession' -ErrorAction SilentlyContinue
+
+    # Attempt to reuse the session if we found one
+    if ($null -ne $session)
+    {
+        if ($session.State -eq 'Opened')
+        {
+            Write-Verbose -Message 'Reusing existing Remote Powershell Session to Exchange'
+        }
+        else # Session is in an unexpected state. Remove it so we can rebuild it
+        {
+            Remove-RemoteExchangeSession
+            $session = $null
+        }
+    }
+
+    return $session
 }
 
 <#
     .SYNOPSIS
-        Establishes an Exchange remote PowerShell session to the local server.
-        Reuses the session if it already exists.
+        Establishes an Exchange remote PowerShell session to the local server,
+        and imports the session. Reuses the session if it already exists.
 
     .PARAMETER Credential
         The Credentials to use when creating a remote PowerShell session to
@@ -53,83 +71,117 @@ function Get-RemoteExchangeSession
     }
 
     # See if the session already exists
-    $Session = Get-ExistingRemoteExchangeSession
-
-    # Attempt to reuse the session if we found one
-    if ($null -ne $Session)
-    {
-        if ($Session.State -eq 'Opened')
-        {
-            Write-Verbose -Message 'Reusing existing Remote Powershell Session to Exchange'
-        }
-        else # Session is in an unexpected state. Remove it so we can rebuild it
-        {
-            Remove-RemoteExchangeSession
-            $Session = $null
-        }
-    }
+    $session = Get-ExistingRemoteExchangeSession -Verbose:$VerbosePreference
 
     # Either the session didn't exist, or it was broken and we nulled it out. Create a new one
-    if ($null -eq $Session)
+    if ($null -eq $session)
     {
-        # First make sure we are on a valid server version, and that Exchange is fully installed
-        if (!(Test-ExchangeSetupComplete -Verbose:$VerbosePreference))
-        {
-            throw 'A supported version of Exchange is either not present, or not fully installed on this machine.'
-        }
-
-        Write-Verbose -Message 'Creating new Remote Powershell session to Exchange'
-
-        # Get local server FQDN
-        $machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
-        $serverName = $env:computername.ToLower()
-        $serverFQDN = $serverName + "." + $machineDomain
-
-        # Override chatty banner, because chatty
-        New-Alias Get-ExBanner Out-Null
-        New-Alias Get-Tip Out-Null
-
-        # Load built in Exchange functions, and create session
-        $exbin = Join-Path -Path ((Get-ItemProperty HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\Setup).MsiInstallPath) -ChildPath "bin"
-        $remoteExchange = Join-Path -Path "$exbin" -ChildPath 'RemoteExchange.ps1'
-        . $remoteExchange
-        $Session = _NewExchangeRunspace -fqdn $serverFQDN -credential $Credential -UseWIA $false -AllowRedirection $false
-
-        # Remove the aliases we created earlier
-        Remove-Item Alias:Get-ExBanner
-        Remove-Item Alias:Get-Tip
-
-        if ($null -ne $Session)
-        {
-            $Session.Name = 'DSCExchangeSession'
-        }
+        $session = New-RemoteExchangeSession -Credential $Credential -Verbose:$VerbosePreference
     }
 
     # If the session is still null here, things went wrong. Throw exception
-    if ($null -eq $Session)
+    if ($null -eq $session)
     {
-        throw "Failed to establish remote Powershell session to FQDN: $serverFQDN"
+        throw 'Failed to establish remote Powershell session to local server.'
     }
     else # Import the session globally
     {
-        # Temporarily set Verbose to SilentlyContinue so the Session and Module import isn't noisy
-        $oldVerbose = $VerbosePreference
-        $VerbosePreference = 'SilentlyContinue'
-
-        if ($CommandsToLoad.Count -gt 0)
-        {
-            $moduleInfo = Import-PSSession $Session -WarningAction SilentlyContinue -DisableNameChecking -AllowClobber -CommandName $CommandsToLoad -Verbose:0
-        }
-        else
-        {
-            $moduleInfo = Import-PSSession $Session -WarningAction SilentlyContinue -DisableNameChecking -AllowClobber -Verbose:0
-        }
-
-        Import-Module $moduleInfo -Global -DisableNameChecking
-
-        # Set Verbose back
-        $VerbosePreference = $oldVerbose
+        Import-RemoteExchangeSession -Session $session -CommandsToLoad $CommandsToLoad -Verbose:([System.Management.Automation.ActionPreference]::SilentlyContinue)
     }
+}
+
+<#
+    .SYNOPSIS
+        Creates a new Exchange remote PowerShell session to the local server.
+
+    .PARAMETER Credential
+        The Credentials to use when creating a remote PowerShell session to
+        Exchange.
+#>
+function New-RemoteExchangeSession
+{
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.Runspaces.PSSession])]
+    param
+    (
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential
+    )
+
+    # First make sure we are on a valid server version, and that Exchange is fully installed
+    if (!(Test-ExchangeSetupComplete -Verbose:$VerbosePreference))
+    {
+        throw 'A supported version of Exchange is either not present, or not fully installed on this machine.'
+    }
+
+    Write-Verbose -Message 'Creating new Remote Powershell session to Exchange'
+
+    # Get local server FQDN
+    $machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
+    $serverName = $env:computername.ToLower()
+    $serverFQDN = $serverName + "." + $machineDomain
+
+    # Override chatty banner, because chatty
+    New-Alias Get-ExBanner Out-Null
+    New-Alias Get-Tip Out-Null
+
+    # Load built in Exchange functions, and create session
+    $exbin = Join-Path -Path ((Get-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\Setup).MsiInstallPath) -ChildPath "bin"
+    $remoteExchange = Join-Path -Path "$exbin" -ChildPath 'RemoteExchange.ps1'
+
+    Invoke-DotSourcedScript -ScriptPath $remoteExchange -Verbose:$VerbosePreference
+
+    $session = _NewExchangeRunspace -fqdn $serverFQDN -credential $Credential -UseWIA $false -AllowRedirection $false
+
+    # Remove the aliases we created earlier
+    Remove-Item Alias:Get-ExBanner
+    Remove-Item Alias:Get-Tip
+
+    if ($null -ne $session)
+    {
+        $session.Name = 'DSCExchangeSession'
+    }
+
+    return $session
+}
+
+<#
+    .SYNOPSIS
+        Imports an established remote PowerShell session to Exchange.
+
+    .PARAMETER Session
+        The remote PowerShell session to import.
+
+    .PARAMETER CommandsToLoad
+        A list of the cmdlets that should be imported in the remote PowerShell
+        session.
+#>
+function Import-RemoteExchangeSession
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Object]
+        $Session,
+
+        [Parameter()]
+        [System.String[]]
+        $CommandsToLoad
+    )
+
+    if ($CommandsToLoad.Count -gt 0)
+    {
+        $moduleInfo = Import-PSSession $Session -WarningAction SilentlyContinue -DisableNameChecking -AllowClobber -CommandName $CommandsToLoad -Verbose:0
+    }
+    else
+    {
+        $moduleInfo = Import-PSSession $Session -WarningAction SilentlyContinue -DisableNameChecking -AllowClobber -Verbose:0
+    }
+
+    Import-Module $moduleInfo -Global -DisableNameChecking
 }
 
 <#
@@ -142,13 +194,13 @@ function Remove-RemoteExchangeSession
     [CmdletBinding()]
     param ()
 
-    $sessions = Get-ExistingRemoteExchangeSession
+    $session = Get-ExistingRemoteExchangeSession
 
-    if ($null -ne $sessions)
+    if ($null -ne $session)
     {
         Write-Verbose -Message 'Removing existing remote Powershell sessions'
 
-        Get-ExistingRemoteExchangeSession | Remove-PSSession
+        $session | Remove-PSSession
     }
 }
 
