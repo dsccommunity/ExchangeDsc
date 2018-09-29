@@ -252,9 +252,10 @@ function Get-ExchangeUninstallKey
 
 <#
     .SYNOPSIS
-        Gets the installed Exchange buildnumber, which refers to the installed updates / CU,
-        and returns a hashtable with Major, Minor, Update versions. Returns NULL if the version cannot be found, and will
-        optionally throw an exception if ThrowIfUnknownVersion was set to $true.
+        Gets installed Exchange's buildnumber, which refers to the installed updates,
+        and returns a hashtable with Major, Minor, Update versions.
+        Returns NULL if the version cannot be found, and will optionally throw
+        an exception if ThrowIfUnknownVersion was set to $true.
 
     .PARAMETER ThrowIfUnknownVersion
         Whether the function should throw an exception if the version cannot
@@ -394,7 +395,7 @@ function Get-SetupExeVersion
     # Get Exchange setup.exe version
     if(Test-Path -Path $Path -ErrorAction SilentlyContinue)
     {
-       
+
         $setupexeVersionInfo = (Get-ChildItem -Path $Path).VersionInfo.ProductVersionRaw
 
         $setupexeVersionInfo = @{
@@ -438,8 +439,8 @@ function Test-ShouldUpgradeExchange
 
     if($null -ne $setupExeVersion)
     {
-        Write-Verbose -Message "Setup.exe version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $setupExeVersion.Major,$setupexeVersion.Minor, $setupexeVersion.Build)'"    
-        
+        Write-Verbose -Message "Setup.exe version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $setupExeVersion.Major,$setupexeVersion.Minor, $setupexeVersion.Build)'"
+
         $exchangeDisplayVersion = Get-DetailedInstalledVersion
 
         if($null -ne $exchangeDisplayVersion)
@@ -447,12 +448,12 @@ function Test-ShouldUpgradeExchange
 
             Write-Verbose -Message "Comparing setup.exe version and installed Exchange's version."
 
-            Write-Verbose -Message "Exchange version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $exchangeDisplayVersion.Major,$exchangeDisplayVersion.Minor, $exchangeDisplayVersion.Build)'"    
-        
+            Write-Verbose -Message "Exchange version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $exchangeDisplayVersion.Major,$exchangeDisplayVersion.Minor, $exchangeDisplayVersion.Build)'"
+
 
             if(($exchangeDisplayVersion.VersionMajor -eq $setupExeVersion.VersionMajor)`
                 -and ($exchangeDisplayVersion.VersionMinor -eq $setupExeVersion.VersionMinor)`
-                -and ($exchangeDisplayVersion.VersionBuild -lt $setupExeVersion.VersionBuild) ) 
+                -and ($exchangeDisplayVersion.VersionBuild -lt $setupExeVersion.VersionBuild) )
             { # If server has lower version of CU installed
 
                 Write-Verbose -Message 'Version upgrade is requested.'
