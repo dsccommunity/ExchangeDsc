@@ -400,9 +400,9 @@ function Get-SetupExeVersion
 
         $setupexeVersionInfo = @{
 
-            VersionMajor =  [System.Int32]$setupexeVersionInfo.Major
-            VersionMinor =  [System.Int32]$setupexeVersionInfo.Minor
-            VersionBuild =  [System.Int32]$setupexeVersionInfo.Build
+            VersionMajor = [System.Int32]$setupexeVersionInfo.Major
+            VersionMinor = [System.Int32]$setupexeVersionInfo.Minor
+            VersionBuild = [System.Int32]$setupexeVersionInfo.Build
 
         }
 
