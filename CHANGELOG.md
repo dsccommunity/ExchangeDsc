@@ -18,7 +18,6 @@
 - Updated .gitattributes to allow test .pfx files to be saved as binary
 - Added Cumulative Update / Exchange update support to xExchInstall resource.
 
-
 ## 1.23.0.0
 
 - Fixes issue with xExchMaintenanceMode on Exchange 2016 where the cluster
