@@ -1063,6 +1063,58 @@ try
                 }
             }
 
+            Context 'When Get-SetupExeVersion returns null within Test-ShouldUpgradeExchange.' {
+                It 'Should return $false' {
+
+                    Mock -CommandName Get-SetupExeVersion -MockWith {
+                        return $null
+                    }
+
+                    Mock -CommandName Get-DetailedInstalledVersion -MockWith {
+                        return [PSCustomObject] @{
+                            VersionMajor = $ExchangeVersionMajor
+                            VersionMinor = $ExchangeVersionMinor
+                            VersionBuild = $ExchangeVersionBuild
+                        }
+                    }
+
+                    Test-ShouldUpgradeExchange -Path 'test' | Should -Be $false
+                }
+            }
+
+            Context 'When Get-DetailedInstalledVersion returns null within Test-ShouldUpgradeExchange.' {
+                It 'Should show output of Write-Error and return with $false' {
+
+                    Mock -CommandName Get-SetupExeVersion -MockWith {
+                        return [PSCustomObject] @{
+                            VersionMajor = $SetupVersionMajor
+                            VersionMinor = $SetupVersionMinor
+                            VersionBuild = $SetupVersionBuild
+                        }
+                    }
+
+                    Mock -CommandName Get-DetailedInstalledVersion -MockWith {
+                        return $null
+                    }
+
+                    Test-ShouldUpgradeExchange -Path 'test' | Should -Be $false
+                }
+            }
+
+            Context 'When Get-DetailedInstalledVersion and Get-SetupExeVersion return null within Test-ShouldUpgradeExchange.' {
+                It 'Should show output of Write-Error and return with $false' {
+
+                    Mock -CommandName Get-SetupExeVersion -MockWith {
+                        return $false
+                    }
+
+                    Mock -CommandName Get-DetailedInstalledVersion -MockWith {
+                        return $null
+                    }
+
+                    Test-ShouldUpgradeExchange -Path 'test' | Should -Be $false
+                }
+            }
         }
     }
 }
