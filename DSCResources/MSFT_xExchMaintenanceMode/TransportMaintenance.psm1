@@ -618,7 +618,7 @@ function Get-ActiveServer
 # .RETURN
 # version string.
 #
-function Get-ExchangeVersionYear
+function Get-ExchangeVersion
 {
     param
     (
@@ -931,7 +931,7 @@ function Initialize-TransportMaintenanceLog()
             }
         }
 
-        $Script:ExchangeVersion = Get-ExchangeVersionYear $Server
+        $Script:ExchangeVersion = Get-ExchangeVersion $Server
         Register-TransportMaintenanceLog -TransportService $transportService -LogPath $logPath
     }
 }
