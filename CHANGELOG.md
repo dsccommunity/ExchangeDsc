@@ -15,7 +15,11 @@
 - Add Unit Tests for xExchAntiMalwareScanning
 - Add remaining Unit Tests for xExchInstall, and for most common setup
   functions
-- Added ActionForUnknownFileAndMIMETypes,WSSAccessOnPublicComputersEnabled,WSSAccessOnPrivateComputersEnabled,UNCAccessOnPublicComputersEnabled,UNCAccessOnPrivateComputersEnabled, and GzipLevel to xExchOwaVirtualDirectory. Added GzipLevel and AdminEnabled to xExchEcpVirtualDirectory. Added OAuthAuthentication to xExchOabVirtualDirectory. Updated readme with the new parameters and removed a bad parameter from xExchOwaVirtualDirectory that did not actually exist.
+- Added ActionForUnknownFileAndMIMETypes,WSSAccessOnPublicComputersEnabled,WSSAccessOnPrivateComputersEnabled,UNCAccessOnPublicComputersEnabled
+  UNCAccessOnPrivateComputersEnabled, and GzipLevel to xExchOwaVirtualDirectory.
+  Added GzipLevel and AdminEnabled to xExchEcpVirtualDirectory.
+  Added OAuthAuthentication to xExchOabVirtualDirectory.
+  Updated readme with the new parameters and removed a bad parameter from xExchOwaVirtualDirectory that did not actually exist.
 
 ## 1.23.0.0
 
