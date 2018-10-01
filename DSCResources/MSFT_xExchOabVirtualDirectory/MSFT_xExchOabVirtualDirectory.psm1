@@ -52,6 +52,10 @@ function Get-TargetResource
         $InternalUrl,
 
         [Parameter()]
+        [System.Boolean]
+        $OAuthAuthentication,
+
+        [Parameter()]
         [System.Int32]
         $PollInterval,
 
@@ -99,6 +103,7 @@ function Get-TargetResource
             ExternalUrl                     = [System.String] $vdir.ExternalUrl.AbsoluteUri
             InternalUrl                     = [System.String] $vdir.InternalUrl.AbsoluteUri
             OABsToDistribute                = [System.String[]] $oabNames
+            OAuthAuthentication             = [System.Boolean] $vdir.OAuthAuthentication
             PollInterval                    = [System.Int32] $vdir.PollInterval
             RequireSSL                      = [System.Boolean] $vdir.RequireSSL
             WindowsAuthentication           = [System.Boolean] $vdir.WindowsAuthentication
@@ -158,6 +163,10 @@ function Set-TargetResource
         [Parameter()]
         [System.String]
         $InternalUrl,
+
+        [Parameter()]
+        [System.Boolean]
+        $OAuthAuthentication,
 
         [Parameter()]
         [System.Int32]
@@ -266,6 +275,10 @@ function Test-TargetResource
         $InternalUrl,
 
         [Parameter()]
+        [System.Boolean]
+        $OAuthAuthentication,
+
+        [Parameter()]
         [System.Int32]
         $PollInterval,
 
@@ -341,6 +354,11 @@ function Test-TargetResource
         {
             $testResults = $false
         }
+
+        if (!(Test-ExchangeSetting -Name 'OAuthAuthentication' -Type 'Boolean' -ExpectedValue $OAuthAuthentication -ActualValue $vdir.OAuthAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
     }
 
     return $testResults
@@ -397,6 +415,10 @@ function AddOabDistributionPoint
         [Parameter()]
         [System.String]
         $InternalUrl,
+
+        [Parameter()]
+        [System.Boolean]
+        $OAuthAuthentication,
 
         [Parameter()]
         [System.Int32]

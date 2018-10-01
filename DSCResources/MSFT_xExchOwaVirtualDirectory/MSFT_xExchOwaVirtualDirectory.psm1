@@ -15,6 +15,11 @@ function Get-TargetResource
         $Credential,
 
         [Parameter()]
+        [ValidateSet("Allow","ForceSave","Block")]
+        [System.String]
+        $ActionForUnknownFileAndMIMETypes,
+
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
@@ -51,6 +56,11 @@ function Get-TargetResource
         $FormsAuthentication,
 
         [Parameter()]
+        [ValidateSet("Off","Low","High","Error")]
+        [System.String]
+        $GzipLevel,
+
+        [Parameter()]
         [System.Boolean]
         $InstantMessagingEnabled,
 
@@ -81,7 +91,23 @@ function Get-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $UNCAccessOnPublicComputersEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $UNCAccessOnPrivateComputersEnabled,
+
+        [Parameter()]
+        [System.Boolean]
         $WindowsAuthentication,
+
+        [Parameter()]
+        [System.Boolean]
+        $WSSAccessOnPublicComputersEnabled,
+
+        [Parameter]
+        [System.Boolean]
+        $WSSAccessOnPrivateComputersEnabled,
 
         [Parameter()]
         [ValidateSet('FullDomain','UserName','PrincipalName')]
@@ -104,6 +130,7 @@ function Get-TargetResource
     {
         $returnValue = @{
             Identity                               = [System.String] $Identity
+            ActionForUnknownFileAndMIMETypes       = [System.String] $OwaVdir.ActionForUnknownFileAndMIMETypes
             AdfsAuthentication                     = [System.Boolean] $OwaVdir.AdfsAuthentication
             BasicAuthentication                    = [System.Boolean] $OwaVdir.BasicAuthentication
             ChangePasswordEnabled                  = [System.Boolean] $OwaVdir.ChangePasswordEnabled
@@ -112,6 +139,7 @@ function Get-TargetResource
             ExternalAuthenticationMethods          = [System.String[]] $OwaVdir.ExternalAuthenticationMethods
             ExternalUrl                            = [System.String] $OwaVdir.ExternalUrl.AbsoluteUri
             FormsAuthentication                    = [System.Boolean] $OwaVdir.FormsAuthentication
+            GzipLevel                              = [System.String] $OwaVdir.GzipLevel
             InstantMessagingCertificateThumbprint  = [System.String] $OwaVdir.InstantMessagingCertificateThumbprint
             InstantMessagingEnabled                = [System.Boolean] $OwaVdir.InstantMessagingEnabled
             InstantMessagingServerName             = [System.String] $OwaVdir.InstantMessagingServerName
@@ -120,7 +148,11 @@ function Get-TargetResource
             LogonFormat                            = [System.String] $OwaVdir.LogonFormat
             LogonPageLightSelectionEnabled         = [System.Boolean] $OwaVdir.LogonPageLightSelectionEnabled
             LogonPagePublicPrivateSelectionEnabled = [System.Boolean] $OwaVdir.LogonPagePublicPrivateSelectionEnabled
+            UNCAccessOnPublicComputersEnabled      = [System.Boolean] $OwaVdir.UNCAccessOnPublicComputersEnabled
+            UNCAccessOnPrivateComputersEnabled     = [System.Boolean] $OwaVdir.UNCAccessOnPrivateComputersEnabled
             WindowsAuthentication                  = [System.Boolean] $OwaVdir.WindowsAuthentication
+            WSSAccessOnPublicComputersEnabled      = [System.Boolean] $OwaVdir.WSSAccessOnPublicComputersEnabled
+            WSSAccessOnPrivateComputersEnabled     = [System.Boolean] $OwaVdir.WSSAccessOnPrivateComputersEnabled
         }
     }
 
@@ -139,6 +171,11 @@ function Set-TargetResource
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
+
+        [Parameter()]
+        [ValidateSet("Allow","ForceSave","Block")]
+        [System.String]
+        $ActionForUnknownFileAndMIMETypes,
 
         [Parameter()]
         [System.Boolean]
@@ -177,6 +214,11 @@ function Set-TargetResource
         $FormsAuthentication,
 
         [Parameter()]
+        [ValidateSet("Off","Low","High","Error")]
+        [System.String]
+        $GzipLevel,
+
+        [Parameter()]
         [System.Boolean]
         $InstantMessagingEnabled,
 
@@ -207,7 +249,23 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $UNCAccessOnPublicComputersEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $UNCAccessOnPrivateComputersEnabled,
+
+        [Parameter()]
+        [System.Boolean]
         $WindowsAuthentication,
+
+        [Parameter()]
+        [System.Boolean]
+        $WSSAccessOnPublicComputersEnabled,
+
+        [Parameter]
+        [System.Boolean]
+        $WSSAccessOnPrivateComputersEnabled,
 
         [Parameter()]
         [ValidateSet('FullDomain','UserName','PrincipalName')]
@@ -260,6 +318,11 @@ function Test-TargetResource
         $Credential,
 
         [Parameter()]
+        [ValidateSet("Allow","ForceSave","Block")]
+        [System.String]
+        $ActionForUnknownFileAndMIMETypes,
+
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
@@ -296,6 +359,11 @@ function Test-TargetResource
         $FormsAuthentication,
 
         [Parameter()]
+        [ValidateSet("Off","Low","High","Error")]
+        [System.String]
+        $GzipLevel,
+
+        [Parameter()]
         [System.Boolean]
         $InstantMessagingEnabled,
 
@@ -326,7 +394,23 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $UNCAccessOnPublicComputersEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $UNCAccessOnPrivateComputersEnabled,
+
+        [Parameter()]
+        [System.Boolean]
         $WindowsAuthentication,
+
+        [Parameter()]
+        [System.Boolean]
+        $WSSAccessOnPublicComputersEnabled,
+
+        [Parameter]
+        [System.Boolean]
+        $WSSAccessOnPrivateComputersEnabled,
 
         [Parameter()]
         [ValidateSet('FullDomain','UserName','PrincipalName')]
@@ -442,6 +526,36 @@ function Test-TargetResource
         {
             $testResults = $false
         }
+
+        if (!(Test-ExchangeSetting -Name 'ActionForUnknownFileAndMIMETypes' -Type 'String' -ExpectedValue $ActionForUnknownFileAndMIMETypes -ActualValue $OwaVdir.ActionForUnknownFileAndMIMETypes -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'WSSAccessOnPublicComputersEnabled' -Type 'Boolean' -ExpectedValue $WSSAccessOnPublicComputersEnabled -ActualValue $OwaVdir.WSSAccessOnPublicComputersEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'WSSAccessOnPrivateComputersEnabled' -Type 'Boolean' -ExpectedValue $WSSAccessOnPrivateComputersEnabled -ActualValue $OwaVdir.WSSAccessOnPrivateComputersEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'UNCAccessOnPublicComputersEnabled' -Type 'Boolean' -ExpectedValue $UNCAccessOnPublicComputersEnabled -ActualValue $OwaVdir.UNCAccessOnPublicComputersEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'UNCAccessOnPrivateComputersEnabled' -Type 'Boolean' -ExpectedValue $UNCAccessOnPrivateComputersEnabled -ActualValue $OwaVdir.UNCAccessOnPrivateComputersEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'GzipLevel' -Type 'String' -ExpectedValue $GzipLevel -ActualValue $OwaVdir.GzipLevel -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
     }
 
     return $testResults
@@ -460,6 +574,11 @@ function GetOwaVirtualDirectory
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
+
+        [Parameter()]
+        [ValidateSet("Allow","ForceSave","Block")]
+        [System.String]
+        $ActionForUnknownFileAndMIMETypes,
 
         [Parameter()]
         [System.Boolean]
@@ -498,6 +617,11 @@ function GetOwaVirtualDirectory
         $FormsAuthentication,
 
         [Parameter()]
+        [ValidateSet("Off","Low","High","Error")]
+        [System.String]
+        $GzipLevel,
+
+        [Parameter()]
         [System.Boolean]
         $InstantMessagingEnabled,
 
@@ -528,7 +652,23 @@ function GetOwaVirtualDirectory
 
         [Parameter()]
         [System.Boolean]
+        $UNCAccessOnPublicComputersEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $UNCAccessOnPrivateComputersEnabled,
+
+        [Parameter()]
+        [System.Boolean]
         $WindowsAuthentication,
+
+        [Parameter()]
+        [System.Boolean]
+        $WSSAccessOnPublicComputersEnabled,
+
+        [Parameter]
+        [System.Boolean]
+        $WSSAccessOnPrivateComputersEnabled,
 
         [Parameter()]
         [ValidateSet('FullDomain','UserName','PrincipalName')]

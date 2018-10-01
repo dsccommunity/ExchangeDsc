@@ -16,6 +16,7 @@ class MSFT_xExchOabVirtualDirectory : OMI_BaseResource
     [Write, ValueMap{"None","Allow","Require"}, Values{"None","Allow","Require"}] String ExtendedProtectionTokenChecking;
     [Write] String ExternalUrl;
     [Write] String InternalUrl;
+    [Write] Boolean OAuthAuthentication;
     [Write] Sint32 PollInterval;
     [Write] Boolean RequireSSL;
     [Write] Boolean WindowsAuthentication;

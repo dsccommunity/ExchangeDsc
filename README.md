@@ -369,11 +369,13 @@ parameters.
 * **AllowServiceRestart**: Whether it is OK to recycle the app pool after making
   changes. Defaults to $false.
 * **AdfsAuthentication**
+* **AdminEnabled**
 * **BasicAuthentication**
 * **DigestAuthentication**
 * **DomainController**
 * **ExternalAuthenticationMethods**
 * **FormsAuthentication**
+* **GzipLevel**
 * **ExternalUrl**
 * **InternalUrl**
 * **WindowsAuthentication**
@@ -993,6 +995,7 @@ parameters.
 * **ExtendedProtectionTokenChecking**
 * **ExternalUrl**
 * **InternalUrl**
+* **OAuthAuthentication**
 * **PollInterval**
 * **RequireSSL**
 * **WindowsAuthentication**
@@ -1037,6 +1040,7 @@ parameters.
 * **AllowServiceRestart**: Whether it is OK to recycle the app pool
   after making changes.
   Defaults to $false.
+* **ActionForUnknownFileAndMIMETypes**
 * **AdfsAuthentication**
 * **BasicAuthentication**
 * **ChangePasswordEnabled**
@@ -1045,6 +1049,7 @@ parameters.
 * **ExternalAuthenticationMethods**
 * **ExternalUrl**
 * **FormsAuthentication**
+* **GzipLevel**
 * **InternalUrl**
 * **InstantMessagingEnabled**
 * **InstantMessagingCertificateThumbprint**
@@ -1052,8 +1057,11 @@ parameters.
 * **InstantMessagingType**
 * **LogonPagePublicPrivateSelectionEnabled**
 * **LogonPageLightSelectionEnabled**
+* **UNCAccessOnPublicComputersEnabled**
+* **UNCAccessOnPrivateComputersEnabled**
 * **WindowsAuthentication**
-* **WSSecurityAuthentication**
+* **WSSAccessOnPublicComputersEnabled**
+* **WSSAccessOnPrivateComputersEnabled**
 * **LogonFormat**
 * **DefaultDomain**
 
