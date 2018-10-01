@@ -3,3 +3,6 @@
 
 # Allow Excel files in examples to be saved as binary files
 *.xl* binary
+
+# Allow test .PFX files to be saved as binary files
+*.pfx binary
