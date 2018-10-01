@@ -273,10 +273,13 @@ function Get-DetailedInstalledVersion
 
     if ($null -ne $uninstallKey)
     {
+
+        $uninstallKeyPath = $uninstallKey.Name.ToLower().Replace('hkey_local_machine','hklm:')
+
         $versionDetails = @{
-            VersionMajor   = Get-ItemProperty -Path $uninstallKey.Name -Name 'VersionMajor' -ErrorAction SilentlyContinue
-            VersionMinor   = Get-ItemProperty -Path $uninstallKey.Name -Name 'VersionMinor' -ErrorAction SilentlyContinue
-            DisplayVersion = Get-ItemProperty -Path $uninstallKey.Name -Name 'DisplayVersion' -ErrorAction SilentlyContinue
+            VersionMajor   = Get-ItemProperty -Path $uninstallKeyPath -Name 'VersionMajor' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VersionMajor
+            VersionMinor   = Get-ItemProperty -Path $uninstallKeyPath -Name 'VersionMinor' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VersionMinor
+            DisplayVersion = Get-ItemProperty -Path $uninstallKeyPath -Name 'DisplayVersion' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty DisplayVersion
         }
 
         $installedVersionDetails = New-Object -TypeName PSCustomObject -Property $versionDetails
@@ -395,7 +398,6 @@ function Get-SetupExeVersion
     # Get Exchange setup.exe version
     if(Test-Path -Path $Path -ErrorAction SilentlyContinue)
     {
-
         $setupexeVersionInfo = (Get-ChildItem -Path $Path).VersionInfo.ProductVersionRaw
 
         $setupexeVersionInfo = @{
@@ -443,27 +445,21 @@ function Test-ShouldUpgradeExchange
 
         if($null -ne $exchangeDisplayVersion)
         { # If we have an exchange installed
-
             Write-Verbose -Message "Comparing setup.exe version and installed Exchange's version."
-
             Write-Verbose -Message "Exchange version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $exchangeDisplayVersion.Major,$exchangeDisplayVersion.Minor, $exchangeDisplayVersion.Build)'"
-
 
             if(($exchangeDisplayVersion.VersionMajor -eq $setupExeVersion.VersionMajor)`
                 -and ($exchangeDisplayVersion.VersionMinor -eq $setupExeVersion.VersionMinor)`
                 -and ($exchangeDisplayVersion.VersionBuild -lt $setupExeVersion.VersionBuild) )
             { # If server has lower version of CU installed
-
                 Write-Verbose -Message 'Version upgrade is requested.'
                 # Executing with the upgrade.
                 $shouldUpgrade = $true
-
             }
             else
             {
                 Write-Verbose -Message 'Exchange with same or newer version was found.'
             }
-
         }
         else
         {
@@ -2334,7 +2330,6 @@ function Wait-ForProcessStop
 
     .PARAMETER Arguments
         The command line arguments passed to Exchange Setup.
-
 #>
 function Assert-ExchangeSetupArgumentsComplete
 {

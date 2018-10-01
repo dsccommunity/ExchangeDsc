@@ -989,8 +989,11 @@ try
             Context 'When DetailedInstalledVersion is called and a valid key is returned by Get-ExchangeUninstallKey' {
                 It 'Should return custom object with VersionMajor and VersionMinor properties' {
                     Mock -CommandName Get-ExchangeUninstallKey -Verifiable -MockWith { return @{Name = 'SomeKeyName'} }
-                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter {$Name -eq 'VersionMajor'} -MockWith { return 15 }
-                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter {$Name -eq 'VersionMinor'} -MockWith { return 1 }
+                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter {$Name -eq 'VersionMajor'} -MockWith {
+                        return [PSCustomObject] @{VersionMajor = 15} }
+                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter {$Name -eq 'VersionMinor'} -MockWith {
+                        return [PSCustomObject] @{ VersionMinor = 1 }
+                    }
 
                     $installedVersionDetails = Get-DetailedInstalledVersion
 
@@ -1085,7 +1088,7 @@ try
                         $Result
                     )
 
-                    Mock -CommandName Get-SetupExeVersion -MockWith {
+                    Mock -CommandName Get-SetupExeVersion -Verifiable -MockWith {
                         return [PSCustomObject] @{
                             VersionMajor = $SetupVersionMajor
                             VersionMinor = $SetupVersionMinor
@@ -1093,7 +1096,7 @@ try
                         }
                     }
 
-                    Mock -CommandName Get-DetailedInstalledVersion -MockWith {
+                    Mock -CommandName Get-DetailedInstalledVersion -Verifiable -MockWith {
                         return [PSCustomObject] @{
                             VersionMajor = $ExchangeVersionMajor
                             VersionMinor = $ExchangeVersionMinor
@@ -1108,16 +1111,8 @@ try
             Context 'When Get-SetupExeVersion returns null within Test-ShouldUpgradeExchange.' {
                 It 'Should return $false' {
 
-                    Mock -CommandName Get-SetupExeVersion -MockWith {
+                    Mock -CommandName Get-SetupExeVersion -Verifiable -MockWith {
                         return $null
-                    }
-
-                    Mock -CommandName Get-DetailedInstalledVersion -MockWith {
-                        return [PSCustomObject] @{
-                            VersionMajor = $ExchangeVersionMajor
-                            VersionMinor = $ExchangeVersionMinor
-                            VersionBuild = $ExchangeVersionBuild
-                        }
                     }
 
                     Test-ShouldUpgradeExchange -Path 'test' | Should -Be $false
@@ -1125,9 +1120,10 @@ try
             }
 
             Context 'When Get-DetailedInstalledVersion returns null within Test-ShouldUpgradeExchange.' {
-                It 'Should show output of Write-Error and return with $false' {
+                It 'Should return with $false' {
+                    Mock -CommandName Write-Error -Verifiable -MockWith {}
 
-                    Mock -CommandName Get-SetupExeVersion -MockWith {
+                    Mock -CommandName Get-SetupExeVersion -Verifiable -MockWith {
                         return [PSCustomObject] @{
                             VersionMajor = $SetupVersionMajor
                             VersionMinor = $SetupVersionMinor
@@ -1135,7 +1131,7 @@ try
                         }
                     }
 
-                    Mock -CommandName Get-DetailedInstalledVersion -MockWith {
+                    Mock -CommandName Get-DetailedInstalledVersion -Verifiable -MockWith {
                         return $null
                     }
 
@@ -1144,17 +1140,55 @@ try
             }
 
             Context 'When Get-DetailedInstalledVersion and Get-SetupExeVersion return null within Test-ShouldUpgradeExchange.' {
-                It 'Should show output of Write-Error and return with $false' {
+                It 'Should return with $false' {
+                    Mock -CommandName Write-Error -Verifiable -MockWith {}
 
-                    Mock -CommandName Get-SetupExeVersion -MockWith {
+                    Mock -CommandName Get-SetupExeVersion -Verifiable -MockWith {
                         return $false
                     }
 
-                    Mock -CommandName Get-DetailedInstalledVersion -MockWith {
+                    Mock -CommandName Get-DetailedInstalledVersion -Verifiable -MockWith {
                         return $null
                     }
 
                     Test-ShouldUpgradeExchange -Path 'test' | Should -Be $false
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Get-SetupExeVersion' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Get-SetupExeVersion is called.' {
+                It 'Will find the file and returns the version of it.' {
+                    Mock -CommandName Test-Path -Verifiable -MockWith { return $true }
+                    Mock -CommandName Get-ChildItem -Verifiable  -MockWith {
+                        @{
+                            VersionInfo = @{
+                                ProductVersionRaw = @{
+                                    Major = 1
+                                    Minor = 2
+                                    Build = 3
+                                }
+                            }
+                        }
+                    }
+
+                    $version = Get-SetupExeVersion -Path 'SomePath'
+
+                    $version.VersionMajor | Should -Be 1
+                    $version.VersionMinor | Should -Be 2
+                    $version.VersionBuild | Should -Be 3
+                }
+            }
+
+            Context 'When Get-SetupExeVersion is called.' {
+                It 'Will NOT find the file and returns NULL.' {
+                    Mock -CommandName Test-Path -Verifiable -MockWith { return $false }
+
+                    Get-SetupExeVersion -Path 'SomePath' | Should -Be $null
                 }
             }
         }
