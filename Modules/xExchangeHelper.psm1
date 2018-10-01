@@ -202,8 +202,7 @@ function Get-ExchangeVersionYear
     $installedVersionDetails = Get-DetailedInstalledVersion
 
     if ($null -ne $installedVersionDetails)
-    { # if Exchange is installed
-
+    { # If Exchange is installed
         switch ($installedVersionDetails.VersionMajor)
         {
             15
@@ -216,7 +215,6 @@ function Get-ExchangeVersionYear
                 }
             }
         }
-
     }
 
     if ($version -eq 'N/A' -and $ThrowIfUnknownVersion)
@@ -256,10 +254,6 @@ function Get-ExchangeUninstallKey
         and returns a hashtable with Major, Minor, Update versions.
         Returns NULL if the version cannot be found, and will optionally throw
         an exception if ThrowIfUnknownVersion was set to $true.
-
-    .PARAMETER ThrowIfUnknownVersion
-        Whether the function should throw an exception if the version cannot
-        be found. Defauls to $false.
 #>
 function Get-DetailedInstalledVersion
 {
@@ -273,7 +267,6 @@ function Get-DetailedInstalledVersion
 
     if ($null -ne $uninstallKey)
     {
-
         $uninstallKeyPath = $uninstallKey.Name.ToLower().Replace('hkey_local_machine','hklm:')
 
         $versionDetails = @{
@@ -377,7 +370,8 @@ function Test-ExchangeSetupPartiallyCompleted
 <#
     .SYNOPSIS
        Gets Exchange's setup.exe file's version info.
-       It will return VersionMajor, VersionMinor, VersionBuild values in a PSCustomObject or NULL if not readable.
+       It will return VersionMajor, VersionMinor, VersionBuild values as PSCustomObject
+       or NULL if not readable.
 
     .PARAMETER Path
         The path of the setup.exe which is used within the xExchInstall DSC resource.
@@ -414,12 +408,15 @@ function Get-SetupExeVersion
 
 <#
     .SYNOPSIS
-        Checks if installed Exchange version is older then the version of the setup.exe used
-        within the xExchInstall DSC Resource call.
+        Checks if installed Exchange version is older than the version of the setup.exe,
+        which is used within the xExchInstall DSC Resource call.
         Will return Boolean.
 
     .PARAMETER Path
         The path of the setup.exe which is used within the xExchInstall DSC resource.
+
+    .PARAMETER Path
+        The commandline arguments of setup.exe.
 #>
 function Test-ShouldUpgradeExchange
 {
@@ -430,10 +427,19 @@ function Test-ShouldUpgradeExchange
     (
         [Parameter(Mandatory=$true)]
         [System.String]
-        $Path
+        $Path,
+
+        [Parameter(Mandatory=$true)]
+        [System.String]
+        $Arguments
     )
 
     $shouldUpgrade = $false
+
+    if(($Arguments -notmatch '/mode:upgrade') -and ($Arguments -notmatch '/m:upgrade'))
+    {
+        return $shouldUpgrade
+    }
 
     $setupExeVersion = Get-SetupExeVersion -Path $Path
 
@@ -458,7 +464,7 @@ function Test-ShouldUpgradeExchange
             }
             else
             {
-                Write-Verbose -Message 'Exchange with same or newer version was found.'
+                Write-Verbose -Message 'Exchange update is not possible. Version of installed Exchange cannot be updated with the version of setup.exe.'
             }
         }
         else
@@ -501,10 +507,12 @@ function Get-ExchangeInstallStatus
     $setupRunning = Test-ExchangeSetupRunning
     $setupComplete = Test-ExchangeSetupComplete -Verbose:$VerbosePreference
     $exchangePresent = Test-ExchangePresent
+    # Exchange CU install / update support
+    $shouldUpgrade = Test-ShouldUpgradeExchange -Path $Path -Arguments $Arguments -Verbose:$VerbosePreference
 
     if ($setupRunning -or $setupComplete)
     {
-        if($shouldInstallLanguagePack -and $setupComplete)
+        if(($shouldInstallLanguagePack -or $shouldUpgrade)  -and $setupComplete)
         {
             $shouldStartInstall = $true
         }
@@ -518,12 +526,6 @@ function Get-ExchangeInstallStatus
         $shouldStartInstall = $true
     }
 
-    # Exchange CU install / update support
-    if(($Arguments -match '/mode:upgrade') -or ($Arguments -match '/m:upgrade'))
-    { # In case of an upgrade
-        $shouldStartInstall = Test-ShouldUpgradeExchange -Path $Path
-    }
-
     Write-Verbose -Message "Finished Checking Exchange Install Status. ShouldInstallLanguagePack: $shouldInstallLanguagePack. SetupRunning: $setupRunning. SetupComplete: $setupComplete. ExchangePresent: $exchangePresent. ShouldStartInstall: $shouldStartInstall."
 
     $returnValue = @{
@@ -531,6 +533,7 @@ function Get-ExchangeInstallStatus
         SetupRunning = $setupRunning
         SetupComplete = $setupComplete
         ExchangePresent = $exchangePresent
+        ShouldUpgrade = $shouldUpgrade
         ShouldStartInstall = $shouldStartInstall
     }
 
