@@ -399,11 +399,9 @@ function Get-SetupExeVersion
         $setupexeVersionInfo = (Get-ChildItem -Path $Path).VersionInfo.ProductVersionRaw
 
         $setupexeVersionInfo = @{
-
-            VersionMajor = [System.Int32]$setupexeVersionInfo.Major
-            VersionMinor = [System.Int32]$setupexeVersionInfo.Minor
-            VersionBuild = [System.Int32]$setupexeVersionInfo.Build
-
+            VersionMajor = [System.Int32] $setupexeVersionInfo.Major
+            VersionMinor = [System.Int32] $setupexeVersionInfo.Minor
+            VersionBuild = [System.Int32] $setupexeVersionInfo.Build
         }
 
         $version = New-Object -TypeName PSCustomObject -Property $setupexeVersionInfo
@@ -467,10 +465,9 @@ function Test-ShouldUpgradeExchange
             }
 
         }
-        else {
-
-            Write-Error -Message "Get-ExchangeInstallStatus: Script cannot determin installed Exchange's version. Please check if Exchange is installed."
-
+        else
+        {
+            Write-Error -Message "Get-ExchangeInstallStatus: Script cannot determine installed Exchange's version. Please check if Exchange is installed."
         }
     }
 
@@ -2332,8 +2329,12 @@ function Wait-ForProcessStop
         Checks whether Exchange Setup has completed successfully according to
         the input Setup Arguments, and throws an exception if it has not.
 
+    .PARAMETER Path
+        Path to the setup.exe of Exchange.
+
     .PARAMETER Arguments
         The command line arguments passed to Exchange Setup.
+
 #>
 function Assert-ExchangeSetupArgumentsComplete
 {
@@ -2342,10 +2343,19 @@ function Assert-ExchangeSetupArgumentsComplete
     (
         [Parameter(Mandatory=$true)]
         [System.String]
+        $Path,
+
+        [Parameter(Mandatory=$true)]
+        [System.String]
         $Arguments
     )
 
-    $installStatus = Get-ExchangeInstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
+    if(-Not (Test-Path -Path $Path -ErrorAction SilentlyContinue))
+    {
+        throw "Path to Exchange setup '$Path' does not exists."
+    }
+
+    $installStatus = Get-ExchangeInstallStatus -Path $Path -Arguments $Arguments -Verbose:$VerbosePreference
 
     if ($installStatus.SetupComplete)
     {
