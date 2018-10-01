@@ -452,7 +452,7 @@ try
                         $Year
                     )
 
-                    Mock -CommandName Get-ExchangeVersion -Verifiable -MockWith { return $Year }
+                    Mock -CommandName Get-ExchangeVersionYear -Verifiable -MockWith { return $Year }
 
                     Test-ExchangePresent | Should -Be $true
                 }
@@ -473,7 +473,7 @@ try
                         $Year
                     )
 
-                    Mock -CommandName Get-ExchangeVersion -Verifiable -MockWith { return $Year }
+                    Mock -CommandName Get-ExchangeVersionYear -Verifiable -MockWith { return $Year }
 
                     Test-ExchangePresent | Should -Be $false
                 }
