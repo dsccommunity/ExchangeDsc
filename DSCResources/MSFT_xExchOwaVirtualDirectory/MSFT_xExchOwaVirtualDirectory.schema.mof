@@ -7,7 +7,7 @@ class MSFT_xExchOwaVirtualDirectory : OMI_BaseResource
 
     //Remaining props correspond directly to Set-OwaVirtualDirectory parameters
     //http://technet.microsoft.com/en-us/library/bb123515(v=exchg.150).aspx
-    [Write, ValueMap{"Allow","ForceSave","Block"}] String ActionForUnknownFileAndMIMETypes;
+    [Write, ValueMap{"Allow","ForceSave","Block"}, Values{"Allow","ForceSave","Block"}] String ActionForUnknownFileAndMIMETypes;
     [Write] Boolean AdfsAuthentication;
     [Write] Boolean AllowServiceRestart;
     [Write] Boolean BasicAuthentication;
@@ -17,7 +17,7 @@ class MSFT_xExchOwaVirtualDirectory : OMI_BaseResource
     [Write] String ExternalAuthenticationMethods[];
     [Write] String ExternalUrl;
     [Write] Boolean FormsAuthentication;
-    [Write, ValueMap{"Off","Low","High","Error"}] String GzipLevel;
+    [Write, ValueMap{"Off","Low","High","Error"}, Values{"Off","Low","High","Error"}] String GzipLevel;
     [Write] String InternalUrl;
     [Write] Boolean InstantMessagingEnabled;
     [Write] String InstantMessagingCertificateThumbprint;

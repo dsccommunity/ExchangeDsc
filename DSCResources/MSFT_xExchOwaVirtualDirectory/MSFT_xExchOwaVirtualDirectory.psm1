@@ -105,7 +105,7 @@ function Get-TargetResource
         [System.Boolean]
         $WSSAccessOnPublicComputersEnabled,
 
-        [Parameter]
+        [Parameter()]
         [System.Boolean]
         $WSSAccessOnPrivateComputersEnabled,
 
@@ -263,7 +263,7 @@ function Set-TargetResource
         [System.Boolean]
         $WSSAccessOnPublicComputersEnabled,
 
-        [Parameter]
+        [Parameter()]
         [System.Boolean]
         $WSSAccessOnPrivateComputersEnabled,
 
@@ -408,7 +408,7 @@ function Test-TargetResource
         [System.Boolean]
         $WSSAccessOnPublicComputersEnabled,
 
-        [Parameter]
+        [Parameter()]
         [System.Boolean]
         $WSSAccessOnPrivateComputersEnabled,
 
@@ -666,7 +666,7 @@ function GetOwaVirtualDirectory
         [System.Boolean]
         $WSSAccessOnPublicComputersEnabled,
 
-        [Parameter]
+        [Parameter()]
         [System.Boolean]
         $WSSAccessOnPrivateComputersEnabled,
 

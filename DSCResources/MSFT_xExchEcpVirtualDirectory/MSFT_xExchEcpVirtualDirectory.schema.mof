@@ -15,7 +15,7 @@ class MSFT_xExchEcpVirtualDirectory : OMI_BaseResource
     [Write] String DomainController;
     [Write] String ExternalAuthenticationMethods[];
     [Write] Boolean FormsAuthentication;
-    [Write, ValueMap{"Off","Low","High","Error"}] String GzipLevel;
+    [Write, ValueMap{"Off","Low","High","Error"}, Values{"Off","Low","High","Error"}] String GzipLevel;
     [Write] String ExternalUrl;
     [Write] String InternalUrl;
     [Write] Boolean WindowsAuthentication;
