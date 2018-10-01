@@ -828,13 +828,11 @@ try
 
             Context 'When Assert-ExchangeSetupArgumentsComplete is called with wrong file path' {
                 It 'Should throw an exception' {
-                    Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
-                        return @{
-                            SetupComplete = $true
-                        }
+                    Mock -CommandName Test-Path -Verifiable -MockWith {
+                        return $false
                     }
 
-                    { Assert-ExchangeSetupArgumentsComplete -Path 'c:\Exchange\setup.exe' -Arguments 'SetupArgs' } | Should -Throw -ExpectedMessage 'Path to Exchange setup "c:\Exchange\setup.exe" does not exists.'
+                    { Assert-ExchangeSetupArgumentsComplete -Path 'c:\Exchange\setup.exe' -Arguments 'SetupArgs' } | Should -Throw -ExpectedMessage "Path to Exchange setup 'c:\Exchange\setup.exe' does not exists."
                 }
             }
         }
