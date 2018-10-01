@@ -50,6 +50,7 @@ try
                 Assert-MockCalled -CommandName Test-ExchangeSetupRunning -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Test-ExchangeSetupComplete -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Test-ExchangePresent -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Test-ShouldUpgradeExchange -Exactly -Times 1 -Scope It
             }
 
             Context 'When Exchange is not present on the system' {
@@ -58,6 +59,7 @@ try
                     Mock -CommandName Test-ExchangeSetupRunning -MockWith { return $false }
                     Mock -CommandName Test-ExchangeSetupComplete -MockWith { return $false }
                     Mock -CommandName Test-ExchangePresent -MockWith { return $false }
+                    Mock -CommandName Test-ShouldUpgradeExchange -MockWith { return $false }
 
                     $installStatus = Get-ExchangeInstallStatus @getInstallStatusParams
 
@@ -65,6 +67,7 @@ try
                     $installStatus.SetupRunning | Should -Be $false
                     $installStatus.SetupComplete | Should -Be $false
                     $installStatus.ExchangePresent | Should -Be $false
+                    $installStatus.ShouldUpgrade | Should -Be $false
                     $installStatus.ShouldStartInstall | Should -Be $true
                 }
             }
@@ -75,6 +78,7 @@ try
                     Mock -CommandName Test-ExchangeSetupRunning -MockWith { return $false }
                     Mock -CommandName Test-ExchangeSetupComplete -MockWith { return $true }
                     Mock -CommandName Test-ExchangePresent -MockWith { return $true }
+                    Mock -CommandName Test-ShouldUpgradeExchange -MockWith { return $false }
 
                     $installStatus = Get-ExchangeInstallStatus @getInstallStatusParams
 
@@ -82,6 +86,7 @@ try
                     $installStatus.SetupRunning | Should -Be $false
                     $installStatus.SetupComplete | Should -Be $true
                     $installStatus.ExchangePresent | Should -Be $true
+                    $installStatus.ShouldUpgrade | Should -Be $false
                     $installStatus.ShouldStartInstall | Should -Be $false
                 }
             }
@@ -92,6 +97,7 @@ try
                     Mock -CommandName Test-ExchangeSetupRunning -MockWith { return $false }
                     Mock -CommandName Test-ExchangeSetupComplete -MockWith { return $false }
                     Mock -CommandName Test-ExchangePresent -MockWith { return $true }
+                    Mock -CommandName Test-ShouldUpgradeExchange -MockWith { return $false }
 
                     $installStatus = Get-ExchangeInstallStatus @getInstallStatusParams
 
@@ -99,6 +105,7 @@ try
                     $installStatus.SetupRunning | Should -Be $false
                     $installStatus.SetupComplete | Should -Be $false
                     $installStatus.ExchangePresent | Should -Be $true
+                    $installStatus.ShouldUpgrade | Should -Be $false
                     $installStatus.ShouldStartInstall | Should -Be $true
                 }
             }
@@ -109,6 +116,7 @@ try
                     Mock -CommandName Test-ExchangeSetupRunning -MockWith { return $true }
                     Mock -CommandName Test-ExchangeSetupComplete -MockWith { return $false }
                     Mock -CommandName Test-ExchangePresent -MockWith { return $true }
+                    Mock -CommandName Test-ShouldUpgradeExchange -MockWith { return $false }
 
                     $installStatus = Get-ExchangeInstallStatus @getInstallStatusParams
 
@@ -116,6 +124,7 @@ try
                     $installStatus.SetupRunning | Should -Be $true
                     $installStatus.SetupComplete | Should -Be $false
                     $installStatus.ExchangePresent | Should -Be $true
+                    $installStatus.ShouldUpgrade | Should -Be $false
                     $installStatus.ShouldStartInstall | Should -Be $false
                 }
             }
@@ -126,6 +135,7 @@ try
                     Mock -CommandName Test-ExchangeSetupRunning -MockWith { return $false }
                     Mock -CommandName Test-ExchangeSetupComplete -MockWith { return $true }
                     Mock -CommandName Test-ExchangePresent -MockWith { return $true }
+                    Mock -CommandName Test-ShouldUpgradeExchange -MockWith { return $false }
 
                     $installStatus = Get-ExchangeInstallStatus @getInstallStatusParams
 
@@ -133,6 +143,7 @@ try
                     $installStatus.SetupRunning | Should -Be $false
                     $installStatus.SetupComplete | Should -Be $true
                     $installStatus.ExchangePresent | Should -Be $true
+                    $installStatus.ShouldUpgrade | Should -Be $false
                     $installStatus.ShouldStartInstall | Should -Be $true
                 }
             }
@@ -156,6 +167,7 @@ try
                     $installStatus.SetupRunning | Should -Be $false
                     $installStatus.SetupComplete | Should -Be $false
                     $installStatus.ExchangePresent | Should -Be $true
+                    $installStatus.ShouldUpgrade | Should -Be $true
                     $installStatus.ShouldStartInstall | Should -Be $true
                 }
             }
@@ -1018,14 +1030,26 @@ try
 
             $cases = @(
                         @{
-                            Case = 'Setup.exe is newer.'
+                            Case = 'Setup.exe is newer. Commandline Argment is /mode:Upgrade'
                             SetupVersionMajor = 15
                             SetupVersionMinor = 1
                             SetupVersionBuild = 2000
                             ExchangeVersionMajor = 15
                             ExchangeVersionMinor = 1
                             ExchangeVersionBuild = 1800
-                            Result            = $true
+                            Result = $true
+                            Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
+                        }
+                        @{
+                            Case = 'Setup.exe is newer. Commandline Argment is /m:Upgrade'
+                            SetupVersionMajor = 15
+                            SetupVersionMinor = 1
+                            SetupVersionBuild = 2000
+                            ExchangeVersionMajor = 15
+                            ExchangeVersionMinor = 1
+                            ExchangeVersionBuild = 1800
+                            Result = $true
+                            Arguments = '/m:upgrade /Iacceptexchangeserverlicenseterms'
                         }
                         @{
                             Case = 'Setup.exe and installed Exchange version is the same.'
@@ -1035,7 +1059,8 @@ try
                             ExchangeVersionMajor = 15
                             ExchangeVersionMinor = 1
                             ExchangeVersionBuild = 2000
-                            Result            = $false
+                            Result = $false
+                            Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
                         }
                         @{
                             Case = 'Installed Exchange version is different than the setup.exe. e.g. 2013, 2016'
@@ -1045,7 +1070,8 @@ try
                             ExchangeVersionMajor = 15
                             ExchangeVersionMinor = 0
                             ExchangeVersionBuild = 2000
-                            Result            = $false
+                            Result = $false
+                            Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
                         }
                         @{
                             Case = 'Setup.exe version is different than the installed Exchange. e.g. 2013, 2016'
@@ -1055,7 +1081,8 @@ try
                             ExchangeVersionMajor = 15
                             ExchangeVersionMinor = 1
                             ExchangeVersionBuild = 2000
-                            Result            = $false
+                            Result = $false
+                            Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
                         }
                     )
 
@@ -1085,7 +1112,10 @@ try
                         $ExchangeVersionBuild,
 
                         [System.Boolean]
-                        $Result
+                        $Result,
+
+                        [System.String]
+                        $Arguments
                     )
 
                     Mock -CommandName Get-SetupExeVersion -Verifiable -MockWith {
@@ -1104,23 +1134,26 @@ try
                         }
                     }
 
-                    Test-ShouldUpgradeExchange -Path 'test' | Should -Be $Result
+                    Test-ShouldUpgradeExchange -Path 'test' -Arguments $Arguments | Should -Be $Result
                 }
             }
 
             Context 'When Get-SetupExeVersion returns null within Test-ShouldUpgradeExchange.' {
                 It 'Should return $false' {
+                    $Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
 
                     Mock -CommandName Get-SetupExeVersion -Verifiable -MockWith {
                         return $null
                     }
 
-                    Test-ShouldUpgradeExchange -Path 'test' | Should -Be $false
+                    Test-ShouldUpgradeExchange -Path 'test' -Arguments $Arguments | Should -Be $false
                 }
             }
 
             Context 'When Get-DetailedInstalledVersion returns null within Test-ShouldUpgradeExchange.' {
                 It 'Should return with $false' {
+                    $Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
+
                     Mock -CommandName Write-Error -Verifiable -MockWith {}
 
                     Mock -CommandName Get-SetupExeVersion -Verifiable -MockWith {
@@ -1135,12 +1168,14 @@ try
                         return $null
                     }
 
-                    Test-ShouldUpgradeExchange -Path 'test' | Should -Be $false
+                    Test-ShouldUpgradeExchange -Path 'test' -Arguments $Arguments | Should -Be $false
                 }
             }
 
             Context 'When Get-DetailedInstalledVersion and Get-SetupExeVersion return null within Test-ShouldUpgradeExchange.' {
                 It 'Should return with $false' {
+                    $Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
+
                     Mock -CommandName Write-Error -Verifiable -MockWith {}
 
                     Mock -CommandName Get-SetupExeVersion -Verifiable -MockWith {
@@ -1151,7 +1186,15 @@ try
                         return $null
                     }
 
-                    Test-ShouldUpgradeExchange -Path 'test' | Should -Be $false
+                    Test-ShouldUpgradeExchange -Path 'test' -Arguments $Arguments | Should -Be $false
+                }
+            }
+
+            Context 'When calling Test-ShouldUpgradeExchange with commandline arguments, which belongs to a simple install not to an upgrade.' {
+                It 'Should return with $false' {
+                    $Arguments = '/mode:Install /role:Mailbox /IAcceptExchangeServerLicenseTerms'
+
+                    Test-ShouldUpgradeExchange -Path 'test' -Arguments $Arguments | Should -Be $false
                 }
             }
         }
@@ -1161,10 +1204,10 @@ try
                 Assert-VerifiableMock
             }
 
-            Context 'When Get-SetupExeVersion is called.' {
-                It 'Will find the file and returns the version of it.' {
+            Context 'When Get-SetupExeVersion is called and the setup executable is found.' {
+                It 'Should return the file version information.' {
                     Mock -CommandName Test-Path -Verifiable -MockWith { return $true }
-                    Mock -CommandName Get-ChildItem -Verifiable  -MockWith {
+                    Mock -CommandName Get-ChildItem -Verifiable -MockWith {
                         @{
                             VersionInfo = @{
                                 ProductVersionRaw = @{
@@ -1184,8 +1227,8 @@ try
                 }
             }
 
-            Context 'When Get-SetupExeVersion is called.' {
-                It 'Will NOT find the file and returns NULL.' {
+            Context 'When Get-SetupExeVersion is called and the setup executable is not found' {
+                It 'Should return NULL.' {
                     Mock -CommandName Test-Path -Verifiable -MockWith { return $false }
 
                     Get-SetupExeVersion -Path 'SomePath' | Should -Be $null
