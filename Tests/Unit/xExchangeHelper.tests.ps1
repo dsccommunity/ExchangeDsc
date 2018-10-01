@@ -806,7 +806,7 @@ try
                         }
                     }
 
-                    { Assert-ExchangeSetupArgumentsComplete -Path "c:\Exchange\setup.exe" -Arguments 'SetupArgs' } | Should -Not -Throw
+                    { Assert-ExchangeSetupArgumentsComplete -Path 'c:\Exchange\setup.exe' -Arguments 'SetupArgs' } | Should -Not -Throw
                 }
             }
 
@@ -822,23 +822,19 @@ try
                         }
                     }
 
-                    { Assert-ExchangeSetupArgumentsComplete -Path "c:\Exchange\setup.exe" -Arguments 'SetupArgs' } | Should -Throw -ExpectedMessage 'Exchange setup did not complete successfully. See "<system drive>\ExchangeSetupLogs\ExchangeSetup.log" for details.'
+                    { Assert-ExchangeSetupArgumentsComplete -Path 'c:\Exchange\setup.exe' -Arguments 'SetupArgs' } | Should -Throw -ExpectedMessage 'Exchange setup did not complete successfully. See "<system drive>\ExchangeSetupLogs\ExchangeSetup.log" for details.'
                 }
             }
 
             Context 'When Assert-ExchangeSetupArgumentsComplete is called with wrong file path' {
                 It 'Should throw an exception' {
-                    Mock -CommandName Test-Path -Verifiable -MockWith {
-                        return $false
-                    }
-
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
                         return @{
                             SetupComplete = $true
                         }
                     }
 
-                    { Assert-ExchangeSetupArgumentsComplete -Path "c:\Exchange\setup.exe" -Arguments 'SetupArgs' } | Should -Throw -ExpectedMessage "Path to Exchange setup 'c:\Exchange\setup.exe' does not exists."
+                    { Assert-ExchangeSetupArgumentsComplete -Path 'c:\Exchange\setup.exe' -Arguments 'SetupArgs' } | Should -Throw -ExpectedMessage 'Path to Exchange setup "c:\Exchange\setup.exe" does not exists.'
                 }
             }
         }
