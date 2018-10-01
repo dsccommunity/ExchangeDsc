@@ -41,6 +41,7 @@ try
         Describe 'xExchangeHelper\Get-ExchangeInstallStatus' -Tag 'Helper' {
             # Used for calls to Get-InstallStatus
             $getInstallStatusParams = @{
+                Path = 'C:\Exchange\setup.exe'
                 Arguments = '/mode:Install /role:Mailbox /Iacceptexchangeserverlicenseterms'
             }
 
@@ -131,6 +132,29 @@ try
                     $installStatus.ShouldInstallLanguagePack | Should -Be $true
                     $installStatus.SetupRunning | Should -Be $false
                     $installStatus.SetupComplete | Should -Be $true
+                    $installStatus.ExchangePresent | Should -Be $true
+                    $installStatus.ShouldStartInstall | Should -Be $true
+                }
+            }
+
+            Context 'When Exchange upgrade is requested' {
+                It 'Should recommend starting the install' {
+                    Mock -CommandName Test-ShouldInstallUMLanguagePack -MockWith { return $false }
+                    Mock -CommandName Test-ExchangeSetupRunning -MockWith { return $false }
+                    Mock -CommandName Test-ExchangeSetupComplete -MockWith { return $false }
+                    Mock -CommandName Test-ExchangePresent -MockWith { return $true }
+                    Mock -CommandName Test-ShouldUpgradeExchange -MockWith { return $true }
+
+                    $getInstallStatusParams = @{
+                        Path = 'C:\Exchange\setup.exe'
+                        Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
+                    }
+
+                    $installStatus = Get-ExchangeInstallStatus @getInstallStatusParams
+
+                    $installStatus.ShouldInstallLanguagePack | Should -Be $false
+                    $installStatus.SetupRunning | Should -Be $false
+                    $installStatus.SetupComplete | Should -Be $false
                     $installStatus.ExchangePresent | Should -Be $true
                     $installStatus.ShouldStartInstall | Should -Be $true
                 }
@@ -772,25 +796,49 @@ try
 
             Context 'When Assert-ExchangeSetupArgumentsComplete is called and setup is complete' {
                 It 'Should execute without throwing an exception' {
+                    Mock -CommandName Test-Path -Verifiable -MockWith {
+                        return $true
+                    }
+
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
                         return @{
                             SetupComplete = $true
                         }
                     }
 
-                    { Assert-ExchangeSetupArgumentsComplete -Arguments 'SetupArgs' } | Should -Not -Throw
+                    { Assert-ExchangeSetupArgumentsComplete -Path "c:\Exchange\setup.exe" -Arguments 'SetupArgs' } | Should -Not -Throw
                 }
             }
 
             Context 'When Assert-ExchangeSetupArgumentsComplete is called and setup is not complete' {
                 It 'Should throw an exception' {
+                    Mock -CommandName Test-Path -Verifiable -MockWith {
+                        return $true
+                    }
+
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
                         return @{
                             SetupComplete = $false
                         }
                     }
 
-                    { Assert-ExchangeSetupArgumentsComplete -Arguments 'SetupArgs' } | Should -Throw -ExpectedMessage 'Exchange setup did not complete successfully. See "<system drive>\ExchangeSetupLogs\ExchangeSetup.log" for details.'
+                    { Assert-ExchangeSetupArgumentsComplete -Path "c:\Exchange\setup.exe" -Arguments 'SetupArgs' } | Should -Throw -ExpectedMessage 'Exchange setup did not complete successfully. See "<system drive>\ExchangeSetupLogs\ExchangeSetup.log" for details.'
+                }
+            }
+
+            Context 'When Assert-ExchangeSetupArgumentsComplete is called with wrong file path' {
+                It 'Should throw an exception' {
+                    Mock -CommandName Test-Path -Verifiable -MockWith {
+                        return $false
+                    }
+
+                    Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
+                        return @{
+                            SetupComplete = $true
+                        }
+                    }
+
+                    { Assert-ExchangeSetupArgumentsComplete -Path "c:\Exchange\setup.exe" -Arguments 'SetupArgs' } | Should -Throw -ExpectedMessage "Path to Exchange setup 'c:\Exchange\setup.exe' does not exists."
                 }
             }
         }
