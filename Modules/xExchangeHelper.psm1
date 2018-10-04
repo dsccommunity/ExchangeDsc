@@ -269,10 +269,20 @@ function Get-DetailedInstalledVersion
     {
         $uninstallKeyPath = $uninstallKey.Name.ToLower().Replace('hkey_local_machine','hklm:')
 
+        $DisplayVersion = Get-ItemProperty -Path $uninstallKeyPath -Name 'DisplayVersion' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty DisplayVersion
+
+        $VersionBuild = $null
+        $DisplayVersion -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionBuild>\d+)'
+        if($Matches)
+        {
+            $VersionBuild = $Matches['VersionBuild']
+        }
+
         $versionDetails = @{
             VersionMajor   = Get-ItemProperty -Path $uninstallKeyPath -Name 'VersionMajor' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VersionMajor
             VersionMinor   = Get-ItemProperty -Path $uninstallKeyPath -Name 'VersionMinor' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VersionMinor
-            DisplayVersion = Get-ItemProperty -Path $uninstallKeyPath -Name 'DisplayVersion' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty DisplayVersion
+            VersionBuild   = $VersionBuild
+            DisplayVersion = $DisplayVersion
         }
 
         $installedVersionDetails = New-Object -TypeName PSCustomObject -Property $versionDetails
@@ -392,12 +402,12 @@ function Get-SetupExeVersion
     # Get Exchange setup.exe version
     if(Test-Path -Path $Path -ErrorAction SilentlyContinue)
     {
-        $setupexeVersionInfo = (Get-ChildItem -Path $Path).VersionInfo.ProductVersionRaw
+        $setupexeVersionInfo = (Get-ChildItem -Path $Path).VersionInfo
 
         $setupexeVersionInfo = @{
-            VersionMajor = [System.Int32] $setupexeVersionInfo.Major
-            VersionMinor = [System.Int32] $setupexeVersionInfo.Minor
-            VersionBuild = [System.Int32] $setupexeVersionInfo.Build
+            VersionMajor = [System.Int32] $setupexeVersionInfo.ProductMajorPart
+            VersionMinor = [System.Int32] $setupexeVersionInfo.ProductMinorPart
+            VersionBuild = [System.Int32] $setupexeVersionInfo.ProductBuildPart
         }
 
         $version = New-Object -TypeName PSCustomObject -Property $setupexeVersionInfo
@@ -443,13 +453,19 @@ function Test-ShouldUpgradeExchange
 
     $setupExeVersion = Get-SetupExeVersion -Path $Path
 
-    if($null -ne $setupExeVersion)
+    if($null -ne $setupExeVersion`
+        -and $null -ne $setupExeVersion.VersionMajor`
+        -and $null -ne $setupExeVersion.VersionMinor`
+        -and $null -ne $setupExeVersion.VersionBuild)
     {
-        Write-Verbose -Message "Setup.exe version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $setupExeVersion.Major,$setupexeVersion.Minor, $setupexeVersion.Build)'"
+        Write-Verbose -Message "Setup.exe version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $setupExeVersion.VersionMajor,$setupexeVersion.VersionMinor, $setupexeVersion.VersionBuild)'"
 
         $exchangeDisplayVersion = Get-DetailedInstalledVersion
 
-        if($null -ne $exchangeDisplayVersion)
+        if($null -ne $exchangeDisplayVersion`
+            -and $null -ne $exchangeDisplayVersion.VersionMajor`
+            -and $null -ne $exchangeDisplayVersion.VersionMinor`
+            -and $null -ne $exchangeDisplayVersion.VersionBuild)
         { # If we have an exchange installed
             Write-Verbose -Message "Comparing setup.exe version and installed Exchange's version."
             Write-Verbose -Message "Exchange version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $exchangeDisplayVersion.Major,$exchangeDisplayVersion.Minor, $exchangeDisplayVersion.Build)'"
@@ -471,6 +487,10 @@ function Test-ShouldUpgradeExchange
         {
             Write-Error -Message "Get-ExchangeInstallStatus: Script cannot determine installed Exchange's version. Please check if Exchange is installed."
         }
+    }
+    else
+    {
+        Write-Error -Message "Get-ExchangeInstallStatus: Script cannot determine setup.exe version. Please check the file '$Path'."
     }
 
     return $shouldUpgrade

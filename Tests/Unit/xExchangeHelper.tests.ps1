@@ -1146,6 +1146,8 @@ try
                         return $null
                     }
 
+                    Mock -CommandName Write-Error -Verifiable -MockWith {}
+
                     Test-ShouldUpgradeExchange -Path 'test' -Arguments $Arguments | Should -Be $false
                 }
             }
@@ -1158,9 +1160,9 @@ try
 
                     Mock -CommandName Get-SetupExeVersion -Verifiable -MockWith {
                         return [PSCustomObject] @{
-                            VersionMajor = $SetupVersionMajor
-                            VersionMinor = $SetupVersionMinor
-                            VersionBuild = $SetupVersionBuild
+                            VersionMajor = 15
+                            VersionMinor = 1
+                            VersionBuild = 1234
                         }
                     }
 
@@ -1180,10 +1182,6 @@ try
 
                     Mock -CommandName Get-SetupExeVersion -Verifiable -MockWith {
                         return $false
-                    }
-
-                    Mock -CommandName Get-DetailedInstalledVersion -Verifiable -MockWith {
-                        return $null
                     }
 
                     Test-ShouldUpgradeExchange -Path 'test' -Arguments $Arguments | Should -Be $false
@@ -1210,11 +1208,9 @@ try
                     Mock -CommandName Get-ChildItem -Verifiable -MockWith {
                         @{
                             VersionInfo = @{
-                                ProductVersionRaw = @{
-                                    Major = 1
-                                    Minor = 2
-                                    Build = 3
-                                }
+                                ProductMajorPart = 1
+                                ProductMinorPart = 2
+                                ProductBuildPart = 3
                             }
                         }
                     }
