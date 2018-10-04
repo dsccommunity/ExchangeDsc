@@ -415,7 +415,7 @@ function Get-SetupExeVersion
     .PARAMETER Path
         The path of the setup.exe which is used within the xExchInstall DSC resource.
 
-    .PARAMETER Path
+    .PARAMETER Arguments
         The commandline arguments of setup.exe.
 #>
 function Test-ShouldUpgradeExchange
@@ -480,6 +480,9 @@ function Test-ShouldUpgradeExchange
     .SYNOPSIS
         Checks for the exact status of Exchange setup and returns the results
         in a Hashtable.
+
+    .PARAMETER Path
+        The path of the setup.exe which is used within the xExchInstall DSC resource.
 
     .PARAMETER Arguments
         The command line arguments to be passed to Exchange Setup.
