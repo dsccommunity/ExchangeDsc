@@ -279,6 +279,7 @@ function Get-DetailedInstalledVersion
 
         $versionBuild = $null
         $displayVersion -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionBuild>\d+)'
+
         if ($Matches)
         {
             $versionBuild = $Matches['VersionBuild']
