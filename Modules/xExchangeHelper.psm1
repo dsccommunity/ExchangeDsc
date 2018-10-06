@@ -178,7 +178,7 @@ function Test-ExchangePresent
 <#
     .SYNOPSIS
         Gets the installed Exchange Version, and returns the number as a
-        string. Returns N/A if the version cannot be found, and will
+        string. Returns Null if the version cannot be found, and will
         optionally throw an exception if ThrowIfUnknownVersion was set to
         $true.
 
@@ -197,7 +197,7 @@ function Get-ExchangeVersionYear
         $ThrowIfUnknownVersion = $false
     )
 
-    $version = 'N/A'
+    $version = $null
 
     $installedVersionDetails = Get-DetailedInstalledVersion
 
@@ -217,7 +217,7 @@ function Get-ExchangeVersionYear
         }
     }
 
-    if ($version -eq 'N/A' -and $ThrowIfUnknownVersion)
+    if ($null -eq $version -and $ThrowIfUnknownVersion)
     {
         throw 'Failed to discover a known Exchange Version'
     }

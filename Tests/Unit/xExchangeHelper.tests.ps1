@@ -876,12 +876,12 @@ try
                 @{
                     VersionMajor = 15
                     VersionMinor = 7
-                    Year         = 'N/A'
+                    Year         = $null
                 }
                 @{
                     VersionMajor = 14
                     VersionMinor = 0
-                    Year         = 'N/A'
+                    Year         = $null
                 }
             )
 
@@ -911,7 +911,7 @@ try
             }
 
             Context 'When Get-ExchangeVersionYear is called and finds an invalid VersionMajor or VersionMinor without ThrowIfUnknownVersion' {
-                It 'Should return N/A' -TestCases $invalidProductVersions {
+                It 'Should return <Year>' -TestCases $invalidProductVersions {
                     param
                     (
                         [System.Int32]
@@ -931,7 +931,7 @@ try
                         }
                     }
 
-                    Get-ExchangeVersionYear | Should -Be $Year
+                    Get-ExchangeVersionYear | Should -Be $null
                 }
             }
 
