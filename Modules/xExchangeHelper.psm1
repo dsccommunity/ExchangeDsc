@@ -275,20 +275,20 @@ function Get-DetailedInstalledVersion
     {
         $uninstallKeyPath = $uninstallKey.Name.ToLower().Replace('hkey_local_machine','hklm:')
 
-        $DisplayVersion = Get-ItemProperty -Path $uninstallKeyPath -Name 'DisplayVersion' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty DisplayVersion
+        $displayVersion = Get-ItemProperty -Path $uninstallKeyPath -Name 'DisplayVersion' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty DisplayVersion
 
-        $VersionBuild = $null
-        $DisplayVersion -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionBuild>\d+)'
+        $versionBuild = $null
+        $displayVersion -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionBuild>\d+)'
         if ($Matches)
         {
-            $VersionBuild = $Matches['VersionBuild']
+            $versionBuild = $Matches['VersionBuild']
         }
 
         $versionDetails = @{
             VersionMajor   = Get-ItemProperty -Path $uninstallKeyPath -Name 'VersionMajor' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VersionMajor
             VersionMinor   = Get-ItemProperty -Path $uninstallKeyPath -Name 'VersionMinor' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VersionMinor
-            VersionBuild   = $VersionBuild
-            DisplayVersion = $DisplayVersion
+            VersionBuild   = $versionBuild
+            DisplayVersion = $displayVersion
         }
 
         $installedVersionDetails = New-Object -TypeName PSCustomObject -Property $versionDetails
@@ -475,7 +475,7 @@ function Test-ShouldUpgradeExchange
             -and $null -ne $exchangeDisplayVersion.VersionMinor`
             -and $null -ne $exchangeDisplayVersion.VersionBuild)
         { # If we have an exchange installed
-            Write-Verbose -Message "Exchange version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $exchangeDisplayVersion.Major,$exchangeDisplayVersion.Minor, $exchangeDisplayVersion.Build)'"
+            Write-Verbose -Message "Exchange version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $exchangeDisplayVersion.VersionMajor,$exchangeDisplayVersion.VersionMinor, $exchangeDisplayVersion.VersionBuild)'"
 
             if(($exchangeDisplayVersion.VersionMajor -eq $setupExeVersion.VersionMajor)`
                 -and ($exchangeDisplayVersion.VersionMinor -eq $setupExeVersion.VersionMinor)`
