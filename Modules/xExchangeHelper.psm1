@@ -209,9 +209,15 @@ function Get-ExchangeVersionYear
             {
                 switch ($installedVersionDetails.VersionMinor)
                 {
-                    0 {$version = '2013'}
-                    1 {$version = '2016'}
-                    2 {$version = '2019'}
+                    0 {
+                        $version = '2013'
+                    }
+                    1 {
+                        $version = '2016'
+                    }
+                    2 {
+                        $version = '2019'
+                    }
                 }
             }
         }
@@ -273,7 +279,7 @@ function Get-DetailedInstalledVersion
 
         $VersionBuild = $null
         $DisplayVersion -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionBuild>\d+)'
-        if($Matches)
+        if ($Matches)
         {
             $VersionBuild = $Matches['VersionBuild']
         }
@@ -400,7 +406,7 @@ function Get-SetupExeVersion
     $version = $null
 
     # Get Exchange setup.exe version
-    if(Test-Path -Path $Path -ErrorAction SilentlyContinue)
+    if (Test-Path -Path $Path -ErrorAction SilentlyContinue)
     {
         $setupexeVersionInfo = (Get-ChildItem -Path $Path).VersionInfo
 
@@ -446,10 +452,12 @@ function Test-ShouldUpgradeExchange
 
     $shouldUpgrade = $false
 
-    if(($Arguments -notmatch '/mode:upgrade') -and ($Arguments -notmatch '/m:upgrade'))
+    if (($Arguments -notmatch '/mode:upgrade') -and ($Arguments -notmatch '/m:upgrade'))
     {
         return $shouldUpgrade
     }
+
+    Write-Verbose -Message "Comparing setup.exe version and installed Exchange's version."
 
     $setupExeVersion = Get-SetupExeVersion -Path $Path
 
@@ -467,7 +475,6 @@ function Test-ShouldUpgradeExchange
             -and $null -ne $exchangeDisplayVersion.VersionMinor`
             -and $null -ne $exchangeDisplayVersion.VersionBuild)
         { # If we have an exchange installed
-            Write-Verbose -Message "Comparing setup.exe version and installed Exchange's version."
             Write-Verbose -Message "Exchange version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $exchangeDisplayVersion.Major,$exchangeDisplayVersion.Minor, $exchangeDisplayVersion.Build)'"
 
             if(($exchangeDisplayVersion.VersionMajor -eq $setupExeVersion.VersionMajor)`
@@ -535,7 +542,7 @@ function Get-ExchangeInstallStatus
 
     if ($setupRunning -or $setupComplete)
     {
-        if(($shouldInstallLanguagePack -or $shouldUpgrade)  -and $setupComplete)
+        if (($shouldInstallLanguagePack -or $shouldUpgrade)  -and $setupComplete)
         {
             $shouldStartInstall = $true
         }
@@ -2371,7 +2378,7 @@ function Assert-ExchangeSetupArgumentsComplete
         $Arguments
     )
 
-    if(-Not (Test-Path -Path $Path -ErrorAction SilentlyContinue))
+    if (-Not (Test-Path -Path $Path -ErrorAction SilentlyContinue))
     {
         throw "Path to Exchange setup '$Path' does not exists."
     }
