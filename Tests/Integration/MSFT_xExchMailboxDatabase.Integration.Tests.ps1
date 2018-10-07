@@ -176,7 +176,7 @@ if ($exchangeInstalled)
         $expectedGetResults.RecoverableItemsQuota = '2 GB (2,147,483,648 bytes)'
         $expectedGetResults.RecoverableItemsWarningQuota = '1.5 GB (1,610,612,736 bytes)'
 
-        $serverVersion = Get-ExchangeVersion
+        $serverVersion = Get-ExchangeVersionYear
 
         if ($serverVersion -in '2016','2019')
         {

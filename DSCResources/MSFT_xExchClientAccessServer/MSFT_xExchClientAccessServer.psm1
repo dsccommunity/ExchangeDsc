@@ -144,7 +144,7 @@ function Set-TargetResource
 
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    $serverVersion = Get-ExchangeVersion -ThrowIfUnknownVersion $true
+    $serverVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
 
     if ($serverVersion -in '2016','2019')
     {
@@ -329,7 +329,7 @@ function GetClientAccessServer
     #Remove params we don't want to pass into the next command
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
-    $serverVersion = Get-ExchangeVersion -ThrowIfUnknownVersion $true
+    $serverVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
     if (($null -ne $AlternateServiceAccountCredential) -or ($RemoveAlternateServiceAccountCredentials))
     {
         $PSBoundParameters.Add('IncludeAlternateServiceAccountCredentialPassword',$true)

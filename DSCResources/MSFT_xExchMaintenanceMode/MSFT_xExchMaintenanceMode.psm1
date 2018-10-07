@@ -282,7 +282,7 @@ function Set-TargetResource
                     Verbose = $true
                 }
 
-                if ((Get-ExchangeVersion) -in '2016','2019')
+                if ((Get-ExchangeVersionYear) -in '2016','2019')
                 {
                     $startDagScriptParams.Add('pauseClusterNode', $true)
                 }
@@ -483,7 +483,7 @@ function Test-TargetResource
     #Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-*' -Verbose:$VerbosePreference
 
-    $serverVersion = Get-ExchangeVersion
+    $serverVersion = Get-ExchangeVersionYear
 
     $maintenanceModeStatus = GetMaintenanceModeStatus -EnteringMaintenanceMode $Enabled -DomainController $DomainController
 
@@ -1453,7 +1453,7 @@ function GetUMActiveCalls
 
     $umActiveCalls = $null
 
-    $serverVersion = Get-ExchangeVersion
+    $serverVersion = Get-ExchangeVersionYear
 
     if ($serverVersion -in '2013','2016')
     {
@@ -1587,7 +1587,7 @@ function MoveActiveMailboxDatabase
         $moveDBParams.Add("SkipMaximumActiveDatabasesChecks", $true)
     }
 
-    if ((Get-ExchangeVersion) -in '2016','2019')
+    if ((Get-ExchangeVersionYear) -in '2016','2019')
     {
         if ($SkipAllChecks)
         {
