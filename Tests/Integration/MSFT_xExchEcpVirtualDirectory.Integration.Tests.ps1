@@ -41,7 +41,7 @@ if ($exchangeInstalled)
             DigestAuthentication = $false
             ExternalUrl = "https://$($serverFqdn)/ecp"
             FormsAuthentication = $true
-            GzipLevel = "Off"
+            GzipLevel = 'Off'
             InternalUrl = "https://$($serverFqdn)/ecp"
             WindowsAuthentication = $false
         }
@@ -53,7 +53,7 @@ if ($exchangeInstalled)
             DigestAuthentication = $false
             ExternalUrl = "https://$($serverFqdn)/ecp"
             FormsAuthentication = $true
-            GzipLevel = "Off"
+            GzipLevel = 'Off'
             InternalUrl = "https://$($serverFqdn)/ecp"
             WindowsAuthentication = $false
         }
@@ -70,7 +70,7 @@ if ($exchangeInstalled)
             DigestAuthentication = $true
             ExternalUrl = ''
             FormsAuthentication = $false
-            GzipLevel = "High"
+            GzipLevel = 'High'
             InternalUrl = ''
             WindowsAuthentication = $true
         }
@@ -82,7 +82,7 @@ if ($exchangeInstalled)
             DigestAuthentication = $true
             ExternalUrl = ''
             FormsAuthentication = $false
-            GzipLevel = "High"
+            GzipLevel = 'High'
             InternalUrl = ''
             WindowsAuthentication = $true
         }

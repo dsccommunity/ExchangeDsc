@@ -39,7 +39,7 @@ function Get-TargetResource
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
@@ -152,7 +152,7 @@ function Set-TargetResource
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
@@ -262,7 +262,7 @@ function Test-TargetResource
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
@@ -404,7 +404,7 @@ function AddOabDistributionPoint
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 

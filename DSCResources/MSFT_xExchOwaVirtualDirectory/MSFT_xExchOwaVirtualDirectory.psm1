@@ -15,7 +15,7 @@ function Get-TargetResource
         $Credential,
 
         [Parameter()]
-        [ValidateSet("Allow","ForceSave","Block")]
+        [ValidateSet('Allow', 'ForceSave', 'Block')]
         [System.String]
         $ActionForUnknownFileAndMIMETypes,
 
@@ -56,7 +56,7 @@ function Get-TargetResource
         $FormsAuthentication,
 
         [Parameter()]
-        [ValidateSet("Off","Low","High","Error")]
+        [ValidateSet('Off', 'Low', 'High', 'Error')]
         [System.String]
         $GzipLevel,
 
@@ -73,7 +73,7 @@ function Get-TargetResource
         $InstantMessagingServerName,
 
         [Parameter()]
-        [ValidateSet('None','Ocs')]
+        [ValidateSet('None', 'Ocs')]
         [System.String]
         $InstantMessagingType,
 
@@ -110,7 +110,7 @@ function Get-TargetResource
         $WSSAccessOnPrivateComputersEnabled,
 
         [Parameter()]
-        [ValidateSet('FullDomain','UserName','PrincipalName')]
+        [ValidateSet('FullDomain', 'UserName', 'PrincipalName')]
         [System.String]
         $LogonFormat,
 
@@ -173,7 +173,7 @@ function Set-TargetResource
         $Credential,
 
         [Parameter()]
-        [ValidateSet("Allow","ForceSave","Block")]
+        [ValidateSet('Allow', 'ForceSave', 'Block')]
         [System.String]
         $ActionForUnknownFileAndMIMETypes,
 
@@ -214,7 +214,7 @@ function Set-TargetResource
         $FormsAuthentication,
 
         [Parameter()]
-        [ValidateSet("Off","Low","High","Error")]
+        [ValidateSet('Off', 'Low', 'High', 'Error')]
         [System.String]
         $GzipLevel,
 
@@ -231,7 +231,7 @@ function Set-TargetResource
         $InstantMessagingServerName,
 
         [Parameter()]
-        [ValidateSet('None','Ocs')]
+        [ValidateSet('None', 'Ocs')]
         [System.String]
         $InstantMessagingType,
 
@@ -318,7 +318,7 @@ function Test-TargetResource
         $Credential,
 
         [Parameter()]
-        [ValidateSet("Allow","ForceSave","Block")]
+        [ValidateSet('Allow', 'ForceSave', 'Block')]
         [System.String]
         $ActionForUnknownFileAndMIMETypes,
 
@@ -359,7 +359,7 @@ function Test-TargetResource
         $FormsAuthentication,
 
         [Parameter()]
-        [ValidateSet("Off","Low","High","Error")]
+        [ValidateSet('Off', 'Low', 'High', 'Error')]
         [System.String]
         $GzipLevel,
 
@@ -376,7 +376,7 @@ function Test-TargetResource
         $InstantMessagingServerName,
 
         [Parameter()]
-        [ValidateSet('None','Ocs')]
+        [ValidateSet('None', 'Ocs')]
         [System.String]
         $InstantMessagingType,
 
@@ -413,7 +413,7 @@ function Test-TargetResource
         $WSSAccessOnPrivateComputersEnabled,
 
         [Parameter()]
-        [ValidateSet('FullDomain','UserName','PrincipalName')]
+        [ValidateSet('FullDomain', 'UserName', 'PrincipalName')]
         [System.String]
         $LogonFormat,
 
@@ -576,7 +576,7 @@ function GetOwaVirtualDirectory
         $Credential,
 
         [Parameter()]
-        [ValidateSet("Allow","ForceSave","Block")]
+        [ValidateSet('Allow', 'ForceSave', 'Block')]
         [System.String]
         $ActionForUnknownFileAndMIMETypes,
 
@@ -617,7 +617,7 @@ function GetOwaVirtualDirectory
         $FormsAuthentication,
 
         [Parameter()]
-        [ValidateSet("Off","Low","High","Error")]
+        [ValidateSet('Off', 'Low', 'High', 'Error')]
         [System.String]
         $GzipLevel,
 
@@ -634,7 +634,7 @@ function GetOwaVirtualDirectory
         $InstantMessagingServerName,
 
         [Parameter()]
-        [ValidateSet('None','Ocs')]
+        [ValidateSet('None', 'Ocs')]
         [System.String]
         $InstantMessagingType,
 
@@ -671,7 +671,7 @@ function GetOwaVirtualDirectory
         $WSSAccessOnPrivateComputersEnabled,
 
         [Parameter()]
-        [ValidateSet('FullDomain','UserName','PrincipalName')]
+        [ValidateSet('FullDomain', 'UserName', 'PrincipalName')]
         [System.String]
         $LogonFormat,
 
