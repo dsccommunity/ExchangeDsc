@@ -24,6 +24,8 @@
   xExchOwaVirtualDirectory that did not actually exist.
 - Updated .gitattributes to allow test .pfx files to be saved as binary
 - Added Cumulative Update / Exchange update support to xExchInstall resource.
+- Add remaining Unit Tests for all xExchangeHelper functions that don't
+  require the loading of Exchange DLL's.
 
 ## 1.23.0.0
 

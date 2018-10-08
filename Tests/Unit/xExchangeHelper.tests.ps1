@@ -1,3 +1,6 @@
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidUsingConvertToSecureStringWithPlainText", "")]
+param()
+
 #region HEADER
 $script:DSCModuleName = 'xExchange'
 $script:DSCHelperName = "xExchangeHelper"
@@ -1296,7 +1299,8 @@ try
                 It 'Should throw an exception' {
                     Mock -CommandName Test-ExchangeSetupRunning -Verifiable -MockWith { return $true }
 
-                    { Get-RemoteExchangeSession } | Should -Throw -ExpectedMessage 'Exchange Setup is currently running. Preventing creation of new Remote PowerShell session to Exchange.'
+                    { Get-RemoteExchangeSession } | `
+                        Should -Throw -ExpectedMessage 'Exchange Setup is currently running. Preventing creation of new Remote PowerShell session to Exchange.'
                 }
             }
 
@@ -1355,7 +1359,8 @@ try
                 It 'Should throw an exception' {
                     Mock -CommandName Test-ExchangeSetupComplete -Verifiable -MockWith { return $false }
 
-                    { New-RemoteExchangeSession } | Should -Throw -ExpectedMessage 'A supported version of Exchange is either not present, or not fully installed on this machine.'
+                    { New-RemoteExchangeSession } | `
+                        Should -Throw -ExpectedMessage 'A supported version of Exchange is either not present, or not fully installed on this machine.'
                 }
             }
 
@@ -1386,6 +1391,7 @@ try
         }
 
         Describe 'xExchangeHelper\Import-RemoteExchangeSession' -Tag 'Helper' {
+            # Override functions which have non-Mockable parameter types
             function Import-PSSession {}
             function Import-Module {}
 
@@ -1398,7 +1404,10 @@ try
 
             Context 'When Import-RemoteExchangeSession is called and CommandsToLoad is passed' {
                 It 'Should import the session and load the commands' {
-                    Mock -CommandName Import-PSSession -Verifiable -ParameterFilter {$CommandsToLoad.Count -eq 1 -and $CommandsToLoad[0] -like $commandToLoad} -MockWith { return $true }
+                    Mock `
+                        -CommandName Import-PSSession `
+                        -Verifiable `
+                        -ParameterFilter {$CommandsToLoad.Count -eq 1 -and $CommandsToLoad[0] -like $commandToLoad} -MockWith { return $true }
                     Mock -CommandName Import-Module -Verifiable
 
                     Import-RemoteExchangeSession -Session 'SomeSession' -CommandsToLoad $commandsToLoad
@@ -1407,7 +1416,10 @@ try
 
             Context 'When Import-RemoteExchangeSession is called and CommandsToLoad is not passed' {
                 It 'Should import the session and load all commands' {
-                    Mock -CommandName Import-PSSession -Verifiable -ParameterFilter {$CommandsToLoad.Count -eq 1 -and $CommandsToLoad[0] -like '*'} -MockWith { return $true }
+                    Mock `
+                        -CommandName Import-PSSession `
+                        -Verifiable `
+                        -ParameterFilter {$CommandsToLoad.Count -eq 1 -and $CommandsToLoad[0] -like '*'} -MockWith { return $true }
                     Mock -CommandName Import-Module -Verifiable
 
                     Import-RemoteExchangeSession -Session 'SomeSession'
@@ -1416,6 +1428,7 @@ try
         }
 
         Describe 'xExchangeHelper\Remove-RemoteExchangeSession' -Tag 'Helper' {
+            # Override functions which have non-Mockable parameter types
             function Remove-PSSession {}
 
             AfterEach {
@@ -1617,6 +1630,7 @@ try
         }
 
         Describe 'xExchangeHelper\Compare-UnlimitedToString' -Tag 'Helper' {
+            # Override functions which have non-Mockable parameter types
             function Compare-ByteQuantifiedSizeToString {}
 
             AfterEach {
@@ -1629,7 +1643,11 @@ try
 
             Context 'When Compare-UnlimitedToString is called and the Unlimited is set to Unlimited' {
                 It 'Should call Compare-StringToString, passing Unlimited as the first string, and the input string as the second' {
-                    Mock -CommandName Compare-StringToString -ParameterFilter {$String2 -eq 'unlimitedUnlimitedComp'} -Verifiable -MockWith { return $true }
+                    Mock `
+                        -CommandName Compare-StringToString `
+                        -ParameterFilter {$String2 -eq 'unlimitedUnlimitedComp'} `
+                        -Verifiable `
+                        -MockWith { return $true }
 
                     Compare-UnlimitedToString -Unlimited $unlimitedUnlimited -String 'unlimitedUnlimitedComp'
                 }
@@ -1650,7 +1668,11 @@ try
 
             Context 'When Compare-UnlimitedToString is called, the Unlimited is not set to Unlimited, and the Unlimited Value is an Int32' {
                 It 'Should call Compare-StringToString, passing the Unlimited value as the first string, and the input string as the second' {
-                    Mock -CommandName Compare-StringToString -ParameterFilter {$String1 -eq $unlimitedInt32.Value.ToString() -and $String2 -eq '2'} -Verifiable -MockWith { return $true }
+                    Mock `
+                        -CommandName Compare-StringToString `
+                        -ParameterFilter {$String1 -eq $unlimitedInt32.Value.ToString() -and $String2 -eq '2'} `
+                        -Verifiable `
+                        -MockWith { return $true }
 
                     Compare-UnlimitedToString -Unlimited $unlimitedInt32 -String '2'
                 }
@@ -1691,6 +1713,7 @@ try
                 It 'Should return the split, trimmed strings' {
                     $outputArray = Convert-StringToArray -StringIn 'Abc, deF, ghi ,jkl ,mno' -Separator ','
 
+                    $outputArray.Count | Should -Be 5
                     $outputArray.Contains('Abc') | Should -Be $true
                     $outputArray.Contains('deF') | Should -Be $true
                     $outputArray.Contains('ghi') | Should -Be $true
@@ -1715,6 +1738,7 @@ try
 
                     $outputArray = Convert-StringArrayToLowerCase -Array $inputArray
 
+                    $outputArray.Count | Should -Be 7
                     $outputArray.Contains('abc') | Should -Be $true
                     $outputArray.Contains('def') | Should -Be $true
                     $outputArray.Contains('ghi') | Should -Be $true
@@ -1766,12 +1790,16 @@ try
                         $Array2Lower
                     )
 
-                    Mock -CommandName Convert-StringArrayToLowerCase -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 )} -Verifiable -MockWith {
-                        return $Array1Lower
-                    }
-                    Mock -CommandName Convert-StringArrayToLowerCase -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 )} -Verifiable -MockWith {
-                        return $Array2Lower
-                    }
+                    Mock `
+                        -CommandName Convert-StringArrayToLowerCase `
+                        -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 )} `
+                        -Verifiable `
+                        -MockWith { return $Array1Lower }
+                    Mock `
+                        -CommandName Convert-StringArrayToLowerCase `
+                        -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 )} `
+                        -Verifiable `
+                        -MockWith { return $Array2Lower }
 
                     Compare-ArrayContent -Array1 $Array1Param -Array2 $Array2Param -IgnoreCase | Should -Be $true
                 }
@@ -1815,12 +1843,16 @@ try
                         $Array2Lower
                     )
 
-                    Mock -CommandName Convert-StringArrayToLowerCase -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 )} -Verifiable -MockWith {
-                        return $Array1Lower
-                    }
-                    Mock -CommandName Convert-StringArrayToLowerCase -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 )} -Verifiable -MockWith {
-                        return $Array2Lower
-                    }
+                    Mock `
+                        -CommandName Convert-StringArrayToLowerCase `
+                        -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 )} `
+                        -Verifiable `
+                        -MockWith { return $Array1Lower }
+                    Mock `
+                        -CommandName Convert-StringArrayToLowerCase `
+                        -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 )} `
+                        -Verifiable `
+                        -MockWith { return $Array2Lower }
 
                     Compare-ArrayContent -Array1 $Array1Param -Array2 $Array2Param -IgnoreCase | Should -Be $false
                 }
@@ -1944,12 +1976,16 @@ try
                         $Array2Lower
                     )
 
-                    Mock -CommandName Convert-StringArrayToLowerCase -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 )} -Verifiable -MockWith {
-                        return $Array1Lower
-                    }
-                    Mock -CommandName Convert-StringArrayToLowerCase -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 )} -Verifiable -MockWith {
-                        return $Array2Lower
-                    }
+                    Mock `
+                        -CommandName Convert-StringArrayToLowerCase `
+                        -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 )} `
+                        -Verifiable `
+                        -MockWith { return $Array1Lower }
+                    Mock `
+                        -CommandName Convert-StringArrayToLowerCase `
+                        -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 )} `
+                        -Verifiable `
+                        -MockWith { return $Array2Lower }
 
                     Test-ArrayElementsInSecondArray -Array1 $Array1Param -Array2 $Array2Param -IgnoreCase | Should -Be $true
                 }
@@ -1987,12 +2023,16 @@ try
                         $Array2Lower
                     )
 
-                    Mock -CommandName Convert-StringArrayToLowerCase -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 )} -Verifiable -MockWith {
-                        return $Array1Lower
-                    }
-                    Mock -CommandName Convert-StringArrayToLowerCase -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 )} -Verifiable -MockWith {
-                        return $Array2Lower
-                    }
+                    Mock `
+                        -CommandName Convert-StringArrayToLowerCase `
+                        -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 )} `
+                        -Verifiable `
+                        -MockWith { return $Array1Lower }
+                    Mock `
+                        -CommandName Convert-StringArrayToLowerCase `
+                        -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 )} `
+                        -Verifiable `
+                        -MockWith { return $Array2Lower }
 
                     Test-ArrayElementsInSecondArray -Array1 $Array1Param -Array2 $Array2Param -IgnoreCase | Should -Be $false
                 }
@@ -2074,11 +2114,11 @@ try
 
             Context 'When Add-ToPSBoundParametersFromHashtable is called, a parameter is added, and a parameter is changed' {
                 It 'Should add a new parameter and change the existing parameter' {
-                    $param1 = 'abc'
-                    $param2 = $null
+                    $param1    = 'abc'
+                    $param2    = $null
                     $param2new = 'notnull'
-                    $param3 = 'def'
-                    $param4 = 'ghi'
+                    $param3    = 'def'
+                    $param4    = 'ghi'
 
                     $psBoundParametersIn = @{
                         Param1 = $param1
@@ -2108,7 +2148,8 @@ try
 
             Context 'When Remove-FromPSBoundParametersUsingHashtable is called and both ParamsToKeep and ParamsToRemove are specified' {
                 It 'Should throw an exception' {
-                    { Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn @{} -ParamsToKeep @('Param1') -ParamsToRemove @('Param2') } | Should -Throw -ExpectedMessage 'Remove-FromPSBoundParametersUsingHashtable does not support using both ParamsToKeep and ParamsToRemove'
+                    { Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn @{} -ParamsToKeep @('Param1') -ParamsToRemove @('Param2') } | `
+                        Should -Throw -ExpectedMessage 'Remove-FromPSBoundParametersUsingHashtable does not support using both ParamsToKeep and ParamsToRemove'
                 }
             }
 
@@ -2161,7 +2202,7 @@ try
 
             Context 'When Remove-NotApplicableParamsForVersion is called and the parameter exists in the current Exchange version' {
                 It 'Should not modify the input PSBoundParameters' {
-                    Mock -CommandName Get-ExchangeVersion -Verifiable -MockWith {
+                    Mock -CommandName Get-ExchangeVersionYear -Verifiable -MockWith {
                         return '2016'
                     }
 
@@ -2171,7 +2212,11 @@ try
                         Param3 = 3
                     }
 
-                    Remove-NotApplicableParamsForVersion -PSBoundParametersIn $psBoundParametersIn -ParamName 'Param1' -ResourceName 'xExchangeHelper.tests.ps1' -ParamExistsInVersion @('2016', '2019')
+                    Remove-NotApplicableParamsForVersion `
+                        -PSBoundParametersIn $psBoundParametersIn `
+                        -ParamName 'Param1' `
+                        -ResourceName 'xExchangeHelper.tests.ps1' `
+                        -ParamExistsInVersion @('2016', '2019')
 
                     $psBoundParametersIn.ContainsKey('Param1') | Should -Be $true
                     $psBoundParametersIn.ContainsKey('Param2') | Should -Be $true
@@ -2181,7 +2226,7 @@ try
 
             Context 'When Remove-NotApplicableParamsForVersion is called and the parameter does not exist in the current Exchange version' {
                 It 'Should remove the parameter from the input PSBoundParameters, but leave the other parameters' {
-                    Mock -CommandName Get-ExchangeVersion -Verifiable -MockWith {
+                    Mock -CommandName Get-ExchangeVersionYear -Verifiable -MockWith {
                         return '2016'
                     }
                     Mock -CommandName Write-Warning -Verifiable
@@ -2192,7 +2237,11 @@ try
                         Param3 = 3
                     }
 
-                    Remove-NotApplicableParamsForVersion -PSBoundParametersIn $psBoundParametersIn -ParamName 'Param1' -ResourceName 'xExchangeHelper.tests.ps1' -ParamExistsInVersion @('2013', '2019')
+                    Remove-NotApplicableParamsForVersion `
+                        -PSBoundParametersIn $psBoundParametersIn `
+                        -ParamName 'Param1' `
+                        -ResourceName 'xExchangeHelper.tests.ps1' `
+                        -ParamExistsInVersion @('2013', '2019')
 
                     $psBoundParametersIn.ContainsKey('Param1') | Should -Be $false
                     $psBoundParametersIn.ContainsKey('Param2') | Should -Be $true
@@ -2228,9 +2277,9 @@ try
 
             Context 'When Write-InvalidSettingVerbose is called' {
                 It 'Should call Write-Verbose, and the message should contain the input values' {
-                    $setting = 'TestSetting'
+                    $setting  = 'TestSetting'
                     $expected = 'ExpectedTestValue'
-                    $actual = 'ActualTestValue'
+                    $actual   = 'ActualTestValue'
 
                     Mock -CommandName Write-Verbose -ParameterFilter {$Message.Contains($setting) -and $Message.Contains($expected) -and $Message.Contains($actual)} -Verifiable
 
@@ -2268,7 +2317,10 @@ try
                             @{FunctionName = $functionName}
                         )
                     }
-                    Mock -CommandName Write-Verbose -ParameterFilter {$Message.Contains($functionName) -and $Message.Contains('Param1') -and $Message.Contains('123') -and $Message.Contains('Param2') -and $Message.Contains('321')} -Verifiable
+                    Mock `
+                        -CommandName Write-Verbose `
+                        -ParameterFilter {$Message.Contains($functionName) -and $Message.Contains('Param1') -and $Message.Contains('123') -and $Message.Contains('Param2') -and $Message.Contains('321')} `
+                        -Verifiable
 
                     Write-FunctionEntry -Parameters @{Param1 = 123; Param2 = 321}
                 }
@@ -2314,65 +2366,66 @@ try
         }
 
         Describe 'xExchangeHelper\Test-ExchangeSetting' -Tag 'Helper' {
-            AfterEach {
-                Assert-VerifiableMock
-            }
-
-            Context 'When Test-ExchangeSetting is called and the target type is not handled by the function' {
-                It 'Should throw an exception' {
-                    { Test-ExchangeSetting -Name 'Setting' -Type 'MissingType' -ExpectedValue 1 -ActualValue 2 -PSBoundParametersIn @{Setting = 1} } | Should -Throw -ExpectedMessage 'Type not found: MissingType'
-                }
-            }
-
             # Override functions that require types loaded by Exchange DLLs
             function Compare-TimespanToString {}
             function Compare-ByteQuantifiedSizeToString {}
             function Compare-SmtpAddressToString {}
             function Compare-PSCredential {}
 
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Test-ExchangeSetting is called and the target type is not handled by the function' {
+                It 'Should throw an exception' {
+                    { Test-ExchangeSetting -Name 'Setting' -Type 'MissingType' -ExpectedValue 1 -ActualValue 2 -PSBoundParametersIn @{Setting = 1} } | `
+                        Should -Throw -ExpectedMessage 'Type not found: MissingType'
+                }
+            }
+
             $simpleTypeFunctionComparisons = @(
                 @{
-                    Type = 'String'
+                    Type     = 'String'
                     Function = 'Compare-StringToString'
                 },
                 @{
-                    Type = 'Boolean'
+                    Type     = 'Boolean'
                     Function = 'Compare-BoolToBool'
                 },
                 @{
-                    Type = 'Array'
+                    Type     = 'Array'
                     Function = 'Compare-ArrayContent'
                 },
                 @{
-                    Type = 'Unlimited'
+                    Type     = 'Unlimited'
                     Function = 'Compare-UnlimitedToString'
                 },
                 @{
-                    Type = 'Timespan'
+                    Type     = 'Timespan'
                     Function = 'Compare-TimespanToString'
                 },
                 @{
-                    Type = 'ADObjectID'
+                    Type     = 'ADObjectID'
                     Function = 'Compare-ADObjectIdToSmtpAddressString'
                 },
                 @{
-                    Type = 'ByteQuantifiedSize'
+                    Type     = 'ByteQuantifiedSize'
                     Function = 'Compare-ByteQuantifiedSizeToString'
                 },
                 @{
-                    Type = 'IPAddress'
+                    Type     = 'IPAddress'
                     Function = 'Compare-IPAddressToString'
                 },
                 @{
-                    Type = 'IPAddresses'
+                    Type     = 'IPAddresses'
                     Function = 'Compare-IPAddressesToArray'
                 },
                 @{
-                    Type = 'SMTPAddress'
+                    Type     = 'SMTPAddress'
                     Function = 'Compare-SmtpAddressToString'
                 },
                 @{
-                    Type = 'PSCredential'
+                    Type     = 'PSCredential'
                     Function = 'Compare-PSCredential'
                 }
             )
@@ -2469,15 +2522,15 @@ try
             $nullNotNullComparisons = @(
                 @{
                     IPAddress = $null
-                    String = '192.168.0.1'
+                    String    = '192.168.0.1'
                 },
                 @{
                     IPAddress = [System.Net.IPAddress] '192.168.1.1'
-                    String = $null
+                    String    = $null
                 },
                 @{
                     IPAddress = [System.Net.IPAddress] '192.168.1.1'
-                    String = ''
+                    String    = ''
                 }
             )
 
@@ -2499,11 +2552,11 @@ try
             $nullNullComparisons = @(
                 @{
                     IPAddress = $null
-                    String = ''
+                    String    = ''
                 },
                 @{
                     IPAddress = $null
-                    String = $null
+                    String    = $null
                 }
             )
 
@@ -2525,18 +2578,18 @@ try
             $actualIPToStringComps = @(
                 @{
                     IPAddress = [System.Net.IPAddress] '192.168.1.1'
-                    String = '192.168.1.1'
-                    Result = $true
+                    String    = '192.168.1.1'
+                    Result    = $true
                 },
                 @{
                     IPAddress = [System.Net.IPAddress] '192.168.1.1'
-                    String = '192.168.01.01'
-                    Result = $true
+                    String    = '192.168.01.01'
+                    Result    = $true
                 },
                 @{
                     IPAddress = [System.Net.IPAddress] '192.168.1.2'
-                    String = '192.168.1.1'
-                    Result = $false
+                    String    = '192.168.1.1'
+                    Result    = $false
                 }
             )
 
@@ -2693,14 +2746,12 @@ try
                 Assert-VerifiableMock
             }
 
-            $password1 = ConvertTo-SecureString 'Password1' -AsPlainText -Force
+            $password1      = ConvertTo-SecureString 'Password1' -AsPlainText -Force
             $password1Upper = ConvertTo-SecureString 'PASSWORD1' -AsPlainText -Force
-            $password2 = ConvertTo-SecureString 'Password2' -AsPlainText -Force
 
-            $user1 = 'user1'
+            $user1      = 'user1'
             $user1Upper = 'USER1'
-            $user2 = 'user2'
-            $user2Upper = 'USER2'
+            $user2      = 'user2'
 
             $trueCredentialComps = @(
                 @{
@@ -2768,6 +2819,7 @@ try
         }
 
         Describe 'xExchangeHelper\Start-ExchangeScheduledTask' -Tag 'Helper' {
+            # Override functions with non-Mockable parameter types
             function Register-ScheduledTask {}
             function Set-ScheduledTask {}
             function Start-ScheduledTask {}
@@ -2777,10 +2829,10 @@ try
             }
 
             $functionArgs = @{
-                Path = 'ExeLocation'
-                Arguments = 'Args'
-                Credential = New-Object System.Management.Automation.PSCredential ('SomeUser', (ConvertTo-SecureString 'Password1' -AsPlainText -Force))
-                TaskName = 'TaskName'
+                Path             = 'ExeLocation'
+                Arguments        = 'Args'
+                Credential       = New-Object System.Management.Automation.PSCredential ('SomeUser', (ConvertTo-SecureString 'Password1' -AsPlainText -Force))
+                TaskName         = 'TaskName'
                 WorkingDirectory = 'WorkingLocation'
             }
 
@@ -2795,10 +2847,10 @@ try
                         return @{
                             Settings = @{
                                 ExecutionLimit = 'PT5M'
-                                Priority = 4
+                                Priority       = 4
                             }
                             TaskName = $functionArgs.TaskName
-                            State = 'Ready'
+                            State    = 'Ready'
                         }
                     }
                     Mock -CommandName Start-ScheduledTask -Verifiable

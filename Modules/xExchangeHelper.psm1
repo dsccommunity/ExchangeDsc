@@ -142,7 +142,11 @@ function New-RemoteExchangeSession
         }
     }
 
-    $returnValues = Invoke-DotSourcedScript -ScriptPath $remoteExchange -CommandsToExecuteInScope $commandToExecuteAfterDotSourcing -ParamsForCommandsToExecuteInScope $commandParamsToExecuteAfterDotSourcing -Verbose:$VerbosePreference
+    $returnValues = Invoke-DotSourcedScript `
+                        -ScriptPath $remoteExchange `
+                        -CommandsToExecuteInScope $commandToExecuteAfterDotSourcing `
+                        -ParamsForCommandsToExecuteInScope $commandParamsToExecuteAfterDotSourcing `
+                        -Verbose:$VerbosePreference
 
     if ($null -ne $returnValues -and $returnValues.ContainsKey('_NewExchangeRunspace'))
     {
@@ -1060,7 +1064,7 @@ function Convert-StringArrayToLowerCase
         $Array
     )
 
-    [System.String[]]$arrayOut = New-Object -TypeName 'System.String[]' -ArgumentList $Array.Count
+    [System.String[]] $arrayOut = New-Object -TypeName 'System.String[]' -ArgumentList $Array.Count
 
     for ($i = 0; $i -lt $Array.Count; $i++)
     {
@@ -1174,7 +1178,7 @@ function Test-ArrayElementsInSecondArray
     {
         $hasContents = $false
     }
-    elseif ($Array1.Count -gt $Array2.Count) #Array1 has more elements than Array2, so Array2 can't contain Array1
+    elseif ($Array1.Count -gt $Array2.Count) # Array1 has more elements than Array2, so Array2 can't contain Array1
     {
         $hasContents = $false
     }

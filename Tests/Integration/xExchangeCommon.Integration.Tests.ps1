@@ -94,7 +94,7 @@ if ($exchangeInstalled)
             It 'Should return true' {
                 [Microsoft.Exchange.Data.Unlimited`1[System.Int32]]$unlimitedInt32 = 10
 
-                { Compare-UnlimitedToString -Unlimited $unlimitedInt32 -String '10' } | Should -Be $true
+                Compare-UnlimitedToString -Unlimited $unlimitedInt32 -String '10' | Should -Be $true
             }
         }
 
@@ -102,7 +102,7 @@ if ($exchangeInstalled)
             It 'Should return false' {
                 [Microsoft.Exchange.Data.Unlimited`1[System.Int32]]$unlimitedInt32 = 10
 
-                { Compare-UnlimitedToString -Unlimited $unlimitedInt32 -String '100' } | Should -Be $true
+                Compare-UnlimitedToString -Unlimited $unlimitedInt32 -String '100' | Should -Be $false
             }
         }
     }
