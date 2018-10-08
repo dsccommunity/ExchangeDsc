@@ -121,14 +121,14 @@ function New-RemoteExchangeSession
     # Get local server FQDN
     $machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
     $serverName = $env:computername.ToLower()
-    $serverFQDN = $serverName + "." + $machineDomain
+    $serverFQDN = $serverName + '.' + $machineDomain
 
     # Override chatty banner, because chatty
     New-Alias Get-ExBanner Out-Null
     New-Alias Get-Tip Out-Null
 
     # Load built in Exchange functions, and create session
-    $exbin = Join-Path -Path ((Get-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\Setup).MsiInstallPath) -ChildPath "bin"
+    $exbin = Join-Path -Path ((Get-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\Setup).MsiInstallPath) -ChildPath 'bin'
     $remoteExchange = Join-Path -Path "$exbin" -ChildPath 'RemoteExchange.ps1'
 
     # Setup commands to run while the RemoteExchange.ps1 script is in scope
@@ -2272,7 +2272,7 @@ function Invoke-DotSourcedScript
 
         if (!$returnValues.ContainsKey($commandToExecute))
         {
-            $returnValues.Add($commandToExecute,$null)
+            $returnValues.Add($commandToExecute, $null)
         }
 
         $returnValues[$commandToExecute] = $returnValue

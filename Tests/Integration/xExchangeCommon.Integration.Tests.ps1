@@ -82,26 +82,23 @@ if ($exchangeInstalled)
             Calling Compare-UnlimitedToString when the Unlimited is of type [Microsoft.Exchange.Data.Unlimited`1[System.Int32]]
             and the string value contains a number throws an exception.
         #>
+
+        [Microsoft.Exchange.Data.Unlimited`1[System.Int32]] $unlimitedInt32 = 1000
+
         Context 'When Compare-UnlimitedToString is called using an Int32 Unlimited and a String Containing a Number' {
             It 'Should not throw an exception' {
-                [Microsoft.Exchange.Data.Unlimited`1[System.Int32]]$unlimitedInt32 = 1000
-
                 { Compare-UnlimitedToString -Unlimited $unlimitedInt32 -String '1000' } | Should -Not -Throw
             }
         }
 
         Context 'When Compare-UnlimitedToString is called using an Int32 Unlimited and a String Containing similar numbers' {
             It 'Should return true' {
-                [Microsoft.Exchange.Data.Unlimited`1[System.Int32]]$unlimitedInt32 = 10
-
-                Compare-UnlimitedToString -Unlimited $unlimitedInt32 -String '10' | Should -Be $true
+                Compare-UnlimitedToString -Unlimited $unlimitedInt32 -String '1000' | Should -Be $true
             }
         }
 
         Context 'When Compare-UnlimitedToString is called using an Int32 Unlimited and a String Containing different numbers' {
             It 'Should return false' {
-                [Microsoft.Exchange.Data.Unlimited`1[System.Int32]]$unlimitedInt32 = 10
-
                 Compare-UnlimitedToString -Unlimited $unlimitedInt32 -String '100' | Should -Be $false
             }
         }
