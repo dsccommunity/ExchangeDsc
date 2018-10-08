@@ -265,13 +265,18 @@ function Get-ExchangeVersionYear
             {
                 switch ($installedVersionDetails.VersionMinor)
                 {
-                    0 {
+                    0
+                    {
                         $version = '2013'
                     }
-                    1 {
+
+                    1
+                    {
                         $version = '2016'
                     }
-                    2 {
+
+                    2
+                    {
                         $version = '2019'
                     }
                 }

@@ -1020,6 +1020,8 @@ try
             Context 'When DetailedInstalledVersion is called and a valid key is returned by Get-ExchangeUninstallKey' {
                 It 'Should return custom object with VersionMajor and VersionMinor properties' {
                     Mock -CommandName Get-ExchangeUninstallKey -Verifiable -MockWith { return @{Name = 'SomeKeyName'} }
+                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter {$Name -eq 'DisplayVersion'} -MockWith {
+                        return [PSCustomObject] @{DisplayVersion = '15.1.1531.13'} }
                     Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter {$Name -eq 'VersionMajor'} -MockWith {
                         return [PSCustomObject] @{VersionMajor = 15} }
                     Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter {$Name -eq 'VersionMinor'} -MockWith {
@@ -1030,6 +1032,8 @@ try
 
                     $installedVersionDetails.VersionMajor | Should -Be 15
                     $installedVersionDetails.VersionMinor | Should -Be 1
+                    $installedVersionDetails.VersionBuild | Should -Be 1531
+                    $installedVersionDetails.DisplayVersion | Should -Be '15.1.1531.13'
                 }
             }
 
