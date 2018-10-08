@@ -417,6 +417,21 @@ try
                     Invoke-DotSourcedScript -ScriptPath 'Get-Process' -SnapinsToRemove 'SomeSnapin' | Out-Null
                 }
             }
+
+            Context 'When Invoke-DotSourcedScript is called and CommandsToExecuteInScope is passed' {
+                It 'Should execute the commands and return values from those commands' {
+                    $commandToExecuteAfterDotSourcing = @('Get-Process')
+                    $commandParamsToExecuteAfterDotSourcing = @{
+                        'Get-Process' = @{
+                            Name = 'svchost'
+                        }
+                    }
+
+                    $returnValues = Invoke-DotSourcedScript -ScriptPath 'Start-Sleep' -ScriptParams @{Seconds=0} -CommandsToExecuteInScope $commandToExecuteAfterDotSourcing -ParamsForCommandsToExecuteInScope $commandParamsToExecuteAfterDotSourcing
+
+                    $returnValues.Count -gt 0 -and $returnValues.ContainsKey('Get-Process') -and $null -ne $returnValues['Get-Process'] | Should -Be $true
+                }
+            }
         }
 
         Describe 'xExchangeHelper\Remove-HelperSnapin' -Tag 'Helper' {
@@ -623,6 +638,7 @@ try
                             Watermark         = $Watermark
                         }
                     }
+                    Mock -CommandName Write-Warning -Verifiable
 
                     Test-ExchangeSetupPartiallyCompleted | Should -Be $true
                 }
@@ -1356,10 +1372,11 @@ try
                             MsiInstallPath = 'C:\Program Files\Microsoft\Exchange Server\V15\'
                         }
                     }
-                    Mock -CommandName Invoke-DotSourcedScript -Verifiable
-                    Mock -CommandName _NewExchangeRunspace -Verifiable -MockWith {
+                    Mock -CommandName Invoke-DotSourcedScript -Verifiable -MockWith {
                         return @{
-                            Name = 'SomeSession'
+                            '_NewExchangeRunspace' = @{
+                                Name = 'NewSession'
+                            }
                         }
                     }
 
@@ -1368,25 +1385,39 @@ try
             }
         }
 
-        <#Describe 'xExchangeHelper\Import-RemoteExchangeSession' -Tag 'Helper' {
+        Describe 'xExchangeHelper\Import-RemoteExchangeSession' -Tag 'Helper' {
+            function Import-PSSession {}
+            function Import-Module {}
+
             AfterEach {
                 Assert-VerifiableMock
             }
 
-                    $commandToLoad = 'Get-ExchangeServer'
-                    $commandsToLoad = @($commandToLoad)
+            $commandToLoad = 'Get-ExchangeServer'
+            $commandsToLoad = @($commandToLoad)
 
             Context 'When Import-RemoteExchangeSession is called and CommandsToLoad is passed' {
                 It 'Should import the session and load the commands' {
-                    Mock -CommandName Import-PSSession -Verifiable -MockWith { return $true }
-                    Mock -CommandName Import-Module
+                    Mock -CommandName Import-PSSession -Verifiable -ParameterFilter {$CommandsToLoad.Count -eq 1 -and $CommandsToLoad[0] -like $commandToLoad} -MockWith { return $true }
+                    Mock -CommandName Import-Module -Verifiable
 
                     Import-RemoteExchangeSession -Session 'SomeSession' -CommandsToLoad $commandsToLoad
                 }
             }
-        }#>
+
+            Context 'When Import-RemoteExchangeSession is called and CommandsToLoad is not passed' {
+                It 'Should import the session and load all commands' {
+                    Mock -CommandName Import-PSSession -Verifiable -ParameterFilter {$CommandsToLoad.Count -eq 1 -and $CommandsToLoad[0] -like '*'} -MockWith { return $true }
+                    Mock -CommandName Import-Module -Verifiable
+
+                    Import-RemoteExchangeSession -Session 'SomeSession'
+                }
+            }
+        }
 
         Describe 'xExchangeHelper\Remove-RemoteExchangeSession' -Tag 'Helper' {
+            function Remove-PSSession {}
+
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -1394,9 +1425,1549 @@ try
             Context 'When Remove-RemoteExchangeSession is called and sessions exist' {
                 It 'Should remove the sessions' {
                     Mock -CommandName Get-ExistingRemoteExchangeSession -Verifiable -MockWith { return 'SomeSession' }
-                    Mock -CommandName Remove-PSSession
+                    Mock -CommandName Remove-PSSession -Verifiable
 
                     Remove-RemoteExchangeSession
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Compare-StringToString' -Tag 'Helper' {
+            $trueCaseInsensitiveCases = @(
+                @{
+                    String1 = 'aBc'
+                    String2 = 'AbC'
+                }
+                @{
+                    String1 = 'abc'
+                    String2 = 'Abc'
+                }
+                @{
+                    String1 = ''
+                    String2 = ''
+                }
+                @{
+                    String1 = ''
+                    String2 = $null
+                }
+                @{
+                    String1 = $null
+                    String2 = $null
+                }
+            )
+
+            Context 'When Compare-StringToString is called with the Ignore case switch and the strings are like eachother' {
+                It 'Should return true' -TestCases $trueCaseInsensitiveCases {
+                    param
+                    (
+                        [System.String]
+                        $String1,
+
+                        [System.String]
+                        $String2
+                    )
+
+                    Compare-StringToString -String1 $String1 -String2 $String2 -IgnoreCase | Should -Be $true
+                }
+            }
+
+            $trueCaseSensitiveCases = @(
+                @{
+                    String1 = 'ABC'
+                    String2 = 'ABC'
+                }
+                @{
+                    String1 = 'abc'
+                    String2 = 'abc'
+                }
+            )
+
+            Context 'When Compare-StringToString is called without the Ignore case switch and the strings are equal to eachother' {
+                It 'Should return true' -TestCases $trueCaseSensitiveCases {
+                    param
+                    (
+                        [System.String]
+                        $String1,
+
+                        [System.String]
+                        $String2
+                    )
+
+                    Compare-StringToString -String1 $String1 -String2 $String2 | Should -Be $true
+                }
+            }
+
+            $falseCaseInsensitiveCases = @(
+                @{
+                    String1 = 'aBcd'
+                    String2 = 'AbC'
+                }
+                @{
+                    String1 = 'abcd'
+                    String2 = 'Abc'
+                }
+            )
+
+            Context 'When Compare-StringToString is called with the Ignore case switch and the strings are not like eachother' {
+                It 'Should return false' -TestCases $falseCaseInsensitiveCases {
+                    param
+                    (
+                        [System.String]
+                        $String1,
+
+                        [System.String]
+                        $String2
+                    )
+
+                    Compare-StringToString -String1 $String1 -String2 $String2 -IgnoreCase | Should -Be $false
+                }
+            }
+
+            $falseCaseSensitiveCases = @(
+                @{
+                    String1 = 'abc'
+                    String2 = 'ABC'
+                }
+            )
+
+            Context 'When Compare-StringToString is called without the Ignore case switch and the strings are not equal to eachother' {
+                It 'Should return false' -TestCases $falseCaseSensitiveCases {
+                    param
+                    (
+                        [System.String]
+                        $String1,
+
+                        [System.String]
+                        $String2
+                    )
+
+                    Compare-StringToString -String1 $String1 -String2 $String2 | Should -Be $false
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Compare-BoolToBool' -Tag 'Helper' {
+            $trueBooleanTestCases = @(
+                @{
+                    Bool1 = $true
+                    Bool2 = $true
+                }
+                @{
+                    Bool1 = $false
+                    Bool2 = $false
+                }
+                @{
+                    Bool1 = $null
+                    Bool2 = $false
+                }
+                @{
+                    Bool1 = $false
+                    Bool2 = $null
+                }
+            )
+
+            Context 'When Compare-BoolToBool is called and both Booleans are like each other' {
+                It 'Should return true' -TestCases $trueBooleanTestCases {
+                    param
+                    (
+                        [Nullable[System.Boolean]]
+                        $Bool1,
+
+                        [Nullable[System.Boolean]]
+                        $Bool2
+                    )
+
+                    Compare-BoolToBool -Bool1 $Bool1 -Bool2 $Bool2 | Should -Be $true
+                }
+            }
+
+            $falseBooleanTestCases = @(
+                @{
+                    Bool1 = $true
+                    Bool2 = $false
+                }
+                @{
+                    Bool1 = $false
+                    Bool2 = $true
+                }
+                @{
+                    Bool1 = $true
+                    Bool2 = $null
+                }
+                @{
+                    Bool1 = $null
+                    Bool2 = $true
+                }
+            )
+
+            Context 'When Compare-BoolToBool is called and both Booleans are not like each other' {
+                It 'Should return false' -TestCases $falseBooleanTestCases {
+                    param
+                    (
+                        [Nullable[System.Boolean]]
+                        $Bool1,
+
+                        [Nullable[System.Boolean]]
+                        $Bool2
+                    )
+
+                    Compare-BoolToBool -Bool1 $Bool1 -Bool2 $Bool2 | Should -Be $false
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Compare-UnlimitedToString' -Tag 'Helper' {
+            function Compare-ByteQuantifiedSizeToString {}
+
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            $unlimitedUnlimited = @{
+                IsUnlimited = $true
+            }
+
+            Context 'When Compare-UnlimitedToString is called and the Unlimited is set to Unlimited' {
+                It 'Should call Compare-StringToString, passing Unlimited as the first string, and the input string as the second' {
+                    Mock -CommandName Compare-StringToString -ParameterFilter {$String2 -eq 'unlimitedUnlimitedComp'} -Verifiable -MockWith { return $true }
+
+                    Compare-UnlimitedToString -Unlimited $unlimitedUnlimited -String 'unlimitedUnlimitedComp'
+                }
+            }
+
+            $unlimitedInt32 = @{
+                IsUnlimited = $false
+                Value       = [System.Int32] 1
+            }
+
+            Context 'When Compare-UnlimitedToString is called, the Unlimited is not set to Unlimited, and the string equals Unlimited' {
+                It 'Should return false' {
+                    Mock -CommandName Compare-StringToString -ParameterFilter {$String2 -eq 'Unlimited'} -Verifiable -MockWith { return $true }
+
+                    Compare-UnlimitedToString -Unlimited $unlimitedInt32 -String 'Unlimited' | Should -Be $false
+                }
+            }
+
+            Context 'When Compare-UnlimitedToString is called, the Unlimited is not set to Unlimited, and the Unlimited Value is an Int32' {
+                It 'Should call Compare-StringToString, passing the Unlimited value as the first string, and the input string as the second' {
+                    Mock -CommandName Compare-StringToString -ParameterFilter {$String1 -eq $unlimitedInt32.Value.ToString() -and $String2 -eq '2'} -Verifiable -MockWith { return $true }
+
+                    Compare-UnlimitedToString -Unlimited $unlimitedInt32 -String '2'
+                }
+            }
+
+            $unlimitedOther = @{
+                IsUnlimited = $false
+            }
+
+            Context 'When Compare-UnlimitedToString is called, the Unlimited is not set to Unlimited, and the Unlimited Value is not an Int32' {
+                It 'Should call Compare-ByteQuantifiedSizeToString' {
+                    Mock -CommandName Compare-StringToString -Verifiable -MockWith { return $false }
+                    Mock -CommandName Compare-ByteQuantifiedSizeToString -Verifiable
+
+                    Compare-UnlimitedToString -Unlimited $unlimitedOther -String '2'
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Convert-StringToArray' -Tag 'Helper' {
+            Context 'When Convert-StringToArray is called, the string does not contain the separator, and does not contain whitespace' {
+                It 'Should return the same string' {
+                    $outputArray = Convert-StringToArray -StringIn 'Test' -Separator ','
+
+                    $outputArray.Count -eq 1 -and $outputArray[0] -ceq 'Test'
+                }
+            }
+
+            Context 'When Convert-StringToArray is called, the string does not contain the separator, and does contains whitespace' {
+                It 'Should return the string without whitespace' {
+                    $outputArray = Convert-StringToArray -StringIn ' Test ' -Separator ','
+
+                    $outputArray.Count -eq 1 -and $outputArray[0] -ceq 'Test'
+                }
+            }
+
+            Context 'When Convert-StringToArray is called, the string contains a separator, and substrings have a mix of whitespace and no whitespace' {
+                It 'Should return the split, trimmed strings' {
+                    $outputArray = Convert-StringToArray -StringIn 'Abc, deF, ghi ,jkl ,mno' -Separator ','
+
+                    $outputArray.Contains('Abc') | Should -Be $true
+                    $outputArray.Contains('deF') | Should -Be $true
+                    $outputArray.Contains('ghi') | Should -Be $true
+                    $outputArray.Contains('jkl') | Should -Be $true
+                    $outputArray.Contains('mno') | Should -Be $true
+                }
+            }
+
+            Context 'When Convert-StringToArray is called with a null string' {
+                It 'Should return an array with 1 empty string' {
+                    $outputArray = Convert-StringToArray -StringIn $null -Separator ','
+
+                    $outputArray.Count -eq 1 -and [String]::IsNullOrEmpty($outputArray[0]) | Should -Be $true
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Convert-StringArrayToLowerCase' -Tag 'Helper' {
+            Context 'When Convert-StringArrayToLowerCase is called' {
+                It 'All input array members show be converted to lower case, and null members should be converted to empty strings' {
+                    [System.String[]] $inputArray = @('ABC', 'dEf', $null, 'GhI', 'jkl', '', 'mnO')
+
+                    $outputArray = Convert-StringArrayToLowerCase -Array $inputArray
+
+                    $outputArray.Contains('abc') | Should -Be $true
+                    $outputArray.Contains('def') | Should -Be $true
+                    $outputArray.Contains('ghi') | Should -Be $true
+                    $outputArray.Contains('jkl') | Should -Be $true
+                    $outputArray.Contains('mno') | Should -Be $true
+
+                    $outputArray[2] | Should -Be ''
+                    $outputArray[5] | Should -Be ''
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Compare-ArrayContent' -Tag 'Helper' {
+            $trueCaseInsensitiveCases = @(
+                @{
+                    Array1Param = @('aBc', '', 'deF')
+                    Array1Lower = @('abc', '', 'def')
+                    Array2Param = @('', 'DEF', 'AbC')
+                    Array2Lower = @('', 'def', 'abc')
+                }
+                @{
+                    Array1Param = @()
+                    Array1Lower = @()
+                    Array2Param = @()
+                    Array2Lower = @()
+                }
+                @{
+                    Array1Param = @('abc', 'def')
+                    Array1Lower = @('abc', 'def')
+                    Array2Param = @('abc', 'def')
+                    Array2Lower = @('abc', 'def')
+                }
+            )
+
+            Context 'When Compare-ArrayContent is called with IgnoreCase and the arrays contain the same contents' {
+                It 'Should return true' -TestCases $trueCaseInsensitiveCases {
+                    param
+                    (
+                        [System.String[]]
+                        $Array1Param,
+
+                        [System.String[]]
+                        $Array1Lower,
+
+                        [System.String[]]
+                        $Array2Param,
+
+                        [System.String[]]
+                        $Array2Lower
+                    )
+
+                    Mock -CommandName Convert-StringArrayToLowerCase -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 )} -Verifiable -MockWith {
+                        return $Array1Lower
+                    }
+                    Mock -CommandName Convert-StringArrayToLowerCase -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 )} -Verifiable -MockWith {
+                        return $Array2Lower
+                    }
+
+                    Compare-ArrayContent -Array1 $Array1Param -Array2 $Array2Param -IgnoreCase | Should -Be $true
+                }
+            }
+
+            $falseCaseInsensitiveCases = @(
+                @{
+                    Array1Param = @('aBc', '', 'deF')
+                    Array1Lower = @('abc', '', 'def')
+                    Array2Param = @('DEF', 'AbC')
+                    Array2Lower = @('def', 'abc')
+                }
+                @{
+                    Array1Param = @()
+                    Array1Lower = @()
+                    Array2Param = @('')
+                    Array2Lower = @('')
+                }
+                @{
+                    Array1Param = @('abc', 'def')
+                    Array1Lower = @('abc', 'def')
+                    Array2Param = @('abc', 'def', 'GHI')
+                    Array2Lower = @('abc', 'def', 'ghi')
+                }
+            )
+
+            Context 'When Compare-ArrayContent is called with IgnoreCase and the arrays do not contain the same contents' {
+                It 'Should return false' -TestCases $falseCaseInsensitiveCases {
+                    param
+                    (
+                        [System.String[]]
+                        $Array1Param,
+
+                        [System.String[]]
+                        $Array1Lower,
+
+                        [System.String[]]
+                        $Array2Param,
+
+                        [System.String[]]
+                        $Array2Lower
+                    )
+
+                    Mock -CommandName Convert-StringArrayToLowerCase -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 )} -Verifiable -MockWith {
+                        return $Array1Lower
+                    }
+                    Mock -CommandName Convert-StringArrayToLowerCase -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 )} -Verifiable -MockWith {
+                        return $Array2Lower
+                    }
+
+                    Compare-ArrayContent -Array1 $Array1Param -Array2 $Array2Param -IgnoreCase | Should -Be $false
+                }
+            }
+
+            $trueCaseSensitiveCases = @(
+                @{
+                    Array1 = @('aBc', '', 'deF')
+                    Array2 = @('', 'aBc', 'deF')
+                }
+                @{
+                    Array1 = @()
+                    Array2 = @()
+                }
+                @{
+                    Array1 = @('abc', 'def')
+                    Array2 = @('def', 'abc')
+                }
+            )
+
+            Context 'When Compare-ArrayContent is called without IgnoreCase and the arrays contain the same contents' {
+                It 'Should return true' -TestCases $trueCaseSensitiveCases {
+                    param
+                    (
+                        [System.String[]]
+                        $Array1,
+
+                        [System.String[]]
+                        $Array2
+                    )
+
+                    Mock -CommandName Convert-StringArrayToLowerCase
+
+                    Compare-ArrayContent -Array1 $Array1 -Array2 $Array2 | Should -Be $true
+
+                    Assert-MockCalled Convert-StringArrayToLowerCase -Times 0
+                }
+            }
+
+            $falseCaseSensitiveCases = @(
+                @{
+                    Array1 = @('aBc', '', 'deF')
+                    Array2 = @('aBc', 'deF')
+                }
+                @{
+                    Array1 = @('')
+                    Array2 = @()
+                }
+                @{
+                    Array1 = @('abc', 'def')
+                    Array2 = @('ABC', 'DEF')
+                }
+                @{
+                    Array1 = @('abc', 'def')
+                    Array2 = @('DEF', 'abc')
+                }
+            )
+
+            Context 'When Compare-ArrayContent is called without IgnoreCase and the arrays do not contain the same contents' {
+                It 'Should return false' -TestCases $falseCaseSensitiveCases {
+                    param
+                    (
+                        [System.String[]]
+                        $Array1,
+
+                        [System.String[]]
+                        $Array2
+                    )
+
+                    Mock -CommandName Convert-StringArrayToLowerCase
+
+                    Compare-ArrayContent -Array1 $Array1 -Array2 $Array2 | Should -Be $false
+
+                    Assert-MockCalled Convert-StringArrayToLowerCase -Times 0
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Test-ArrayElementsInSecondArray' -Tag 'Helper' {
+            $trueCaseInsensitiveCases = @(
+                @{
+                    Array1Param = @('aBc', '', 'deF')
+                    Array1Lower = @('abc', '', 'def')
+                    Array2Param = @('', 'DEF', 'AbC')
+                    Array2Lower = @('', 'def', 'abc')
+                }
+                @{
+                    Array1Param = @()
+                    Array1Lower = @()
+                    Array2Param = @()
+                    Array2Lower = @()
+                }
+                @{
+                    Array1Param = @()
+                    Array1Lower = @()
+                    Array2Param = @('ABC')
+                    Array2Lower = @('abc')
+                }
+                @{
+                    Array1Param = @('abc', 'def')
+                    Array1Lower = @('abc', 'def')
+                    Array2Param = @('abc', 'GHI', 'def')
+                    Array2Lower = @('abc', 'ghi', 'def')
+                }
+            )
+
+            Context 'When Test-ArrayElementsInSecondArray is called with IgnoreCase and the arrays contain the same contents' {
+                It 'Should return true' -TestCases $trueCaseInsensitiveCases {
+                    param
+                    (
+                        [System.String[]]
+                        $Array1Param,
+
+                        [System.String[]]
+                        $Array1Lower,
+
+                        [System.String[]]
+                        $Array2Param,
+
+                        [System.String[]]
+                        $Array2Lower
+                    )
+
+                    Mock -CommandName Convert-StringArrayToLowerCase -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 )} -Verifiable -MockWith {
+                        return $Array1Lower
+                    }
+                    Mock -CommandName Convert-StringArrayToLowerCase -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 )} -Verifiable -MockWith {
+                        return $Array2Lower
+                    }
+
+                    Test-ArrayElementsInSecondArray -Array1 $Array1Param -Array2 $Array2Param -IgnoreCase | Should -Be $true
+                }
+            }
+
+            $falseCaseInsensitiveCases = @(
+                @{
+                    Array1Param = @('ABC')
+                    Array1Lower = @('abc')
+                    Array2Param = @()
+                    Array2Lower = @()
+                }
+                @{
+                    Array1Param = @('abc', 'GHI', 'def')
+                    Array1Lower = @('abc', 'ghi', 'def')
+                    Array2Param = @('abc', 'def')
+                    Array2Lower = @('abc', 'def')
+                }
+            )
+
+            Context 'When Test-ArrayElementsInSecondArray is called with IgnoreCase and the arrays do not contain the same contents' {
+                It 'Should return false' -TestCases $falseCaseInsensitiveCases {
+                    param
+                    (
+                        [System.String[]]
+                        $Array1Param,
+
+                        [System.String[]]
+                        $Array1Lower,
+
+                        [System.String[]]
+                        $Array2Param,
+
+                        [System.String[]]
+                        $Array2Lower
+                    )
+
+                    Mock -CommandName Convert-StringArrayToLowerCase -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 )} -Verifiable -MockWith {
+                        return $Array1Lower
+                    }
+                    Mock -CommandName Convert-StringArrayToLowerCase -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 )} -Verifiable -MockWith {
+                        return $Array2Lower
+                    }
+
+                    Test-ArrayElementsInSecondArray -Array1 $Array1Param -Array2 $Array2Param -IgnoreCase | Should -Be $false
+                }
+            }
+
+            $trueCaseSensitiveCases = @(
+                @{
+                    Array1 = @('aBc', '', 'deF')
+                    Array2 = @('', 'aBc', 'deF')
+                }
+                @{
+                    Array1 = @()
+                    Array2 = @()
+                }
+                @{
+                    Array1 = @('abc', 'def')
+                    Array2 = @('def', 'abc', '', 'GHI')
+                }
+            )
+
+            Context 'When Test-ArrayElementsInSecondArray is called without IgnoreCase and the arrays contain the same contents' {
+                It 'Should return true' -TestCases $trueCaseSensitiveCases {
+                    param
+                    (
+                        [System.String[]]
+                        $Array1,
+
+                        [System.String[]]
+                        $Array2
+                    )
+
+                    Mock -CommandName Convert-StringArrayToLowerCase
+
+                    Test-ArrayElementsInSecondArray -Array1 $Array1 -Array2 $Array2 | Should -Be $true
+
+                    Assert-MockCalled Convert-StringArrayToLowerCase -Times 0
+                }
+            }
+
+            $falseCaseSensitiveCases = @(
+                @{
+                    Array1 = @('aBc', '', 'deF')
+                    Array2 = @('', 'ABC', 'deF')
+                }
+                @{
+                    Array1 = @('ABC')
+                    Array2 = @('abc')
+                }
+                @{
+                    Array1 = @('def', 'abc', '', 'GHI')
+                    Array2 = @('abc', 'def')
+                }
+            )
+
+            Context 'When Test-ArrayElementsInSecondArray is called without IgnoreCase and the arrays do not contain the same contents' {
+                It 'Should return true' -TestCases $falseCaseSensitiveCases {
+                    param
+                    (
+                        [System.String[]]
+                        $Array1,
+
+                        [System.String[]]
+                        $Array2
+                    )
+
+                    Mock -CommandName Convert-StringArrayToLowerCase
+
+                    Test-ArrayElementsInSecondArray -Array1 $Array1 -Array2 $Array2 | Should -Be $false
+
+                    Assert-MockCalled Convert-StringArrayToLowerCase -Times 0
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Add-ToPSBoundParametersFromHashtable' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Add-ToPSBoundParametersFromHashtable is called, a parameter is added, and a parameter is changed' {
+                It 'Should add a new parameter and change the existing parameter' {
+                    $param1 = 'abc'
+                    $param2 = $null
+                    $param2new = 'notnull'
+                    $param3 = 'def'
+                    $param4 = 'ghi'
+
+                    $psBoundParametersIn = @{
+                        Param1 = $param1
+                        Param2 = $param2
+                        Param3 = $param3
+                    }
+
+                    $paramsToAdd = @{
+                        Param2 = $param2new
+                        Param4 = $param4
+                    }
+
+                    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $psBoundParametersIn -ParamsToAdd $paramsToAdd
+
+                    $psBoundParametersIn.ContainsKey('Param1') -and $psBoundParametersIn['Param1'] -eq $param1 | Should -Be $true
+                    $psBoundParametersIn.ContainsKey('Param2') -and $psBoundParametersIn['Param2'] -eq $param2new | Should -Be $true
+                    $psBoundParametersIn.ContainsKey('Param3') -and $psBoundParametersIn['Param3'] -eq $param3 | Should -Be $true
+                    $psBoundParametersIn.ContainsKey('Param4') -and $psBoundParametersIn['Param4'] -eq $param4 | Should -Be $true
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Remove-FromPSBoundParametersUsingHashtable' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Remove-FromPSBoundParametersUsingHashtable is called and both ParamsToKeep and ParamsToRemove are specified' {
+                It 'Should throw an exception' {
+                    { Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn @{} -ParamsToKeep @('Param1') -ParamsToRemove @('Param2') } | Should -Throw -ExpectedMessage 'Remove-FromPSBoundParametersUsingHashtable does not support using both ParamsToKeep and ParamsToRemove'
+                }
+            }
+
+            Context 'When Remove-FromPSBoundParametersUsingHashtable is called with ParamsToKeep' {
+                It 'Should remove any parameter not specified in ParamsToKeep' {
+                    Mock -CommandName Convert-StringArrayToLowerCase -Verifiable -MockWith { return @('param1', 'param2') }
+
+                    $psBoundParametersIn = @{
+                        Param1 = 1
+                        Param2 = 2
+                        Param3 = 3
+                    }
+
+                    $paramsToKeep = @('Param1', 'Param2')
+
+                    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $psBoundParametersIn -ParamsToKeep $paramsToKeep
+
+                    $psBoundParametersIn.ContainsKey('Param1') | Should -Be $true
+                    $psBoundParametersIn.ContainsKey('Param2') | Should -Be $true
+                    $psBoundParametersIn.ContainsKey('Param3') | Should -Be $false
+                }
+            }
+
+            Context 'When Remove-FromPSBoundParametersUsingHashtable is called with ParamsToRemove' {
+                It 'Should remove any parameter specified in ParamsToRemove' {
+                    $psBoundParametersIn = @{
+                        Param1 = 1
+                        Param2 = 2
+                        Param3 = 3
+                    }
+
+                    $paramsToRemove = @(
+                        'Param1',
+                        'param2'
+                    )
+
+                    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $psBoundParametersIn -ParamsToRemove $paramsToRemove
+
+                    $psBoundParametersIn.ContainsKey('Param1') | Should -Be $false
+                    $psBoundParametersIn.ContainsKey('Param2') | Should -Be $false
+                    $psBoundParametersIn.ContainsKey('Param3') | Should -Be $true
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Remove-NotApplicableParamsForVersion' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Remove-NotApplicableParamsForVersion is called and the parameter exists in the current Exchange version' {
+                It 'Should not modify the input PSBoundParameters' {
+                    Mock -CommandName Get-ExchangeVersion -Verifiable -MockWith {
+                        return '2016'
+                    }
+
+                    $psBoundParametersIn = @{
+                        Param1 = 1
+                        Param2 = 2
+                        Param3 = 3
+                    }
+
+                    Remove-NotApplicableParamsForVersion -PSBoundParametersIn $psBoundParametersIn -ParamName 'Param1' -ResourceName 'xExchangeHelper.tests.ps1' -ParamExistsInVersion @('2016', '2019')
+
+                    $psBoundParametersIn.ContainsKey('Param1') | Should -Be $true
+                    $psBoundParametersIn.ContainsKey('Param2') | Should -Be $true
+                    $psBoundParametersIn.ContainsKey('Param3') | Should -Be $true
+                }
+            }
+
+            Context 'When Remove-NotApplicableParamsForVersion is called and the parameter does not exist in the current Exchange version' {
+                It 'Should remove the parameter from the input PSBoundParameters, but leave the other parameters' {
+                    Mock -CommandName Get-ExchangeVersion -Verifiable -MockWith {
+                        return '2016'
+                    }
+                    Mock -CommandName Write-Warning -Verifiable
+
+                    $psBoundParametersIn = @{
+                        Param1 = 1
+                        Param2 = 2
+                        Param3 = 3
+                    }
+
+                    Remove-NotApplicableParamsForVersion -PSBoundParametersIn $psBoundParametersIn -ParamName 'Param1' -ResourceName 'xExchangeHelper.tests.ps1' -ParamExistsInVersion @('2013', '2019')
+
+                    $psBoundParametersIn.ContainsKey('Param1') | Should -Be $false
+                    $psBoundParametersIn.ContainsKey('Param2') | Should -Be $true
+                    $psBoundParametersIn.ContainsKey('Param3') | Should -Be $true
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Set-EmptyStringParamsToNull' -Tag 'Helper' {
+            Context 'When Set-EmptyStringParamsToNull is called and the input hashtable contains empty strings' {
+                It 'Should set the empty strings to null and not modify any other parameters' {
+                    $psBoundParametersIn = @{
+                        Param1 = 1
+                        Param2 = ''
+                        Param3 = 'abc'
+                        Param4 = $null
+                    }
+
+                    Set-EmptyStringParamsToNull -PSBoundParametersIn $psBoundParametersIn
+
+                    $psBoundParametersIn.ContainsKey('Param1') -and $psBoundParametersIn['Param1'] -eq 1 | Should -Be $true
+                    $psBoundParametersIn.ContainsKey('Param2') -and $psBoundParametersIn['Param2'] -eq $null | Should -Be $true
+                    $psBoundParametersIn.ContainsKey('Param3') -and $psBoundParametersIn['Param3'] -eq 'abc' | Should -Be $true
+                    $psBoundParametersIn.ContainsKey('Param4') -and $psBoundParametersIn['Param4'] -eq $null | Should -Be $true
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Write-InvalidSettingVerbose' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Write-InvalidSettingVerbose is called' {
+                It 'Should call Write-Verbose, and the message should contain the input values' {
+                    $setting = 'TestSetting'
+                    $expected = 'ExpectedTestValue'
+                    $actual = 'ActualTestValue'
+
+                    Mock -CommandName Write-Verbose -ParameterFilter {$Message.Contains($setting) -and $Message.Contains($expected) -and $Message.Contains($actual)} -Verifiable
+
+                    Write-InvalidSettingVerbose -SettingName $setting -ExpectedValue $expected -ActualValue $actual
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Write-FunctionEntry' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            $functionName = 'Test-Function'
+
+            Context 'When Write-FunctionEntry is called without parameters' {
+                It 'Should write the calling function name and no parameters' {
+                    Mock -CommandName Get-PSCallStack -Verifiable -MockWith {
+                        return @(
+                            @{FunctionName = 'Bottom-O-Stack'},
+                            @{FunctionName = $functionName}
+                        )
+                    }
+                    Mock -CommandName Write-Verbose -ParameterFilter {$Message.Contains($functionName) -and !$Message.Contains('parameters')} -Verifiable
+
+                    Write-FunctionEntry
+                }
+            }
+
+            Context 'When Write-FunctionEntry is called with parameters' {
+                It 'Should write the calling function name and parameters' {
+                    Mock -CommandName Get-PSCallStack -Verifiable -MockWith {
+                        return @(
+                            @{FunctionName = 'Bottom-O-Stack'},
+                            @{FunctionName = $functionName}
+                        )
+                    }
+                    Mock -CommandName Write-Verbose -ParameterFilter {$Message.Contains($functionName) -and $Message.Contains('Param1') -and $Message.Contains('123') -and $Message.Contains('Param2') -and $Message.Contains('321')} -Verifiable
+
+                    Write-FunctionEntry -Parameters @{Param1 = 123; Param2 = 321}
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Test-CmdletHasParameter' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Test-CmdletHasParameter is called and the cmdlet has the input parameter' {
+                It 'Should return true' {
+                    $targetParam = 'TestParam'
+
+                    Mock -CommandName Get-Command -Verifiable -MockWith {
+                        return @{
+                            Parameters = @{
+                                $targetParam = 1
+                            }
+                        }
+                    }
+
+                    Test-CmdletHasParameter -CmdletName 'TestCmdlet' -ParameterName $targetParam | Should -Be $true
+                }
+            }
+
+            Context 'When Test-CmdletHasParameter is called and the cmdlet does not have the input parameter' {
+                It 'Should return false' {
+                    $targetParam = 'TestParam'
+
+                    Mock -CommandName Get-Command -Verifiable -MockWith {
+                        return @{
+                            Parameters = @{
+                                SomeOtherParam = 1
+                            }
+                        }
+                    }
+
+                    Test-CmdletHasParameter -CmdletName 'TestCmdlet' -ParameterName $targetParam | Should -Be $false
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Test-ExchangeSetting' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Test-ExchangeSetting is called and the target type is not handled by the function' {
+                It 'Should throw an exception' {
+                    { Test-ExchangeSetting -Name 'Setting' -Type 'MissingType' -ExpectedValue 1 -ActualValue 2 -PSBoundParametersIn @{Setting = 1} } | Should -Throw -ExpectedMessage 'Type not found: MissingType'
+                }
+            }
+
+            # Override functions that require types loaded by Exchange DLLs
+            function Compare-TimespanToString {}
+            function Compare-ByteQuantifiedSizeToString {}
+            function Compare-SmtpAddressToString {}
+            function Compare-PSCredential {}
+
+            $simpleTypeFunctionComparisons = @(
+                @{
+                    Type = 'String'
+                    Function = 'Compare-StringToString'
+                },
+                @{
+                    Type = 'Boolean'
+                    Function = 'Compare-BoolToBool'
+                },
+                @{
+                    Type = 'Array'
+                    Function = 'Compare-ArrayContent'
+                },
+                @{
+                    Type = 'Unlimited'
+                    Function = 'Compare-UnlimitedToString'
+                },
+                @{
+                    Type = 'Timespan'
+                    Function = 'Compare-TimespanToString'
+                },
+                @{
+                    Type = 'ADObjectID'
+                    Function = 'Compare-ADObjectIdToSmtpAddressString'
+                },
+                @{
+                    Type = 'ByteQuantifiedSize'
+                    Function = 'Compare-ByteQuantifiedSizeToString'
+                },
+                @{
+                    Type = 'IPAddress'
+                    Function = 'Compare-IPAddressToString'
+                },
+                @{
+                    Type = 'IPAddresses'
+                    Function = 'Compare-IPAddressesToArray'
+                },
+                @{
+                    Type = 'SMTPAddress'
+                    Function = 'Compare-SmtpAddressToString'
+                },
+                @{
+                    Type = 'PSCredential'
+                    Function = 'Compare-PSCredential'
+                }
+            )
+
+            Context 'When Test-ExchangeSetting is called and the results are determined by a call to simple function, when the function returns true' {
+                It 'Should return true' -TestCases $simpleTypeFunctionComparisons {
+                    param
+                    (
+                        [System.String]
+                        $Type,
+
+                        [System.String]
+                        $Function
+                    )
+
+                    Mock -CommandName $Function -Verifiable -MockWith { return $true }
+
+                    Test-ExchangeSetting -Name 'Setting' -Type $Type -ExpectedValue 1 -ActualValue 2 -PSBoundParametersIn @{Setting = 1} | Should -Be $true
+                }
+            }
+
+            Context 'When Test-ExchangeSetting is called and the results are determined by a call to simple function, when the function returns false' {
+                It 'Should return false' -TestCases $simpleTypeFunctionComparisons {
+                    param
+                    (
+                        [System.String]
+                        $Type,
+
+                        [System.String]
+                        $Function
+                    )
+
+                    Mock -CommandName $Function -Verifiable -MockWith { return $false }
+                    Mock -CommandName Write-InvalidSettingVerbose -Verifiable
+
+                    Test-ExchangeSetting -Name 'Setting' -Type $Type -ExpectedValue 1 -ActualValue 2 -PSBoundParametersIn @{Setting = 1} | Should -Be $false
+                }
+            }
+
+            Context 'When Test-ExchangeSetting is called, the Type is Int, and the types are equal' {
+                It 'Should return true' {
+                    Test-ExchangeSetting -Name 'Setting' -Type 'Int' -ExpectedValue 1 -ActualValue 1 -PSBoundParametersIn @{Setting = 1} | Should -Be $true
+                }
+            }
+
+            Context 'When Test-ExchangeSetting is called, the Type is Int, and the types are not equal' {
+                It 'Should return false' {
+                    Mock -CommandName Write-InvalidSettingVerbose -Verifiable
+
+                    Test-ExchangeSetting -Name 'Setting' -Type 'Int' -ExpectedValue 1 -ActualValue 2 -PSBoundParametersIn @{Setting = 1} | Should -Be $false
+                }
+            }
+
+            Context 'When Test-ExchangeSetting is called, the Type is ExtendedProtection, the ExpectedValue array contains "none", and the ActualValue is empty' {
+                It 'Should return true' {
+                    Mock -CommandName Convert-StringArrayToLowerCase -Verifiable -MockWith { return @('none') }
+
+                    Test-ExchangeSetting -Name 'Setting' -Type 'ExtendedProtection' -ExpectedValue 1 -ActualValue '' -PSBoundParametersIn @{Setting = 1} | Should -Be $true
+                }
+            }
+
+            Context 'When Test-ExchangeSetting is called, the Type is ExtendedProtection, the ExpectedValue array contains "none", and the ActualValue is not empty' {
+                It 'Should return false' {
+                    Mock -CommandName Convert-StringArrayToLowerCase -Verifiable -MockWith { return @('none') }
+                    Mock -CommandName Write-InvalidSettingVerbose -Verifiable
+
+                    Test-ExchangeSetting -Name 'Setting' -Type 'ExtendedProtection' -ExpectedValue 1 -ActualValue 'notempty' -PSBoundParametersIn @{Setting = 1} | Should -Be $false
+                }
+            }
+
+            Context 'When Test-ExchangeSetting is called, the Type is ExtendedProtection, the ExpectedValue array does not contain "none", and Compare-ArrayContent returns true' {
+                It 'Should return true' {
+                    Mock -CommandName Compare-ArrayContent -Verifiable -MockWith { return $true }
+
+                    Test-ExchangeSetting -Name 'Setting' -Type 'ExtendedProtection' -ExpectedValue 1 -ActualValue '' -PSBoundParametersIn @{Setting = 1} | Should -Be $true
+                }
+            }
+
+            Context 'When Test-ExchangeSetting is called, the Type is ExtendedProtection, the ExpectedValue array does not contain "none", and Compare-ArrayContent returns false' {
+                It 'Should return false' {
+                    Mock -CommandName Compare-ArrayContent -Verifiable -MockWith { return $false }
+                    Mock -CommandName Write-InvalidSettingVerbose -Verifiable
+
+                    Test-ExchangeSetting -Name 'Setting' -Type 'ExtendedProtection' -ExpectedValue 1 -ActualValue '' -PSBoundParametersIn @{Setting = 1} | Should -Be $false
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Compare-IPAddressToString' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            $nullNotNullComparisons = @(
+                @{
+                    IPAddress = $null
+                    String = '192.168.0.1'
+                },
+                @{
+                    IPAddress = [System.Net.IPAddress] '192.168.1.1'
+                    String = $null
+                },
+                @{
+                    IPAddress = [System.Net.IPAddress] '192.168.1.1'
+                    String = ''
+                }
+            )
+
+            Context 'When Compare-IPAddressToString is called, the IPAddress is null and the string is not, or vice versa' {
+                It 'Should return false' -TestCases $nullNotNullComparisons {
+                    param
+                    (
+                        [System.Net.IPAddress]
+                        $IPAddress,
+
+                        [System.String]
+                        $String
+                    )
+
+                    Compare-IPAddressToString -IPAddress $IPAddress -String $String | Should -Be $false
+                }
+            }
+
+            $nullNullComparisons = @(
+                @{
+                    IPAddress = $null
+                    String = ''
+                },
+                @{
+                    IPAddress = $null
+                    String = $null
+                }
+            )
+
+            Context 'When Compare-IPAddressToString is called, the IPAddress is null and the string is null or empty' {
+                It 'Should return true' -TestCases $nullNullComparisons {
+                    param
+                    (
+                        [System.Net.IPAddress]
+                        $IPAddress,
+
+                        [System.String]
+                        $String
+                    )
+
+                    Compare-IPAddressToString -IPAddress $IPAddress -String $String | Should -Be $true
+                }
+            }
+
+            $actualIPToStringComps = @(
+                @{
+                    IPAddress = [System.Net.IPAddress] '192.168.1.1'
+                    String = '192.168.1.1'
+                    Result = $true
+                },
+                @{
+                    IPAddress = [System.Net.IPAddress] '192.168.1.1'
+                    String = '192.168.01.01'
+                    Result = $true
+                },
+                @{
+                    IPAddress = [System.Net.IPAddress] '192.168.1.2'
+                    String = '192.168.1.1'
+                    Result = $false
+                }
+            )
+
+            Context 'When Compare-IPAddressToString is called and the IPAddress and string are not empty' {
+                It 'Should compare properly' -TestCases $actualIPToStringComps {
+                    param
+                    (
+                        [System.Net.IPAddress]
+                        $IPAddress,
+
+                        [System.String]
+                        $String,
+
+                        [System.Boolean]
+                        $Result
+                    )
+
+                    Compare-IPAddressToString -IPAddress $IPAddress -String $String | Should -Be $Result
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Compare-IPAddressesToArray' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            $trueIPAddressArrayComps = @(
+                @{
+                    IPAddressObjects = @(
+                        [System.Net.IPAddress] '192.168.1.1',
+                        [System.Net.IPAddress] '192.168.1.2'
+                    )
+                    IPAddressStrings = @(
+                        '192.168.1.1'
+                        '192.168.1.2'
+                    )
+                },
+                @{
+                    IPAddressObjects = @(
+                        [System.Net.IPAddress] '192.168.1.1',
+                        [System.Net.IPAddress] '192.168.1.2'
+                    )
+                    IPAddressStrings = @(
+                        '192.168.1.02'
+                        '192.168.01.1'
+                    )
+                },
+                @{
+                    IPAddressObjects = @()
+                    IPAddressStrings = @()
+                }
+            )
+
+            Context 'When Compare-IPAddressesToArray is called and the IPAddress and String arrays contain similar contents' {
+                It 'Should return true' -TestCases $trueIPAddressArrayComps {
+                    param
+                    (
+                        [System.Net.IPAddress[]]
+                        $IPAddressObjects,
+
+                        [System.String[]]
+                        $IPAddressStrings
+                    )
+
+                    Compare-IPAddressesToArray -IPAddressObjects $IPAddressObjects -IPAddressStrings $IPAddressStrings | Should -Be $true
+                }
+            }
+
+            $falseIPAddressArrayComps = @(
+                @{
+                    IPAddressObjects = @(
+                        [System.Net.IPAddress] '192.168.1.1',
+                        [System.Net.IPAddress] '192.168.1.2'
+                    )
+                    IPAddressStrings = @(
+                        '192.168.1.1'
+                    )
+                },
+                @{
+                    IPAddressObjects = @(
+                        [System.Net.IPAddress] '192.168.1.1',
+                        [System.Net.IPAddress] '192.168.1.2'
+                    )
+                    IPAddressStrings = @(
+                        '192.168.1.03'
+                        '192.168.01.4'
+                    )
+                },
+                @{
+                    IPAddressObjects = @(
+                        [System.Net.IPAddress] '192.168.1.1',
+                        [System.Net.IPAddress] '192.168.1.2'
+                    )
+                    IPAddressStrings = @()
+                },
+                @{
+                    IPAddressObjects = @()
+                    IPAddressStrings = @(
+                        '192.168.1.03'
+                        '192.168.01.4'
+                    )
+                }
+            )
+
+            Context 'When Compare-IPAddressesToArray is called and the IPAddress and String arrays do not contain similar contents' {
+                It 'Should return false' -TestCases $falseIPAddressArrayComps {
+                    param
+                    (
+                        [System.Net.IPAddress[]]
+                        $IPAddressObjects,
+
+                        [System.String[]]
+                        $IPAddressStrings
+                    )
+
+                    Compare-IPAddressesToArray -IPAddressObjects $IPAddressObjects -IPAddressStrings $IPAddressStrings | Should -Be $false
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Restart-ExistingAppPool' -Tag 'Helper' {
+            #Allow override of IIS commands
+            function Get-WebAppPoolState {}
+            function Restart-WebAppPool {}
+
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Restart-ExistingAppPool is called and the application pool exists' {
+                It 'Should restart the application pool' {
+                    Mock -CommandName Get-WebAppPoolState -Verifiable -MockWith { return $true }
+                    Mock -CommandName Restart-WebAppPool -Verifiable
+
+                    Restart-ExistingAppPool -Name 'SomeAppPool'
+                }
+            }
+
+            Context 'When Restart-ExistingAppPool is called and the application pool does not exist' {
+                It 'Should not attempt to restart the application pool' {
+                    Mock -CommandName Get-WebAppPoolState -Verifiable -MockWith { return $null }
+                    Mock -CommandName Restart-WebAppPool
+
+                    Restart-ExistingAppPool -Name 'SomeAppPool'
+
+                    Assert-MockCalled -CommandName Restart-WebAppPool -Times 0
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Compare-PSCredential' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            $password1 = ConvertTo-SecureString 'Password1' -AsPlainText -Force
+            $password1Upper = ConvertTo-SecureString 'PASSWORD1' -AsPlainText -Force
+            $password2 = ConvertTo-SecureString 'Password2' -AsPlainText -Force
+
+            $user1 = 'user1'
+            $user1Upper = 'USER1'
+            $user2 = 'user2'
+            $user2Upper = 'USER2'
+
+            $trueCredentialComps = @(
+                @{
+                    Cred1 = New-Object System.Management.Automation.PSCredential ($user1, $password1)
+                    Cred2 = New-Object System.Management.Automation.PSCredential ($user1, $password1)
+                },
+                @{
+                    Cred1 = New-Object System.Management.Automation.PSCredential ($user1, $password1)
+                    Cred2 = New-Object System.Management.Automation.PSCredential ($user1Upper, $password1)
+                },
+                @{
+                    Cred1 = $null
+                    Cred2 = $null
+                }
+            )
+
+            Context 'When Compare-PSCredential is called and the credentials are equal' {
+                It 'Should return true' -TestCases $trueCredentialComps {
+                    param
+                    (
+                        [System.Management.Automation.PSCredential]
+                        $Cred1,
+
+                        [System.Management.Automation.PSCredential]
+                        $Cred2
+                    )
+
+                    Compare-PSCredential -Cred1 $Cred1 -Cred2 $Cred2 | Should -Be $true
+                }
+            }
+
+            $falseCredentialComps = @(
+                @{
+                    Cred1 = New-Object System.Management.Automation.PSCredential ($user1, $password1)
+                    Cred2 = New-Object System.Management.Automation.PSCredential ($user1, $password1Upper)
+                },
+                @{
+                    Cred1 = New-Object System.Management.Automation.PSCredential ($user1, $password1)
+                    Cred2 = New-Object System.Management.Automation.PSCredential ($user2, $password1)
+                },
+                @{
+                    Cred1 = New-Object System.Management.Automation.PSCredential ($user1, $password1)
+                    Cred2 = $null
+                },
+                @{
+                    Cred1 = $null
+                    Cred2 = New-Object System.Management.Automation.PSCredential ($user2, $password1)
+                }
+            )
+
+            Context 'When Compare-PSCredential is called and the credentials are not equal' {
+                It 'Should return false' -TestCases $falseCredentialComps {
+                    param
+                    (
+                        [System.Management.Automation.PSCredential]
+                        $Cred1,
+
+                        [System.Management.Automation.PSCredential]
+                        $Cred2
+                    )
+
+                    Compare-PSCredential -Cred1 $Cred1 -Cred2 $Cred2 | Should -Be $false
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Start-ExchangeScheduledTask' -Tag 'Helper' {
+            function Register-ScheduledTask {}
+            function Set-ScheduledTask {}
+            function Start-ScheduledTask {}
+
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            $functionArgs = @{
+                Path = 'ExeLocation'
+                Arguments = 'Args'
+                Credential = New-Object System.Management.Automation.PSCredential ('SomeUser', (ConvertTo-SecureString 'Password1' -AsPlainText -Force))
+                TaskName = 'TaskName'
+                WorkingDirectory = 'WorkingLocation'
+            }
+
+            $taskAction = @{ WorkingDirectory = $functionArgs.WorkingDirectory }
+
+            Context 'When Start-ExchangeScheduledTask is called and no errors are encountered while setting up the task' {
+                It 'Should register the task, set settings on it, and start it' {
+                    Mock -CommandName New-ScheduledTaskAction -Verifiable -MockWith { return $taskAction }
+                    Mock -CommandName Get-PreviousError -Verifiable -MockWith { return $Error }
+                    Mock -CommandName Assert-NoNewError -Verifiable
+                    Mock -CommandName Register-ScheduledTask -Verifiable -MockWith {
+                        return @{
+                            Settings = @{
+                                ExecutionLimit = 'PT5M'
+                                Priority = 4
+                            }
+                            TaskName = $functionArgs.TaskName
+                            State = 'Ready'
+                        }
+                    }
+                    Mock -CommandName Start-ScheduledTask -Verifiable
+
+                    Start-ExchangeScheduledTask @functionArgs
+                }
+            }
+
+            $badTaskCases = @(
+                @{
+                    Task = $null
+                },
+                @{
+                    Task = @{
+                        State = 'Bad'
+                    }
+                }
+            )
+            Context 'When Start-ExchangeScheduledTask is called and the task fails to registery correctly' {
+                It 'Should throw an exception' -TestCases $badTaskCases {
+                    param
+                    (
+                        [System.Collections.Hashtable]
+                        $Task
+                    )
+
+                    Mock -CommandName New-ScheduledTaskAction -Verifiable -MockWith { return $taskAction }
+                    Mock -CommandName Get-PreviousError -Verifiable -MockWith { return $Error }
+                    Mock -CommandName Assert-NoNewError -Verifiable
+                    Mock -CommandName Register-ScheduledTask -Verifiable -MockWith { return $Task }
+                    Mock -CommandName Start-ScheduledTask
+
+                    { Start-ExchangeScheduledTask @functionArgs } | Should -Throw -ExpectedMessage 'Failed to register Scheduled Task'
+
+                    Assert-MockCalled -CommandName Start-ScheduledTask -Times 0
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Test-ExtendedProtectionSPNList' -Tag 'Helper' {
+
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            $noneInvalidCases = @(
+                @{
+                    Flags      = @('None', 'AllowDotlessSPN')
+                    FlagsLower = @('none', 'allowdotlessspn')
+                },
+                @{
+                    Flags      = @('None', 'NoServiceNameCheck')
+                    FlagsLower = @('none', 'noservicenamecheck')
+                },
+                @{
+                    Flags      = @('None', 'Proxy')
+                    FlagsLower = @('none', 'proxy')
+                },
+                @{
+                    Flags      = @('None', 'ProxyCoHosting')
+                    FlagsLower = @('none', 'proxycohosting')
+                }
+            )
+
+            Context 'When Test-ExtendedProtectionSPNList is called with the none flag, as well as other flags' {
+                It 'Should return false' -TestCases $noneInvalidCases {
+                    param
+                    (
+                        [System.String[]]
+                        $Flags,
+
+                        [System.String[]]
+                        $FlagsLower
+                    )
+
+                    Mock -CommandName Convert-StringArrayToLowerCase -Verifiable -MockWith { return $FlagsLower }
+
+                    Test-ExtendedProtectionSPNList -SPNList @() -Flags $Flags | Should -Be $false
+                }
+            }
+
+            $invalidSPNCases = @(
+                @{
+                    SPNList    = @('http\backslash.local')
+                    Flags      = @()
+                    FlagsLower = @()
+                },
+                @{
+                    SPNList    = @('http/name')
+                    Flags      = @('None')
+                    FlagsLower = @('none')
+                },
+                @{
+                    SPNList    = @('http/name.local', 'http/name')
+                    Flags      = @('None')
+                    FlagsLower = @('none')
+                },
+                @{
+                    SPNList    = @('name.local')
+                    Flags      = @()
+                    FlagsLower = @()
+                },
+                @{
+                    SPNList    = @()
+                    Flags      = @('Proxy')
+                    FlagsLower = @('proxy')
+                }
+            )
+
+            Context 'When Test-ExtendedProtectionSPNList is called with straight invalid SPNs, or invalid SPNs combined with the given flags' {
+                It 'Should return false' -TestCases $invalidSPNCases {
+                    param
+                    (
+                        [System.String[]]
+                        $SPNList,
+
+                        [System.String[]]
+                        $Flags,
+
+                        [System.String[]]
+                        $FlagsLower
+                    )
+
+                    Mock -CommandName Convert-StringArrayToLowerCase -MockWith { return $FlagsLower }
+
+                    Test-ExtendedProtectionSPNList -SPNList $SPNList -Flags $Flags | Should -Be $false
+                }
+            }
+
+            $validSPNCases = @(
+                @{
+                    SPNList    = @('http/backslash.local')
+                    Flags      = @()
+                    FlagsLower = @()
+                },
+                @{
+                    SPNList    = @('http/backslash.local')
+                    Flags      = @('None')
+                    FlagsLower = @('none')
+                },
+                @{
+                    SPNList    = @('http/backslash.local')
+                    Flags      = @('NoServiceNameCheck')
+                    FlagsLower = @('noservicenamecheck')
+                },
+                @{
+                    SPNList    = @('http/backslash')
+                    Flags      = @('AllowDotlessSPN')
+                    FlagsLower = @('allowdotlessspn')
+                }
+            )
+
+            Context 'When Test-ExtendedProtectionSPNList is called with straight valid SPNs, or valid SPNs combined with the given flags' {
+                It 'Should return true' -TestCases $validSPNCases {
+                    param
+                    (
+                        [System.String[]]
+                        $SPNList,
+
+                        [System.String[]]
+                        $Flags,
+
+                        [System.String[]]
+                        $FlagsLower
+                    )
+
+                    Mock -CommandName Convert-StringArrayToLowerCase -MockWith { return $FlagsLower }
+
+                    Test-ExtendedProtectionSPNList -SPNList $SPNList -Flags $Flags | Should -Be $true
                 }
             }
         }

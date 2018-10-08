@@ -131,9 +131,23 @@ function New-RemoteExchangeSession
     $exbin = Join-Path -Path ((Get-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\Setup).MsiInstallPath) -ChildPath "bin"
     $remoteExchange = Join-Path -Path "$exbin" -ChildPath 'RemoteExchange.ps1'
 
-    Invoke-DotSourcedScript -ScriptPath $remoteExchange -Verbose:$VerbosePreference
+    # Setup commands to run while the RemoteExchange.ps1 script is in scope
+    $commandToExecuteAfterDotSourcing = @('_NewExchangeRunspace')
+    $commandParamsToExecuteAfterDotSourcing = @{
+        '_NewExchangeRunspace' = @{
+            fqdn             = $serverFQDN
+            credential       = $Credential
+            UseWIA           = $false
+            AllowRedirection = $false
+        }
+    }
 
-    $session = _NewExchangeRunspace -fqdn $serverFQDN -credential $Credential -UseWIA $false -AllowRedirection $false
+    $returnValues = Invoke-DotSourcedScript -ScriptPath $remoteExchange -CommandsToExecuteInScope $commandToExecuteAfterDotSourcing -ParamsForCommandsToExecuteInScope $commandParamsToExecuteAfterDotSourcing -Verbose:$VerbosePreference
+
+    if ($null -ne $returnValues -and $returnValues.ContainsKey('_NewExchangeRunspace'))
+    {
+        $session = $returnValues['_NewExchangeRunspace']
+    }
 
     # Remove the aliases we created earlier
     Remove-Item Alias:Get-ExBanner
@@ -169,17 +183,10 @@ function Import-RemoteExchangeSession
 
         [Parameter()]
         [System.String[]]
-        $CommandsToLoad
+        $CommandsToLoad = @('*')
     )
 
-    if ($CommandsToLoad.Count -gt 0)
-    {
-        $moduleInfo = Import-PSSession $Session -WarningAction SilentlyContinue -DisableNameChecking -AllowClobber -CommandName $CommandsToLoad -Verbose:0
-    }
-    else
-    {
-        $moduleInfo = Import-PSSession $Session -WarningAction SilentlyContinue -DisableNameChecking -AllowClobber -Verbose:0
-    }
+    $moduleInfo = Import-PSSession $Session -WarningAction SilentlyContinue -DisableNameChecking -AllowClobber -CommandName $CommandsToLoad -Verbose:0
 
     Import-Module $moduleInfo -Global -DisableNameChecking
 }
@@ -194,14 +201,7 @@ function Remove-RemoteExchangeSession
     [CmdletBinding()]
     param ()
 
-    $session = Get-ExistingRemoteExchangeSession
-
-    if ($null -ne $session)
-    {
-        Write-Verbose -Message 'Removing existing remote Powershell sessions'
-
-        $session | Remove-PSSession
-    }
+    Get-ExistingRemoteExchangeSession | Remove-PSSession
 }
 
 <#
@@ -937,7 +937,7 @@ function Compare-UnlimitedToString
     }
     elseif (($Unlimited.Value -is [System.Int32]) -and !$Unlimited.IsUnlimited)
     {
-        return (Compare-StringToString -String1 $Unlimited -String2 $String -IgnoreCase)
+        return (Compare-StringToString -String1 $Unlimited.Value.ToString() -String2 $String -IgnoreCase)
     }
     else
     {
@@ -1060,15 +1060,14 @@ function Convert-StringArrayToLowerCase
         $Array
     )
 
+    [System.String[]]$arrayOut = New-Object -TypeName 'System.String[]' -ArgumentList $Array.Count
+
     for ($i = 0; $i -lt $Array.Count; $i++)
     {
-        if (!([System.String]::IsNullOrEmpty($Array[$i])))
-        {
-            $Array[$i] = $Array[$i].ToLower()
-        }
+        $arrayOut[$i] = $Array[$i].ToLower()
     }
 
-    return $Array
+    return $arrayOut
 }
 
 <#
@@ -1169,9 +1168,13 @@ function Test-ArrayElementsInSecondArray
 
     $hasContents = $true
 
-    if ($Array1.Length -eq 0) # Do nothing, as Array2 at a minimum contains nothing
+    if ($Array1.Count -eq 0) # Do nothing, as Array2 at a minimum contains nothing
     {}
-    elseif ($Array2.Length -eq 0) # Array2 is empty and Array1 is not. Return false
+    elseif ($Array2.Count -eq 0) # Array2 is empty and Array1 is not. Return false
+    {
+        $hasContents = $false
+    }
+    elseif ($Array1.Count -gt $Array2.Count) #Array1 has more elements than Array2, so Array2 can't contain Array1
     {
         $hasContents = $false
     }
@@ -1213,7 +1216,7 @@ function Add-ToPSBoundParametersFromHashtable
     [CmdletBinding()]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         $PSBoundParametersIn,
 
         [Parameter()]
@@ -1237,10 +1240,11 @@ function Add-ToPSBoundParametersFromHashtable
 <#
     .SYNOPSIS
         Takes $PSBoundParameters from another function, and modifies it based
-        on the contents of the given Hashtable. If ParamsToRemove is specified,
-        it will remove each param. If ParamsToKeep is specified, everything but
-        those params will be removed. If both ParamsToRemove and ParamsToKeep
-        are specified, only ParamsToKeep will be used.
+        on the contents of the ParamsToRemove or ParamsToKeep parameters. If
+        ParamsToRemove is specified, it will remove each param. If ParamsToKeep
+        is specified, everything but those params will be removed. If both
+        ParamsToRemove and ParamsToKeep are specified, the function will throw
+        an exception.
 
     .PARAMETER PSBoundParametersIn
         The $PSBoundParameters Hashtable from the calling function.
@@ -1258,7 +1262,7 @@ function Remove-FromPSBoundParametersUsingHashtable
     [CmdletBinding()]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         $PSBoundParametersIn,
 
         [Parameter()]
@@ -1270,9 +1274,14 @@ function Remove-FromPSBoundParametersUsingHashtable
         $ParamsToRemove
     )
 
+    if ($ParamsToKeep.Count -gt 0 -and $ParamsToRemove.Count -gt 0)
+    {
+        throw 'Remove-FromPSBoundParametersUsingHashtable does not support using both ParamsToKeep and ParamsToRemove'
+    }
+
     if ($ParamsToKeep.Count -gt 0)
     {
-        [System.String[]] $ParamsToRemove = @()
+        $ParamsToKeep = $ParamsToKeep.ToLower()
 
         $lowerParamsToKeep = Convert-StringArrayToLowerCase -Array $ParamsToKeep
 
@@ -1319,19 +1328,19 @@ function Remove-NotApplicableParamsForVersion
     [CmdletBinding()]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.Collections.Hashtable]
         $PSBoundParametersIn,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ParamName,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ResourceName,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [ValidateSet('2013','2016','2019')]
         [System.String[]]
         $ParamExistsInVersion
@@ -1411,11 +1420,11 @@ function Test-ExchangeSetting
     [OutputType([System.Boolean])]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Type,
 
@@ -1427,7 +1436,7 @@ function Test-ExchangeSetting
         [System.Object]
         $ActualValue,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.Collections.Hashtable]
         $PSBoundParametersIn
     )
@@ -1438,103 +1447,61 @@ function Test-ExchangeSetting
     {
         if ($Type -like 'String')
         {
-            if ((Compare-StringToString -String1 $ExpectedValue -String2 $ActualValue -IgnoreCase) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-StringToString -String1 $ExpectedValue -String2 $ActualValue -IgnoreCase
         }
         elseif ($Type -like 'Boolean')
         {
-            if ((Compare-BoolToBool -Bool1 $ExpectedValue -Bool2 $ActualValue) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-BoolToBool -Bool1 $ExpectedValue -Bool2 $ActualValue
         }
         elseif ($Type -like 'Array')
         {
-            if ((Compare-ArrayContent -Array1 $ExpectedValue -Array2 $ActualValue -IgnoreCase) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-ArrayContent -Array1 $ExpectedValue -Array2 $ActualValue -IgnoreCase
         }
         elseif ($Type -like 'Int')
         {
-            if ($ExpectedValue -ne $ActualValue)
-            {
-                $returnValue = $false
-            }
+            $returnValue = $ExpectedValue -eq $ActualValue
         }
         elseif ($Type -like 'Unlimited')
         {
-            if ((Compare-UnlimitedToString -Unlimited $ActualValue -String $ExpectedValue) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-UnlimitedToString -Unlimited $ActualValue -String $ExpectedValue
         }
         elseif ($Type -like 'Timespan')
         {
-            if ((Compare-TimespanToString -TimeSpan $ActualValue -String $ExpectedValue) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-TimespanToString -TimeSpan $ActualValue -String $ExpectedValue
         }
         elseif ($Type -like 'ADObjectID')
         {
-            if ((Compare-ADObjectIdToSmtpAddressString -ADObjectId $ActualValue -AddressString $ExpectedValue) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-ADObjectIdToSmtpAddressString -ADObjectId $ActualValue -AddressString $ExpectedValue
         }
         elseif ($Type -like 'ByteQuantifiedSize')
         {
-            if ((Compare-ByteQuantifiedSizeToString -ByteQuantifiedSize $ActualValue -String $ExpectedValue) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-ByteQuantifiedSizeToString -ByteQuantifiedSize $ActualValue -String $ExpectedValue
         }
         elseif ($Type -like 'IPAddress')
         {
-            if ((Compare-IPAddressToString -IPAddress $ActualValue -String $ExpectedValue) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-IPAddressToString -IPAddress $ActualValue -String $ExpectedValue
         }
         elseif ($Type -like 'IPAddresses')
         {
-            if ((Compare-IPAddressesToArray -IPAddresses $ActualValue -Array $ExpectedValue) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-IPAddressesToArray -IPAddressObjects $ActualValue -IPAddressStrings $ExpectedValue
         }
         elseif ($Type -like 'SMTPAddress')
         {
-            if ((Compare-SmtpAddressToString -SmtpAddress $ActualValue -String $ExpectedValue) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-SmtpAddressToString -SmtpAddress $ActualValue -String $ExpectedValue
         }
         elseif ($Type -like 'PSCredential')
         {
-            if ((Compare-PSCredential -Cred1 $ActualValue -Cred2 $ExpectedValue ) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-PSCredential -Cred1 $ActualValue -Cred2 $ExpectedValue
         }
         elseif ($Type -like 'ExtendedProtection')
         {
-            if ((Convert-StringArrayToLowerCase $ExpectedValue).Contains('none'))
+            if ((Convert-StringArrayToLowerCase -Array $ExpectedValue).Contains('none'))
             {
-                if (-not [System.String]::IsNullOrEmpty($ActualValue))
-                {
-                    $returnValue = $false
-                }
+                $returnValue = [System.String]::IsNullOrEmpty($ActualValue)
             }
             else
             {
-                if ((Compare-ArrayContent -Array1 $ExpectedValue -Array2 $ActualValue -IgnoreCase) -eq $false)
-                {
-                    $returnValue = $false
-                }
+                $returnValue = Compare-ArrayContent -Array1 $ExpectedValue -Array2 $ActualValue -IgnoreCase
             }
         }
         else
@@ -1570,7 +1537,7 @@ function Write-InvalidSettingVerbose
     [CmdletBinding()]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $SettingName,
 
@@ -1725,13 +1692,13 @@ function Start-ExchangeScheduledTask
         $credParams.Add('Password', $Credential.GetNetworkCredential().Password)
     }
 
+    $previousError = Get-PreviousError
+
     $task = Register-ScheduledTask @credParams -TaskName "$tName" -Action $action -RunLevel Highest -ErrorVariable errRegister -ErrorAction SilentlyContinue
 
-    if (0 -lt $errRegister.Count)
-    {
-        throw $errRegister[0]
-    }
-    elseif ($null -ne $task -and $task.State -eq 'Ready')
+    Assert-NoNewError -CmdletBeingRun 'Register-ScheduledTask' -PreviousError $previousError -Verbose:$VerbosePreference
+
+    if ($null -ne $task -and $task.State -eq 'Ready')
     {
         # Set a time limit on the task
         $taskSettings = $task.Settings
@@ -1766,11 +1733,11 @@ function Test-CmdletHasParameter
     [OutputType([System.Boolean])]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $CmdletName,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ParameterName
     )
@@ -1862,7 +1829,7 @@ function Restart-ExistingAppPool
     [CmdletBinding()]
     param
     (
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Name
     )
@@ -1938,7 +1905,7 @@ function Compare-IPAddressToString
     }
     else
     {
-        $returnValue =($IPAddress.Equals([System.Net.IPAddress]::Parse($string)))
+        $returnValue = ($IPAddress.Equals([System.Net.IPAddress]::Parse($string)))
     }
 
     return $returnValue
@@ -2016,24 +1983,35 @@ function Compare-IPAddressesToArray
     (
         [Parameter()]
         [System.Net.IPAddress[]]
-        $IPAddresses,
+        $IPAddressObjects,
 
         [Parameter()]
-        [System.Array]
-        $Array
+        [System.String[]]
+        $IPAddressStrings
     )
 
-    if (([System.String]::IsNullOrEmpty($IPAddresses)) -and ([System.String]::IsNullOrEmpty($Array)))
-    {
-        $returnValue = $true
-    }
-    elseif ((([System.String]::IsNullOrEmpty($IPAddresses)) -and !(([System.String]::IsNullOrEmpty($Array)))) -or (!(([System.String]::IsNullOrEmpty($IPAddresses))) -and ([System.String]::IsNullOrEmpty($Array))))
+    [System.String[]] $validIPStrings = $IPAddressStrings | Where-Object -FilterScript {![String]::IsNullOrEmpty($_)}
+
+    if ($IPAddressObjects.Count -ne $validIPStrings.Count)
     {
         $returnValue = $false
     }
+    elseif ($IPAddressObjects.Count -eq 0 -and $validIPStrings.Count -eq 0)
+    {
+        $returnValue = $true
+    }
     else
     {
-        Compare-ArrayContent -Array1 $IPAddresses -Array2 $Array
+        $returnValue = $true
+
+        foreach ($ipString in $validIPStrings)
+        {
+            if (!$IPAddressObjects.Contains([System.Net.IPAddress]::Parse($ipString)))
+            {
+                $returnValue = $false
+                break
+            }
+        }
     }
 
     return $returnValue
@@ -2082,7 +2060,7 @@ function Compare-PSCredential
     }
     process
     {
-        if (($Cred1User -ceq $Cred2User) -and ($Cred1Password -ceq $Cred2Password))
+        if (($Cred1User -like $Cred2User) -and ($Cred1Password -ceq $Cred2Password))
         {
             Write-Verbose -Message 'Credentials match'
             $returnValue = $true
@@ -2132,12 +2110,20 @@ function Test-ExtendedProtectionSPNList
         [System.Boolean] $returnValue = $true
         [System.Boolean] $InvalidFlags = $false
 
+        $flagsLower = Convert-StringArrayToLowerCase -Array $Flags
+
         # Check for invalid ExtendedProtectionFlags
         if (-not [System.String]::IsNullOrEmpty($Flags))
         {
-            if ((Convert-StringArrayToLowerCase $Flags).Contains('none') -and ($Flags.Count -gt 1))
+            if ($flagsLower.Contains('none') -and $Flags.Count -gt 1)
             {
-                Write-Verbose -Message 'Invalid combination of ExtendedProtectionFlags detected!'
+                Write-Verbose -Message "Invalid combination of ExtendedProtectionFlags detected! Flag 'None' cannot be use with other flags."
+                $InvalidFlags = $true
+                $returnValue = $false
+            }
+            elseif ($flagsLower.Contains('proxy') -and $SPNList.Count -eq 0)
+            {
+                Write-Verbose -Message "Invalid combination of ExtendedProtectionFlags detected! Flag 'Proxy' requires one or more valid SPNs to be specified with ExtendedProtectionSPNList"
                 $InvalidFlags = $true
                 $returnValue = $false
             }
@@ -2153,14 +2139,15 @@ function Test-ExtendedProtectionSPNList
 
                 if ([System.String]::IsNullOrEmpty($Name))
                 {
-                    Write-Verbose -Message "Invalid SPN:$S"
+                    Write-Verbose -Message "Invalid SPN: $S"
+                    $returnValue = $false
                     break
                 }
                 else
                 {
                     if (-not $Name.Contains('.'))
                     {
-                        Write-Verbose -Message "Found Dotless SPN:$Name"
+                        Write-Verbose -Message "Found Dotless SPN: $Name"
                         $IsDotless = $true
                         break
                     }
@@ -2173,18 +2160,10 @@ function Test-ExtendedProtectionSPNList
         # Check if AllowDotless is set in Flags
         if($IsDotless)
         {
-            if([System.String]::IsNullOrEmpty($Flags))
+            if(!$flagsLower.Contains('allowdotlessspn'))
             {
-                Write-Verbose -Message 'AllowDotless SPN found, but Flags is NULL!'
+                Write-Verbose -Message 'Dotless SPN found, but ExtendedProtectionFlags does not contain AllowDotlessSPN!'
                 $returnValue = $false
-            }
-            else
-            {
-                if( -not (Convert-StringArrayToLowerCase $Flags).Contains('allowdotlessspn'))
-                {
-                    Write-Verbose -Message 'AllowDotless is not found in Flags!'
-                    $returnValue = $false
-                }
             }
         }
     }
@@ -2246,6 +2225,7 @@ function Assert-IsSupportedWithExchangeVersion
 function Invoke-DotSourcedScript
 {
     [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -2258,15 +2238,48 @@ function Invoke-DotSourcedScript
 
         [Parameter()]
         [System.String[]]
-        $SnapinsToRemove
+        $SnapinsToRemove,
+
+        [Parameter()]
+        [System.String[]]
+        $CommandsToExecuteInScope,
+
+        [Parameter()]
+        [System.Collections.Hashtable]
+        $ParamsForCommandsToExecuteInScope
     )
 
+    [System.Collections.Hashtable] $returnValues = @{}
+
     . $ScriptPath @ScriptParams
+
+    for ($i = 0; $i -lt $CommandsToExecuteInScope.Count; $i++)
+    {
+        [System.String] $commandToExecute = $CommandsToExecuteInScope[$i]
+
+        [System.Collections.Hashtable] $commandParams = @{}
+
+        if ($ParamsForCommandsToExecuteInScope.ContainsKey($commandToExecute))
+        {
+            [System.Collections.Hashtable] $commandParams = $ParamsForCommandsToExecuteInScope[$commandToExecute]
+        }
+
+        $returnValue = . $commandToExecute @commandParams
+
+        if (!$returnValues.ContainsKey($commandToExecute))
+        {
+            $returnValues.Add($commandToExecute,$null)
+        }
+
+        $returnValues[$commandToExecute] = $returnValue
+    }
 
     if ($SnapinsToRemove.Count -gt 0)
     {
         Remove-HelperSnapin -SnapinsToRemove $SnapinsToRemove -Verbose:$VerbosePreference
     }
+
+    return $returnValues
 }
 
 <#
@@ -2324,11 +2337,11 @@ function Wait-ForProcessStart
         $ProcessName,
 
         [Parameter()]
-        [System.String]
+        [System.Int32]
         $SecondsPerSleep = 1,
 
         [Parameter()]
-        [System.String]
+        [System.Int32]
         $MaxSleepCycles = 60
     )
 
@@ -2379,11 +2392,11 @@ function Wait-ForProcessStop
         $ProcessName,
 
         [Parameter()]
-        [System.String]
+        [System.Int32]
         $SecondsPerSleep = 60,
 
         [Parameter()]
-        [System.String]
+        [System.Int32]
         $MaxSleepCycles = 1440
     )
 

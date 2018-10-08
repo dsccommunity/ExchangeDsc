@@ -96,7 +96,7 @@ function Set-TargetResource
     if ($waitingForSetup)
     {
         #Now wait for setup to finish
-        Wait-ForProcessStop -ProcessName 'ExSetup' -Verbose:$VerbosePreference
+        Wait-ForProcessStop -ProcessName 'ExSetup' -Verbose:$VerbosePreference | Out-Null
     }
 
     Assert-ExchangeSetupArgumentsComplete -Path $Path -Arguments $Arguments -Verbose:$VerbosePreference

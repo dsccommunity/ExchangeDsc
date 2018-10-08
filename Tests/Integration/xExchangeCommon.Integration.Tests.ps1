@@ -89,6 +89,22 @@ if ($exchangeInstalled)
                 { Compare-UnlimitedToString -Unlimited $unlimitedInt32 -String '1000' } | Should -Not -Throw
             }
         }
+
+        Context 'When Compare-UnlimitedToString is called using an Int32 Unlimited and a String Containing similar numbers' {
+            It 'Should return true' {
+                [Microsoft.Exchange.Data.Unlimited`1[System.Int32]]$unlimitedInt32 = 10
+
+                { Compare-UnlimitedToString -Unlimited $unlimitedInt32 -String '10' } | Should -Be $true
+            }
+        }
+
+        Context 'When Compare-UnlimitedToString is called using an Int32 Unlimited and a String Containing different numbers' {
+            It 'Should return false' {
+                [Microsoft.Exchange.Data.Unlimited`1[System.Int32]]$unlimitedInt32 = 10
+
+                { Compare-UnlimitedToString -Unlimited $unlimitedInt32 -String '100' } | Should -Be $true
+            }
+        }
     }
 
     Describe 'xExchangeHelper\Compare-ADObjectIdToSmtpAddressString' -Tag 'Helper' {
