@@ -13,7 +13,7 @@ class MSFT_xExchOabVirtualDirectory : OMI_BaseResource
     [Write] String DomainController;
     [Write] String ExtendedProtectionFlags[];
     [Write] String ExtendedProtectionSPNList[];
-    [Write, ValueMap{'None', 'Allow', 'Require'}, Values{'None', 'Allow', 'Require'}] String ExtendedProtectionTokenChecking;
+    [Write, ValueMap{"None", "Allow", "Require"}, Values{"None", "Allow", "Require"}] String ExtendedProtectionTokenChecking;
     [Write] String ExternalUrl;
     [Write] String InternalUrl;
     [Write] Boolean OAuthAuthentication;
