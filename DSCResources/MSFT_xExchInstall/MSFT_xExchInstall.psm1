@@ -53,7 +53,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Path' = $Path; 'Arguments' = $Arguments} -Verbose:$VerbosePreference
 
-    $installStatus = Get-ExchangeInstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
+    $installStatus = Get-ExchangeInstallStatus -Path $Path -Arguments $Arguments -Verbose:$VerbosePreference
 
     $waitingForSetup = $false
 
@@ -99,7 +99,7 @@ function Set-TargetResource
         Wait-ForProcessStop -ProcessName 'ExSetup' -Verbose:$VerbosePreference
     }
 
-    Assert-ExchangeSetupArgumentsComplete -Arguments $Arguments -Verbose:$VerbosePreference
+    Assert-ExchangeSetupArgumentsComplete -Path $Path -Arguments $Arguments -Verbose:$VerbosePreference
 }
 
 function Test-TargetResource
@@ -124,7 +124,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Path' = $Path; 'Arguments' = $Arguments} -Verbose:$VerbosePreference
 
-    $installStatus = Get-ExchangeInstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
+    $installStatus = Get-ExchangeInstallStatus -Path $Path -Arguments $Arguments -Verbose:$VerbosePreference
 
     [System.Boolean]$shouldStartOrWaitForInstall = $false
 

@@ -97,7 +97,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   an ExchangeCertificate using *-ExchangeCertificate cmdlets.
 * **xExchExchangeServer**
 * **xExchImapSettings** configures IMAP settings using Set-ImapSettings.
-* **xExchInstall** installs Exchange 2013, 2016, or 2019 (Preview).
+* **xExchInstall** installs or updates Exchange 2013, 2016, or 2019 (Preview).
 * **xExchJetstress** automatically runs Jetstress using
   the **JetstressCmd.exe** command line executable.
 * **xExchJetstressCleanup** cleans up the database and log
@@ -458,7 +458,7 @@ parameters.
 
 ### xExchInstall
 
-**xExchInstall** installs Exchange 2013, 2016, or 2019 (Preview).
+**xExchInstall** installs or updates Exchange 2013, 2016, or 2019 (Preview).
 
 * **Path**: Full path to setup.exe in the Exchange 2013, 2016, or 2019
   (Preview) setup directory.

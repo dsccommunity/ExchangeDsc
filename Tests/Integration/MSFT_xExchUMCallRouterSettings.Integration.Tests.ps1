@@ -25,7 +25,7 @@ if ($exchangeInstalled)
     #Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
-    $serverVersion = Get-ExchangeVersion
+    $serverVersion = Get-ExchangeVersionYear
 
     if ($serverVersion -in '2013','2016')
     {

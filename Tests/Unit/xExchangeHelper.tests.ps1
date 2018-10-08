@@ -41,6 +41,7 @@ try
         Describe 'xExchangeHelper\Get-ExchangeInstallStatus' -Tag 'Helper' {
             # Used for calls to Get-InstallStatus
             $getInstallStatusParams = @{
+                Path = 'C:\Exchange\setup.exe'
                 Arguments = '/mode:Install /role:Mailbox /Iacceptexchangeserverlicenseterms'
             }
 
@@ -49,6 +50,7 @@ try
                 Assert-MockCalled -CommandName Test-ExchangeSetupRunning -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Test-ExchangeSetupComplete -Exactly -Times 1 -Scope It
                 Assert-MockCalled -CommandName Test-ExchangePresent -Exactly -Times 1 -Scope It
+                Assert-MockCalled -CommandName Test-ShouldUpgradeExchange -Exactly -Times 1 -Scope It
             }
 
             Context 'When Exchange is not present on the system' {
@@ -57,6 +59,7 @@ try
                     Mock -CommandName Test-ExchangeSetupRunning -MockWith { return $false }
                     Mock -CommandName Test-ExchangeSetupComplete -MockWith { return $false }
                     Mock -CommandName Test-ExchangePresent -MockWith { return $false }
+                    Mock -CommandName Test-ShouldUpgradeExchange -MockWith { return $false }
 
                     $installStatus = Get-ExchangeInstallStatus @getInstallStatusParams
 
@@ -64,6 +67,7 @@ try
                     $installStatus.SetupRunning | Should -Be $false
                     $installStatus.SetupComplete | Should -Be $false
                     $installStatus.ExchangePresent | Should -Be $false
+                    $installStatus.ShouldUpgrade | Should -Be $false
                     $installStatus.ShouldStartInstall | Should -Be $true
                 }
             }
@@ -74,6 +78,7 @@ try
                     Mock -CommandName Test-ExchangeSetupRunning -MockWith { return $false }
                     Mock -CommandName Test-ExchangeSetupComplete -MockWith { return $true }
                     Mock -CommandName Test-ExchangePresent -MockWith { return $true }
+                    Mock -CommandName Test-ShouldUpgradeExchange -MockWith { return $false }
 
                     $installStatus = Get-ExchangeInstallStatus @getInstallStatusParams
 
@@ -81,6 +86,7 @@ try
                     $installStatus.SetupRunning | Should -Be $false
                     $installStatus.SetupComplete | Should -Be $true
                     $installStatus.ExchangePresent | Should -Be $true
+                    $installStatus.ShouldUpgrade | Should -Be $false
                     $installStatus.ShouldStartInstall | Should -Be $false
                 }
             }
@@ -91,6 +97,7 @@ try
                     Mock -CommandName Test-ExchangeSetupRunning -MockWith { return $false }
                     Mock -CommandName Test-ExchangeSetupComplete -MockWith { return $false }
                     Mock -CommandName Test-ExchangePresent -MockWith { return $true }
+                    Mock -CommandName Test-ShouldUpgradeExchange -MockWith { return $false }
 
                     $installStatus = Get-ExchangeInstallStatus @getInstallStatusParams
 
@@ -98,6 +105,7 @@ try
                     $installStatus.SetupRunning | Should -Be $false
                     $installStatus.SetupComplete | Should -Be $false
                     $installStatus.ExchangePresent | Should -Be $true
+                    $installStatus.ShouldUpgrade | Should -Be $false
                     $installStatus.ShouldStartInstall | Should -Be $true
                 }
             }
@@ -108,6 +116,7 @@ try
                     Mock -CommandName Test-ExchangeSetupRunning -MockWith { return $true }
                     Mock -CommandName Test-ExchangeSetupComplete -MockWith { return $false }
                     Mock -CommandName Test-ExchangePresent -MockWith { return $true }
+                    Mock -CommandName Test-ShouldUpgradeExchange -MockWith { return $false }
 
                     $installStatus = Get-ExchangeInstallStatus @getInstallStatusParams
 
@@ -115,6 +124,7 @@ try
                     $installStatus.SetupRunning | Should -Be $true
                     $installStatus.SetupComplete | Should -Be $false
                     $installStatus.ExchangePresent | Should -Be $true
+                    $installStatus.ShouldUpgrade | Should -Be $false
                     $installStatus.ShouldStartInstall | Should -Be $false
                 }
             }
@@ -125,6 +135,7 @@ try
                     Mock -CommandName Test-ExchangeSetupRunning -MockWith { return $false }
                     Mock -CommandName Test-ExchangeSetupComplete -MockWith { return $true }
                     Mock -CommandName Test-ExchangePresent -MockWith { return $true }
+                    Mock -CommandName Test-ShouldUpgradeExchange -MockWith { return $false }
 
                     $installStatus = Get-ExchangeInstallStatus @getInstallStatusParams
 
@@ -132,6 +143,31 @@ try
                     $installStatus.SetupRunning | Should -Be $false
                     $installStatus.SetupComplete | Should -Be $true
                     $installStatus.ExchangePresent | Should -Be $true
+                    $installStatus.ShouldUpgrade | Should -Be $false
+                    $installStatus.ShouldStartInstall | Should -Be $true
+                }
+            }
+
+            Context 'When Exchange upgrade is requested' {
+                It 'Should recommend starting the install' {
+                    Mock -CommandName Test-ShouldInstallUMLanguagePack -MockWith { return $false }
+                    Mock -CommandName Test-ExchangeSetupRunning -MockWith { return $false }
+                    Mock -CommandName Test-ExchangeSetupComplete -MockWith { return $false }
+                    Mock -CommandName Test-ExchangePresent -MockWith { return $true }
+                    Mock -CommandName Test-ShouldUpgradeExchange -MockWith { return $true }
+
+                    $getInstallStatusParams = @{
+                        Path = 'C:\Exchange\setup.exe'
+                        Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
+                    }
+
+                    $installStatus = Get-ExchangeInstallStatus @getInstallStatusParams
+
+                    $installStatus.ShouldInstallLanguagePack | Should -Be $false
+                    $installStatus.SetupRunning | Should -Be $false
+                    $installStatus.SetupComplete | Should -Be $false
+                    $installStatus.ExchangePresent | Should -Be $true
+                    $installStatus.ShouldUpgrade | Should -Be $true
                     $installStatus.ShouldStartInstall | Should -Be $true
                 }
             }
@@ -219,7 +255,7 @@ try
                 It 'Should not throw an exception' -TestCases $supportedVersionTestCases {
                     param($Name, $ExchangeVersion, $SupportedVersions)
 
-                    Mock -CommandName Get-ExchangeVersion -MockWith { return $ExchangeVersion }
+                    Mock -CommandName Get-ExchangeVersionYear -MockWith { return $ExchangeVersion }
 
                     { Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName $Name -SupportedVersions $SupportedVersions } | Should -Not -Throw
                 }
@@ -229,7 +265,7 @@ try
                 It 'Should throw an exception' -TestCases $notSupportedVersionTestCases {
                     param($Name, $ExchangeVersion, $SupportedVersions)
 
-                    Mock -CommandName Get-ExchangeVersion -MockWith { return $ExchangeVersion }
+                    Mock -CommandName Get-ExchangeVersionYear -MockWith { return $ExchangeVersion }
 
                     { Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName $Name -SupportedVersions $SupportedVersions } | Should -Throw
                 }
@@ -428,7 +464,7 @@ try
                         $Year
                     )
 
-                    Mock -CommandName Get-ExchangeVersion -Verifiable -MockWith { return $Year }
+                    Mock -CommandName Get-ExchangeVersionYear -Verifiable -MockWith { return $Year }
 
                     Test-ExchangePresent | Should -Be $true
                 }
@@ -449,7 +485,7 @@ try
                         $Year
                     )
 
-                    Mock -CommandName Get-ExchangeVersion -Verifiable -MockWith { return $Year }
+                    Mock -CommandName Get-ExchangeVersionYear -Verifiable -MockWith { return $Year }
 
                     Test-ExchangePresent | Should -Be $false
                 }
@@ -772,25 +808,426 @@ try
 
             Context 'When Assert-ExchangeSetupArgumentsComplete is called and setup is complete' {
                 It 'Should execute without throwing an exception' {
+                    Mock -CommandName Test-Path -Verifiable -MockWith {
+                        return $true
+                    }
+
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
                         return @{
                             SetupComplete = $true
                         }
                     }
 
-                    { Assert-ExchangeSetupArgumentsComplete -Arguments 'SetupArgs' } | Should -Not -Throw
+                    { Assert-ExchangeSetupArgumentsComplete -Path 'c:\Exchange\setup.exe' -Arguments 'SetupArgs' } | Should -Not -Throw
                 }
             }
 
             Context 'When Assert-ExchangeSetupArgumentsComplete is called and setup is not complete' {
                 It 'Should throw an exception' {
+                    Mock -CommandName Test-Path -Verifiable -MockWith {
+                        return $true
+                    }
+
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
                         return @{
                             SetupComplete = $false
                         }
                     }
 
-                    { Assert-ExchangeSetupArgumentsComplete -Arguments 'SetupArgs' } | Should -Throw -ExpectedMessage 'Exchange setup did not complete successfully. See "<system drive>\ExchangeSetupLogs\ExchangeSetup.log" for details.'
+                    { Assert-ExchangeSetupArgumentsComplete -Path 'c:\Exchange\setup.exe' -Arguments 'SetupArgs' } | Should -Throw -ExpectedMessage 'Exchange setup did not complete successfully. See "<system drive>\ExchangeSetupLogs\ExchangeSetup.log" for details.'
+                }
+            }
+
+            Context 'When Assert-ExchangeSetupArgumentsComplete is called with wrong file path' {
+                It 'Should throw an exception' {
+                    Mock -CommandName Test-Path -Verifiable -MockWith {
+                        return $false
+                    }
+
+                    { Assert-ExchangeSetupArgumentsComplete -Path 'c:\Exchange\setup.exe' -Arguments 'SetupArgs' } | Should -Throw -ExpectedMessage "Path to Exchange setup 'c:\Exchange\setup.exe' does not exists."
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Get-ExchangeVersionYear' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            $validProductVersions = @(
+                @{
+                    VersionMajor = 15
+                    VersionMinor = 0
+                    Year         = '2013'
+                }
+                @{
+                    VersionMajor = 15
+                    VersionMinor = 1
+                    Year         = '2016'
+                }
+                @{
+                    VersionMajor = 15
+                    VersionMinor = 2
+                    Year         = '2019'
+                }
+            )
+
+            $invalidProductVersions = @(
+                @{
+                    VersionMajor = 15
+                    VersionMinor = 7
+                    Year         = $null
+                }
+                @{
+                    VersionMajor = 14
+                    VersionMinor = 0
+                    Year         = $null
+                }
+            )
+
+            Context 'When Get-ExchangeVersionYear is called and finds a valid VersionMajor and VersionMinor' {
+                It 'Should return the correct Exchange year' -TestCases $validProductVersions {
+                    param
+                    (
+                        [System.Int32]
+                        $VersionMajor,
+
+                        [System.Int32]
+                        $VersionMinor,
+
+                        [System.String]
+                        $Year
+                    )
+
+                    Mock -CommandName Get-DetailedInstalledVersion -Verifiable -MockWith {
+                        return @{
+                            VersionMajor = $VersionMajor
+                            VersionMinor = $VersionMinor
+                        }
+                    }
+
+                    Get-ExchangeVersionYear | Should -Be $Year
+                }
+            }
+
+            Context 'When Get-ExchangeVersionYear is called and finds an invalid VersionMajor or VersionMinor without ThrowIfUnknownVersion' {
+                It 'Should return <Year>' -TestCases $invalidProductVersions {
+                    param
+                    (
+                        [System.Int32]
+                        $VersionMajor,
+
+                        [System.Int32]
+                        $VersionMinor,
+
+                        [System.String]
+                        $Year
+                    )
+
+                    Mock -CommandName Get-DetailedInstalledVersion -Verifiable -MockWith {
+                        return @{
+                            VersionMajor = $VersionMajor
+                            VersionMinor = $VersionMinor
+                        }
+                    }
+
+                    Get-ExchangeVersionYear | Should -Be $null
+                }
+            }
+
+            Context 'When Get-ExchangeVersionYear is called and finds an invalid VersionMajor or VersionMinor and ThrowIfUnknownVersion is specified' {
+                It 'Should throw an exception' -TestCases $invalidProductVersions {
+                    param
+                    (
+                        [System.Int32]
+                        $VersionMajor,
+
+                        [System.Int32]
+                        $VersionMinor,
+
+                        [System.String]
+                        $Year
+                    )
+
+                    Mock -CommandName Get-DetailedInstalledVersion -Verifiable -MockWith {
+                        return @{
+                            VersionMajor = $VersionMajor
+                            VersionMinor = $VersionMinor
+                        }
+                    }
+
+                    { Get-ExchangeVersionYear -ThrowIfUnknownVersion $true } | Should -Throw -ExpectedMessage 'Failed to discover a known Exchange Version'
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Get-ExchangeUninstallKey' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Get-ExchangeUninstallKey is called and Exchange 2016 or 2019 is installed' {
+                It 'Should return the 2016/2019 uninstall key' {
+                    Mock -CommandName Get-Item -Verifiable -ParameterFilter {$Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}'} -MockWith { return $true }
+
+                    Get-ExchangeUninstallKey | Should -Be -Not $Null
+                }
+            }
+
+            Context 'When Get-ExchangeUninstallKey is called and Exchange 2013 is installed' {
+                It 'Should return the 2016/2019 uninstall key' {
+                    Mock -CommandName Get-Item -Verifiable -ParameterFilter {$Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}'} -MockWith { return $null }
+                    Mock -CommandName Get-Item -Verifiable -ParameterFilter {$Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4934D1EA-BE46-48B1-8847-F1AF20E892C1}'} -MockWith { return $true }
+
+                    Get-ExchangeUninstallKey | Should -Be -Not $Null
+                }
+            }
+
+            Context 'When Get-ExchangeUninstallKey is called and no Exchange is installed' {
+                It 'Should return NULL' {
+                    Mock -CommandName Get-Item -Verifiable -ParameterFilter {$Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}'} -MockWith { return $null }
+                    Mock -CommandName Get-Item -Verifiable -ParameterFilter {$Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4934D1EA-BE46-48B1-8847-F1AF20E892C1}'} -MockWith { return $null }
+
+                    Get-ExchangeUninstallKey | Should -Be $Null
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Get-DetailedInstalledVersion' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When DetailedInstalledVersion is called and a valid key is returned by Get-ExchangeUninstallKey' {
+                It 'Should return custom object with VersionMajor and VersionMinor properties' {
+                    Mock -CommandName Get-ExchangeUninstallKey -Verifiable -MockWith { return @{Name = 'SomeKeyName'} }
+                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter {$Name -eq 'VersionMajor'} -MockWith {
+                        return [PSCustomObject] @{VersionMajor = 15} }
+                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter {$Name -eq 'VersionMinor'} -MockWith {
+                        return [PSCustomObject] @{ VersionMinor = 1 }
+                    }
+
+                    $installedVersionDetails = Get-DetailedInstalledVersion
+
+                    $installedVersionDetails.VersionMajor | Should -Be 15
+                    $installedVersionDetails.VersionMinor | Should -Be 1
+                }
+            }
+
+            Context 'When DetailedInstalledVersion is called and no valid key is returned by Get-ExchangeUninstallKey' {
+                It 'Should return NULL' {
+                    Mock -CommandName Get-ExchangeUninstallKey -Verifiable -MockWith { return $null }
+
+                    Get-DetailedInstalledVersion | Should -Be $null
+                }
+            }
+        }
+
+        Describe 'Test-ShouldUpgradeExchange' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            $cases = @(
+                        @{
+                            Case = 'Setup.exe is newer. Commandline Argment is /mode:Upgrade'
+                            SetupVersionMajor = 15
+                            SetupVersionMinor = 1
+                            SetupVersionBuild = 2000
+                            ExchangeVersionMajor = 15
+                            ExchangeVersionMinor = 1
+                            ExchangeVersionBuild = 1800
+                            Result = $true
+                            Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
+                        }
+                        @{
+                            Case = 'Setup.exe is newer. Commandline Argment is /m:Upgrade'
+                            SetupVersionMajor = 15
+                            SetupVersionMinor = 1
+                            SetupVersionBuild = 2000
+                            ExchangeVersionMajor = 15
+                            ExchangeVersionMinor = 1
+                            ExchangeVersionBuild = 1800
+                            Result = $true
+                            Arguments = '/m:upgrade /Iacceptexchangeserverlicenseterms'
+                        }
+                        @{
+                            Case = 'Setup.exe and installed Exchange version is the same.'
+                            SetupVersionMajor = 15
+                            SetupVersionMinor = 1
+                            SetupVersionBuild = 2000
+                            ExchangeVersionMajor = 15
+                            ExchangeVersionMinor = 1
+                            ExchangeVersionBuild = 2000
+                            Result = $false
+                            Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
+                        }
+                        @{
+                            Case = 'Installed Exchange version is different than the setup.exe. e.g. 2013, 2016'
+                            SetupVersionMajor = 15
+                            SetupVersionMinor = 1
+                            SetupVersionBuild = 2000
+                            ExchangeVersionMajor = 15
+                            ExchangeVersionMinor = 0
+                            ExchangeVersionBuild = 2000
+                            Result = $false
+                            Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
+                        }
+                        @{
+                            Case = 'Setup.exe version is different than the installed Exchange. e.g. 2013, 2016'
+                            SetupVersionMajor = 15
+                            SetupVersionMinor = 0
+                            SetupVersionBuild = 2000
+                            ExchangeVersionMajor = 15
+                            ExchangeVersionMinor = 1
+                            ExchangeVersionBuild = 2000
+                            Result = $false
+                            Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
+                        }
+                    )
+
+            Context 'When Test-ShouldUpgradeExchange is called for different cases.' {
+                It 'For case <Case> should return <Result>' -TestCases $cases {
+
+                    Param(
+                        [System.String]
+                        $Case,
+
+                        [System.Int32]
+                        $SetupVersionMajor,
+
+                        [System.Int32]
+                        $SetupVersionMinor,
+
+                        [System.Int32]
+                        $SetupVersionBuild,
+
+                        [System.Int32]
+                        $ExchangeVersionMajor,
+
+                        [System.Int32]
+                        $ExchangeVersionMinor,
+
+                        [System.Int32]
+                        $ExchangeVersionBuild,
+
+                        [System.Boolean]
+                        $Result,
+
+                        [System.String]
+                        $Arguments
+                    )
+
+                    Mock -CommandName Get-SetupExeVersion -Verifiable -MockWith {
+                        return [PSCustomObject] @{
+                            VersionMajor = $SetupVersionMajor
+                            VersionMinor = $SetupVersionMinor
+                            VersionBuild = $SetupVersionBuild
+                        }
+                    }
+
+                    Mock -CommandName Get-DetailedInstalledVersion -Verifiable -MockWith {
+                        return [PSCustomObject] @{
+                            VersionMajor = $ExchangeVersionMajor
+                            VersionMinor = $ExchangeVersionMinor
+                            VersionBuild = $ExchangeVersionBuild
+                        }
+                    }
+
+                    Test-ShouldUpgradeExchange -Path 'test' -Arguments $Arguments | Should -Be $Result
+                }
+            }
+
+            Context 'When Get-SetupExeVersion returns null within Test-ShouldUpgradeExchange.' {
+                It 'Should return $false' {
+                    $Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
+
+                    Mock -CommandName Get-SetupExeVersion -Verifiable -MockWith {
+                        return $null
+                    }
+
+                    Mock -CommandName Write-Error -Verifiable -MockWith {}
+
+                    Test-ShouldUpgradeExchange -Path 'test' -Arguments $Arguments | Should -Be $false
+                }
+            }
+
+            Context 'When Get-DetailedInstalledVersion returns null within Test-ShouldUpgradeExchange.' {
+                It 'Should return with $false' {
+                    $Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
+
+                    Mock -CommandName Write-Error -Verifiable -MockWith {}
+
+                    Mock -CommandName Get-SetupExeVersion -Verifiable -MockWith {
+                        return [PSCustomObject] @{
+                            VersionMajor = 15
+                            VersionMinor = 1
+                            VersionBuild = 1234
+                        }
+                    }
+
+                    Mock -CommandName Get-DetailedInstalledVersion -Verifiable -MockWith {
+                        return $null
+                    }
+
+                    Test-ShouldUpgradeExchange -Path 'test' -Arguments $Arguments | Should -Be $false
+                }
+            }
+
+            Context 'When Get-DetailedInstalledVersion and Get-SetupExeVersion return null within Test-ShouldUpgradeExchange.' {
+                It 'Should return with $false' {
+                    $Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
+
+                    Mock -CommandName Write-Error -Verifiable -MockWith {}
+
+                    Mock -CommandName Get-SetupExeVersion -Verifiable -MockWith {
+                        return $false
+                    }
+
+                    Test-ShouldUpgradeExchange -Path 'test' -Arguments $Arguments | Should -Be $false
+                }
+            }
+
+            Context 'When calling Test-ShouldUpgradeExchange with commandline arguments, which belongs to a simple install not to an upgrade.' {
+                It 'Should return with $false' {
+                    $Arguments = '/mode:Install /role:Mailbox /IAcceptExchangeServerLicenseTerms'
+
+                    Test-ShouldUpgradeExchange -Path 'test' -Arguments $Arguments | Should -Be $false
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Get-SetupExeVersion' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Get-SetupExeVersion is called and the setup executable is found.' {
+                It 'Should return the file version information.' {
+                    Mock -CommandName Test-Path -Verifiable -MockWith { return $true }
+                    Mock -CommandName Get-ChildItem -Verifiable -MockWith {
+                        @{
+                            VersionInfo = @{
+                                ProductMajorPart = 1
+                                ProductMinorPart = 2
+                                ProductBuildPart = 3
+                            }
+                        }
+                    }
+
+                    $version = Get-SetupExeVersion -Path 'SomePath'
+
+                    $version.VersionMajor | Should -Be 1
+                    $version.VersionMinor | Should -Be 2
+                    $version.VersionBuild | Should -Be 3
+                }
+            }
+
+            Context 'When Get-SetupExeVersion is called and the setup executable is not found' {
+                It 'Should return NULL.' {
+                    Mock -CommandName Test-Path -Verifiable -MockWith { return $false }
+
+                    Get-SetupExeVersion -Path 'SomePath' | Should -Be $null
                 }
             }
         }

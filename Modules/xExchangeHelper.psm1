@@ -163,7 +163,7 @@ function Test-ExchangePresent
     [OutputType([System.Boolean])]
     param ()
 
-    $version = Get-ExchangeVersion
+    $version = Get-ExchangeVersionYear
 
     if ($version -in '2013','2016','2019')
     {
@@ -178,7 +178,7 @@ function Test-ExchangePresent
 <#
     .SYNOPSIS
         Gets the installed Exchange Version, and returns the number as a
-        string. Returns N/A if the version cannot be found, and will
+        string. Returns Null if the version cannot be found, and will
         optionally throw an exception if ThrowIfUnknownVersion was set to
         $true.
 
@@ -186,7 +186,7 @@ function Test-ExchangePresent
         Whether the function should throw an exception if the version cannot
         be found. Defauls to $false.
 #>
-function Get-ExchangeVersion
+function Get-ExchangeVersionYear
 {
     [CmdletBinding()]
     [OutputType([System.String])]
@@ -197,31 +197,105 @@ function Get-ExchangeVersion
         $ThrowIfUnknownVersion = $false
     )
 
-    $version = 'N/A'
+    $version = $null
 
-    $uninstall20162019Key = Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}' -ErrorAction SilentlyContinue
+    $installedVersionDetails = Get-DetailedInstalledVersion
 
-    if ($null -ne $uninstall20162019Key)
-    {
-        if ($uninstall20162019Key.GetValue('VersionMajor') -eq 15 -and $uninstall20162019Key.GetValue('VersionMinor') -eq 2)
+    if ($null -ne $installedVersionDetails)
+    { # If Exchange is installed
+        switch ($installedVersionDetails.VersionMajor)
         {
-            $version = '2019'
-        }
-        else
-        {
-            $version = '2016'
+            15
+            {
+                switch ($installedVersionDetails.VersionMinor)
+                {
+                    0 {
+                        $version = '2013'
+                    }
+                    1 {
+                        $version = '2016'
+                    }
+                    2 {
+                        $version = '2019'
+                    }
+                }
+            }
         }
     }
-    elseif ($null -ne (Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4934D1EA-BE46-48B1-8847-F1AF20E892C1}' -ErrorAction SilentlyContinue))
-    {
-        $version = '2013'
-    }
-    elseif ($ThrowIfUnknownVersion)
+
+    if ($null -eq $version -and $ThrowIfUnknownVersion)
     {
         throw 'Failed to discover a known Exchange Version'
     }
 
     return $version
+}
+
+<#
+    .SYNOPSIS
+        Function to read installed Exchange's Uninstall information from registry.
+        The function returns with the Uninstall registry key object.
+#>
+function Get-ExchangeUninstallKey
+{
+    [CmdletBinding()]
+    [OutputType([Microsoft.Win32.RegistryKey])]
+    param()
+
+    # First try to get the Exchange 2016 / 2019 uninstall key.
+    $uninstallKey = Get-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}' -ErrorAction SilentlyContinue
+
+    # If the first key attempt is NULL, this may be a 2013 server. Try the 2013 key.
+    if ($null -eq $uninstallKey)
+    {
+        $uninstallKey = Get-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4934D1EA-BE46-48B1-8847-F1AF20E892C1}' -ErrorAction SilentlyContinue
+    }
+
+    return $uninstallKey
+}
+
+<#
+    .SYNOPSIS
+        Gets installed Exchange's buildnumber, which refers to the installed updates,
+        and returns a hashtable with Major, Minor, Update versions.
+        Returns NULL if the version cannot be found, and will optionally throw
+        an exception if ThrowIfUnknownVersion was set to $true.
+#>
+function Get-DetailedInstalledVersion
+{
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCustomObject])]
+    param()
+
+    $installedVersionDetails = $null
+
+    $uninstallKey = Get-ExchangeUninstallKey
+
+    if ($null -ne $uninstallKey)
+    {
+        $uninstallKeyPath = $uninstallKey.Name.ToLower().Replace('hkey_local_machine','hklm:')
+
+        $displayVersion = Get-ItemProperty -Path $uninstallKeyPath -Name 'DisplayVersion' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty DisplayVersion
+
+        $versionBuild = $null
+        $displayVersion -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionBuild>\d+)'
+
+        if ($Matches)
+        {
+            $versionBuild = $Matches['VersionBuild']
+        }
+
+        $versionDetails = @{
+            VersionMajor   = Get-ItemProperty -Path $uninstallKeyPath -Name 'VersionMajor' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VersionMajor
+            VersionMinor   = Get-ItemProperty -Path $uninstallKeyPath -Name 'VersionMinor' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VersionMinor
+            VersionBuild   = $versionBuild
+            DisplayVersion = $displayVersion
+        }
+
+        $installedVersionDetails = New-Object -TypeName PSCustomObject -Property $versionDetails
+    }
+
+    return $installedVersionDetails
 }
 
 <#
@@ -312,8 +386,131 @@ function Test-ExchangeSetupPartiallyCompleted
 
 <#
     .SYNOPSIS
+       Gets Exchange's setup.exe file's version info.
+       It will return VersionMajor, VersionMinor, VersionBuild values as PSCustomObject
+       or NULL if not readable.
+
+    .PARAMETER Path
+        The path of the setup.exe which is used within the xExchInstall DSC resource.
+#>
+function Get-SetupExeVersion
+{
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCustomObject])]
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [System.String]
+        $Path
+    )
+
+    $version = $null
+
+    # Get Exchange setup.exe version
+    if (Test-Path -Path $Path -ErrorAction SilentlyContinue)
+    {
+        $setupexeVersionInfo = (Get-ChildItem -Path $Path).VersionInfo
+
+        $setupexeVersionInfo = @{
+            VersionMajor = [System.Int32] $setupexeVersionInfo.ProductMajorPart
+            VersionMinor = [System.Int32] $setupexeVersionInfo.ProductMinorPart
+            VersionBuild = [System.Int32] $setupexeVersionInfo.ProductBuildPart
+        }
+
+        $version = New-Object -TypeName PSCustomObject -Property $setupexeVersionInfo
+    }
+
+    return $version
+}
+
+<#
+    .SYNOPSIS
+        Checks if installed Exchange version is older than the version of the setup.exe,
+        which is used within the xExchInstall DSC Resource call.
+        Will return Boolean.
+
+    .PARAMETER Path
+        The path of the setup.exe which is used within the xExchInstall DSC resource.
+
+    .PARAMETER Arguments
+        The commandline arguments of setup.exe.
+#>
+function Test-ShouldUpgradeExchange
+{
+
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [System.String]
+        $Path,
+
+        [Parameter(Mandatory=$true)]
+        [System.String]
+        $Arguments
+    )
+
+    $shouldUpgrade = $false
+
+    if (($Arguments -notmatch '/mode:upgrade') -and ($Arguments -notmatch '/m:upgrade'))
+    {
+        return $shouldUpgrade
+    }
+
+    Write-Verbose -Message "Comparing setup.exe version and installed Exchange's version."
+
+    $setupExeVersion = Get-SetupExeVersion -Path $Path
+
+    if($null -ne $setupExeVersion`
+        -and $null -ne $setupExeVersion.VersionMajor`
+        -and $null -ne $setupExeVersion.VersionMinor`
+        -and $null -ne $setupExeVersion.VersionBuild)
+    {
+        Write-Verbose -Message "Setup.exe version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $setupExeVersion.VersionMajor,$setupexeVersion.VersionMinor, $setupexeVersion.VersionBuild)'"
+
+        $exchangeDisplayVersion = Get-DetailedInstalledVersion
+
+        if($null -ne $exchangeDisplayVersion`
+            -and $null -ne $exchangeDisplayVersion.VersionMajor`
+            -and $null -ne $exchangeDisplayVersion.VersionMinor`
+            -and $null -ne $exchangeDisplayVersion.VersionBuild)
+        { # If we have an exchange installed
+            Write-Verbose -Message "Exchange version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $exchangeDisplayVersion.VersionMajor,$exchangeDisplayVersion.VersionMinor, $exchangeDisplayVersion.VersionBuild)'"
+
+            if(($exchangeDisplayVersion.VersionMajor -eq $setupExeVersion.VersionMajor)`
+                -and ($exchangeDisplayVersion.VersionMinor -eq $setupExeVersion.VersionMinor)`
+                -and ($exchangeDisplayVersion.VersionBuild -lt $setupExeVersion.VersionBuild) )
+            { # If server has lower version of CU installed
+                Write-Verbose -Message 'Version upgrade is requested.'
+                # Executing with the upgrade.
+                $shouldUpgrade = $true
+            }
+            else
+            {
+                Write-Verbose -Message 'Exchange update is not possible. Version of installed Exchange cannot be updated with the version of setup.exe.'
+            }
+        }
+        else
+        {
+            Write-Error -Message "Get-ExchangeInstallStatus: Script cannot determine installed Exchange's version. Please check if Exchange is installed."
+        }
+    }
+    else
+    {
+        Write-Error -Message "Get-ExchangeInstallStatus: Script cannot determine setup.exe version. Please check the file '$Path'."
+    }
+
+    return $shouldUpgrade
+}
+
+<#
+    .SYNOPSIS
         Checks for the exact status of Exchange setup and returns the results
         in a Hashtable.
+
+    .PARAMETER Path
+        The path of the setup.exe which is used within the xExchInstall DSC resource.
 
     .PARAMETER Arguments
         The command line arguments to be passed to Exchange Setup.
@@ -324,6 +521,10 @@ function Get-ExchangeInstallStatus
     [OutputType([System.Collections.Hashtable])]
     param
     (
+        [Parameter()]
+        [System.String]
+        $Path,
+
         [Parameter()]
         [System.String]
         $Arguments
@@ -337,10 +538,12 @@ function Get-ExchangeInstallStatus
     $setupRunning = Test-ExchangeSetupRunning
     $setupComplete = Test-ExchangeSetupComplete -Verbose:$VerbosePreference
     $exchangePresent = Test-ExchangePresent
+    # Exchange CU install / update support
+    $shouldUpgrade = Test-ShouldUpgradeExchange -Path $Path -Arguments $Arguments -Verbose:$VerbosePreference
 
     if ($setupRunning -or $setupComplete)
     {
-        if($shouldInstallLanguagePack -and $setupComplete)
+        if (($shouldInstallLanguagePack -or $shouldUpgrade)  -and $setupComplete)
         {
             $shouldStartInstall = $true
         }
@@ -361,6 +564,7 @@ function Get-ExchangeInstallStatus
         SetupRunning = $setupRunning
         SetupComplete = $setupComplete
         ExchangePresent = $exchangePresent
+        ShouldUpgrade = $shouldUpgrade
         ShouldStartInstall = $shouldStartInstall
     }
 
@@ -1083,7 +1287,7 @@ function Remove-NotApplicableParamsForVersion
 
     if ($PSBoundParametersIn.ContainsKey($ParamName))
     {
-        $serverVersion = Get-ExchangeVersion
+        $serverVersion = Get-ExchangeVersionYear
 
         if ($serverVersion -notin $ParamExistsInVersion)
         {
@@ -1965,7 +2169,7 @@ function Assert-IsSupportedWithExchangeVersion
         $SupportedVersions
     )
 
-    $serverVersion = Get-ExchangeVersion
+    $serverVersion = Get-ExchangeVersionYear
 
     if ($serverVersion -notin $SupportedVersions)
     {
@@ -2155,6 +2359,9 @@ function Wait-ForProcessStop
         Checks whether Exchange Setup has completed successfully according to
         the input Setup Arguments, and throws an exception if it has not.
 
+    .PARAMETER Path
+        Path to the setup.exe of Exchange.
+
     .PARAMETER Arguments
         The command line arguments passed to Exchange Setup.
 #>
@@ -2165,10 +2372,19 @@ function Assert-ExchangeSetupArgumentsComplete
     (
         [Parameter(Mandatory=$true)]
         [System.String]
+        $Path,
+
+        [Parameter(Mandatory=$true)]
+        [System.String]
         $Arguments
     )
 
-    $installStatus = Get-ExchangeInstallStatus -Arguments $Arguments -Verbose:$VerbosePreference
+    if (-Not (Test-Path -Path $Path -ErrorAction SilentlyContinue))
+    {
+        throw "Path to Exchange setup '$Path' does not exists."
+    }
+
+    $installStatus = Get-ExchangeInstallStatus -Path $Path -Arguments $Arguments -Verbose:$VerbosePreference
 
     if ($installStatus.SetupComplete)
     {

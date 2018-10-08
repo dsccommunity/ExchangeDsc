@@ -174,7 +174,7 @@ function Get-TargetResource
             RetainDeletedItemsUntilBackup = [System.Boolean] $db.RetainDeletedItemsUntilBackup
         }
 
-        $serverVersion = Get-ExchangeVersion
+        $serverVersion = Get-ExchangeVersionYear
 
         if ($serverVersion -in '2016','2019')
         {
