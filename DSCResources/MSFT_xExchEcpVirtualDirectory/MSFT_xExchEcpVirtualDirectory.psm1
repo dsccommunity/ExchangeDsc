@@ -20,6 +20,10 @@ function Get-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $AdminEnabled,
+
+        [Parameter()]
+        [System.Boolean]
         $AdfsAuthentication,
 
         [Parameter()]
@@ -47,6 +51,11 @@ function Get-TargetResource
         $FormsAuthentication,
 
         [Parameter()]
+        [ValidateSet('Off','Low','High','Error')]
+        [System.String]
+        $GzipLevel,
+
+        [Parameter()]
         [System.String]
         $InternalUrl,
 
@@ -66,12 +75,14 @@ function Get-TargetResource
     {
         $returnValue = @{
             Identity                      = [System.String] $Identity
+            AdminEnabled                  = [System.Boolean] $EcpVdir.AdminEnabled
             AdfsAuthentication            = [System.Boolean] $EcpVdir.AdfsAuthentication
             BasicAuthentication           = [System.Boolean] $EcpVdir.BasicAuthentication
             DigestAuthentication          = [System.Boolean] $EcpVdir.DigestAuthentication
             ExternalAuthenticationMethods = [System.String[]] $EcpVdir.ExternalAuthenticationMethods
             ExternalUrl                   = [System.String] $EcpVdir.ExternalUrl
             FormsAuthentication           = [System.Boolean] $EcpVdir.FormsAuthentication
+            GzipLevel                     = [System.String] $EcpVdir.GzipLevel
             InternalUrl                   = [System.String] $EcpVdir.InternalUrl
             WindowsAuthentication         = [System.Boolean] $EcpVdir.WindowsAuthentication
         }
@@ -100,6 +111,10 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $AdminEnabled,
+
+        [Parameter()]
+        [System.Boolean]
         $AdfsAuthentication,
 
         [Parameter()]
@@ -125,6 +140,11 @@ function Set-TargetResource
         [Parameter()]
         [System.Boolean]
         $FormsAuthentication,
+
+        [Parameter()]
+        [ValidateSet('Off', 'Low', 'High', 'Error')]
+        [System.String]
+        $GzipLevel,
 
         [Parameter()]
         [System.String]
@@ -182,6 +202,10 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $AdminEnabled,
+
+        [Parameter()]
+        [System.Boolean]
         $AdfsAuthentication,
 
         [Parameter()]
@@ -207,6 +231,11 @@ function Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $FormsAuthentication,
+
+        [Parameter()]
+        [ValidateSet('Off', 'Low',  'High', 'Error')]
+        [System.String]
+        $GzipLevel,
 
         [Parameter()]
         [System.String]
@@ -276,6 +305,16 @@ function Test-TargetResource
         {
             $testResults = $false
         }
+
+        if (!(Test-ExchangeSetting -Name 'AdminEnabled' -Type 'Boolean' -ExpectedValue $AdminEnabled -ActualValue $EcpVdir.AdminEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'GzipLevel' -Type 'String' -ExpectedValue $GzipLevel -ActualValue $EcpVdir.GzipLevel -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
     }
 
     return $testResults
@@ -298,6 +337,10 @@ function GetEcpVirtualDirectory
         [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
+
+        [Parameter()]
+        [System.Boolean]
+        $AdminEnabled,
 
         [Parameter()]
         [System.Boolean]
@@ -326,6 +369,11 @@ function GetEcpVirtualDirectory
         [Parameter()]
         [System.Boolean]
         $FormsAuthentication,
+
+        [Parameter()]
+        [ValidateSet('Off', 'Low', 'High', 'Error')]
+        [System.String]
+        $GzipLevel,
 
         [Parameter()]
         [System.String]

@@ -40,6 +40,7 @@ if ($exchangeInstalled)
             Credential = $shellCredentials
             OABsToDistribute = $testOabName
             BasicAuthentication = $false
+            OAuthAuthentication = $false
             ExtendedProtectionFlags = 'Proxy','ProxyCoHosting'
             ExtendedProtectionSPNList = @()
             ExtendedProtectionTokenChecking = 'Allow'
@@ -53,6 +54,7 @@ if ($exchangeInstalled)
         $expectedGetResults = @{
             Identity =  "$($env:COMPUTERNAME)\OAB (Default Web Site)"
             BasicAuthentication = $false
+            OAuthAuthentication = $false
             ExtendedProtectionTokenChecking = 'Allow'
             InternalUrl = "http://$($serverFqdn)/OAB"
             ExternalUrl = ''

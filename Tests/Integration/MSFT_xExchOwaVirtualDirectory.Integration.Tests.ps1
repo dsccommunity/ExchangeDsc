@@ -51,11 +51,13 @@ if ($exchangeInstalled)
             Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
             Credential = $shellCredentials
             #AdfsAuthentication = $false #Don't test AdfsAuthentication changes in dedicated OWA tests, as they have to be done to ECP at the same time
+            ActionForUnknownFileAndMIMETypes = 'ForceSave'
             BasicAuthentication = $true
             ChangePasswordEnabled = $true
             DigestAuthentication = $false
             ExternalUrl = "https://$($serverFqdn)/owa"
             FormsAuthentication = $true
+            GzipLevel = 'Off'
             InstantMessagingEnabled = $false
             InstantMessagingCertificateThumbprint = ''
             InstantMessagingServerName = ''
@@ -63,7 +65,11 @@ if ($exchangeInstalled)
             InternalUrl = "https://$($serverFqdn)/owa"
             LogonPagePublicPrivateSelectionEnabled = $true
             LogonPageLightSelectionEnabled = $true
+            UNCAccessOnPublicComputersEnabled = $true
+            UNCAccessOnPrivateComputersEnabled = $true
             WindowsAuthentication = $false
+            WSSAccessOnPublicComputersEnabled = $true
+            WSSAccessOnPrivateComputersEnabled = $true
             LogonFormat = 'PrincipalName'
             DefaultDomain = 'contoso.local'
         }
@@ -71,10 +77,12 @@ if ($exchangeInstalled)
         $expectedGetResults = @{
             Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
             BasicAuthentication = $true
+            ActionForUnknownFileAndMIMETypes = 'ForceSave'
             ChangePasswordEnabled = $true
             DigestAuthentication = $false
             ExternalUrl = "https://$($serverFqdn)/owa"
             FormsAuthentication = $true
+            GzipLevel = 'Off'
             InstantMessagingEnabled = $false
             InstantMessagingCertificateThumbprint = ''
             InstantMessagingServerName = ''
@@ -82,7 +90,11 @@ if ($exchangeInstalled)
             InternalUrl = "https://$($serverFqdn)/owa"
             LogonPagePublicPrivateSelectionEnabled = $true
             LogonPageLightSelectionEnabled = $true
+            UNCAccessOnPublicComputersEnabled = $true
+            UNCAccessOnPrivateComputersEnabled = $true
             WindowsAuthentication = $false
+            WSSAccessOnPublicComputersEnabled = $true
+            WSSAccessOnPrivateComputersEnabled = $true
             LogonFormat = 'PrincipalName'
             DefaultDomain = 'contoso.local'
         }
@@ -93,11 +105,13 @@ if ($exchangeInstalled)
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
             Credential = $shellCredentials
+            ActionForUnknownFileAndMIMETypes = 'Block'
             BasicAuthentication = $false
             ChangePasswordEnabled = $false
             DigestAuthentication = $true
             ExternalUrl = ''
             FormsAuthentication = $false
+            GzipLevel = 'High'
             InstantMessagingEnabled = $true
             InstantMessagingCertificateThumbprint = $imCertThumbprint
             InstantMessagingServerName = $env:COMPUTERNAME
@@ -105,18 +119,24 @@ if ($exchangeInstalled)
             InternalUrl = ''
             LogonPagePublicPrivateSelectionEnabled = $false
             LogonPageLightSelectionEnabled = $false
+            UNCAccessOnPublicComputersEnabled = $false
+            UNCAccessOnPrivateComputersEnabled = $false
             WindowsAuthentication = $true
+            WSSAccessOnPublicComputersEnabled = $false
+            WSSAccessOnPrivateComputersEnabled = $false
             LogonFormat = 'FullDomain'
             DefaultDomain = ''
         }
 
         $expectedGetResults = @{
             Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
+            ActionForUnknownFileAndMIMETypes = 'Block'
             BasicAuthentication = $false
             ChangePasswordEnabled = $false
             DigestAuthentication = $true
             ExternalUrl = ''
             FormsAuthentication = $false
+            GzipLevel = 'High'
             InstantMessagingEnabled = $true
             InstantMessagingCertificateThumbprint = $imCertThumbprint
             InstantMessagingServerName = $env:COMPUTERNAME
@@ -124,7 +144,11 @@ if ($exchangeInstalled)
             InternalUrl = ''
             LogonPagePublicPrivateSelectionEnabled = $false
             LogonPageLightSelectionEnabled = $false
+            UNCAccessOnPublicComputersEnabled = $false
+            UNCAccessOnPrivateComputersEnabled = $false
             WindowsAuthentication = $true
+            WSSAccessOnPublicComputersEnabled = $false
+            WSSAccessOnPrivateComputersEnabled = $false
             LogonFormat = 'FullDomain'
             DefaultDomain = ''
         }
