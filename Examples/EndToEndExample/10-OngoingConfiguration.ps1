@@ -150,6 +150,8 @@ Configuration Example
     Import-DscResource -Module xExchange
     Import-DscResource -Module xWebAdministration
 
+    Import-Module -Name (Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath 'Modules\xExchangeCalculatorHelper.psm1')
+
     Node $AllNodes.NodeName
     {
         $dagSettings = $ConfigurationData[$Node.DAGId] #Get DAG settings for this node
@@ -277,15 +279,15 @@ Configuration Example
         }
 
         ###Mailbox Server settings###
-        $dbMap          = DBMapFromServersCsv -ServersCsvPath $Node.ServersCsvPath `
+        $dbMap          = Get-DBMapFromServersCsv -ServersCsvPath $Node.ServersCsvPath `
                                               -ServerNameInCsv $Node.ServerNameInCsv `
                                               -DbNameReplacements $dagSettings.DbNameReplacements
 
-        $primaryDbList  = DBListFromMailboxDatabasesCsv -MailboxDatabasesCsvPath $Node.MailboxDatabasesCsvPath `
+        $primaryDbList  = Get-DBListFromMailboxDatabasesCsv -MailboxDatabasesCsvPath $Node.MailboxDatabasesCsvPath `
                                                         -ServerNameInCsv $Node.ServerNameInCsv `
                                                         -DbNameReplacements $dagSettings.DbNameReplacements
 
-        $copyDbList     = DBListFromMailboxDatabaseCopiesCsv -MailboxDatabaseCopiesCsvPath $Node.MailboxDatabaseCopiesCsvPath `
+        $copyDbList     = Get-DBListFromMailboxDatabaseCopiesCsv -MailboxDatabaseCopiesCsvPath $Node.MailboxDatabaseCopiesCsvPath `
                                                              -ServerNameInCsv $Node.ServerNameInCsv `
                                                              -DbNameReplacements $dagSettings.DbNameReplacements
 

@@ -135,7 +135,7 @@ Configuration Example
 
     Import-DscResource -Module xExchange
 
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Examples\HelperScripts\ExchangeConfigHelper.psm1"
+    Import-Module -Name (Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath 'Modules\xExchangeCalculatorHelper.psm1')
 
     #This section will handle configuring all non-DAG specific settings, including CAS and MBX settings.
     Node $AllNodes.NodeName
@@ -143,7 +143,7 @@ Configuration Example
         $dagSettings = $ConfigurationData[$Node.DAGId] #Look up and retrieve the DAG settings for this node
 
         ###Mailbox Server settings###
-        $copyDbList = DBListFromMailboxDatabaseCopiesCsv -MailboxDatabaseCopiesCsvPath $Node.MailboxDatabaseCopiesCsvPath `
+        $copyDbList = Get-DBListFromMailboxDatabaseCopiesCsv -MailboxDatabaseCopiesCsvPath $Node.MailboxDatabaseCopiesCsvPath `
                                                          -ServerNameInCsv $Node.ServerNameInCsv `
                                                          -DbNameReplacements $dagSettings.DbNameReplacements
 
