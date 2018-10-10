@@ -74,7 +74,7 @@ function Get-DBMapFromServersCsv
     # Loop through the DbMap in increments of dbPerVolume and figure out which DB's will go on a single disk
     for ($i = 0; $i -lt $dbMapIn.Count; $i += $dbPerVolume)
     {
-        [System.Text.StringBuilder] $diskBuilder = New-Object System.Text.StringBuilder
+        [System.Text.StringBuilder] $diskBuilder = New-Object -TypeName System.Text.StringBuilder
 
         # Loop through the individual DB's for this disk
         for ($j = $i; $j -lt $i + $dbPerVolume; $j++)
