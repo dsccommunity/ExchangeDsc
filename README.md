@@ -1502,7 +1502,7 @@ and exit maintenance mode. MaintenanceModePrep.ps1 prepares a server for
 maintenance mode by setting DatabaseCopyAutoActivationPolicy to Blocked using a
 Domain Controller in both the primary and secondary site. If multiple servers are
 going to be entering maintenance mode at the same time, this step can help prevent
-these servers from failing over databases to eachother. MaintenanceModeStart.ps1
+these servers from failing over databases to each other. MaintenanceModeStart.ps1
 puts a server into maintenance mode. MaintenanceModeStop.ps1 takes a server out
 of maintenance mode.
 

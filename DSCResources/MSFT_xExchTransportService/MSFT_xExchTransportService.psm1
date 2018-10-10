@@ -1429,7 +1429,7 @@ function Test-TargetResource
             $testResults = $false
         }
 
-        if (!(Test-ExchangeSetting -Name 'ExternalDNSServers' -Type 'IPAddresses' -ExpectedValue $ExternalDNSServers -ActualValue $TransportService.ExternalDNSServers.IPAddressToString -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'ExternalDNSServers' -Type 'IPAddresses' -ExpectedValue $ExternalDNSServers -ActualValue $TransportService.ExternalDNSServers -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
@@ -1454,7 +1454,7 @@ function Test-TargetResource
             $testResults = $false
         }
 
-        if (!(Test-ExchangeSetting -Name 'InternalDNSServers' -Type 'IPAddresses' -ExpectedValue $InternalDNSServers -ActualValue $TransportService.InternalDNSServers.IPAddressToString -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'InternalDNSServers' -Type 'IPAddresses' -ExpectedValue $InternalDNSServers -ActualValue $TransportService.InternalDNSServers -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
