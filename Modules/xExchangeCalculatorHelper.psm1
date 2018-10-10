@@ -145,7 +145,7 @@ function Get-DBListFromMailboxDatabasesCsv
         throw 'Unable to access file specified in MailboxDatabasesCsvPath'
     }
 
-    $relevantDBs = Import-Csv -Path $MailboxDatabasesCsvPath | Where-Object -FilterScript {$_.Server -like $ServerNameInCsv}
+    [System.Object[]] $relevantDBs = Import-Csv -Path $MailboxDatabasesCsvPath | Where-Object -FilterScript {$_.Server -like $ServerNameInCsv}
 
     # Create the output variable
     [System.Management.Automation.PSObject[]] $dbList = New-Object -TypeName 'System.Management.Automation.PSObject[]' -ArgumentList $relevantDBs.Count
@@ -248,7 +248,7 @@ function Get-DBListFromMailboxDatabaseCopiesCsv
         throw 'Unable to access file specified in MailboxDatabaseCopiesCsvPath'
     }
 
-    $relevantDBs = Import-Csv -Path $MailboxDatabaseCopiesCsvPath | Where-Object -FilterScript {$_.Server -like $ServerNameInCsv}
+    [System.Object[]] $relevantDBs = Import-Csv -Path $MailboxDatabaseCopiesCsvPath | Where-Object -FilterScript {$_.Server -like $ServerNameInCsv}
 
     # Create the output variable
     [System.Management.Automation.PSObject[]] $dbList = New-Object -TypeName 'System.Management.Automation.PSObject[]' -ArgumentList $relevantDBs.Count
