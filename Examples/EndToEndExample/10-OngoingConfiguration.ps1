@@ -150,6 +150,8 @@ Configuration Example
     Import-DscResource -Module xExchange
     Import-DscResource -Module xWebAdministration
 
+    Import-Module -Name (Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath 'Modules\xExchangeCalculatorHelper.psm1')
+
     Node $AllNodes.NodeName
     {
         $dagSettings = $ConfigurationData[$Node.DAGId] #Get DAG settings for this node
