@@ -42,7 +42,7 @@ try
                 }
             )
 
-            Context 'When Get-DBMapFromServersCsv is called, a valid Servers.CSV is discovered, and data for the server is found' {
+            Context 'When Get-DBMapFromServersCsv is called, a valid Servers.csv is discovered, and data for the server is found' {
                 It 'Should return a valid DiskToDBMap array' -TestCases $differentVersionValidCsvPaths {
                     param
                     (
@@ -50,9 +50,7 @@ try
                         $ServersCsvPath
                     )
 
-                    Mock -CommandName Update-StringContent -MockWith {
-                        return $StringIn
-                    }
+                    Mock -CommandName Update-StringContent -Verifiable -MockWith { return $StringIn }
 
                     $dbMap = Get-DBMapFromServersCsv -ServersCsvPath $ServersCsvPath -ServerNameInCsv $validServerName
 
@@ -64,7 +62,8 @@ try
                 It 'Should throw an exception' {
                     Mock -CommandName Test-Path -Verifiable -MockWith { return $false }
 
-                    { Get-DBMapFromServersCsv -ServersCsvPath $serversLatestCsvPath -ServerNameInCsv $validServerName } | Should -Throw -ExpectedMessage 'Unable to access file specified in ServersCsvPath'
+                    { Get-DBMapFromServersCsv -ServersCsvPath $serversLatestCsvPath -ServerNameInCsv $validServerName } | `
+                        Should -Throw -ExpectedMessage 'Unable to access file specified in ServersCsvPath'
                 }
             }
 
@@ -73,7 +72,8 @@ try
                     Mock -CommandName Test-Path -Verifiable -MockWith { return $true }
                     Mock -CommandName Import-Csv -Verifiable
 
-                    { Get-DBMapFromServersCsv -ServersCsvPath $serversLatestCsvPath -ServerNameInCsv $invalidServerName } | Should -Throw -ExpectedMessage 'Failed to find single entry for server in Servers.Csv file'
+                    { Get-DBMapFromServersCsv -ServersCsvPath $serversLatestCsvPath -ServerNameInCsv $invalidServerName } | `
+                        Should -Throw -ExpectedMessage 'Failed to find single entry for server in Servers.Csv file'
                 }
             }
 
@@ -87,7 +87,8 @@ try
                         })
                     }
 
-                    { Get-DBMapFromServersCsv -ServersCsvPath $serversLatestCsvPath -ServerNameInCsv $validServerName } | Should -Throw -ExpectedMessage 'DbPerVolume for server is null or less than 0'
+                    { Get-DBMapFromServersCsv -ServersCsvPath $serversLatestCsvPath -ServerNameInCsv $validServerName } | `
+                        Should -Throw -ExpectedMessage 'DbPerVolume for server is null or less than 0'
                 }
             }
 
@@ -102,7 +103,8 @@ try
                         })
                     }
 
-                    { Get-DBMapFromServersCsv -ServersCsvPath $serversLatestCsvPath -ServerNameInCsv $validServerName } | Should -Throw -ExpectedMessage 'No data specified in DbMap for server'
+                    { Get-DBMapFromServersCsv -ServersCsvPath $serversLatestCsvPath -ServerNameInCsv $validServerName } | `
+                        Should -Throw -ExpectedMessage 'No data specified in DbMap for server'
                 }
             }
         }
@@ -134,7 +136,7 @@ try
                         $MailboxDatabasesCsvPath
                     )
 
-                    Mock -CommandName Update-StringContent -MockWith { return $StringIn }
+                    Mock -CommandName Update-StringContent -Verifiable -MockWith { return $StringIn }
 
                     $dbList = Get-DBListFromMailboxDatabasesCsv -MailboxDatabasesCsvPath $MailboxDatabasesCsvPath -ServerNameInCsv $validServerName
 
@@ -154,16 +156,18 @@ try
                 It 'Should throw an exception' {
                     Mock -CommandName Test-Path -Verifiable -MockWith { return $false }
 
-                    { Get-DBListFromMailboxDatabasesCsv -MailboxDatabasesCsvPath $mailboxDatabasesLatestCsvPath -ServerNameInCsv $validServerName } | Should -Throw -ExpectedMessage 'Unable to access file specified in MailboxDatabasesCsvPath'
+                    { Get-DBListFromMailboxDatabasesCsv -MailboxDatabasesCsvPath $mailboxDatabasesLatestCsvPath -ServerNameInCsv $validServerName } | `
+                        Should -Throw -ExpectedMessage 'Unable to access file specified in MailboxDatabasesCsvPath'
                 }
             }
 
             Context 'When Get-DBListFromMailboxDatabasesCsv is called and the specified MailboxDatabases.csv does not have a DBFilePath or EDBFilePath column' {
                 It 'Should throw an exception' {
                     Mock -CommandName Test-Path -Verifiable -MockWith { return $true }
-                    Mock -CommandName Update-StringContent -MockWith { return $StringIn }
+                    Mock -CommandName Update-StringContent -Verifiable -MockWith { return $StringIn }
 
-                    { Get-DBListFromMailboxDatabasesCsv -MailboxDatabasesCsvPath $mailboxDatabasesBadCsvPath -ServerNameInCsv $validServerName } | Should -Throw -ExpectedMessage 'Unable to locate column containing database file path'
+                    { Get-DBListFromMailboxDatabasesCsv -MailboxDatabasesCsvPath $mailboxDatabasesBadCsvPath -ServerNameInCsv $validServerName } | `
+                        Should -Throw -ExpectedMessage 'Unable to locate column containing database file path'
                 }
             }
         }
@@ -190,7 +194,7 @@ try
                         $MailboxDatabaseCopiesCsvPath
                     )
 
-                    Mock -CommandName Update-StringContent -MockWith { return $StringIn }
+                    Mock -CommandName Update-StringContent -Verifiable -MockWith { return $StringIn }
 
                     $dbList = Get-DBListFromMailboxDatabaseCopiesCsv -MailboxDatabaseCopiesCsvPath $MailboxDatabaseCopiesCsvPath -ServerNameInCsv $validServerName
 
@@ -210,7 +214,8 @@ try
                 It 'Should throw an exception' {
                     Mock -CommandName Test-Path -Verifiable -MockWith { return $false }
 
-                    { Get-DBListFromMailboxDatabaseCopiesCsv -MailboxDatabaseCopiesCsvPath $mailboxDatabasesCopiesLatestCsvPath -ServerNameInCsv $validServerName } | Should -Throw -ExpectedMessage 'Unable to access file specified in MailboxDatabaseCopiesCsvPath'
+                    { Get-DBListFromMailboxDatabaseCopiesCsv -MailboxDatabaseCopiesCsvPath $mailboxDatabasesCopiesLatestCsvPath -ServerNameInCsv $validServerName } | `
+                        Should -Throw -ExpectedMessage 'Unable to access file specified in MailboxDatabaseCopiesCsvPath'
                 }
             }
         }
