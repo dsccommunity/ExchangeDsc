@@ -26,6 +26,10 @@
 - Added Cumulative Update / Exchange update support to xExchInstall resource.
 - Add remaining Unit Tests for all xExchangeHelper functions that don't
   require the loading of Exchange DLL's.
+- Renamed and moved file Examples/HelperScripts/ExchangeConfigHelper.psm1 to
+  Modules/xExchangeCalculatorHelper.psm1. Renamed functions within the module
+  to conform to proper function naming standards. Added remaining Unit tests
+  for module.
 
 ## 1.23.0.0
 
