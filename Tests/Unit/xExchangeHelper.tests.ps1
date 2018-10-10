@@ -1473,7 +1473,7 @@ try
                 }
             )
 
-            Context 'When Compare-StringToString is called with the Ignore case switch and the strings are like eachother' {
+            Context 'When Compare-StringToString is called with the Ignore case switch and the strings are like each other' {
                 It 'Should return true' -TestCases $trueCaseInsensitiveCases {
                     param
                     (
@@ -1499,7 +1499,7 @@ try
                 }
             )
 
-            Context 'When Compare-StringToString is called without the Ignore case switch and the strings are equal to eachother' {
+            Context 'When Compare-StringToString is called without the Ignore case switch and the strings are equal to each other' {
                 It 'Should return true' -TestCases $trueCaseSensitiveCases {
                     param
                     (
@@ -1525,7 +1525,7 @@ try
                 }
             )
 
-            Context 'When Compare-StringToString is called with the Ignore case switch and the strings are not like eachother' {
+            Context 'When Compare-StringToString is called with the Ignore case switch and the strings are not like each other' {
                 It 'Should return false' -TestCases $falseCaseInsensitiveCases {
                     param
                     (
@@ -1547,7 +1547,7 @@ try
                 }
             )
 
-            Context 'When Compare-StringToString is called without the Ignore case switch and the strings are not equal to eachother' {
+            Context 'When Compare-StringToString is called without the Ignore case switch and the strings are not equal to each other' {
                 It 'Should return false' -TestCases $falseCaseSensitiveCases {
                     param
                     (
