@@ -42,10 +42,10 @@ function Get-TargetResource
         $Services
     )
 
-    LogFunctionEntry -Parameters @{"Thumbprint" = $Thumbprint} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Thumbprint' = $Thumbprint} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -Verbose:$VerbosePreference
 
     $cert = GetExchangeCertificate @PSBoundParameters
 
@@ -102,10 +102,10 @@ function Set-TargetResource
         $Services
     )
 
-    LogFunctionEntry -Parameters @{"Thumbprint" = $Thumbprint} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Thumbprint' = $Thumbprint} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*ExchangeCertificate' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*ExchangeCertificate' -Verbose:$VerbosePreference
 
     $cert = GetExchangeCertificate @PSBoundParameters
 
@@ -115,20 +115,20 @@ function Set-TargetResource
 
     if ($null -ne $cert)
     {
-        $currentServices = StringToArray -StringIn $cert.Services -Separator ','
+        $currentServices = Convert-StringToArray -StringIn $cert.Services -Separator ','
     }
 
-    if ((Array2ContainsArray1Contents -Array2 $Services -Array1 'UM' -IgnoreCase $true) -eq $true)
+    if ((Test-ArrayElementsInSecondArray -Array2 $Services -Array1 'UM' -IgnoreCase) -eq $true)
     {
-        if ($null -eq $cert -or (Array2ContainsArray1Contents -Array2 $currentServices -Array1 'UM' -IgnoreCase $true) -eq $false)
+        if ($null -eq $cert -or (Test-ArrayElementsInSecondArray -Array2 $currentServices -Array1 'UM' -IgnoreCase) -eq $false)
         {
             $needUMServiceReset = $true
         }
     }
 
-    if ((Array2ContainsArray1Contents -Array2 $Services -Array1 'UMCallRouter' -IgnoreCase $true) -eq $true)
+    if ((Test-ArrayElementsInSecondArray -Array2 $Services -Array1 'UMCallRouter' -IgnoreCase) -eq $true)
     {
-        if ($null -eq $cert -or (Array2ContainsArray1Contents -Array2 $currentServices -Array1 'UMCallRouter' -IgnoreCase $true) -eq $false)
+        if ($null -eq $cert -or (Test-ArrayElementsInSecondArray -Array2 $currentServices -Array1 'UMCallRouter' -IgnoreCase) -eq $false)
         {
             $needUMCallRouterServiceReset = $true
         }
@@ -240,10 +240,10 @@ function Test-TargetResource
         $Services
     )
 
-    LogFunctionEntry -Parameters @{"Thumbprint" = $Thumbprint} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Thumbprint' = $Thumbprint} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -Verbose:$VerbosePreference
 
     $cert = GetExchangeCertificate @PSBoundParameters
 
@@ -255,7 +255,7 @@ function Test-TargetResource
         {
             if (!(CompareCertServices -ServicesActual $cert.Services -ServicesDesired $Services -AllowExtraServices $AllowExtraServices))
             {
-                ReportBadSetting -SettingName 'Services' -ExpectedValue $Services -ActualValue $cert.Services -Verbose:$VerbosePreference
+                Write-InvalidSettingVerbose -SettingName 'Services' -ExpectedValue $Services -ActualValue $cert.Services -Verbose:$VerbosePreference
                 $testResults = $false
             }
         }
@@ -321,7 +321,7 @@ function GetExchangeCertificate
     )
 
     #Remove params we don't want to pass into the next command
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Thumbprint','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Thumbprint','DomainController'
 
     return (Get-ExchangeCertificate @PSBoundParameters -ErrorAction SilentlyContinue -Server $env:COMPUTERNAME)
 }
@@ -350,7 +350,7 @@ function CompareCertServices
         $AllowExtraServices
     )
 
-    $actual = StringToArray -StringIn $ServicesActual -Separator ','
+    $actual = Convert-StringToArray -StringIn $ServicesActual -Separator ','
 
     if ($AllowExtraServices -eq $true)
     {
@@ -360,7 +360,7 @@ function CompareCertServices
         }
         else
         {
-            $result = Array2ContainsArray1Contents -Array1 $ServicesDesired -Array2 $actual -IgnoreCase
+            $result = Test-ArrayElementsInSecondArray -Array1 $ServicesDesired -Array2 $actual -IgnoreCase
         }
     }
     else

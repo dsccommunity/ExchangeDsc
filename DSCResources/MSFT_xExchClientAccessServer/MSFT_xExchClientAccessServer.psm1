@@ -41,10 +41,10 @@ function Get-TargetResource
         $RemoveAlternateServiceAccountCredentials
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ClientAccessServ*" -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ClientAccessServ*' -Verbose:$VerbosePreference
 
     $cas = GetClientAccessServer @PSBoundParameters
 
@@ -135,16 +135,16 @@ function Set-TargetResource
         }
     }
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Set-ClientAccessServ*" -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-ClientAccessServ*' -Verbose:$VerbosePreference
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential"
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential"
 
-    SetEmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
+    Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    $serverVersion = Get-ExchangeVersion -ThrowIfUnknownVersion $true
+    $serverVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
 
     if ($serverVersion -in '2016','2019')
     {
@@ -238,10 +238,10 @@ function Test-TargetResource
         $RemoveAlternateServiceAccountCredentials
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad "Get-ClientAccessServ*" -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ClientAccessServ*' -Verbose:$VerbosePreference
 
     $cas = GetClientAccessServer @PSBoundParameters
 
@@ -255,17 +255,17 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name "AutoDiscoverServiceInternalUri" -Type "String" -ExpectedValue $AutoDiscoverServiceInternalUri -ActualValue $cas.AutoDiscoverServiceInternalUri.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'AutoDiscoverServiceInternalUri' -Type 'String' -ExpectedValue $AutoDiscoverServiceInternalUri -ActualValue $cas.AutoDiscoverServiceInternalUri.AbsoluteUri -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name "AutoDiscoverSiteScope" -Type "Array" -ExpectedValue $AutoDiscoverSiteScope -ActualValue $cas.AutoDiscoverSiteScope -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'AutoDiscoverSiteScope' -Type 'Array' -ExpectedValue $AutoDiscoverSiteScope -ActualValue $cas.AutoDiscoverSiteScope -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name "AlternateServiceAccountCredential" -Type "PSCredential" -ExpectedValue $AlternateServiceAccountCredential -ActualValue ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | Sort-Object WhenAddedUTC | Select-Object -Last 1).Credential $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'AlternateServiceAccountCredential' -Type 'PSCredential' -ExpectedValue $AlternateServiceAccountCredential -ActualValue ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials | Sort-Object WhenAddedUTC | Select-Object -Last 1).Credential $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
@@ -327,9 +327,9 @@ function GetClientAccessServer
     )
 
     #Remove params we don't want to pass into the next command
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
-    $serverVersion = Get-ExchangeVersion -ThrowIfUnknownVersion $true
+    $serverVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
     if (($null -ne $AlternateServiceAccountCredential) -or ($RemoveAlternateServiceAccountCredentials))
     {
         $PSBoundParameters.Add('IncludeAlternateServiceAccountCredentialPassword',$true)

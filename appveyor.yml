@@ -1,17 +1,12 @@
-# This is the template for appveyor.yml which uses the "default model" of the
-# test framework in https://github.com/PowerShell/DscResource.Tests.
-#
-# This template assumes you have connected your repository to AppVeyor
-# (https://ci.appveyor.com).
-#
-# Before using it in your repository, modify places marked with 'TODO:'.
-################################################################################
-
 #---------------------------------#
 #      environment configuration  #
 #---------------------------------#
 
 version: 1.13.{build}.0
+environment:
+  gallery_api:
+    secure: 9ekJzfsPCDBkyLrfmov83XbbhZ6E2N3z+B/Io8NbDetbHc6hWS19zsDmy7t0Vvxv
+
 install:
     - git clone https://github.com/PowerShell/DscResource.Tests
     - ps: Write-Verbose -Message "PowerShell version $($PSVersionTable.PSVersion)" -Verbose
@@ -32,13 +27,18 @@ build: false
 
 test_script:
     - ps: |
-        Invoke-AppveyorTestScriptTask -CodeCoverage -CodeCovIo -ExcludeTag @() -RunTestInOrder
+        Invoke-AppveyorTestScriptTask -CodeCoverage -CodeCovIo -RunTestInOrder
+
+# scripts to run before deployment
+after_test:
+    - ps: |
+        Import-Module -Name "$env:APPVEYOR_BUILD_FOLDER\DscResource.Tests\AppVeyor.psm1"
+        Invoke-AppveyorAfterTestTask
 
 #---------------------------------#
 #      deployment configuration   #
 #---------------------------------#
 
-# scripts to run before deployment
 deploy_script:
-    - ps: |
-        Invoke-AppveyorAfterTestTask
+  - ps: |
+        Invoke-AppVeyorDeployTask

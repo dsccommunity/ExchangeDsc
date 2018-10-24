@@ -184,7 +184,7 @@ function Test-Array2ContainsArray1
         [System.Collections.Hashtable]$getResult = Get-TargetResource @TestParams
 
         It $ItLabel {
-            Array2ContainsArray1Contents -Array1 $DesiredArrayContents -Array2 $getResult."$($GetResultParameterName)" -IgnoreCase | Should Be $true
+            Test-ArrayElementsInSecondArray -Array1 $DesiredArrayContents -Array2 $getResult."$GetResultParameterName" -IgnoreCase | Should Be $true
         }
     }
 }
@@ -204,7 +204,7 @@ function Get-TestOfflineAddressBook
 
     [System.String]$testOabName = 'Offline Address Book (DSC Test)'
 
-    GetRemoteExchangeSession -Credential $ShellCredentials -CommandsToLoad '*-OfflineAddressBook'
+    Get-RemoteExchangeSession -Credential $ShellCredentials -CommandsToLoad '*-OfflineAddressBook'
 
     if ($null -eq (Get-OfflineAddressBook -Identity $testOabName -ErrorAction SilentlyContinue))
     {
@@ -246,7 +246,7 @@ function Initialize-TestForDAG
 
     Write-Verbose -Message 'Cleaning up test DAG and related resources'
 
-    GetRemoteExchangeSession -Credential $ShellCredentials -CommandsToLoad '*-MailboxDatabase',`
+    Get-RemoteExchangeSession -Credential $ShellCredentials -CommandsToLoad '*-MailboxDatabase',`
                                                                                   '*-DatabaseAvailabilityGroup',`
                                                                                   'Remove-DatabaseAvailabilityGroupServer',`
                                                                                   'Get-MailboxDatabaseCopyStatus',`
@@ -325,6 +325,217 @@ function Get-TestCredential
     }
 
     return $Global:TestCredential
+}
+
+<#
+    .SYNOPSIS
+        Gets all configured Accepted Domains, and returns the Domain name of
+        the first retrieved Accepted Domain. Throws an exception if no
+        Accepted Domains are configured.
+#>
+function Get-TestAcceptedDomainName
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param()
+
+    [System.Object[]] $acceptedDomains = Get-AcceptedDomain
+
+    if ($acceptedDomains.Count -gt 0)
+    {
+        return $acceptedDomains[0].DomainName.ToString()
+    }
+    else
+    {
+        throw 'One or more Accepted Domains must be configured for tests to function.'
+    }
+}
+
+<#
+    .SYNOPSIS
+        Returns a Mailbox object corresponding to a DSC Test Mailbox. Creates
+        the Mailbox if it does not already exist.
+#>
+function Get-DSCTestMailbox
+{
+    [CmdletBinding()]
+    [OutputType([Microsoft.Exchange.Data.Directory.Management.Mailbox])]
+    param()
+
+    $testMailboxName = 'DSCTestMailbox'
+
+    $testDomain = Get-TestAcceptedDomainName
+    $testCreds = Get-TestCredential
+
+    $testMailbox = Get-Mailbox $testMailboxName -ErrorAction SilentlyContinue
+    $primarySMTP = "$testMailboxName@$testDomain"
+    $secondarySMTP = "$($testMailboxName)2@$testDomain"
+    [System.Object[]] $dbsOnServer = Get-MailboxDatabase -Server $env:COMPUTERNAME -ErrorAction SilentlyContinue
+
+    $changedMailbox = $false
+
+    # Create the test mailbox if it doesn't exist
+    if ($null -eq $testMailbox)
+    {
+        Write-Verbose -Message "Creating test mailbox: $testMailboxName"
+
+        $newMailboxParams = @{
+            Name               = $testMailboxName
+            PrimarySmtpAddress = $primarySMTP
+            UserPrincipalName  = $primarySMTP
+            Password           = $testCreds.Password
+        }
+
+        if ($dbsOnServer.Count -gt 0)
+        {
+            $newMailboxParams.Add('Database',$dbsOnServer[0].Name)
+        }
+
+        $testMailbox = New-Mailbox @newMailboxParams
+
+        if ($null -eq $testMailbox)
+        {
+            throw 'Failed to create test mailbox'
+        }
+    }
+
+    # Set the test mailbox primary SMTP if not correct
+    if ($testMailbox.PrimarySmtpAddress.Address -notlike $primarySMTP)
+    {
+        Write-Verbose -Message "Changing primary SMTP on test mailbox: $testMailboxName"
+
+        $testMailbox | Set-Mailbox -PrimarySmtpAddress $primarySMTP
+
+        $changedMailbox = $true
+    }
+
+    # Add the secondary SMTP if necessary
+    if (($testMailbox.EmailAddresses | Where-Object {$_.AddressString -like $secondarySMTP}).Count -eq 0)
+    {
+        Write-Verbose -Message "Adding secondary SMTP on test mailbox: $testMailboxName"
+
+        $testMailbox | Set-Mailbox -EmailAddresses @{add=$secondarySMTP}
+
+        $changedMailbox = $true
+    }
+
+    # Get the mailbox one more time so we have updated properties on it
+    if ($changedMailbox)
+    {
+        $testMailbox = Get-Mailbox $testMailboxName
+    }
+
+    return $testMailbox
+}
+
+<#
+    .SYNOPSIS
+        Returns a MailUser object corresponding to a DSC Test MailUser. Creates
+        the MailUser if it does not already exist.
+#>
+function Get-DSCTestMailUser
+{
+    [CmdletBinding()]
+    [OutputType([Microsoft.Exchange.Data.Directory.Management.MailUser])]
+    param()
+
+    $testMailUserName = 'DSCTestMailUser'
+
+    $testMailUser = Get-MailUser $testMailUserName -ErrorAction SilentlyContinue
+    $primarySMTP = "$testMailUserName@contoso.local"
+
+    $changedMailUser = $false
+
+    # Create the test MailUser if it doesn't exist
+    if ($null -eq $testMailUser)
+    {
+        Write-Verbose -Message "Creating test mail user: $testMailUserName"
+
+        $newMailUserParams = @{
+            Name                 = $testMailUserName
+            ExternalEmailAddress = $primarySMTP
+        }
+
+        $testMailUser = New-MailUser @newMailUserParams
+
+        if ($null -eq $testMailUser)
+        {
+            throw 'Failed to create test MailUser'
+        }
+    }
+
+    # Set the test MailUser primary SMTP if not correct
+    if ($testMailUser.ExternalEmailAddress.AddressString -notlike $primarySMTP)
+    {
+        Write-Verbose -Message "Changing ExternalEmailAddress on test mail user: $testMailboxName"
+
+        $testMailUser | Set-MailUser -ExternalEmailAddress $primarySMTP
+
+        $changedMailUser = $true
+    }
+
+    # Get the MailUser one more time so we have updated properties on it
+    if ($changedMailUser)
+    {
+        $testMailUser = Get-MailUser $testMailUserName
+    }
+
+    return $testMailUser
+}
+
+<#
+    .SYNOPSIS
+        Returns a MailContact object corresponding to a DSC Test MailContact.
+        Creates the MailContact if it does not already exist.
+#>
+function Get-DSCTestMailContact
+{
+    [CmdletBinding()]
+    [OutputType([Microsoft.Exchange.Data.Directory.Management.MailContact])]
+    param()
+
+    $testMailContactName = 'DSCTestMailContact'
+
+    $testMailContact = Get-MailContact $testMailContactName -ErrorAction SilentlyContinue
+    $primarySMTP = "$testMailContactName@contoso.local"
+
+    $changedMailContact = $false
+
+    # Create the test MailContact if it doesn't exist
+    if ($null -eq $testMailContact)
+    {
+        Write-Verbose -Message "Creating test mail contact: $testMailContactName"
+
+        $newMailContactParams = @{
+            Name                 = $testMailContactName
+            ExternalEmailAddress = $primarySMTP
+        }
+
+        $testMailContact = New-MailContact @newMailContactParams
+
+        if ($null -eq $testMailContact)
+        {
+            throw 'Failed to create test MailContact'
+        }
+    }
+
+    # Set the test MailContact primary SMTP if not correct
+    if ($testMailContact.ExternalEmailAddress.AddressString -notlike $primarySMTP)
+    {
+        Write-Verbose -Message "Changing ExternalEmailAddress on test mail contact: $testMailContactName"
+
+        $testMailContact | Set-MailContact -ExternalEmailAddress $primarySMTP
+
+        $changedMailContact = $true
+    }
+
+    # Get the MailContact one more time so we have updated properties on it
+    if ($changedMailContact)
+    {
+        $testMailContact = Get-MailContact $testMailContactName
+    }
+
+    return $testMailContact
 }
 
 Export-ModuleMember -Function *

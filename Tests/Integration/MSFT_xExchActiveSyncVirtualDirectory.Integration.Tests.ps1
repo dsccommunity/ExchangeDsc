@@ -16,7 +16,7 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
+[System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
@@ -172,50 +172,32 @@ if ($exchangeInstalled)
         }
 
         Context 'Test missing ExtendedProtectionFlags for ExtendedProtectionSPNList' {
-            $caughtException = $false
             $testParams.ExtendedProtectionFlags = @('NoServicenameCheck')
-            try
-            {
-                Set-TargetResource @testParams | Out-Null
-            }
-            catch
-            {
-                $caughtException = $true
-            }
 
             It 'Should hit exception for missing ExtendedProtectionFlags AllowDotlessSPN' {
-                $caughtException | Should Be $true
+                { Set-TargetResource @testParams } | Should -Throw
             }
 
             It 'Test results should be true after adding missing ExtendedProtectionFlags' {
                 $testParams.ExtendedProtectionFlags = @('AllowDotlessSPN')
                 Set-TargetResource @testParams
                 $testResults = Test-TargetResource @testParams
-                $testResults | Should Be $true
+                $testResults | Should -Be $true
             }
         }
 
         Context 'Test invalid combination in ExtendedProtectionFlags' {
-            $caughtException = $false
             $testParams.ExtendedProtectionFlags = @('NoServicenameCheck','None')
-            try
-            {
-                Set-TargetResource @testParams | Out-Null
-            }
-            catch
-            {
-                $caughtException = $true
-            }
 
             It 'Should hit exception for invalid combination ExtendedProtectionFlags' {
-                $caughtException | Should Be $true
+                { Set-TargetResource @testParams } | Should -Throw
             }
 
             It 'Test results should be true after correction of ExtendedProtectionFlags' {
                 $testParams.ExtendedProtectionFlags = @('AllowDotlessSPN')
                 Set-TargetResource @testParams
                 $testResults = Test-TargetResource @testParams
-                $testResults | Should Be $true
+                $testResults | Should -Be $true
             }
         }
 

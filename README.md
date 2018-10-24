@@ -97,7 +97,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   an ExchangeCertificate using *-ExchangeCertificate cmdlets.
 * **xExchExchangeServer**
 * **xExchImapSettings** configures IMAP settings using Set-ImapSettings.
-* **xExchInstall** installs Exchange 2013, 2016, or 2019 (Preview).
+* **xExchInstall** installs or updates Exchange 2013, 2016, or 2019 (Preview).
 * **xExchJetstress** automatically runs Jetstress using
   the **JetstressCmd.exe** command line executable.
 * **xExchJetstressCleanup** cleans up the database and log
@@ -369,11 +369,13 @@ parameters.
 * **AllowServiceRestart**: Whether it is OK to recycle the app pool after making
   changes. Defaults to $false.
 * **AdfsAuthentication**
+* **AdminEnabled**
 * **BasicAuthentication**
 * **DigestAuthentication**
 * **DomainController**
 * **ExternalAuthenticationMethods**
 * **FormsAuthentication**
+* **GzipLevel**
 * **ExternalUrl**
 * **InternalUrl**
 * **WindowsAuthentication**
@@ -456,7 +458,7 @@ parameters.
 
 ### xExchInstall
 
-**xExchInstall** installs Exchange 2013, 2016, or 2019 (Preview).
+**xExchInstall** installs or updates Exchange 2013, 2016, or 2019 (Preview).
 
 * **Path**: Full path to setup.exe in the Exchange 2013, 2016, or 2019
   (Preview) setup directory.
@@ -993,6 +995,7 @@ parameters.
 * **ExtendedProtectionTokenChecking**
 * **ExternalUrl**
 * **InternalUrl**
+* **OAuthAuthentication**
 * **PollInterval**
 * **RequireSSL**
 * **WindowsAuthentication**
@@ -1037,6 +1040,7 @@ parameters.
 * **AllowServiceRestart**: Whether it is OK to recycle the app pool
   after making changes.
   Defaults to $false.
+* **ActionForUnknownFileAndMIMETypes**
 * **AdfsAuthentication**
 * **BasicAuthentication**
 * **ChangePasswordEnabled**
@@ -1045,6 +1049,7 @@ parameters.
 * **ExternalAuthenticationMethods**
 * **ExternalUrl**
 * **FormsAuthentication**
+* **GzipLevel**
 * **InternalUrl**
 * **InstantMessagingEnabled**
 * **InstantMessagingCertificateThumbprint**
@@ -1052,8 +1057,11 @@ parameters.
 * **InstantMessagingType**
 * **LogonPagePublicPrivateSelectionEnabled**
 * **LogonPageLightSelectionEnabled**
+* **UNCAccessOnPublicComputersEnabled**
+* **UNCAccessOnPrivateComputersEnabled**
 * **WindowsAuthentication**
-* **WSSecurityAuthentication**
+* **WSSAccessOnPublicComputersEnabled**
+* **WSSAccessOnPrivateComputersEnabled**
 * **LogonFormat**
 * **DefaultDomain**
 
@@ -1494,7 +1502,7 @@ and exit maintenance mode. MaintenanceModePrep.ps1 prepares a server for
 maintenance mode by setting DatabaseCopyAutoActivationPolicy to Blocked using a
 Domain Controller in both the primary and secondary site. If multiple servers are
 going to be entering maintenance mode at the same time, this step can help prevent
-these servers from failing over databases to eachother. MaintenanceModeStart.ps1
+these servers from failing over databases to each other. MaintenanceModeStart.ps1
 puts a server into maintenance mode. MaintenanceModeStop.ps1 takes a server out
 of maintenance mode.
 

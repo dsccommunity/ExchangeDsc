@@ -20,10 +20,10 @@ function Get-TargetResource
         $Level
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-EventLogLevel' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-EventLogLevel' -Verbose:$VerbosePreference
 
     $eventLogLevel = Get-EventLogLevel -Identity "$($env:COMPUTERNAME)\$($Identity)"
 
@@ -59,10 +59,10 @@ function Set-TargetResource
         $Level
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-EventLogLevel' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-EventLogLevel' -Verbose:$VerbosePreference
 
     Set-EventLogLevel -Identity "$($env:COMPUTERNAME)\$($Identity)" -Level $Level
 }
@@ -89,10 +89,10 @@ function Test-TargetResource
         $Level
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-EventLogLevel' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-EventLogLevel' -Verbose:$VerbosePreference
 
     $eventLogLevel = Get-EventLogLevel -Identity "$($env:COMPUTERNAME)\$($Identity)"
 
@@ -106,7 +106,7 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name 'Level' -Type 'String' -ExpectedValue $Level -ActualValue $eventLogLevel.EventLevel -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'Level' -Type 'String' -ExpectedValue $Level -ActualValue $eventLogLevel.EventLevel -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }

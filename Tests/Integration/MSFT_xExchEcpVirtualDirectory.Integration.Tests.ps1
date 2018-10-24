@@ -16,7 +16,7 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean]$exchangeInstalled = Get-IsSetupComplete
+[System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
@@ -35,21 +35,25 @@ if ($exchangeInstalled)
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\ecp (Default Web Site)"
             Credential = $shellCredentials
+            AdminEnabled = $false
             #AdfsAuthentication = $false #Don't test AdfsAuthentication changes in dedicated ECP tests, as they have to be done to OWA at the same time
             BasicAuthentication = $true
             DigestAuthentication = $false
             ExternalUrl = "https://$($serverFqdn)/ecp"
             FormsAuthentication = $true
+            GzipLevel = 'Off'
             InternalUrl = "https://$($serverFqdn)/ecp"
             WindowsAuthentication = $false
         }
 
         $expectedGetResults = @{
             Identity =  "$($env:COMPUTERNAME)\ecp (Default Web Site)"
+            AdminEnabled = $false
             BasicAuthentication = $true
             DigestAuthentication = $false
             ExternalUrl = "https://$($serverFqdn)/ecp"
             FormsAuthentication = $true
+            GzipLevel = 'Off'
             InternalUrl = "https://$($serverFqdn)/ecp"
             WindowsAuthentication = $false
         }
@@ -61,20 +65,24 @@ if ($exchangeInstalled)
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\ecp (Default Web Site)"
             Credential = $shellCredentials
+            AdminEnabled = $true
             BasicAuthentication = $false
             DigestAuthentication = $true
             ExternalUrl = ''
             FormsAuthentication = $false
+            GzipLevel = 'High'
             InternalUrl = ''
             WindowsAuthentication = $true
         }
 
         $expectedGetResults = @{
             Identity =  "$($env:COMPUTERNAME)\ecp (Default Web Site)"
+            AdminEnabled = $true
             BasicAuthentication = $false
             DigestAuthentication = $true
             ExternalUrl = ''
             FormsAuthentication = $false
+            GzipLevel = 'High'
             InternalUrl = ''
             WindowsAuthentication = $true
         }

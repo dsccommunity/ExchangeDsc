@@ -47,17 +47,17 @@ Configuration Example
 
     Import-DscResource -Module xExchange
 
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.FullName)\HelperScripts\ExchangeConfigHelper.psm1"
+    Import-Module -Name (Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath 'Modules\xExchangeCalculatorHelper.psm1')
 
     Node $AllNodes.NodeName
     {
         #Load the primary and copy lists from the calculator files
-        $primaryDbList = DBListFromMailboxDatabasesCsv `
+        $primaryDbList = Get-DBListFromMailboxDatabasesCsv `
                             -MailboxDatabasesCsvPath "$($PSScriptRoot)\CalculatorAndScripts\MailboxDatabases.csv" `
                             -ServerNameInCsv $Node.ServerNameInCsv `
                             -DbNameReplacements $Node.DbNameReplacements
 
-        $copyDbList = DBListFromMailboxDatabaseCopiesCsv `
+        $copyDbList = Get-DBListFromMailboxDatabaseCopiesCsv `
                             -MailboxDatabaseCopiesCsvPath "$($PSScriptRoot)\CalculatorAndScripts\MailboxDatabaseCopies.csv" `
                             -ServerNameInCsv $Node.ServerNameInCsv `
                             -DbNameReplacements $Node.DbNameReplacements

@@ -16,7 +16,7 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 #Check if Exchange is installed on this machine. If not, we can't run tests
-[System.Boolean] $exchangeInstalled = Get-IsSetupComplete
+[System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
@@ -143,7 +143,7 @@ function Get-VersionSpecificComponentsToActivate
     [OutputType([System.String[]])]
     param()
 
-    $serverVersion = Get-ExchangeVersion
+    $serverVersion = Get-ExchangeVersionYear
 
     [System.String[]] $componentsToActivate = @('AutoDiscoverProxy',
                                                'ActiveSyncProxy',
@@ -197,7 +197,7 @@ function Wait-ForPrimaryHealthyIndexState
         {
             if ($null -ne (Get-MailboxDatabaseCopyStatus -Identity $db.DatabaseName | Where-Object {$_.MailboxServer -notlike "$($env:COMPUTERNAME)" -and $_.ContentIndexState -like "Healthy"}))
             {
-                Write-Verbose "Reseeding content index of copy $($db.Identity)"
+                Write-Verbose -Message "Reseeding content index of copy $($db.Identity)"
 
                 Update-MailboxDatabaseCopy -Identity $db.Identity -CatalogOnly -BeginSeed -Confirm:$false -Force
             }
@@ -248,7 +248,7 @@ function Wait-ForSecondaryHealthyIndexState
         {
             if ($null -ne (Get-MailboxDatabaseCopyStatus -Identity $db.DatabaseName | Where-Object {$_.MailboxServer -like "$($env:COMPUTERNAME)" -and $_.ContentIndexState -like "Healthy"}))
             {
-                Write-Verbose "Reseeding content index of copy $($db.Identity)"
+                Write-Verbose -Message "Reseeding content index of copy $($db.Identity)"
 
                 Update-MailboxDatabaseCopy -Identity $db.Identity -CatalogOnly -BeginSeed -Confirm:$false -Force
             }
@@ -317,7 +317,7 @@ if ($exchangeInstalled)
     #Make sure server is a DAG member
     if ($null -eq $isDagMember)
     {
-        GetRemoteExchangeSession -Credential $shellCredentials `
+        Get-RemoteExchangeSession -Credential $shellCredentials `
                                  -CommandsToLoad 'Get-MailboxServer','Get-MailboxDatabaseCopyStatus','Get-MailboxDatabase'
 
         $mbxServer = Get-MailboxServer $env:COMPUTERNAME

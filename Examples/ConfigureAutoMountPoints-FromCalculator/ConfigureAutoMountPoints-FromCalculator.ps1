@@ -36,13 +36,13 @@ Configuration Example
 {
     Import-DscResource -Module xExchange
 
-    Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.FullName)\HelperScripts\ExchangeConfigHelper.psm1"
+    Import-Module -Name (Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath 'Modules\xExchangeCalculatorHelper.psm1')
 
     Node $AllNodes.NodeName
     {
         $dagSettings = $ConfigurationData[$Node.DAGId]
 
-        $dbMap = DBMapFromServersCsv `
+        $dbMap = Get-DBMapFromServersCsv `
                     -ServersCsvPath "$($PSScriptRoot)\CalculatorAndScripts\Servers.csv" `
                     -ServerNameInCsv $Node.ServerNameInCsv `
                     -DbNameReplacements $dagSettings.DbNameReplacements

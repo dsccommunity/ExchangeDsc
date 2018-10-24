@@ -24,14 +24,14 @@ function Get-TargetResource
         $DomainController
     )
 
-    LogFunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
     Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMCallRouterSettings' -SupportedVersions '2013','2016'
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMCallRouterSettings' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMCallRouterSettings' -Verbose:$VerbosePreference
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Server','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Server','DomainController'
 
     $umService = Get-UMCallRouterSettings @PSBoundParameters
 
@@ -71,14 +71,14 @@ function Set-TargetResource
         $DomainController
     )
 
-    LogFunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
     Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMCallRouterSettings' -SupportedVersions '2013','2016'
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMCallRouterSettings' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMCallRouterSettings' -Verbose:$VerbosePreference
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential'
 
     Set-UMCallRouterSettings @PSBoundParameters
 }
@@ -109,7 +109,7 @@ function Test-TargetResource
         $DomainController
     )
 
-    LogFunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
     Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMCallRouterSettings' -SupportedVersions '2013','2016'
 
@@ -125,7 +125,7 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name 'UMStartupMode' -Type 'String' -ExpectedValue $UMStartupMode -ActualValue $umService.UMStartupMode -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'UMStartupMode' -Type 'String' -ExpectedValue $UMStartupMode -ActualValue $umService.UMStartupMode -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }

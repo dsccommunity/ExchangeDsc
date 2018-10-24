@@ -1,6 +1,6 @@
 @{
     # Version number of this module.
-    moduleVersion = '1.23.0.0'
+    moduleVersion = '1.24.0.0'
 
     # ID used to uniquely identify this module
     GUID = '9a908ca3-8a67-485c-a014-66ba37fcc2a4'
@@ -48,26 +48,34 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-        ReleaseNotes = '- Fixes issue with xExchMaintenanceMode on Exchange 2016 where the cluster
-  does not get paused when going into maintenance mode. Also fixes issue
-  where services fail to stop, start, pause, or resume.
-- Explicitly cast member types in Get-DscConfiguration return hashtables to
-  align with the types defined in the resource schemas. Fixes an issue where
-  Get-DscConfiguration fails to return a value.
-- xExchClientAccessServer: Fixes issue where AlternateServiceAccountConfiguration
-  or RemoveAlternateServiceAccountCredentials parameters can"t be used at the
-  same time as other optional parameters.
-- xExchInstall: Fixes issue where Test-TargetResource returns true if setup is
-  running. Fixes issue where setup is not detected as having been successfully
-  completed even if setup was successful. Adds initial set of unit tests for
-  xExchInstall and related functions.
-- Remove VerbosePreference from function parameters and update all calls to
-  changed functions.
-- Fixes multiple PSScriptAnalyzer issues. Specifically, fixes all instances of
-  PSAvoidTrailingWhitespace, PSAvoidGlobalVars,
-  PSAvoidUsingConvertToSecureStringWithPlainText, PSUseSingularNouns, and
-  fixes many instances of PSUseDeclaredVarsMoreThanAssignments.
-- Add support for Exchange Server 2019 - Preview
+        ReleaseNotes = '- xExchangeHelper.psm1: Renamed common functions to use proper Verb-Noun
+  format. Also addresses many common style issues in functions in the file, as
+  well as in calls to these functions from other files.
+- MSFT_xExchTransportService: Removed functions that were duplicates of helper
+  functions in xExchangeHelper.psm1.
+- Fixes an issue where only objects of type Mailbox can be specified as a
+  Journal Recipient. Now MailUser and MailContact types can be used as well.
+- Update appveyor.yml to use the default template.
+- Added default template files .codecov.yml, .gitattributes, and .gitignore, and
+  .vscode folder.
+- Add Unit Tests for xExchAntiMalwareScanning
+- Add remaining Unit Tests for xExchInstall, and for most common setup
+  functions
+- Added ActionForUnknownFileAndMIMETypes,WSSAccessOnPublicComputersEnabled,
+  WSSAccessOnPrivateComputersEnabled,UNCAccessOnPublicComputersEnabled
+  UNCAccessOnPrivateComputersEnabled and GzipLevel to xExchOwaVirtualDirectory.
+- Added GzipLevel and AdminEnabled to xExchEcpVirtualDirectory.
+- Added OAuthAuthentication to xExchOabVirtualDirectory.
+- Updated readme with the new parameters and removed a bad parameter from
+  xExchOwaVirtualDirectory that did not actually exist.
+- Updated .gitattributes to allow test .pfx files to be saved as binary
+- Added Cumulative Update / Exchange update support to xExchInstall resource.
+- Add remaining Unit Tests for all xExchangeHelper functions that don"t
+  require the loading of Exchange DLL"s.
+- Renamed and moved file Examples/HelperScripts/ExchangeConfigHelper.psm1 to
+  Modules/xExchangeCalculatorHelper.psm1. Renamed functions within the module
+  to conform to proper function naming standards. Added remaining Unit tests
+  for module.
 
 '
 
@@ -75,6 +83,7 @@
 
     } # End of PrivateData hashtable
 }
+
 
 
 

@@ -1,131 +1,225 @@
-#Gets the existing Remote PowerShell session to Exchange, if it exists
-function GetExistingExchangeSession
+<#
+    .SYNOPSIS
+        Gets the existing Remote PowerShell session to Exchange, if it exists
+        and is in an Opened state.
+#>
+function Get-ExistingRemoteExchangeSession
 {
-    return (Get-PSSession -Name "DSCExchangeSession" -ErrorAction SilentlyContinue)
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.Runspaces.PSSession])]
+    param ()
+
+    $session = Get-PSSession -Name 'DSCExchangeSession' -ErrorAction SilentlyContinue
+
+    # Attempt to reuse the session if we found one
+    if ($null -ne $session)
+    {
+        if ($session.State -eq 'Opened')
+        {
+            Write-Verbose -Message 'Reusing existing Remote Powershell Session to Exchange'
+        }
+        else # Session is in an unexpected state. Remove it so we can rebuild it
+        {
+            Remove-RemoteExchangeSession
+            $session = $null
+        }
+    }
+
+    return $session
 }
 
-#Establishes a Exchange remote powershell session to the local server. Reuses the session if it already exists.
-function GetRemoteExchangeSession
+<#
+    .SYNOPSIS
+        Establishes an Exchange remote PowerShell session to the local server,
+        and imports the session. Reuses the session if it already exists.
+
+    .PARAMETER Credential
+        The Credentials to use when creating a remote PowerShell session to
+        Exchange.
+
+    .PARAMETER CommandsToLoad
+        A list of the cmdlets that should be imported in the remote PowerShell
+        session.
+
+    .PARAMETER SetupProcessName
+        The name of the primary Exchange Setup process. If this process is
+        detected by this function, an exception will be thrown.
+#>
+function Get-RemoteExchangeSession
 {
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.String[]]
         $CommandsToLoad,
 
-        $SetupProcessName = "ExSetup*"
+        [Parameter()]
+        [System.String]
+        $SetupProcessName = 'ExSetup*'
     )
 
-    #Check if Exchange Setup is running. If so, we need to throw an exception, as a running Exchange DSC resource will block Exchange Setup from working properly.
-    if (Get-IsSetupRunning -SetupProcessName $SetupProcessName)
+    # Check if Exchange Setup is running. If so, we need to throw an exception, as a running Exchange DSC resource will block Exchange Setup from working properly.
+    if (Test-ExchangeSetupRunning -SetupProcessName $SetupProcessName)
     {
-        throw "Exchange Setup is currently running. Preventing creation of new Remote PowerShell session to Exchange."
+        throw 'Exchange Setup is currently running. Preventing creation of new Remote PowerShell session to Exchange.'
     }
 
-    #See if the session already exists
-    $Session = GetExistingExchangeSession
+    # See if the session already exists
+    $session = Get-ExistingRemoteExchangeSession -Verbose:$VerbosePreference
 
-    #Attempt to reuse the session if we found one
-    if ($null -ne $Session)
+    # Either the session didn't exist, or it was broken and we nulled it out. Create a new one
+    if ($null -eq $session)
     {
-        if ($Session.State -eq "Opened")
-        {
-            Write-Verbose "Reusing existing Remote Powershell Session to Exchange"
-        }
-        else #Session is in an unexpected state. Remove it so we can rebuild it
-        {
-            RemoveExistingRemoteSession
-            $Session = $null
-        }
+        $session = New-RemoteExchangeSession -Credential $Credential -Verbose:$VerbosePreference
     }
 
-    #Either the session didn't exist, or it was broken and we nulled it out. Create a new one
-    if ($null -eq $Session)
+    # If the session is still null here, things went wrong. Throw exception
+    if ($null -eq $session)
     {
-        #First make sure we are on a valid server version, and that Exchange is fully installed
-        if (!(Get-IsSetupComplete -Verbose:$VerbosePreference))
-        {
-            throw 'A supported version of Exchange is either not present, or not fully installed on this machine.'
-        }
-
-        Write-Verbose "Creating new Remote Powershell session to Exchange"
-
-        #Get local server FQDN
-        $machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
-        $serverName = $env:computername.ToLower()
-        $serverFQDN = $serverName + "." + $machineDomain
-
-        #Override chatty banner, because chatty
-        New-Alias Get-ExBanner Out-Null
-        New-Alias Get-Tip Out-Null
-
-        #Load built in Exchange functions, and create session
-        $exbin = Join-Path -Path ((Get-ItemProperty HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\Setup).MsiInstallPath) -ChildPath "bin"
-        $remoteExchange = Join-Path -Path "$($exbin)" -ChildPath "RemoteExchange.ps1"
-        . $remoteExchange
-        $Session = _NewExchangeRunspace -fqdn $serverFQDN -credential $Credential -UseWIA $false -AllowRedirection $false
-
-        #Remove the aliases we created earlier
-        Remove-Item Alias:Get-ExBanner
-        Remove-Item Alias:Get-Tip
-
-        if ($null -ne $Session)
-        {
-            $Session.Name = "DSCExchangeSession"
-        }
+        throw 'Failed to establish remote Powershell session to local server.'
     }
-
-    #If the session is still null here, things went wrong. Throw exception
-    if ($null -eq $Session)
+    else # Import the session globally
     {
-        throw "Failed to establish remote Powershell session to FQDN: $($serverFQDN)"
-    }
-    else #Import the session globally
-    {
-        #Temporarily set Verbose to SilentlyContinue so the Session and Module import isn't noisy
-        $oldVerbose = $VerbosePreference
-        $VerbosePreference = "SilentlyContinue"
-
-        if ($CommandsToLoad.Count -gt 0)
-        {
-            $moduleInfo = Import-PSSession $Session -WarningAction SilentlyContinue -DisableNameChecking -AllowClobber -CommandName $CommandsToLoad -Verbose:0
-        }
-        else
-        {
-            $moduleInfo = Import-PSSession $Session -WarningAction SilentlyContinue -DisableNameChecking -AllowClobber -Verbose:0
-        }
-
-        Import-Module $moduleInfo -Global -DisableNameChecking
-
-        #Set Verbose back
-        $VerbosePreference = $oldVerbose
+        Import-RemoteExchangeSession -Session $session -CommandsToLoad $CommandsToLoad -Verbose:([System.Management.Automation.ActionPreference]::SilentlyContinue)
     }
 }
 
-#Removes any Remote Sessions that have been setup by us
-function RemoveExistingRemoteSession
+<#
+    .SYNOPSIS
+        Creates a new Exchange remote PowerShell session to the local server.
+
+    .PARAMETER Credential
+        The Credentials to use when creating a remote PowerShell session to
+        Exchange.
+#>
+function New-RemoteExchangeSession
 {
     [CmdletBinding()]
-    param()
+    [OutputType([System.Management.Automation.Runspaces.PSSession])]
+    param
+    (
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential
+    )
 
-    $sessions = GetExistingExchangeSession
-
-    if ($null -ne $sessions)
+    # First make sure we are on a valid server version, and that Exchange is fully installed
+    if (!(Test-ExchangeSetupComplete -Verbose:$VerbosePreference))
     {
-        Write-Verbose "Removing existing remote Powershell sessions"
-
-        GetExistingExchangeSession | Remove-PSSession
+        throw 'A supported version of Exchange is either not present, or not fully installed on this machine.'
     }
+
+    Write-Verbose -Message 'Creating new Remote Powershell session to Exchange'
+
+    # Get local server FQDN
+    $machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
+    $serverName = $env:computername.ToLower()
+    $serverFQDN = $serverName + '.' + $machineDomain
+
+    # Override chatty banner, because chatty
+    New-Alias Get-ExBanner Out-Null
+    New-Alias Get-Tip Out-Null
+
+    # Load built in Exchange functions, and create session
+    $exbin = Join-Path -Path ((Get-ItemProperty -Path HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\Setup).MsiInstallPath) -ChildPath 'bin'
+    $remoteExchange = Join-Path -Path "$exbin" -ChildPath 'RemoteExchange.ps1'
+
+    # Setup commands to run while the RemoteExchange.ps1 script is in scope
+    $commandToExecuteAfterDotSourcing = @('_NewExchangeRunspace')
+    $commandParamsToExecuteAfterDotSourcing = @{
+        '_NewExchangeRunspace' = @{
+            fqdn             = $serverFQDN
+            credential       = $Credential
+            UseWIA           = $false
+            AllowRedirection = $false
+        }
+    }
+
+    $returnValues = Invoke-DotSourcedScript `
+                        -ScriptPath $remoteExchange `
+                        -CommandsToExecuteInScope $commandToExecuteAfterDotSourcing `
+                        -ParamsForCommandsToExecuteInScope $commandParamsToExecuteAfterDotSourcing `
+                        -Verbose:$VerbosePreference
+
+    if ($null -ne $returnValues -and $returnValues.ContainsKey('_NewExchangeRunspace'))
+    {
+        $session = $returnValues['_NewExchangeRunspace']
+    }
+
+    # Remove the aliases we created earlier
+    Remove-Item Alias:Get-ExBanner
+    Remove-Item Alias:Get-Tip
+
+    if ($null -ne $session)
+    {
+        $session.Name = 'DSCExchangeSession'
+    }
+
+    return $session
 }
 
-#Checks whether a supported version of Exchange is at least partially installed by looking for Exchange's product GUID
-function Get-IsExchangePresent
+<#
+    .SYNOPSIS
+        Imports an established remote PowerShell session to Exchange.
+
+    .PARAMETER Session
+        The remote PowerShell session to import.
+
+    .PARAMETER CommandsToLoad
+        A list of the cmdlets that should be imported in the remote PowerShell
+        session.
+#>
+function Import-RemoteExchangeSession
 {
-    $version = Get-ExchangeVersion
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Object]
+        $Session,
+
+        [Parameter()]
+        [System.String[]]
+        $CommandsToLoad = @('*')
+    )
+
+    $moduleInfo = Import-PSSession $Session -WarningAction SilentlyContinue -DisableNameChecking -AllowClobber -CommandName $CommandsToLoad -Verbose:0
+
+    Import-Module $moduleInfo -Global -DisableNameChecking
+}
+
+<#
+    .SYNOPSIS
+        Removes any Remote Exchange PowerShell Sessions that have been setup by
+        xExchange.
+#>
+function Remove-RemoteExchangeSession
+{
+    [CmdletBinding()]
+    param ()
+
+    Get-ExistingRemoteExchangeSession | Remove-PSSession
+}
+
+<#
+    .SYNOPSIS
+        Checks whether a supported version of Exchange is at least partially
+        installed.
+#>
+function Test-ExchangePresent
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param ()
+
+    $version = Get-ExchangeVersionYear
 
     if ($version -in '2013','2016','2019')
     {
@@ -137,49 +231,146 @@ function Get-IsExchangePresent
     }
 }
 
-#Gets the installed Exchange Version, and returns the number as a string.
-#Returns N/A if the version cannot be found, and will optionally throw an exception
-#if ThrowIfUnknownVersion was set to $true.
-function Get-ExchangeVersion
+<#
+    .SYNOPSIS
+        Gets the installed Exchange Version, and returns the number as a
+        string. Returns Null if the version cannot be found, and will
+        optionally throw an exception if ThrowIfUnknownVersion was set to
+        $true.
+
+    .PARAMETER ThrowIfUnknownVersion
+        Whether the function should throw an exception if the version cannot
+        be found. Defauls to $false.
+#>
+function Get-ExchangeVersionYear
 {
-    param ([bool]$ThrowIfUnknownVersion = $false)
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter()]
+        [System.Boolean]
+        $ThrowIfUnknownVersion = $false
+    )
 
-    $version = "N/A"
+    $version = $null
 
-    $uninstall20162019Key = Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}' -ErrorAction SilentlyContinue
+    $installedVersionDetails = Get-DetailedInstalledVersion
 
-    if ($null -ne $uninstall20162019Key)
-    {
-        if ($uninstall20162019Key.GetValue('VersionMajor') -eq 15 -and $uninstall20162019Key.GetValue('VersionMinor') -eq 2)
+    if ($null -ne $installedVersionDetails)
+    { # If Exchange is installed
+        switch ($installedVersionDetails.VersionMajor)
         {
-            $version = '2019'
-        }
-        else
-        {
-            $version = '2016'
+            15
+            {
+                switch ($installedVersionDetails.VersionMinor)
+                {
+                    0
+                    {
+                        $version = '2013'
+                    }
+
+                    1
+                    {
+                        $version = '2016'
+                    }
+
+                    2
+                    {
+                        $version = '2019'
+                    }
+                }
+            }
         }
     }
-    elseif ($null -ne (Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4934D1EA-BE46-48B1-8847-F1AF20E892C1}' -ErrorAction SilentlyContinue))
+
+    if ($null -eq $version -and $ThrowIfUnknownVersion)
     {
-        $version = '2013'
-    }
-    elseif ($ThrowIfUnknownVersion)
-    {
-        throw "Failed to discover a known Exchange Version"
+        throw 'Failed to discover a known Exchange Version'
     }
 
     return $version
 }
 
-#Checks whether Setup fully completed
-function Get-IsSetupComplete
+<#
+    .SYNOPSIS
+        Function to read installed Exchange's Uninstall information from registry.
+        The function returns with the Uninstall registry key object.
+#>
+function Get-ExchangeUninstallKey
+{
+    [CmdletBinding()]
+    [OutputType([Microsoft.Win32.RegistryKey])]
+    param()
+
+    # First try to get the Exchange 2016 / 2019 uninstall key.
+    $uninstallKey = Get-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}' -ErrorAction SilentlyContinue
+
+    # If the first key attempt is NULL, this may be a 2013 server. Try the 2013 key.
+    if ($null -eq $uninstallKey)
+    {
+        $uninstallKey = Get-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4934D1EA-BE46-48B1-8847-F1AF20E892C1}' -ErrorAction SilentlyContinue
+    }
+
+    return $uninstallKey
+}
+
+<#
+    .SYNOPSIS
+        Gets installed Exchange's buildnumber, which refers to the installed updates,
+        and returns a hashtable with Major, Minor, Update versions.
+        Returns NULL if the version cannot be found, and will optionally throw
+        an exception if ThrowIfUnknownVersion was set to $true.
+#>
+function Get-DetailedInstalledVersion
+{
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCustomObject])]
+    param()
+
+    $installedVersionDetails = $null
+
+    $uninstallKey = Get-ExchangeUninstallKey
+
+    if ($null -ne $uninstallKey)
+    {
+        $uninstallKeyPath = $uninstallKey.Name.ToLower().Replace('hkey_local_machine','hklm:')
+
+        $displayVersion = Get-ItemProperty -Path $uninstallKeyPath -Name 'DisplayVersion' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty DisplayVersion
+
+        $versionBuild = $null
+        $displayVersion -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionBuild>\d+)'
+
+        if ($Matches)
+        {
+            $versionBuild = $Matches['VersionBuild']
+        }
+
+        $versionDetails = @{
+            VersionMajor   = Get-ItemProperty -Path $uninstallKeyPath -Name 'VersionMajor' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VersionMajor
+            VersionMinor   = Get-ItemProperty -Path $uninstallKeyPath -Name 'VersionMinor' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VersionMinor
+            VersionBuild   = $versionBuild
+            DisplayVersion = $displayVersion
+        }
+
+        $installedVersionDetails = New-Object -TypeName PSCustomObject -Property $versionDetails
+    }
+
+    return $installedVersionDetails
+}
+
+<#
+    .SYNOPSIS
+        Returns whether Exchange Setup has fully and successfully completed.
+#>
+function Test-ExchangeSetupComplete
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param()
+    param ()
 
-    $exchangePresent = Get-IsExchangePresent
-    $setupPartiallyCompleted = Get-IsSetupPartiallyCompleted -Verbose:$VerbosePreference
+    $exchangePresent = Test-ExchangePresent
+    $setupPartiallyCompleted = Test-ExchangeSetupPartiallyCompleted -Verbose:$VerbosePreference
 
     if ($exchangePresent -eq $true -and $setupPartiallyCompleted -eq $false)
     {
@@ -197,23 +388,28 @@ function Get-IsSetupComplete
     return $isSetupComplete
 }
 
-#Checks whether any Setup watermark keys exist which means that a previous installation of setup had already started but not completed
-function Get-IsSetupPartiallyCompleted
+<#
+    .SYNOPSIS
+        Checks whether any Setup watermark keys exist which means that a
+        previous installation of setup had already started but not completed.
+#>
+function Test-ExchangeSetupPartiallyCompleted
 {
     [CmdletBinding()]
-    param()
+    [OutputType([System.Boolean])]
+    param ()
 
     Write-Verbose -Message 'Checking if setup is partially complete'
 
     $isPartiallyCompleted = $false
 
-    #Now check if setup actually completed successfully
-    [System.String[]]$roleKeys = "CafeRole","ClientAccessRole","FrontendTransportRole","HubTransportRole","MailboxRole","UnifiedMessagingRole"
+    # Now check if setup actually completed successfully
+    [System.String[]] $roleKeys = @( 'CafeRole', 'ClientAccessRole', 'FrontendTransportRole', 'HubTransportRole', 'MailboxRole', 'UnifiedMessagingRole' )
 
     foreach ($key in $roleKeys)
     {
         $values = $null
-        $values = Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\$key" -ErrorAction SilentlyContinue
+        $values = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\$key" -ErrorAction SilentlyContinue
 
         if ($null -ne $values)
         {
@@ -221,7 +417,7 @@ function Get-IsSetupPartiallyCompleted
 
             if ($null -ne $values.UnpackedVersion)
             {
-                #If ConfiguredVersion is missing, or Action or Watermark or present, setup needs to be resumed
+                # If ConfiguredVersion is missing, or Action or Watermark or present, setup needs to be resumed
                 if ($null -eq $values.ConfiguredVersion)
                 {
                     Write-Warning -Message "Registry value missing. Setup considered partially complete. Location: 'HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\$key\ConfiguredVersion'."
@@ -243,23 +439,153 @@ function Get-IsSetupPartiallyCompleted
                     $isPartiallyCompleted = $true
                 }
             }
-            else
-            {
-                Write-Verbose -Message "Value not present 'HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\$key\UnpackedVersion'. Skipping remaining value checks for key."
-            }
         }
     }
 
     return $isPartiallyCompleted
 }
 
-#Checks for the exact status of Exchange setup and returns the results in a Hashtable
-function Get-InstallStatus
+<#
+    .SYNOPSIS
+       Gets Exchange's setup.exe file's version info.
+       It will return VersionMajor, VersionMinor, VersionBuild values as PSCustomObject
+       or NULL if not readable.
+
+    .PARAMETER Path
+        The path of the setup.exe which is used within the xExchInstall DSC resource.
+#>
+function Get-SetupExeVersion
+{
+    [CmdletBinding()]
+    [OutputType([System.Management.Automation.PSCustomObject])]
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [System.String]
+        $Path
+    )
+
+    $version = $null
+
+    # Get Exchange setup.exe version
+    if (Test-Path -Path $Path -ErrorAction SilentlyContinue)
+    {
+        $setupexeVersionInfo = (Get-ChildItem -Path $Path).VersionInfo
+
+        $setupexeVersionInfo = @{
+            VersionMajor = [System.Int32] $setupexeVersionInfo.ProductMajorPart
+            VersionMinor = [System.Int32] $setupexeVersionInfo.ProductMinorPart
+            VersionBuild = [System.Int32] $setupexeVersionInfo.ProductBuildPart
+        }
+
+        $version = New-Object -TypeName PSCustomObject -Property $setupexeVersionInfo
+    }
+
+    return $version
+}
+
+<#
+    .SYNOPSIS
+        Checks if installed Exchange version is older than the version of the setup.exe,
+        which is used within the xExchInstall DSC Resource call.
+        Will return Boolean.
+
+    .PARAMETER Path
+        The path of the setup.exe which is used within the xExchInstall DSC resource.
+
+    .PARAMETER Arguments
+        The commandline arguments of setup.exe.
+#>
+function Test-ShouldUpgradeExchange
+{
+
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [System.String]
+        $Path,
+
+        [Parameter(Mandatory=$true)]
+        [System.String]
+        $Arguments
+    )
+
+    $shouldUpgrade = $false
+
+    if (($Arguments -notmatch '/mode:upgrade') -and ($Arguments -notmatch '/m:upgrade'))
+    {
+        return $shouldUpgrade
+    }
+
+    Write-Verbose -Message "Comparing setup.exe version and installed Exchange's version."
+
+    $setupExeVersion = Get-SetupExeVersion -Path $Path
+
+    if($null -ne $setupExeVersion`
+        -and $null -ne $setupExeVersion.VersionMajor`
+        -and $null -ne $setupExeVersion.VersionMinor`
+        -and $null -ne $setupExeVersion.VersionBuild)
+    {
+        Write-Verbose -Message "Setup.exe version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $setupExeVersion.VersionMajor,$setupexeVersion.VersionMinor, $setupexeVersion.VersionBuild)'"
+
+        $exchangeDisplayVersion = Get-DetailedInstalledVersion
+
+        if($null -ne $exchangeDisplayVersion`
+            -and $null -ne $exchangeDisplayVersion.VersionMajor`
+            -and $null -ne $exchangeDisplayVersion.VersionMinor`
+            -and $null -ne $exchangeDisplayVersion.VersionBuild)
+        { # If we have an exchange installed
+            Write-Verbose -Message "Exchange version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $exchangeDisplayVersion.VersionMajor,$exchangeDisplayVersion.VersionMinor, $exchangeDisplayVersion.VersionBuild)'"
+
+            if(($exchangeDisplayVersion.VersionMajor -eq $setupExeVersion.VersionMajor)`
+                -and ($exchangeDisplayVersion.VersionMinor -eq $setupExeVersion.VersionMinor)`
+                -and ($exchangeDisplayVersion.VersionBuild -lt $setupExeVersion.VersionBuild) )
+            { # If server has lower version of CU installed
+                Write-Verbose -Message 'Version upgrade is requested.'
+                # Executing with the upgrade.
+                $shouldUpgrade = $true
+            }
+            else
+            {
+                Write-Verbose -Message 'Exchange update is not possible. Version of installed Exchange cannot be updated with the version of setup.exe.'
+            }
+        }
+        else
+        {
+            Write-Error -Message "Get-ExchangeInstallStatus: Script cannot determine installed Exchange's version. Please check if Exchange is installed."
+        }
+    }
+    else
+    {
+        Write-Error -Message "Get-ExchangeInstallStatus: Script cannot determine setup.exe version. Please check the file '$Path'."
+    }
+
+    return $shouldUpgrade
+}
+
+<#
+    .SYNOPSIS
+        Checks for the exact status of Exchange setup and returns the results
+        in a Hashtable.
+
+    .PARAMETER Path
+        The path of the setup.exe which is used within the xExchInstall DSC resource.
+
+    .PARAMETER Arguments
+        The command line arguments to be passed to Exchange Setup.
+#>
+function Get-ExchangeInstallStatus
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
     param
     (
+        [Parameter()]
+        [System.String]
+        $Path,
+
         [Parameter()]
         [System.String]
         $Arguments
@@ -269,20 +595,22 @@ function Get-InstallStatus
 
     $shouldStartInstall = $false
 
-    $shouldInstallLanguagePack = Get-ShouldInstallLanguagePack -Arguments $Arguments
-    $setupRunning = Get-IsSetupRunning
-    $setupComplete = Get-IsSetupComplete -Verbose:$VerbosePreference
-    $exchangePresent = Get-IsExchangePresent
+    $shouldInstallLanguagePack = Test-ShouldInstallUMLanguagePack -Arguments $Arguments
+    $setupRunning = Test-ExchangeSetupRunning
+    $setupComplete = Test-ExchangeSetupComplete -Verbose:$VerbosePreference
+    $exchangePresent = Test-ExchangePresent
+    # Exchange CU install / update support
+    $shouldUpgrade = Test-ShouldUpgradeExchange -Path $Path -Arguments $Arguments -Verbose:$VerbosePreference
 
     if ($setupRunning -or $setupComplete)
     {
-        if($shouldInstallLanguagePack -and $setupComplete)
+        if (($shouldInstallLanguagePack -or $shouldUpgrade)  -and $setupComplete)
         {
             $shouldStartInstall = $true
         }
         else
         {
-            #Do nothing. Either Install is already running, or it's already finished successfully
+            # Do nothing. Either Install is already running, or it's already finished successfully
         }
     }
     elseif (!$setupComplete)
@@ -297,14 +625,20 @@ function Get-InstallStatus
         SetupRunning = $setupRunning
         SetupComplete = $setupComplete
         ExchangePresent = $exchangePresent
+        ShouldUpgrade = $shouldUpgrade
         ShouldStartInstall = $shouldStartInstall
     }
 
     $returnValue
 }
 
-#Check for missing registry keys that may cause Exchange setup to try to restart WinRM mid setup , which will in turn cause the DSC resource to fail
-#If any required keys are missing, configure WinRM, then force a reboot
+<#
+    .SYNOPSIS
+        Check for missing registry keys that may cause Exchange setup to try to
+        restart WinRM mid setup , which will in turn cause the DSC resource to
+        fail. If any required keys are missing, configure WinRM, then force a
+        reboot.
+#>
 function Set-WSManConfigStatus
 {
     # Suppressing this rule because $global:DSCMachineStatus is used to trigger a reboot.
@@ -316,12 +650,11 @@ function Set-WSManConfigStatus
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function', Target='DSCMachineStatus')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param
-    ()
+    param ()
 
     $needReboot = $false
 
-    $wsmanKey = Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN' -ErrorAction SilentlyContinue
+    $wsmanKey = Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN' -ErrorAction SilentlyContinue
 
     if ($null -ne $wsmanKey)
     {
@@ -329,7 +662,7 @@ function Set-WSManConfigStatus
         {
             $needReboot = $true
 
-            Write-Verbose "Value 'UpdatedConfig' missing from registry key HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN. Running: winrm i restore winrm/config"
+            Write-Verbose -Message "Value 'UpdatedConfig' missing from registry key HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WSMAN. Running: winrm i restore winrm/config"
 
             Set-Location "$($env:windir)\System32\inetsrv"
             winrm i restore winrm/config | Out-Null
@@ -347,8 +680,18 @@ function Set-WSManConfigStatus
     return $needReboot
 }
 
-function Get-ShouldInstallLanguagePack
+<#
+    .SYNOPSIS
+        Given the specified Exchange Setup arguments, determines whether an
+        Exchange UM Language Pack should be installed or not.
+
+    .PARAMETER Arguments
+        The command line arguments to be passed to Exchange Setup.
+#>
+function Test-ShouldInstallUMLanguagePack
 {
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param
     (
         [Parameter()]
@@ -359,33 +702,79 @@ function Get-ShouldInstallLanguagePack
     if($Arguments -match '(?<=/AddUMLanguagePack:)(([a-z]{2}-[A-Z]{2},?)+)(?=\s)')
     {
         $Cultures = $Matches[0]
-        Write-Verbose "AddUMLanguagePack parameters detected: $Cultures"
+        Write-Verbose -Message "AddUMLanguagePack parameters detected: $Cultures"
         $Cultures = $Cultures -split ','
 
         foreach($Culture in $Cultures)
         {
-            if((IsUMLanguagePackInstalled -Culture $Culture) -eq $false)
+            if((Test-UMLanguagePackInstalled -Culture $Culture) -eq $false)
             {
-                Write-Verbose "UM Language Pack: $Culture is not installed"
+                Write-Verbose -Message "UM Language Pack: $Culture is not installed"
                 return $true
             }
         }
     }
+
     return $false
 }
 
-#Checks whether setup is running by looking for if the ExSetup.exe process currently exists
-function Get-IsSetupRunning
+<#
+    .SYNOPSIS
+        Checks whether Exchange Setup is running by checking if the
+        ExSetup.exe process currently exists as a running process.
+
+    .PARAMETER SetupProcessName
+        The name of the process to check if running. Defaults to ExSetup*.
+#>
+function Test-ExchangeSetupRunning
 {
-    param([System.String]$SetupProcessName = "ExSetup*")
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $SetupProcessName = 'ExSetup*'
+    )
 
     return ($null -ne (Get-Process -Name $SetupProcessName -ErrorAction SilentlyContinue))
 }
 
-#Checks if two strings are equal, or are both either null or empty
-function CompareStrings
+<#
+    .SYNOPSIS
+        Checks if two strings are equal, or are both either null or empty.
+        If IgnoreCase is specified, returns true if both strings are like
+        each other, regardless of case. Without IgnoreCase, only returns
+        true if both strings are identical. Also returns true if both strings
+        are either null or empty. Returns false for all other cases.
+
+    .PARAMETER String1
+        The first System.String object to compare.
+
+    .PARAMETER String2
+        The second System.String object to compare
+
+    .PARAMETER IgnoreCase
+        Whether case should be ignored when comparing the two strings.
+#>
+function Compare-StringToString
 {
-    param([System.String]$String1, [System.String]$String2, [switch]$IgnoreCase)
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $String1,
+
+        [Parameter()]
+        [System.String]
+        $String2,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $IgnoreCase
+    )
 
     if (([System.String]::IsNullOrEmpty($String1) -and [System.String]::IsNullOrEmpty($String2)))
     {
@@ -404,10 +793,33 @@ function CompareStrings
     }
 }
 
-#Checks if two bools are equal, or are both either null or false
-function CompareBools($Bool1, $Bool2)
+<#
+    .SYNOPSIS
+        Compares two Nullable Boolean objects and returns true if they are both
+        set to true, both set to false, or both set to either null or false.
+
+    .PARAMETER Bool1
+        The first System.Boolean object to compare.
+
+    .PARAMETER Bool2
+        The second System.Boolean object to compare.
+#>
+function Compare-BoolToBool
 {
-    if($Bool1 -ne $Bool2)
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter()]
+        [Nullable[System.Boolean]]
+        $Bool1,
+
+        [Parameter()]
+        [Nullable[System.Boolean]]
+        $Bool2
+    )
+
+    if ($Bool1 -ne $Bool2)
     {
         if (!(($null -eq $Bool1 -and $Bool2 -eq $false) -or ($null -eq $Bool2 -and $Bool1 -eq $false)))
         {
@@ -418,10 +830,31 @@ function CompareBools($Bool1, $Bool2)
     return $true
 }
 
-#Takes a string which should be in timespan format, and compares it to an actual EnhancedTimeSpan object. Returns true if they are equal
-function CompareTimespanWithString
+<#
+    .SYNOPSIS
+        Takes a string which should be in timespan format, and compares it to
+        an actual EnhancedTimeSpan object. Returns true if they are equal.
+
+    .PARAMETER TimeSpan
+        The Microsoft.Exchange.Data.EnhancedTimeSpan object to compare.
+
+    .PARAMETER String
+        The System.String object to compare.
+#>
+function Compare-TimespanToString
 {
-    param([Microsoft.Exchange.Data.EnhancedTimeSpan]$TimeSpan, [System.String]$String)
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter()]
+        [Microsoft.Exchange.Data.EnhancedTimeSpan]
+        $TimeSpan,
+
+        [Parameter()]
+        [System.String]
+        $String
+    )
 
     try
     {
@@ -431,16 +864,38 @@ function CompareTimespanWithString
     }
     catch
     {
-        throw "String '$($String)' is not in a valid format for an EnhancedTimeSpan"
+        throw "String '$String' is not in a valid format for an EnhancedTimeSpan"
     }
 
     return $false
 }
 
-#Takes a string which should be in ByteQuantifiedSize format, and compares it to an actual ByteQuantifiedSize object. Returns true if they are equal
-function CompareByteQuantifiedSizeWithString
+<#
+    .SYNOPSIS
+        Takes a string which should be in ByteQuantifiedSize format, and
+        compares it to an actual ByteQuantifiedSize object. Returns true if
+        they are equal.
+
+    .PARAMETER ByteQuantifiedSize
+        The Microsoft.Exchange.Data.ByteQuantifiedSize object to compare.
+
+    .PARAMETER String
+        The System.String object to compare.
+#>
+function Compare-ByteQuantifiedSizeToString
 {
-    param([Microsoft.Exchange.Data.ByteQuantifiedSize]$ByteQuantifiedSize, [System.String]$String)
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter()]
+        [Microsoft.Exchange.Data.ByteQuantifiedSize]
+        $ByteQuantifiedSize,
+
+        [Parameter()]
+        [System.String]
+        $String
+    )
 
     try
     {
@@ -450,59 +905,142 @@ function CompareByteQuantifiedSizeWithString
     }
     catch
     {
-        throw "String '$($String)' is not in a valid format for a ByteQuantifiedSize"
+        throw "String '$String' is not in a valid format for a ByteQuantifiedSize"
     }
 }
 
-#Takes a string which should be in Microsoft.Exchange.Data.Unlimited format, and compares with an actual Unlimited object. Returns true if they are equal.
-function CompareUnlimitedWithString
+<#
+    .SYNOPSIS
+        Takes a string which should be in Microsoft.Exchange.Data.Unlimited
+        format, and compares with an actual Unlimited object. Returns true if
+        they are equal.
+
+    .PARAMETER Unlimited
+        The Microsoft.Exchange.Data.Unlimited object to compare.
+
+    .PARAMETER String
+        The System.String object to compare.
+#>
+function Compare-UnlimitedToString
 {
-    param($Unlimited, [System.String]$String)
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter()]
+        [System.Object]
+        $Unlimited,
+
+        [Parameter()]
+        [System.String]
+        $String
+    )
 
     if ($Unlimited.IsUnlimited)
     {
-        return (CompareStrings -String1 "Unlimited" -String2 $String -IgnoreCase)
+        return (Compare-StringToString -String1 'Unlimited' -String2 $String -IgnoreCase)
     }
-    elseif ((CompareStrings -String1 "Unlimited" -String2 $String -IgnoreCase) -and !$Unlimited.IsUnlimited)
+    elseif ((Compare-StringToString -String1 'Unlimited' -String2 $String -IgnoreCase) -and !$Unlimited.IsUnlimited)
     {
         return $false
     }
     elseif (($Unlimited.Value -is [System.Int32]) -and !$Unlimited.IsUnlimited)
     {
-        return (CompareStrings -String1 $Unlimited -String2 $String -IgnoreCase)
+        return (Compare-StringToString -String1 $Unlimited.Value.ToString() -String2 $String -IgnoreCase)
     }
     else
     {
-        return (CompareByteQuantifiedSizeWithString -ByteQuantifiedSize $Unlimited -String $String)
+        return (Compare-ByteQuantifiedSizeToString -ByteQuantifiedSize $Unlimited -String $String)
     }
 }
 
-#Takes an ADObjectId, gets a mailbox from it, and checks if it's EmailAddresses property contains the given string.
-#The Get-Mailbox cmdlet must be loaded for this function to succeed.
-function CompareADObjectIdWithEmailAddressString
+<#
+    .SYNOPSIS
+        Takes an ADObjectId, gets a recipient from it using Get-Recipient, and
+        checks if the EmailAddresses property contains the given AddressString.
+        The Get-Recipient cmdlet must be loaded for this function to succeed.
+
+    .PARAMETER ADObjectId
+        The ADObjectID to run Get-Recipient against and compare against the
+        given AddressString.
+
+    .PARAMETER AddressString
+        The AddressString to compare against the EmailAddresses property of the
+        Get-Recipient results.
+#>
+function Compare-ADObjectIdToSmtpAddressString
 {
-    param([Microsoft.Exchange.Data.Directory.ADObjectId]$ADObjectId, [System.String]$String)
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter()]
+        [System.Object]
+        $ADObjectId,
 
-    if ($null -ne (Get-Command Get-Mailbox -ErrorAction SilentlyContinue))
+        [Parameter()]
+        [System.String]
+        $AddressString
+    )
+
+    if ($null -ne (Get-Command -Name 'Get-Recipient' -ErrorAction SilentlyContinue))
     {
-        $mailbox = $ADObjectId | Get-Mailbox -ErrorAction SilentlyContinue
+        if ($null -eq $ADObjectId -and ![System.String]::IsNullOrEmpty($AddressString))
+        {
+            return $false
+        }
+        elseif ($null -ne $ADObjectId -and [System.String]::IsNullOrEmpty($AddressString))
+        {
+            return $false
+        }
+        elseif ($null -eq $ADObjectId -and [System.String]::IsNullOrEmpty($AddressString))
+        {
+            return $true
+        }
 
-        return ($mailbox.EmailAddresses.Contains($String))
+        $recipient = Get-Recipient -Identity $ADObjectId.DistinguishedName -ErrorAction SilentlyContinue
+
+        if ($null -eq $recipient)
+        {
+            throw "Failed to Get-Recipient for ADObjectID with distinguishedName: $($ADObjectId.DistinguishedName)"
+        }
+
+        return ($null -ne ($recipient.EmailAddresses | Where-Object {$_.AddressString -like $AddressString}))
     }
     else
     {
-        Write-Error "CompareADObjectIdWithEmailAddressString requires the Get-Mailbox cmdlert"
-
-        return $false
+        throw 'Compare-ADObjectIdToSmtpAddressString requires the Get-Recipient cmdlet. Make sure this is in the RBAC scope of the executing user account.'
     }
 }
 
-#Takes a string containing a given separator, and breaks it into a string array
-function StringToArray
-{
-    param([System.String]$StringIn, [char]$Separator)
+<#
+    .SYNOPSIS
+        Takes a string containing a given separator, and breaks it into a
+        string array.
 
-    [System.String[]]$array = $StringIn.Split($Separator)
+    .PARAMETER StringIn
+        The System.String object to split into an array.
+
+    .PARAMETER Separator
+        The System.Char object to use as a separater when splitting the
+        given System.String object.
+#>
+function Convert-StringToArray
+{
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $StringIn,
+
+        [Parameter()]
+        [System.Char]
+        $Separator
+    )
+
+    [System.String[]] $array = $StringIn.Split($Separator)
 
     for ($i = 0; $i -lt $array.Length; $i++)
     {
@@ -512,26 +1050,67 @@ function StringToArray
     return $array
 }
 
-#Takes an array of strings and converts all elements to lowercase
-function StringArrayToLower
+<#
+    .SYNOPSIS
+        Takes an array of strings and converts each element in the array to
+        all lowercase characters.
+
+    .PARAMETER Array
+        The array of System.String objects to convert into lowercase strings.
+#>
+function Convert-StringArrayToLowerCase
 {
-    param([System.String[]]$Array)
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
+    param
+    (
+        [Parameter()]
+        [System.String[]]
+        $Array
+    )
+
+    [System.String[]] $arrayOut = New-Object -TypeName 'System.String[]' -ArgumentList $Array.Count
 
     for ($i = 0; $i -lt $Array.Count; $i++)
     {
-        if (!([System.String]::IsNullOrEmpty($Array[$i])))
-        {
-            $Array[$i] = $Array[$i].ToLower()
-        }
+        $arrayOut[$i] = $Array[$i].ToLower()
     }
 
-    return $Array
+    return $arrayOut
 }
 
-#Checks whether two arrays have the same contents, where element order doesn't matter
+<#
+    .SYNOPSIS
+        Returns whether two string arrays have the same contents, where element
+        order doesn't matter.
+
+    .PARAMETER Array1
+        The first System.String[] object to compare.
+
+    .PARAMETER Array2
+        The second System.String[] object to compare.
+
+    .PARAMETER IgnoreCase
+        Specifies that case should be ignored when comparing array contents.
+#>
 function Compare-ArrayContent
 {
-    param([System.String[]]$Array1, [System.String[]]$Array2, [switch]$IgnoreCase)
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter()]
+        [System.String[]]
+        $Array1,
+
+        [Parameter()]
+        [System.String[]]
+        $Array2,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $IgnoreCase
+    )
 
     $hasSameContents = $true
 
@@ -543,8 +1122,8 @@ function Compare-ArrayContent
     {
         if ($IgnoreCase -eq $true)
         {
-            $Array1 = StringArrayToLower -Array $Array1
-            $Array2 = StringArrayToLower -Array $Array2
+            $Array1 = Convert-StringArrayToLowerCase -Array $Array1
+            $Array2 = Convert-StringArrayToLowerCase -Array $Array2
         }
 
         foreach ($str in $Array1)
@@ -560,16 +1139,51 @@ function Compare-ArrayContent
     return $hasSameContents
 }
 
-#Checks whether Array2 contains all elements of Array1 (Array2 may be larger than Array1)
-function Array2ContainsArray1Contents
+<#
+    .SYNOPSIS
+        Given two System.String[] objects, Array 1 and Array 2, returns whether
+        Array2 contains all elements of Array1, in any order. Array2 may be
+        larger than Array1, as long as it contains all elements of Array1.
+
+    .PARAMETER Array1
+        The System.String[] object to check whether its elements exist in
+        Array2.
+
+    .PARAMETER Array2
+        The System.String[] object to check whether the elements of Array1 are
+        a part of.
+
+    .PARAMETER IgnoreCase
+        Whether case should be ignored when comparing strings from each array.
+#>
+function Test-ArrayElementsInSecondArray
 {
-    param([System.String[]]$Array1, [System.String[]]$Array2, [switch]$IgnoreCase)
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter()]
+        [System.String[]]
+        $Array1,
+
+        [Parameter()]
+        [System.String[]]
+        $Array2,
+
+        [Parameter()]
+        [System.Management.Automation.SwitchParameter]
+        $IgnoreCase
+    )
 
     $hasContents = $true
 
-    if ($Array1.Length -eq 0) #Do nothing, as Array2 at a minimum contains nothing
+    if ($Array1.Count -eq 0) # Do nothing, as Array2 at a minimum contains nothing
     {}
-    elseif ($Array2.Length -eq 0) #Array2 is empty and Array1 is not. Return false
+    elseif ($Array2.Count -eq 0) # Array2 is empty and Array1 is not. Return false
+    {
+        $hasContents = $false
+    }
+    elseif ($Array1.Count -gt $Array2.Count) # Array1 has more elements than Array2, so Array2 can't contain Array1
     {
         $hasContents = $false
     }
@@ -577,8 +1191,8 @@ function Array2ContainsArray1Contents
     {
         if ($IgnoreCase -eq $true)
         {
-            $Array1 = StringArrayToLower -Array $Array1
-            $Array2 = StringArrayToLower -Array $Array2
+            $Array1 = Convert-StringArrayToLowerCase -Array $Array1
+            $Array2 = Convert-StringArrayToLowerCase -Array $Array2
         }
 
         foreach ($str in $Array1)
@@ -594,36 +1208,91 @@ function Array2ContainsArray1Contents
     return $hasContents
 }
 
-#Takes $PSBoundParameters from another function and adds in the keys and values from the given Hashtable
-function AddParameters
+<#
+    .SYNOPSIS
+        Takes $PSBoundParameters from another function and adds in the keys and
+        values from the given Hashtable.
+
+    .PARAMETER PSBoundParametersIn
+        The $PSBoundParameters Hashtable from the calling function.
+
+    .PARAMETER ParamsToAdd
+        A Hashtable containing new Key/Value pairs to add to the given
+        PSBoundParametersIn Hashtable.
+#>
+function Add-ToPSBoundParametersFromHashtable
 {
-    param($PSBoundParametersIn, [Hashtable]$ParamsToAdd)
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        $PSBoundParametersIn,
+
+        [Parameter()]
+        [System.Collections.Hashtable]
+        $ParamsToAdd
+    )
 
     foreach ($key in $ParamsToAdd.Keys)
     {
-        if (!($PSBoundParametersIn.ContainsKey($key))) #Key doesn't exist, so add it with value
+        if (!($PSBoundParametersIn.ContainsKey($key))) # Key doesn't exist, so add it with value
         {
             $PSBoundParametersIn.Add($key, $ParamsToAdd[$key]) | Out-Null
         }
-        else #Key already exists, so just replace the value
+        else # Key already exists, so just replace the value
         {
             $PSBoundParametersIn[$key] = $ParamsToAdd[$key]
         }
     }
 }
 
-#Takes $PSBoundParameters from another function. If ParamsToRemove is specified, it will remove each param.
-#If ParamsToKeep is specified, everything but those params will be removed. If both ParamsToRemove and ParamsToKeep
-#are specified, only ParamsToKeep will be used.
-function RemoveParameters
+<#
+    .SYNOPSIS
+        Takes $PSBoundParameters from another function, and modifies it based
+        on the contents of the ParamsToRemove or ParamsToKeep parameters. If
+        ParamsToRemove is specified, it will remove each param. If ParamsToKeep
+        is specified, everything but those params will be removed. If both
+        ParamsToRemove and ParamsToKeep are specified, the function will throw
+        an exception.
+
+    .PARAMETER PSBoundParametersIn
+        The $PSBoundParameters Hashtable from the calling function.
+
+    .PARAMETER ParamsToKeep
+        A String array containing the list of parameter names to keep in the
+        given PSBoundParametersIn HashTable.
+
+    .PARAMETER ParamsToRemove
+        A String array containing the list of parameter names to remove in the
+        given PSBoundParametersIn HashTable.
+#>
+function Remove-FromPSBoundParametersUsingHashtable
 {
-    param($PSBoundParametersIn, [System.String[]]$ParamsToKeep, [System.String[]]$ParamsToRemove)
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        $PSBoundParametersIn,
+
+        [Parameter()]
+        [System.String[]]
+        $ParamsToKeep,
+
+        [Parameter()]
+        [System.String[]]
+        $ParamsToRemove
+    )
+
+    if ($ParamsToKeep.Count -gt 0 -and $ParamsToRemove.Count -gt 0)
+    {
+        throw 'Remove-FromPSBoundParametersUsingHashtable does not support using both ParamsToKeep and ParamsToRemove'
+    }
 
     if ($ParamsToKeep.Count -gt 0)
     {
-        [System.String[]]$ParamsToRemove = @()
+        $ParamsToKeep = $ParamsToKeep.ToLower()
 
-        $lowerParamsToKeep = StringArrayToLower -Array $ParamsToKeep
+        $lowerParamsToKeep = Convert-StringArrayToLowerCase -Array $ParamsToKeep
 
         foreach ($key in $PSBoundParametersIn.Keys)
         {
@@ -656,6 +1325,9 @@ function RemoveParameters
         The parameter to check for and remove if not applicable to this
         server version.
 
+    .PARAMETER ResourceName
+        The name of the DSC resource from which parameters are being checked.
+
     .PARAMETER ParamExistsInVersion
         The parameter to check for and remove if not applicable to this
         server version.
@@ -665,15 +1337,19 @@ function Remove-NotApplicableParamsForVersion
     [CmdletBinding()]
     param
     (
+        [Parameter(Mandatory = $true)]
         [System.Collections.Hashtable]
         $PSBoundParametersIn,
 
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ParamName,
 
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ResourceName,
 
+        [Parameter(Mandatory = $true)]
         [ValidateSet('2013','2016','2019')]
         [System.String[]]
         $ParamExistsInVersion
@@ -681,174 +1357,229 @@ function Remove-NotApplicableParamsForVersion
 
     if ($PSBoundParametersIn.ContainsKey($ParamName))
     {
-        $serverVersion = Get-ExchangeVersion
+        $serverVersion = Get-ExchangeVersionYear
 
         if ($serverVersion -notin $ParamExistsInVersion)
         {
-            Write-Warning "$($ParamName) is not a valid parameter for $($ResourceName) in Exchange $($serverVersion). Skipping usage."
-            RemoveParameters -PSBoundParametersIn $PSBoundParametersIn -ParamsToRemove $ParamName
+            Write-Warning "$ParamName is not a valid parameter for $ResourceName in Exchange $serverVersion. Skipping usage."
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParametersIn -ParamsToRemove $ParamName
         }
     }
 }
 
-function SetEmptyStringParamsToNull
+<#
+    .SYNOPSIS
+        Takes a Hashtable object (generally PSBoundParameters), looks for any
+        values that are of type System.String and are empty strings (""), and
+        sets them to a value of $null instead.
+
+    .PARAMETER PSBoundParametersIn
+        The $PSBoundParameters hashtable from the calling function.
+#>
+function Set-EmptyStringParamsToNull
 {
-    param($PSBoundParametersIn)
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        $PSBoundParametersIn
+    )
 
     [System.String[]] $emptyStringKeys = @()
 
-    #First find all parameters that are a string, and are an empty string ("")
+    # First find all parameters that are a string, and are an empty string ("")
     foreach ($key in $PSBoundParametersIn.Keys)
     {
-        if ($null -ne $PSBoundParametersIn[$key] -and $PSBoundParametersIn[$key].GetType().Name -eq "String" -and $PSBoundParametersIn[$key] -eq "")
+        if ($null -ne $PSBoundParametersIn[$key] -and $PSBoundParametersIn[$key].GetType().Name -eq 'String' -and $PSBoundParametersIn[$key] -eq '')
         {
             $emptyStringKeys += $key
         }
     }
 
-    #Now that we have the keys, set their values to null
+    # Now that we have the keys, set their values to null
     foreach ($key in $emptyStringKeys)
     {
         $PSBoundParametersIn[$key] = $null
     }
 }
 
-function VerifySetting
+<#
+    .SYNOPSIS
+        Takes an expected setting value and an actual setting value, and
+        returns true if they are both comparable.
+
+    .PARAMETER Name
+        The name of the setting that is being compared.
+
+    .PARAMETER Type
+        The object type of the setting that is being compared.
+
+    .PARAMETER ExpectedValue
+        The expected value of the setting that is being compared.
+
+    .PARAMETER ActualValue
+        The actual value of the setting that is being compared.
+
+    .PARAMETER PSBoundParametersIn
+        The PSBoundParameters Hashtable of the calling function.
+#>
+function Test-ExchangeSetting
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param([System.String]$Name, [System.String]$Type, $ExpectedValue, $ActualValue, $PSBoundParametersIn)
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Name,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Type,
+
+        [Parameter()]
+        [System.Object]
+        $ExpectedValue,
+
+        [Parameter()]
+        [System.Object]
+        $ActualValue,
+
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $PSBoundParametersIn
+    )
 
     $returnValue = $true
 
     if ($PSBoundParametersIn.ContainsKey($Name))
     {
-        if ($Type -like "String")
+        if ($Type -like 'String')
         {
-            if ((CompareStrings -String1 $ExpectedValue -String2 $ActualValue -IgnoreCase) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-StringToString -String1 $ExpectedValue -String2 $ActualValue -IgnoreCase
         }
-        elseif ($Type -like "Boolean")
+        elseif ($Type -like 'Boolean')
         {
-            if ((CompareBools -Bool1 $ExpectedValue -Bool2 $ActualValue) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-BoolToBool -Bool1 $ExpectedValue -Bool2 $ActualValue
         }
-        elseif ($Type -like "Array")
+        elseif ($Type -like 'Array')
         {
-            if ((Compare-ArrayContent -Array1 $ExpectedValue -Array2 $ActualValue -IgnoreCase) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-ArrayContent -Array1 $ExpectedValue -Array2 $ActualValue -IgnoreCase
         }
-        elseif ($Type -like "Int")
+        elseif ($Type -like 'Int')
         {
-            if ($ExpectedValue -ne $ActualValue)
-            {
-                $returnValue = $false
-            }
+            $returnValue = $ExpectedValue -eq $ActualValue
         }
-        elseif ($Type -like "Unlimited")
+        elseif ($Type -like 'Unlimited')
         {
-            if ((CompareUnlimitedWithString -Unlimited $ActualValue -String $ExpectedValue) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-UnlimitedToString -Unlimited $ActualValue -String $ExpectedValue
         }
-        elseif ($Type -like "Timespan")
+        elseif ($Type -like 'Timespan')
         {
-            if ((CompareTimespanWithString -TimeSpan $ActualValue -String $ExpectedValue) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-TimespanToString -TimeSpan $ActualValue -String $ExpectedValue
         }
-        elseif ($Type -like "ADObjectID")
+        elseif ($Type -like 'ADObjectID')
         {
-            if ((CompareADObjectIdWithEmailAddressString -ADObjectId $ActualValue -String $ExpectedValue) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-ADObjectIdToSmtpAddressString -ADObjectId $ActualValue -AddressString $ExpectedValue
         }
-        elseif ($Type -like "ByteQuantifiedSize")
+        elseif ($Type -like 'ByteQuantifiedSize')
         {
-            if ((CompareByteQuantifiedSizeWithString -ByteQuantifiedSize $ActualValue -String $ExpectedValue) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-ByteQuantifiedSizeToString -ByteQuantifiedSize $ActualValue -String $ExpectedValue
         }
-        elseif ($Type -like "IPAddress")
+        elseif ($Type -like 'IPAddress')
         {
-            if ((CompareIPAddresseWithString -IPAddress $ActualValue -String $ExpectedValue) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-IPAddressToString -IPAddress $ActualValue -String $ExpectedValue
         }
-        elseif ($Type -like "IPAddresses")
+        elseif ($Type -like 'IPAddresses')
         {
-            if ((CompareIPAddressesWithArray -IPAddresses $ActualValue -Array $ExpectedValue) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-IPAddressesToArray -IPAddressObjects $ActualValue -IPAddressStrings $ExpectedValue
         }
-        elseif ($Type -like "SMTPAddress")
+        elseif ($Type -like 'SMTPAddress')
         {
-            if ((CompareSmtpAdressWithString -SmtpAddress $ActualValue -String $ExpectedValue) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-SmtpAddressToString -SmtpAddress $ActualValue -String $ExpectedValue
         }
-        elseif ($Type -like "PSCredential")
+        elseif ($Type -like 'PSCredential')
         {
-            if ((Compare-PSCredential -Cred1 $ActualValue -Cred2 $ExpectedValue ) -eq $false)
-            {
-                $returnValue = $false
-            }
+            $returnValue = Compare-PSCredential -Cred1 $ActualValue -Cred2 $ExpectedValue
         }
-        elseif ($Type -like "ExtendedProtection")
+        elseif ($Type -like 'ExtendedProtection')
         {
-            if ((StringArrayToLower $ExpectedValue).Contains('none'))
+            if ((Convert-StringArrayToLowerCase -Array $ExpectedValue).Contains('none'))
             {
-                if (-not [System.String]::IsNullOrEmpty($ActualValue))
-                {
-                    $returnValue = $false
-                }
+                $returnValue = [System.String]::IsNullOrEmpty($ActualValue)
             }
             else
             {
-                if ((Compare-ArrayContent -Array1 $ExpectedValue -Array2 $ActualValue -IgnoreCase) -eq $false)
-                {
-                    $returnValue = $false
-                }
+                $returnValue = Compare-ArrayContent -Array1 $ExpectedValue -Array2 $ActualValue -IgnoreCase
             }
         }
         else
         {
-            throw "Type not found: $($Type)"
+            throw "Type not found: $Type"
         }
     }
 
     if ($returnValue -eq $false)
     {
-        ReportBadSetting -SettingName $Name -ExpectedValue $ExpectedValue -ActualValue $ActualValue -Verbose:$VerbosePreference
+        Write-InvalidSettingVerbose -SettingName $Name -ExpectedValue $ExpectedValue -ActualValue $ActualValue -Verbose:$VerbosePreference
     }
 
     return $returnValue
 }
 
-function ReportBadSetting
-{
-    param($SettingName, $ExpectedValue, $ActualValue)
+<#
+    .SYNOPSIS
+        Writes to the Verbose output stream that an invalid setting was
+        detected.
 
-    Write-Verbose "Invalid setting '$($SettingName)'. Expected value: '$($ExpectedValue)'. Actual value: '$($ActualValue)'"
-}
+    .PARAMETER SettingName
+        The name of the setting being reported as Invalid.
 
-function LogFunctionEntry
+    .PARAMETER ExpectedValue
+        The expected value of the Invalid setting.
+
+    .PARAMETER ActualValue
+        The actual value of the Invalid setting.
+#>
+function Write-InvalidSettingVerbose
 {
     [CmdletBinding()]
-    param([Hashtable]$Parameters)
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $SettingName,
+
+        [Parameter()]
+        [System.Object]
+        $ExpectedValue,
+
+        [Parameter()]
+        [System.Object]
+        $ActualValue
+    )
+
+    Write-Verbose -Message "Invalid setting '$SettingName'. Expected value: '$ExpectedValue'. Actual value: '$ActualValue'"
+}
+
+<#
+    .SYNOPSIS
+        Writes to the Verbose output stream the name of the calling function,
+        as well as any relevant parameter names and values.
+
+    .PARAMETER Parameters
+        A Hashtable containing relevant parameter names and values to include
+        in the output.
+#>
+function Write-FunctionEntry
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [System.Collections.Hashtable]
+        $Parameters
+    )
 
     $callingFunction = (Get-PSCallStack)[1].FunctionName
 
@@ -868,102 +1599,161 @@ function LogFunctionEntry
             $parametersString += "$($key) = '$($value)'"
         }
 
-        Write-Verbose "Entering function '$($callingFunction)'. Notable parameters: $($parametersString)"
+        Write-Verbose -Message "Entering function '$callingFunction'. Notable parameters: $parametersString"
     }
     else
     {
-        Write-Verbose "Entering function '$($callingFunction)'."
+        Write-Verbose -Message "Entering function '$callingFunction'."
     }
 }
 
-function StartScheduledTask
+<#
+    .SYNOPSIS
+        Creates and starts a new Scheduled Task using the specified parameters.
+
+    .PARAMETER Path
+        Specifies the path to an executable file.
+
+    .PARAMETER Arguments
+        Specifies arguments for the command-line operation.
+
+    .PARAMETER Credential
+        Specifies the name <run as> credentials to use when running the task.
+
+    .PARAMETER TaskName
+        Specifies the name of a scheduled task.
+
+    .PARAMETER WorkingDirectory
+        Specifies a directory where Task Scheduler will run the task. If you do
+        not specify a working directory, Task Scheduler runs the task in the
+        %windir%\system32 directory.
+
+    .PARAMETER MaxWaitMinutes
+        The amount of time in minutes that is allowed to complete the task. If
+        set to 0 (the default), there is no time limit.
+
+    .PARAMETER TaskPriority
+        The priority level (0-10) of the task. Defaults to 4. Priority level 0
+        is the highest priority, and priority level 10 is the lowest priority.
+        Priority levels 7 and 8 are used for background tasks, and priority
+        levels 4, 5, and 6 are used for interactive tasks.
+#>
+function Start-ExchangeScheduledTask
 {
     [CmdletBinding()]
     param
     (
-        [parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Path,
 
+        [Parameter()]
         [System.String]
         $Arguments,
 
+        [Parameter()]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
         [System.String]
         $TaskName,
 
+        [Parameter()]
         [System.String]
         $WorkingDirectory,
 
+        [Parameter()]
         [System.UInt32]
         $MaxWaitMinutes = 0,
 
+        [Parameter()]
         [System.UInt32]
         $TaskPriority = 4
     )
 
-    $tName = "$([guid]::NewGuid().ToString())"
+    $tName = "$([System.Guid]::NewGuid().ToString())"
 
-    if ($PSBoundParameters.ContainsKey("TaskName"))
+    if ($PSBoundParameters.ContainsKey('TaskName'))
     {
-        $tName = "$($TaskName) $($tName)"
+        $tName = "$TaskName $tName"
     }
 
-    $action = New-ScheduledTaskAction -Execute "$($Path)" -Argument "$($Arguments)"
+    $action = New-ScheduledTaskAction -Execute "$Path" -Argument "$Arguments"
 
-    if ($PSBoundParameters.ContainsKey("WorkingDirectory"))
+    if ($PSBoundParameters.ContainsKey('WorkingDirectory'))
     {
         $action.WorkingDirectory = $WorkingDirectory
     }
 
-    Write-Verbose "Created Scheduled Task with name: $($tName)"
-    Write-Verbose "Task Action: $($Path) $($Arguments)"
+    Write-Verbose -Message "Created Scheduled Task with name: $tName"
+    Write-Verbose -Message "Task Action: $Path $Arguments"
 
-    #Use 'NT AUTHORITY\SYSTEM' as the run as account unless a specific Credential was provided
-    $credParams = @{User = "NT AUTHORITY\SYSTEM"}
-
-    if ($PSBoundParameters.ContainsKey("Credential"))
-    {
-        $credParams["User"] = $Credential.UserName
-        $credParams.Add("Password", $Credential.GetNetworkCredential().Password)
+    # Use 'NT AUTHORITY\SYSTEM' as the run as account unless a specific Credential was provided
+    $credParams = @{
+        User = 'NT AUTHORITY\SYSTEM'
     }
 
-    $task = Register-ScheduledTask @credParams -TaskName "$($tName)" -Action $action -RunLevel Highest -ErrorVariable errRegister -ErrorAction SilentlyContinue
-
-    if (0 -lt $errRegister.Count)
+    if ($PSBoundParameters.ContainsKey('Credential'))
     {
-        throw $errRegister[0]
+        $credParams['User'] = $Credential.UserName
+        $credParams.Add('Password', $Credential.GetNetworkCredential().Password)
     }
-    elseif ($null -ne $task -and $task.State -eq "Ready")
+
+    $previousError = Get-PreviousError
+
+    $task = Register-ScheduledTask @credParams -TaskName "$tName" -Action $action -RunLevel Highest -ErrorVariable errRegister -ErrorAction SilentlyContinue
+
+    Assert-NoNewError -CmdletBeingRun 'Register-ScheduledTask' -PreviousError $previousError -Verbose:$VerbosePreference
+
+    if ($null -ne $task -and $task.State -eq 'Ready')
     {
-        #Set a time limit on the task
+        # Set a time limit on the task
         $taskSettings = $task.Settings
         $taskSettings.ExecutionTimeLimit = "PT$($MaxWaitMinutes)M"
         $taskSettings.Priority = $TaskPriority
         Set-ScheduledTask @credParams -TaskName "$($task.TaskName)" -Settings $taskSettings
 
-        Write-Verbose "Starting task at: $([DateTime]::Now)"
+        Write-Verbose -Message "Starting task at: $([DateTime]::Now)"
 
         $task | Start-ScheduledTask
     }
     else
     {
-        throw "Failed to register Scheduled Task"
+        throw 'Failed to register Scheduled Task'
     }
 }
 
-function CheckForCmdletParameter
+<#
+    .SYNOPSIS
+        Returns whether or not the specified cmdlet has the given parameter
+        name as an available parameter.
+
+    .PARAMETER CmdletName
+        The cmdlet name to check for parameters.
+
+    .PARAMETER ParameterName
+        The name of the parameter to check for.
+#>
+function Test-CmdletHasParameter
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param([System.String]$CmdletName, [System.String]$ParameterName)
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $CmdletName,
 
-    [bool]$hasParameter = $false
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ParameterName
+    )
 
-    $command = Get-Command -Name "$($CmdletName)" -ErrorAction SilentlyContinue
+    [System.Boolean] $hasParameter = $false
+
+    $command = Get-Command -Name $CmdletName -ErrorAction SilentlyContinue
 
     if ($null -ne $command -and $null -ne $command.Parameters)
     {
@@ -986,7 +1776,7 @@ function Get-PreviousError
     [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
     [CmdletBinding()]
     [OutputType([System.Management.Automation.ErrorRecord])]
-    param()
+    param ()
 
     $previousError = $null
 
@@ -1018,24 +1808,40 @@ function Assert-NoNewError
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [System.String]
         $CmdletBeingRun,
 
+        [Parameter()]
         [System.Management.Automation.ErrorRecord]
         $PreviousError
     )
 
-    #Throw an exception if errors were encountered
+    # Throw an exception if errors were encountered
     if ($Global:Error.Count -gt 0 -and $PreviousError -ne $Global:Error[0])
     {
         throw "Failed to run $CmdletBeingRun with: $($Global:Error[0])"
     }
 }
 
-function RestartAppPoolIfExists
+<#
+    .SYNOPSIS
+        Checks whether the IIS Application Pool with the given name exists, and
+        if so, restarts it. Does nothing if the Application Pool does not
+        exist.
+
+    .PARAMETER Name
+        The name of the IIS Application Pool to check for and restart.
+#>
+function Restart-ExistingAppPool
 {
     [CmdletBinding()]
-    param([System.String]$Name)
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Name
+    )
 
     $state = Get-WebAppPoolState -Name $Name -ErrorAction SilentlyContinue
 
@@ -1045,29 +1851,59 @@ function RestartAppPoolIfExists
     }
     else
     {
-        Write-Verbose "Application pool with name '$($Name)' does not exist. Skipping application pool restart."
+        Write-Verbose -Message "Application pool with name '$Name' does not exist. Skipping application pool restart."
     }
 }
 
-#Checks if the UM language pack for the specified culture is installed
-function IsUMLanguagePackInstalled
+<#
+    .SYNOPSIS
+        Returns whether the UM language pack for the specified culture is
+        installed.
+
+    .PARAMETER Culture
+        The Culture of the UM language pack to check for.
+#>
+function Test-UMLanguagePackInstalled
 {
-    Param
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
     (
+        [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.String]
         $Culture
     )
 
-    return [bool](Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\UnifiedMessagingRole\LanguagePacks').$Culture
+    return [System.Boolean] (Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\ExchangeServer\v15\UnifiedMessagingRole\LanguagePacks').$Culture
 }
 
-#Compares a single IPAddress with a string
-function CompareIPAddresseWithString
+<#
+    .SYNOPSIS
+        Returns whether the given IPAddress object is comparable to the given
+        string.
+
+    .PARAMETER IPAddress
+        The System.Net.IPAddress object to compare.
+
+    .PARAMETER String
+        The System.String object to compare.
+#>
+function Compare-IPAddressToString
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param([System.Net.IPAddress]$IPAddress, [System.String]$String)
+    param
+    (
+        [Parameter()]
+        [System.Net.IPAddress]
+        $IPAddress,
+
+        [Parameter()]
+        [System.String]
+        $String
+    )
+
     if (($null -eq $IPAddress -and !([System.String]::IsNullOrEmpty($String))) -or ($null -ne $IPAddress -and [System.String]::IsNullOrEmpty($String)))
     {
         $returnValue = $false
@@ -1078,25 +1914,41 @@ function CompareIPAddresseWithString
     }
     else
     {
-        $returnValue =($IPAddress.Equals([System.Net.IPAddress]::Parse($string)))
+        $returnValue = ($IPAddress.Equals([System.Net.IPAddress]::Parse($string)))
     }
 
-    if ($returnValue -eq $false)
-    {
-        ReportBadSetting -SettingName $IPAddress -ExpectedValue $ExpectedValue -ActualValue $IPAddress -Verbose:$VerbosePreference
-    }
     return $returnValue
 }
 
-#Compares a SMTP address with a string
-function CompareSmtpAdressWithString
+<#
+    .SYNOPSIS
+        Returns whether the given SmtpAddress object is comparable to the given
+        string.
+
+    .PARAMETER SmtpAddress
+        The Microsoft.Exchange.Data.SmtpAddress object to compare.
+
+    .PARAMETER String
+        The System.String object to compare.
+#>
+function Compare-SmtpAddressToString
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param($SmtpAddress,[System.String]$String)
+    param
+    (
+        [Parameter()]
+        [Nullable[Microsoft.Exchange.Data.SmtpAddress]]
+        $SmtpAddress,
+
+        [Parameter()]
+        [System.String]
+        $String
+    )
+
     if (($null -eq $SmtpAddress) -and ([System.String]::IsNullOrEmpty($String)))
     {
-        Write-Verbose "Expected and actual value is empty, therefore equal!"
+        Write-Verbose -Message 'Expected and actual value is empty, therefore equal!'
         return $true
     }
     elseif (($null -eq $SmtpAddress) -and -not ([System.String]::IsNullOrEmpty($String)))
@@ -1116,124 +1968,195 @@ function CompareSmtpAdressWithString
     }
     else
     {
-        Write-Verbose "No type of [Microsoft.Exchange.Data.SmtpAddress]!"
+        Write-Verbose -Message 'No type of [Microsoft.Exchange.Data.SmtpAddress]!'
         return $false
     }
 }
 
-#Compares IPAddresses with an array
-function CompareIPAddressesWithArray
+<#
+    .SYNOPSIS
+        Returns whether the given array of IPAddress objects is comparable
+        to the given Array.
+
+    .PARAMETER IPAddresses
+        The array of IPAddress objects to compare.
+
+    .PARAMETER Array
+        The other array of objects to compare.
+#>
+function Compare-IPAddressesToArray
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param($IPAddresses, [Array]$Array)
-    if (([System.String]::IsNullOrEmpty($IPAddresses)) -and ([System.String]::IsNullOrEmpty($Array)))
-    {
-        $returnValue = $true
-    }
-    elseif ((([System.String]::IsNullOrEmpty($IPAddresses)) -and !(([System.String]::IsNullOrEmpty($Array)))) -or (!(([System.String]::IsNullOrEmpty($IPAddresses))) -and ([System.String]::IsNullOrEmpty($Array))))
+    param
+    (
+        [Parameter()]
+        [System.Net.IPAddress[]]
+        $IPAddressObjects,
+
+        [Parameter()]
+        [System.String[]]
+        $IPAddressStrings
+    )
+
+    [System.String[]] $validIPStrings = $IPAddressStrings | Where-Object -FilterScript {![String]::IsNullOrEmpty($_)}
+
+    if ($IPAddressObjects.Count -ne $validIPStrings.Count)
     {
         $returnValue = $false
     }
+    elseif ($IPAddressObjects.Count -eq 0 -and $validIPStrings.Count -eq 0)
+    {
+        $returnValue = $true
+    }
     else
     {
-        Compare-ArrayContent -Array1 $IPAddresses -Array2 $Array
+        $returnValue = $true
+
+        foreach ($ipString in $validIPStrings)
+        {
+            if (!$IPAddressObjects.Contains([System.Net.IPAddress]::Parse($ipString)))
+            {
+                $returnValue = $false
+                break
+            }
+        }
     }
-    if ($returnValue -eq $false)
-    {
-        ReportBadSetting -SettingName $IPAddresses -ExpectedValue $ExpectedValue -ActualValue $IPAddress -Verbose:$VerbosePreference
-    }
+
     return $returnValue
 }
 
-#Compares two give PSCredential
+<#
+    .SYNOPSIS
+        Returns whether the two PSCredential objects are equal.
+
+    .PARAMETER Cred1
+        The first PSCredential object to compare.
+
+    .PARAMETER Cred2
+        The second PSCredential object to compare.
+#>
 function Compare-PSCredential
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param (
-        #[System.Management.Automation.PSCredential]
-        #[System.Management.Automation.Credential()]
+    param
+    (
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
         $Cred1,
 
-        #[System.Management.Automation.PSCredential]
-        #[System.Management.Automation.Credential()]
+        [Parameter()]
+        [System.Management.Automation.PSCredential]
         $Cred2
     )
-Begin {
-    $returnValue = $false
-    if ($null -ne $Cred1) {
-        $Cred1User = $Cred1.UserName
-        $Cred1Password = $Cred1.GetNetworkCredential().Password
+
+    begin
+    {
+        $returnValue = $false
+
+        if ($null -ne $Cred1)
+        {
+            $Cred1User = $Cred1.UserName
+            $Cred1Password = $Cred1.GetNetworkCredential().Password
+        }
+
+        if ($null -ne $Cred2)
+        {
+            $Cred2User = $Cred2.UserName
+            $Cred2Password = $Cred2.GetNetworkCredential().Password
+        }
     }
-    if ($null -ne $Cred2) {
-        $Cred2User = $Cred2.UserName
-        $Cred2Password = $Cred2.GetNetworkCredential().Password
+    process
+    {
+        if (($Cred1User -like $Cred2User) -and ($Cred1Password -ceq $Cred2Password))
+        {
+            Write-Verbose -Message 'Credentials match'
+            $returnValue = $true
+        }
+        else
+        {
+            Write-Verbose -Message "Credentials don't match"
+            Write-Verbose -Message "Cred1:$Cred1User Cred2:$Cred2User"
+        }
     }
-}
-Process {
-    if (($Cred1User -ceq $Cred2User) -and ($Cred1Password -ceq $Cred2Password)){
-        Write-Verbose "Credentials match"
-        $returnValue = $true
+    end
+    {
+        return $returnValue
     }
-    else{
-        Write-Verbose "Credentials don't match"
-        Write-Verbose "Cred1:$($Cred1User) Cred2:$($Cred2User)"
-        Write-Verbose "Cred1:$($Cred1Password) Cred2:$($Cred2Password)"
-    }
-}
-End {
-    return $returnValue
-}
 }
 
-#helper function to check SPN for Dotless name
+<#
+    .SYNOPSIS
+        Returns whether the list of Service Principal Names is valid given the
+        list of SPN Flags being used.
+
+    .PARAMETER SPNList
+        The list of Service Principal Names to inspect.
+
+    .PARAMETER Flags
+        The SPN Flags to use when inspecting the SPN List.
+#>
 function Test-ExtendedProtectionSPNList
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    Param
+    param
     (
-        [System.String[]]$SPNList,
+        [Parameter()]
+        [System.String[]]
+        $SPNList,
 
-        [System.String[]]$Flags
+        [Parameter()]
+        [System.String[]]
+        $Flags
     )
 
-    Begin
+    begin
     {
-        #initialize variable
-        [System.Boolean]$IsDotless = $false
-        [System.Boolean]$returnValue = $true
-        [System.Boolean]$InvalidFlags = $false
+        # Initialize variable
+        [System.Boolean] $IsDotless = $false
+        [System.Boolean] $returnValue = $true
+        [System.Boolean] $InvalidFlags = $false
 
-        #check for invalid ExtendedProtectionFlags
+        $flagsLower = Convert-StringArrayToLowerCase -Array $Flags
+
+        # Check for invalid ExtendedProtectionFlags
         if (-not [System.String]::IsNullOrEmpty($Flags))
         {
-            if ((StringArrayToLower $Flags).Contains("none") -and ($Flags.Count -gt 1))
+            if ($flagsLower.Contains('none') -and $Flags.Count -gt 1)
             {
-                Write-Verbose "Invalid combination of ExtendedProtectionFlags detected!"
+                Write-Verbose -Message "Invalid combination of ExtendedProtectionFlags detected! Flag 'None' cannot be use with other flags."
+                $InvalidFlags = $true
+                $returnValue = $false
+            }
+            elseif ($flagsLower.Contains('proxy') -and $SPNList.Count -eq 0)
+            {
+                Write-Verbose -Message "Invalid combination of ExtendedProtectionFlags detected! Flag 'Proxy' requires one or more valid SPNs to be specified with ExtendedProtectionSPNList"
                 $InvalidFlags = $true
                 $returnValue = $false
             }
         }
 
-        #check for invalid formatted and Dotless SPNs
+        # Check for invalid formatted and Dotless SPNs
         if ((-not [System.String]::IsNullOrEmpty($SPNList)) -and (-not $InvalidFlags))
         {
-            #check for Dotless SPN
+            # Check for Dotless SPN
             foreach ($S in $SPNList)
             {
                 $Name = $S.Split('/')[1]
+
                 if ([System.String]::IsNullOrEmpty($Name))
                 {
-                    Write-Verbose "Invalid SPN:$($S)"
+                    Write-Verbose -Message "Invalid SPN: $S"
+                    $returnValue = $false
                     break
                 }
                 else
                 {
                     if (-not $Name.Contains('.'))
                     {
-                        Write-Verbose -Message "Found Dotless SPN:$($Name)"
+                        Write-Verbose -Message "Found Dotless SPN: $Name"
                         $IsDotless = $true
                         break
                     }
@@ -1241,27 +2164,19 @@ function Test-ExtendedProtectionSPNList
             }
         }
     }
-    Process
+    process
     {
-        #check if AllowDotless is set in Flags
+        # Check if AllowDotless is set in Flags
         if($IsDotless)
         {
-            if([System.String]::IsNullOrEmpty($Flags))
+            if(!$flagsLower.Contains('allowdotlessspn'))
             {
-                Write-Verbose "AllowDotless SPN found, but Flags is NULL!"
+                Write-Verbose -Message 'Dotless SPN found, but ExtendedProtectionFlags does not contain AllowDotlessSPN!'
                 $returnValue = $false
-            }
-            else
-            {
-                if( -not (StringArrayToLower $Flags).Contains("allowdotlessspn"))
-                {
-                    Write-Verbose "AllowDotless is not found in Flags!"
-                    $returnValue = $false
-                }
             }
         }
     }
-    End
+    end
     {
         $returnValue
     }
@@ -1285,18 +2200,273 @@ function Assert-IsSupportedWithExchangeVersion
     [CmdletBinding()]
     param
     (
+        [Parameter()]
         [System.String]
         $ObjectOrOperationName,
 
+        [Parameter()]
         [System.String[]]
         $SupportedVersions
     )
 
-    $serverVersion = Get-ExchangeVersion
+    $serverVersion = Get-ExchangeVersionYear
 
     if ($serverVersion -notin $SupportedVersions)
     {
         throw "$ObjectOrOperationName is not supported in Exchange Server $serverVersion"
+    }
+}
+
+<#
+    .SYNOPSIS
+        Function used for invoking a dot-sourced script file or cmdlet.
+
+    .PARAMETER ScriptPath
+        The path of the script, or cmdlet, to execute via dot-sourcing.
+
+    .PARAMETER ScriptParams
+        Parameters to pass, if any, to the dot-sourced script or cmdlet.
+
+    .PARAMETER SnapinsToRemove
+        An optional list of PowerShell Snapins to check for and remove after
+        executing the script or cmdlet.
+#>
+function Invoke-DotSourcedScript
+{
+    [CmdletBinding()]
+    [OutputType([System.Collections.Hashtable])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ScriptPath,
+
+        [Parameter()]
+        [System.Collections.Hashtable]
+        $ScriptParams = @{},
+
+        [Parameter()]
+        [System.String[]]
+        $SnapinsToRemove,
+
+        [Parameter()]
+        [System.String[]]
+        $CommandsToExecuteInScope,
+
+        [Parameter()]
+        [System.Collections.Hashtable]
+        $ParamsForCommandsToExecuteInScope
+    )
+
+    [System.Collections.Hashtable] $returnValues = @{}
+
+    . $ScriptPath @ScriptParams
+
+    for ($i = 0; $i -lt $CommandsToExecuteInScope.Count; $i++)
+    {
+        [System.String] $commandToExecute = $CommandsToExecuteInScope[$i]
+
+        [System.Collections.Hashtable] $commandParams = @{}
+
+        if ($ParamsForCommandsToExecuteInScope.ContainsKey($commandToExecute))
+        {
+            [System.Collections.Hashtable] $commandParams = $ParamsForCommandsToExecuteInScope[$commandToExecute]
+        }
+
+        $returnValue = . $commandToExecute @commandParams
+
+        if (!$returnValues.ContainsKey($commandToExecute))
+        {
+            $returnValues.Add($commandToExecute, $null)
+        }
+
+        $returnValues[$commandToExecute] = $returnValue
+    }
+
+    if ($SnapinsToRemove.Count -gt 0)
+    {
+        Remove-HelperSnapin -SnapinsToRemove $SnapinsToRemove -Verbose:$VerbosePreference
+    }
+
+    return $returnValues
+}
+
+<#
+    .SYNOPSIS
+        Detects whether the specified PowerShell snapins have been loaded, and
+        if so, removes them.
+
+    .PARAMETER SnapinsToRemove
+        A list of PowerShell Snapins to check for and remove if loaded.
+#>
+function Remove-HelperSnapin
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String[]]
+        $SnapinsToRemove
+    )
+
+    foreach ($snapin in $SnapinsToRemove)
+    {
+        if ($null -ne (Get-PSSnapin -Name $snapin -ErrorAction SilentlyContinue))
+        {
+            Write-Verbose -Message "'$snapin' snapin is currently loaded. Removing."
+
+            Remove-PSSnapin -Name $snapin -ErrorAction SilentlyContinue -Confirm:$false
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Waits a specified amount of time for a process to start, and returns
+        whether or not the process started.
+
+    .PARAMETER ProcessName
+        The process name to wait for to start.
+
+    .PARAMETER SecondsPerSleep
+        How many seconds to sleep between process checks.
+
+    .PARAMETER MaxSleepCycles
+        The maximum number of times to sleep without detecting the process
+        before returning.
+#>
+function Wait-ForProcessStart
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ProcessName,
+
+        [Parameter()]
+        [System.Int32]
+        $SecondsPerSleep = 1,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxSleepCycles = 60
+    )
+
+    $detectedProcess = $false
+
+    Write-Verbose -Message "Waiting up to $($SecondsPerSleep * $MaxSleepCycles) seconds before exiting to give time for $ProcessName to start"
+
+    for ($i = 0; $i -lt $MaxSleepCycles; $i++)
+    {
+        if ($null -eq (Get-Process -Name $ProcessName -ErrorAction SilentlyContinue))
+        {
+            Start-Sleep -Seconds $SecondsPerSleep
+        }
+        else
+        {
+            Write-Verbose -Message "Detected that $ProcessName is running"
+            $detectedProcess = $true
+            break
+        }
+    }
+
+    return $detectedProcess
+}
+
+<#
+    .SYNOPSIS
+        Waits a specified amount of time to detect that the given process is
+        not running.
+
+    .PARAMETER ProcessName
+        The process name to wait for to stop.
+
+    .PARAMETER SecondsPerSleep
+        How many seconds to sleep between process checks.
+
+    .PARAMETER MaxSleepCycles
+        The maximum number of times to sleep without detecting the process
+        stopping before returning.
+#>
+function Wait-ForProcessStop
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $ProcessName,
+
+        [Parameter()]
+        [System.Int32]
+        $SecondsPerSleep = 60,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxSleepCycles = 1440
+    )
+
+    $processStopped = $false
+
+    for ($i = 0; $i -lt $MaxSleepCycles; $i++)
+    {
+        if ($null -ne (Get-Process -Name $ProcessName -ErrorAction SilentlyContinue))
+        {
+            Write-Verbose -Message "$ProcessName is still running at $([DateTime]::Now). Sleeping for $SecondsPerSleep seconds."
+            Start-Sleep -Seconds $SecondsPerSleep
+        }
+        else
+        {
+            $processStopped = $true
+            break
+        }
+    }
+
+    return $processStopped
+}
+
+<#
+    .SYNOPSIS
+        Checks whether Exchange Setup has completed successfully according to
+        the input Setup Arguments, and throws an exception if it has not.
+
+    .PARAMETER Path
+        Path to the setup.exe of Exchange.
+
+    .PARAMETER Arguments
+        The command line arguments passed to Exchange Setup.
+#>
+function Assert-ExchangeSetupArgumentsComplete
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [System.String]
+        $Path,
+
+        [Parameter(Mandatory=$true)]
+        [System.String]
+        $Arguments
+    )
+
+    if (-Not (Test-Path -Path $Path -ErrorAction SilentlyContinue))
+    {
+        throw "Path to Exchange setup '$Path' does not exists."
+    }
+
+    $installStatus = Get-ExchangeInstallStatus -Path $Path -Arguments $Arguments -Verbose:$VerbosePreference
+
+    if ($installStatus.SetupComplete)
+    {
+        Write-Verbose -Message 'Exchange setup completed successfully'
+    }
+    else
+    {
+        throw 'Exchange setup did not complete successfully. See "<system drive>\ExchangeSetupLogs\ExchangeSetup.log" for details.'
     }
 }
 

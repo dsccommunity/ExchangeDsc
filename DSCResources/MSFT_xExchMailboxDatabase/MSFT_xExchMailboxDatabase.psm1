@@ -132,10 +132,10 @@ function Get-TargetResource
         $SkipInitialDatabaseMount
     )
 
-    LogFunctionEntry -Parameters @{"Name" = $Name} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase','Set-AdServerSettings' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase','Set-AdServerSettings' -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
@@ -174,7 +174,7 @@ function Get-TargetResource
             RetainDeletedItemsUntilBackup = [System.Boolean] $db.RetainDeletedItemsUntilBackup
         }
 
-        $serverVersion = Get-ExchangeVersion
+        $serverVersion = Get-ExchangeVersionYear
 
         if ($serverVersion -in '2016','2019')
         {
@@ -318,10 +318,10 @@ function Set-TargetResource
         $SkipInitialDatabaseMount
     )
 
-    LogFunctionEntry -Parameters @{"Name" = $Name} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential `
+    Get-RemoteExchangeSession -Credential $Credential `
                              -CommandsToLoad '*MailboxDatabase','Move-DatabasePath','Mount-Database','Set-AdServerSettings'`
                              -Verbose:$VerbosePreference
 
@@ -330,6 +330,8 @@ function Set-TargetResource
                                     -ParamName 'IsExcludedFromProvisioningReason' `
                                     -ResourceName 'xExchMailboxDatabase' `
                                     -ParamExistsInVersion '2016','2019'
+
+    Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
@@ -343,7 +345,7 @@ function Set-TargetResource
         #Create a copy of the original parameters
         $originalPSBoundParameters = @{} + $PSBoundParameters
 
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Name','Server','EdbFilePath','LogFolderPath','DomainController'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Name','Server','EdbFilePath','LogFolderPath','DomainController'
 
         #Create the database
         $db = New-MailboxDatabase @PSBoundParameters
@@ -351,7 +353,7 @@ function Set-TargetResource
         if ($null -ne $db)
         {
             #Add original props back
-            AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
+            Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
 
             if ($AllowServiceRestart -eq $true)
             {
@@ -385,8 +387,8 @@ function Set-TargetResource
     if ($null -ne $db) #Set props on existing DB
     {
         #First check if a DB or log move is required
-        if (($PSBoundParameters.ContainsKey('EdbFilePath') -and (CompareStrings -String1 $db.EdbFilePath.PathName -String2 $EdbFilePath -IgnoreCase) -eq $false) -or
-            ($PSBoundParameters.ContainsKey('LogFolderPath') -and (CompareStrings -String1 $db.LogFolderPath.PathName -String2 $LogFolderPath -IgnoreCase) -eq $false))
+        if (($PSBoundParameters.ContainsKey('EdbFilePath') -and (Compare-StringToString -String1 $db.EdbFilePath.PathName -String2 $EdbFilePath -IgnoreCase) -eq $false) -or
+            ($PSBoundParameters.ContainsKey('LogFolderPath') -and (Compare-StringToString -String1 $db.LogFolderPath.PathName -String2 $LogFolderPath -IgnoreCase) -eq $false))
         {
             if ($db.DatabaseCopies.Count -le 1)
             {
@@ -401,15 +403,15 @@ function Set-TargetResource
         }
 
         #setup params
-        AddParameters -PSBoundParametersIn $PSBoundParameters `
+        Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters `
                       -ParamsToAdd @{'Identity' = $Name}
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters `
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters `
                          -ParamsToRemove 'Name','Server','DatabaseCopyCount','AllowServiceRestart','EdbFilePath','LogFolderPath','Credential','AdServerSettingsPreferredServer','SkipInitialDatabaseMount'
 
         #Remove parameters that depend on all copies being added
         if ($db.DatabaseCopies.Count -lt $DatabaseCopyCount)
         {
-            RemoveParameters -PSBoundParametersIn $PSBoundParameters `
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters `
                              -ParamsToRemove 'CircularLoggingEnabled','DataMoveReplicationConstraint'
         }
 
@@ -552,10 +554,10 @@ function Test-TargetResource
         $SkipInitialDatabaseMount
     )
 
-    LogFunctionEntry -Parameters @{"Name" = $Name} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential `
+    Get-RemoteExchangeSession -Credential $Credential `
                              -CommandsToLoad 'Get-MailboxDatabase','Get-Mailbox','Set-AdServerSettings'`
                              -Verbose:$VerbosePreference
 
@@ -582,17 +584,17 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name 'AutoDagExcludeFromMonitoring' -Type 'Boolean' -ExpectedValue $AutoDagExcludeFromMonitoring -ActualValue $db.AutoDagExcludeFromMonitoring -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'AutoDagExcludeFromMonitoring' -Type 'Boolean' -ExpectedValue $AutoDagExcludeFromMonitoring -ActualValue $db.AutoDagExcludeFromMonitoring -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'BackgroundDatabaseMaintenance' -Type 'Boolean' -ExpectedValue $BackgroundDatabaseMaintenance -ActualValue $db.BackgroundDatabaseMaintenance -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'BackgroundDatabaseMaintenance' -Type 'Boolean' -ExpectedValue $BackgroundDatabaseMaintenance -ActualValue $db.BackgroundDatabaseMaintenance -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'CalendarLoggingQuota' -Type 'Unlimited' -ExpectedValue $CalendarLoggingQuota -ActualValue $db.CalendarLoggingQuota -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'CalendarLoggingQuota' -Type 'Unlimited' -ExpectedValue $CalendarLoggingQuota -ActualValue $db.CalendarLoggingQuota -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
@@ -600,68 +602,68 @@ function Test-TargetResource
         #Only check these if all copies have been added
         if ($db.DatabaseCopies.Count -ge $DatabaseCopyCount)
         {
-            if (!(VerifySetting -Name 'CircularLoggingEnabled' -Type 'Boolean' -ExpectedValue $CircularLoggingEnabled -ActualValue $db.CircularLoggingEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+            if (!(Test-ExchangeSetting -Name 'CircularLoggingEnabled' -Type 'Boolean' -ExpectedValue $CircularLoggingEnabled -ActualValue $db.CircularLoggingEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
                 $testResults = $false
             }
 
-            if (!(VerifySetting -Name 'DataMoveReplicationConstraint' -Type 'Boolean' -ExpectedValue $DataMoveReplicationConstraint -ActualValue $db.DataMoveReplicationConstraint -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+            if (!(Test-ExchangeSetting -Name 'DataMoveReplicationConstraint' -Type 'Boolean' -ExpectedValue $DataMoveReplicationConstraint -ActualValue $db.DataMoveReplicationConstraint -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
                 $testResults = $false
             }
         }
 
-        if (!(VerifySetting -Name 'DeletedItemRetention' -Type 'Timespan' -ExpectedValue $DeletedItemRetention -ActualValue $db.DeletedItemRetention -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'DeletedItemRetention' -Type 'Timespan' -ExpectedValue $DeletedItemRetention -ActualValue $db.DeletedItemRetention -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'EdbFilePath' -Type 'String' -ExpectedValue $EdbFilePath -ActualValue $db.EdbFilePath.PathName -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'EdbFilePath' -Type 'String' -ExpectedValue $EdbFilePath -ActualValue $db.EdbFilePath.PathName -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'EventHistoryRetentionPeriod' -Type 'Timespan' -ExpectedValue $EventHistoryRetentionPeriod -ActualValue $db.EventHistoryRetentionPeriod -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'EventHistoryRetentionPeriod' -Type 'Timespan' -ExpectedValue $EventHistoryRetentionPeriod -ActualValue $db.EventHistoryRetentionPeriod -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'IndexEnabled' -Type 'Boolean' -ExpectedValue $IndexEnabled -ActualValue $db.IndexEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'IndexEnabled' -Type 'Boolean' -ExpectedValue $IndexEnabled -ActualValue $db.IndexEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'IsExcludedFromProvisioning' -Type 'Boolean' -ExpectedValue $IsExcludedFromProvisioning -ActualValue $db.IsExcludedFromProvisioning -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'IsExcludedFromProvisioning' -Type 'Boolean' -ExpectedValue $IsExcludedFromProvisioning -ActualValue $db.IsExcludedFromProvisioning -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'IssueWarningQuota' -Type 'Unlimited' -ExpectedValue $IssueWarningQuota -ActualValue $db.IssueWarningQuota -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'IssueWarningQuota' -Type 'Unlimited' -ExpectedValue $IssueWarningQuota -ActualValue $db.IssueWarningQuota -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'IsSuspendedFromProvisioning' -Type 'Boolean' -ExpectedValue $IsSuspendedFromProvisioning -ActualValue $db.IsSuspendedFromProvisioning -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'IsSuspendedFromProvisioning' -Type 'Boolean' -ExpectedValue $IsSuspendedFromProvisioning -ActualValue $db.IsSuspendedFromProvisioning -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'JournalRecipient' -Type 'ADObjectID' -ExpectedValue $JournalRecipient -ActualValue $db.JournalRecipient -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'JournalRecipient' -Type 'ADObjectID' -ExpectedValue $JournalRecipient -ActualValue $db.JournalRecipient -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'LogFolderPath' -Type 'String' -ExpectedValue $LogFolderPath -ActualValue $db.LogFolderPath.PathName -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'LogFolderPath' -Type 'String' -ExpectedValue $LogFolderPath -ActualValue $db.LogFolderPath.PathName -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'MailboxRetention' -Type 'Timespan' -ExpectedValue $MailboxRetention -ActualValue $db.MailboxRetention -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'MailboxRetention' -Type 'Timespan' -ExpectedValue $MailboxRetention -ActualValue $db.MailboxRetention -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'MountAtStartup' -Type 'Boolean' -ExpectedValue $MountAtStartup -ActualValue $db.MountAtStartup -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'MountAtStartup' -Type 'Boolean' -ExpectedValue $MountAtStartup -ActualValue $db.MountAtStartup -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
@@ -684,32 +686,32 @@ function Test-TargetResource
             }
         }
 
-        if (!(VerifySetting -Name 'OfflineAddressBook' -Type 'String' -ExpectedValue $OfflineAddressBook -ActualValue $dbOab -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'OfflineAddressBook' -Type 'String' -ExpectedValue $OfflineAddressBook -ActualValue $dbOab -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'ProhibitSendQuota' -Type 'Unlimited' -ExpectedValue $ProhibitSendQuota -ActualValue $db.ProhibitSendQuota -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'ProhibitSendQuota' -Type 'Unlimited' -ExpectedValue $ProhibitSendQuota -ActualValue $db.ProhibitSendQuota -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'ProhibitSendReceiveQuota' -Type 'Unlimited' -ExpectedValue $ProhibitSendReceiveQuota -ActualValue $db.ProhibitSendReceiveQuota -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'ProhibitSendReceiveQuota' -Type 'Unlimited' -ExpectedValue $ProhibitSendReceiveQuota -ActualValue $db.ProhibitSendReceiveQuota -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'RecoverableItemsQuota' -Type 'Unlimited' -ExpectedValue $RecoverableItemsQuota -ActualValue $db.RecoverableItemsQuota -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'RecoverableItemsQuota' -Type 'Unlimited' -ExpectedValue $RecoverableItemsQuota -ActualValue $db.RecoverableItemsQuota -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'RecoverableItemsWarningQuota' -Type 'Unlimited' -ExpectedValue $RecoverableItemsWarningQuota -ActualValue $db.RecoverableItemsWarningQuota -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'RecoverableItemsWarningQuota' -Type 'Unlimited' -ExpectedValue $RecoverableItemsWarningQuota -ActualValue $db.RecoverableItemsWarningQuota -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'RetainDeletedItemsUntilBackup' -Type 'Boolean' -ExpectedValue $RetainDeletedItemsUntilBackup -ActualValue $db.RetainDeletedItemsUntilBackup -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'RetainDeletedItemsUntilBackup' -Type 'Boolean' -ExpectedValue $RetainDeletedItemsUntilBackup -ActualValue $db.RetainDeletedItemsUntilBackup -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
@@ -851,8 +853,8 @@ function GetMailboxDatabase
         $SkipInitialDatabaseMount
     )
 
-    AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $Name}
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $Name}
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
     return (Get-MailboxDatabase @PSBoundParameters -ErrorAction SilentlyContinue)
 }
@@ -990,8 +992,8 @@ function MoveDatabaseOrLogPath
         $SkipInitialDatabaseMount
     )
 
-    AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $Name}
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController','EdbFilePath','LogFolderPath'
+    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $Name}
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController','EdbFilePath','LogFolderPath'
 
     Move-DatabasePath @PSBoundParameters -Confirm:$false -Force
 }
@@ -1129,8 +1131,8 @@ function MountDatabase
         $SkipInitialDatabaseMount
     )
 
-    AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $Name}
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $Name}
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
     $previousError = Get-PreviousError
 

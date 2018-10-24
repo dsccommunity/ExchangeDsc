@@ -47,10 +47,10 @@ function Get-TargetResource
         $AdServerSettingsPreferredServer
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    GetRemoteExchangeSession -Credential $Credential `
+    Get-RemoteExchangeSession -Credential $Credential `
                              -CommandsToLoad 'Get-MailboxDatabase','*DatabaseCopy*','Set-AdServerSettings' `
                              -Verbose:$VerbosePreference
 
@@ -163,7 +163,7 @@ function Set-TargetResource
         $AdServerSettingsPreferredServer
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Don't need to establish remote session, as Get-TargetResource will do it
     $copy = Get-TargetResource @PSBoundParameters
@@ -178,7 +178,7 @@ function Set-TargetResource
 
     if ($null -eq $copy) #We need to add a new copy
     {
-        Write-Verbose "A copy of database '$($Identity)' does not exist on server '$($MailboxServer)'. Adding."
+        Write-Verbose -Message "A copy of database '$Identity' does not exist on server '$MailboxServer'. Adding."
 
         #Increment the copy count to what it will be when this copy is added
         $copyCount++
@@ -186,14 +186,14 @@ function Set-TargetResource
         #Create a copy of the original parameters
         $originalPSBoundParameters = @{} + $PSBoundParameters
 
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters `
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters `
                          -ParamsToRemove 'Credential','AllowServiceRestart','AdServerSettingsPreferredServer'
 
         #Only send in ActivationPreference if it is less than or equal to the future copy count after adding this copy
         if ($PSBoundParameters.ContainsKey('ActivationPreference') -and $ActivationPreference -gt $copyCount)
         {
             Write-Warning "Desired activation preference '$($ActivationPreference)' is higher than the future copy count '$($copyCount)'. Skipping setting ActivationPreference at this point."
-            RemoveParameters -PSBoundParametersIn $PSBoundParameters
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters
                              -ParamsToRemove 'ActivationPreference'
         }
 
@@ -222,7 +222,7 @@ function Set-TargetResource
         $copyCount++
 
         #Add original props back
-        AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
+        Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
 
         #See if we can find the new copy
         $copy = Get-TargetResource @PSBoundParameters
@@ -230,7 +230,7 @@ function Set-TargetResource
         if ($null -ne $copy)
         {
             #Again, add original props back
-            AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
+            Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
 
             if ($AllowServiceRestart -eq $true)
             {
@@ -250,14 +250,14 @@ function Set-TargetResource
     }
     else #($null -ne $copy) #Need to set props on copy
     {
-        AddParameters -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = "$($Identity)\$($MailboxServer)"}
-        RemoveParameters -PSBoundParametersIn $PSBoundParameters `
+        Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = "$($Identity)\$($MailboxServer)"}
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters `
                          -ParamsToRemove 'Credential','AllowServiceRestart','MailboxServer','AdServerSettingsPreferredServer','SeedingPostponed'
 
         if ($PSBoundParameters.ContainsKey('ActivationPreference') -and $ActivationPreference -gt $copyCount)
         {
             Write-Warning "Desired activation preference '$($ActivationPreference)' is higher than current copy count '$($copyCount)'. Skipping setting ActivationPreference at this point."
-            RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'ActivationPreference'
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'ActivationPreference'
         }
 
         Set-MailboxDatabaseCopy @PSBoundParameters
@@ -314,7 +314,7 @@ function Test-TargetResource
         $AdServerSettingsPreferredServer
     )
 
-    LogFunctionEntry -Parameters @{"Identity" = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Don't need to establish remote session, as Get-TargetResource will do it
     $copy = Get-TargetResource @PSBoundParameters
@@ -329,17 +329,17 @@ function Test-TargetResource
     }
     else
     {
-        if (!(VerifySetting -Name 'ActivationPreference' -Type 'Int' -ExpectedValue $ActivationPreference -ActualValue $copy.ActivationPreference -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'ActivationPreference' -Type 'Int' -ExpectedValue $ActivationPreference -ActualValue $copy.ActivationPreference -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'ReplayLagTime' -Type 'Timespan' -ExpectedValue $ReplayLagTime -ActualValue $copy.ReplayLagTime -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'ReplayLagTime' -Type 'Timespan' -ExpectedValue $ReplayLagTime -ActualValue $copy.ReplayLagTime -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
 
-        if (!(VerifySetting -Name 'TruncationLagTime' -Type 'Timespan' -ExpectedValue $TruncationLagTime -ActualValue $copy.TruncationLagTime -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'TruncationLagTime' -Type 'Timespan' -ExpectedValue $TruncationLagTime -ActualValue $copy.TruncationLagTime -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
@@ -395,7 +395,7 @@ function GetMailboxDatabase
         $AdServerSettingsPreferredServer
     )
 
-    RemoveParameters -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
 
     return (Get-MailboxDatabase @PSBoundParameters -Status -ErrorAction SilentlyContinue)
 }

@@ -2,6 +2,37 @@
 
 ## Unreleased
 
+## 1.24.0.0
+
+- xExchangeHelper.psm1: Renamed common functions to use proper Verb-Noun
+  format. Also addresses many common style issues in functions in the file, as
+  well as in calls to these functions from other files.
+- MSFT_xExchTransportService: Removed functions that were duplicates of helper
+  functions in xExchangeHelper.psm1.
+- Fixes an issue where only objects of type Mailbox can be specified as a
+  Journal Recipient. Now MailUser and MailContact types can be used as well.
+- Update appveyor.yml to use the default template.
+- Added default template files .codecov.yml, .gitattributes, and .gitignore, and
+  .vscode folder.
+- Add Unit Tests for xExchAntiMalwareScanning
+- Add remaining Unit Tests for xExchInstall, and for most common setup
+  functions
+- Added ActionForUnknownFileAndMIMETypes,WSSAccessOnPublicComputersEnabled,
+  WSSAccessOnPrivateComputersEnabled,UNCAccessOnPublicComputersEnabled
+  UNCAccessOnPrivateComputersEnabled and GzipLevel to xExchOwaVirtualDirectory.
+- Added GzipLevel and AdminEnabled to xExchEcpVirtualDirectory.
+- Added OAuthAuthentication to xExchOabVirtualDirectory.
+- Updated readme with the new parameters and removed a bad parameter from
+  xExchOwaVirtualDirectory that did not actually exist.
+- Updated .gitattributes to allow test .pfx files to be saved as binary
+- Added Cumulative Update / Exchange update support to xExchInstall resource.
+- Add remaining Unit Tests for all xExchangeHelper functions that don't
+  require the loading of Exchange DLL's.
+- Renamed and moved file Examples/HelperScripts/ExchangeConfigHelper.psm1 to
+  Modules/xExchangeCalculatorHelper.psm1. Renamed functions within the module
+  to conform to proper function naming standards. Added remaining Unit tests
+  for module.
+
 ## 1.23.0.0
 
 - Fixes issue with xExchMaintenanceMode on Exchange 2016 where the cluster
@@ -184,7 +215,8 @@
 
 ## 1.12.0.0
 
-- xExchangeCommon : In StartScheduledTask corrected throw error check to throw
+- xExchangeCommon : In Start-ExchangeScheduledTask corrected throw error check
+  to throw
   last error when errorRegister has more than 0 errors instead of throwing error
   if errorRegister was not null, which would otherwise always be true.
 - Fix PSAvoidUsingWMICmdlet issues from PSScriptAnalyzer
@@ -305,7 +337,7 @@
 - Fixed issue with reading MailboxDatabases.csv in xExchangeConfigHelper.psm1
   caused by a column name changed introduced in v7.7 of the Exchange Server Role
   Requirements Calculator.
-- Changed function GetRemoteExchangeSession so that it will throw an exception
+- Changed function Get-RemoteExchangeSession so that it will throw an exception
   if Exchange setup is in progress. This will prevent resources from trying to
   execute while setup is running.
 - Fixed issue where VirtualDirectory resources would incorrectly try to restart
@@ -338,7 +370,8 @@
   - Added `ExternalConnectionSettings` parameter
   - Added `X509CertificateName` parameter
 - Added EndToEndExample
-- Fixed bug where StartScheduledTask would throw an error message and fail to
+- Fixed bug where Start-ExchangeScheduledTask would throw an error message and
+  fail to
   set ExecutionTimeLimit and Priority when using domain credentials
 
 ## 1.1.0.0
