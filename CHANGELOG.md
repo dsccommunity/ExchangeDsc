@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.24.0.0
+
 - xExchangeHelper.psm1: Renamed common functions to use proper Verb-Noun
   format. Also addresses many common style issues in functions in the file, as
   well as in calls to these functions from other files.
