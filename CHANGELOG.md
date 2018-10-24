@@ -44,6 +44,8 @@
   Modules/xExchangeCalculatorHelper.psm1. Renamed functions within the module
   to conform to proper function naming standards. Added remaining Unit tests
   for module.
+- Add initial set of Unit Tests (mostly Get-TargetResource tests) for all
+  remaining resource files.
 
 ## 1.23.0.0
 

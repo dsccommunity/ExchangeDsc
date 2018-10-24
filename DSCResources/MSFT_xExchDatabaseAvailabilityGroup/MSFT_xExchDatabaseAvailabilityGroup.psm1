@@ -151,9 +151,9 @@ function Get-TargetResource
 
         if ($serverVersion -in '2016', '2019')
         {
-            $returnValue.Add("AutoDagAutoRedistributeEnabled", [System.Boolean]$dag.AutoDagAutoRedistributeEnabled)
-            $returnValue.Add("FileSystem", [System.String]$dag.FileSystem)
-            $returnValue.Add("PreferenceMoveFrequency", [System.String]$dag.PreferenceMoveFrequency)
+            $returnValue.Add("AutoDagAutoRedistributeEnabled", [System.Boolean] $dag.AutoDagAutoRedistributeEnabled)
+            $returnValue.Add("FileSystem", [System.String] $dag.FileSystem)
+            $returnValue.Add("PreferenceMoveFrequency", [System.String] $dag.PreferenceMoveFrequency)
         }
     }
 

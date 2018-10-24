@@ -40,11 +40,13 @@ try
         $targetResourceParams = @{
             Path       = 'E:\Setup.exe'
             Arguments  = '/mode:Install /role:Mailbox /Iacceptexchangeserverlicenseterms'
-            Credential = New-Object -TypeName System.Management.Automation.PSCredential -argumentlist "fakeuser",(New-Object -TypeName System.Security.SecureString)
+            Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
         }
 
         Describe 'MSFT_xExchInstall\Get-TargetResource' -Tag 'Get' {
             Context 'When Get-TargetResource is called' {
+            Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $targetResourceParams
+
                 It 'Should return the input Path and Arguments' {
 
                     $getResults = Get-TargetResource @targetResourceParams

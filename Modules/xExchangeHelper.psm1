@@ -2470,4 +2470,68 @@ function Assert-ExchangeSetupArgumentsComplete
     }
 }
 
+<#
+    .SYNOPSIS
+        Takes a Hashtable as input, and generates a string containing the keys
+        and values of each Hashtable member.
+
+    .PARAMETER Hashtable
+       The Hashtable to convert to string form.
+
+    .PARAMETER Separator
+        The Separator character to use between key/value pairs. Defaults to ; .
+#>
+function Get-StringFromHashtable
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [System.Collections.Hashtable]
+        $Hashtable,
+
+        [Parameter()]
+        [System.Char]
+        $Separator = ';'
+    )
+
+    [System.Text.StringBuilder] $stringBuilder = New-Object -TypeName System.Text.StringBuilder
+
+    foreach ($key in ($Hashtable.Keys | Sort-Object))
+    {
+        if ($stringBuilder.Length -gt 0)
+        {
+            $stringBuilder.Append($Separator) | Out-Null
+        }
+
+        $stringBuilder.Append($key) | Out-Null
+        $stringBuilder.Append('=') | Out-Null
+        $stringBuilder.Append(([String] $Hashtable[$key])) | Out-Null
+    }
+
+    return $stringBuilder.ToString()
+}
+
+<#
+    .SYNOPSIS
+        Takes a domain name in FQDN format and returns in in distinguishedName
+        format.
+
+    .PARAMETER Fqdn
+        The FQDN of the domain name to convert.
+#>
+function Get-DomainDNFromFQDN
+{
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullorEmpty()]
+        [System.String]
+        $Fqdn
+    )
+
+    return "dc=" + $Fqdn.Replace('.', ',dc=')
+}
+
 Export-ModuleMember -Function *

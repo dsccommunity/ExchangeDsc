@@ -74,10 +74,10 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Enabled' = $Enabled} -Verbose:$VerbosePreference
 
-    #Load TransportMaintenanceMode Helper
+    # Load TransportMaintenanceMode Helper
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)"))\TransportMaintenance.psm1" -Verbose:0
 
-    #Establish remote Powershell session
+    # Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-*' -Verbose:$VerbosePreference
 
     $maintenanceModeStatus = GetMaintenanceModeStatus -EnteringMaintenanceMode $Enabled -DomainController $DomainController
@@ -85,10 +85,10 @@ function Get-TargetResource
 
     if ($null -ne $maintenanceModeStatus)
     {
-        #Determine which components are Active
-        $activeComponents = $MaintenanceModeStatus.ServerComponentState | Where-Object {$_.State -eq "Active"}
+        # Determine which components are Active
+        $activeComponents = $maintenanceModeStatus.ServerComponentState | Where-Object {$_.State -eq "Active"}
 
-        [System.String[]]$activeComponentsList = @()
+        [System.String[]] $activeComponentsList = @()
 
         if ($null -ne $activeComponents)
         {
@@ -100,15 +100,13 @@ function Get-TargetResource
 
         $activeComponentCount = $activeComponentsList.Count
 
-
-        #Figure out what our Enabled state should really be in case UpgradedServerVersion was passed
+        # Figure out what our Enabled state should really be in case UpgradedServerVersion was passed
         $isEnabled = $Enabled
 
         if ($Enabled -eq $true -and $atDesiredVersion -eq $true)
         {
             $isEnabled = $false
         }
-
 
         $returnValue = @{
             Enabled              = [System.Boolean] $isEnabled
