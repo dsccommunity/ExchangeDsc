@@ -159,7 +159,7 @@ function Test-CommonGetTargetResourceFunctionality
 
     $getTargetResourceCommand = Get-Command Get-TargetResource
 
-    It "Only 1 Get-TargetResource function should be loaded" {
+    It 'Only 1 Get-TargetResource function should be loaded' {
         $getTargetResourceCommand.Count -eq 1 | Should -Be $true
     }
 
