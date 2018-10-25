@@ -2515,7 +2515,7 @@ function Get-StringFromHashtable
 
 <#
     .SYNOPSIS
-        Takes a domain name in FQDN format and returns in in distinguishedName
+        Takes a domain name in FQDN format and returns it in distinguishedName
         format.
 
     .PARAMETER Fqdn
@@ -2523,6 +2523,8 @@ function Get-StringFromHashtable
 #>
 function Get-DomainDNFromFQDN
 {
+    [CmdletBinding()]
+    [OutputType([System.String])]
     param
     (
         [Parameter(Mandatory=$true)]
@@ -2531,7 +2533,7 @@ function Get-DomainDNFromFQDN
         $Fqdn
     )
 
-    return "dc=" + $Fqdn.Replace('.', ',dc=')
+    return 'dc=' + $Fqdn.Replace('.', ',dc=')
 }
 
 Export-ModuleMember -Function *
