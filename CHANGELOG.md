@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add WaitForComputerObject parameter to xExchWaitForDAG
+
 ## 1.24.0.0
 
 - xExchangeHelper.psm1: Renamed common functions to use proper Verb-Noun
