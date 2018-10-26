@@ -46,7 +46,7 @@ function Get-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $WaitForComputerObject = $false,
+        $WaitForComputerObject,
 
         [Parameter()]
         [System.UInt32]
@@ -121,7 +121,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $WaitForComputerObject = $false,
+        $WaitForComputerObject,
 
         [Parameter()]
         [System.UInt32]
@@ -194,7 +194,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $WaitForComputerObject = $false,
+        $WaitForComputerObject,
 
         [Parameter()]
         [System.UInt32]
@@ -271,7 +271,7 @@ function Get-DatabaseAvailabilityGroupInternal
 
         [Parameter()]
         [System.Boolean]
-        $WaitForComputerObject = $false,
+        $WaitForComputerObject,
 
         [Parameter()]
         [System.UInt32]
@@ -334,7 +334,7 @@ function Get-DAGComputerObject
 
         [Parameter()]
         [System.Boolean]
-        $WaitForComputerObject = $false,
+        $WaitForComputerObject,
 
         [Parameter()]
         [System.UInt32]
@@ -419,7 +419,7 @@ function Wait-ForDatabaseAvailabilityGroup
 
         [Parameter()]
         [System.Boolean]
-        $WaitForComputerObject = $false,
+        $WaitForComputerObject,
 
         [Parameter()]
         [System.UInt32]
@@ -441,9 +441,6 @@ function Wait-ForDatabaseAvailabilityGroup
         {
             Write-Warning "DAG '$($Identity)' object, or associated computer object (if requested) does not yet exist. Sleeping for $($RetryIntervalSec) seconds."
             Start-Sleep -Seconds $RetryIntervalSec
-
-            $dag = $null
-            $dagComp = $null
         }
         else
         {
