@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Opt-in for the common tests flagged Script Analyzer rules
+  ([issue #234](https://github.com/PowerShell/xExchange/issues/234)).
+
 ## 1.24.0.0
 
 - xExchangeHelper.psm1: Renamed common functions to use proper Verb-Noun
