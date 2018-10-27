@@ -1354,15 +1354,17 @@ configuration. Intended to be used as a DependsOn property by
 does not exist after the specified retry count and interval. If this happens,
 DSC configurations run in push mode will need to be re-executed.
 
-* **Identity**: The name of the DAG.
-* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
-* **DomainController**: Domain controller to talk to when running Get-DatabaseAvailabilityGroup.
+* **Identity**: The name of the DAG to wait for.
+* **Credential**: Credentials used to establish a remote PowerShell session to
+  Exchange.
+* **DomainController**: Optional Domain controller to use when running
+  Get-DatabaseAvailabilityGroup.
+* **WaitForComputerObject**: Whether DSC should also wait for the DAG Computer
+  account object to be discovered. Defaults to False.
 * **RetryIntervalSec**: How many seconds to wait between retries when checking
-  whether the DAG exists.
-  Defaults to 60.
-* **RetryCount**: Mount many retry attempts should be made to find the DAG
-  before an exception is thrown.
-  Defaults to 5.
+  whether the DAG exists. Defaults to 60.
+* **RetryCount**: How many retry attempts should be made to find the DAG
+  before an exception is thrown. Defaults to 5.
 
 ### xExchWaitForMailboxDatabase
 

@@ -15,6 +15,7 @@
 - Add spaces between array members.
 - Add initial set of Unit Tests (mostly Get-TargetResource tests) for all
   remaining resource files.
+- Add WaitForComputerObject parameter to xExchWaitForDAG
 
 ## 1.24.0.0
 
