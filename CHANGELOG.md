@@ -2,14 +2,15 @@
 
 ## Unreleased
 
-- Opt-in for the common tests flagged Script Analyzer rules
+- Opt-in for the common test flagged Script Analyzer rules
   ([issue #234](https://github.com/PowerShell/xExchange/issues/234)).
-- Opt-in for the common tests testing for relative path length.
+- Opt-in for the common test testing for relative path length.
 - Removed the property `PSDscAllowPlainTextPassword` from all examples
   so the examples are secure by default. The property
   `PSDscAllowPlainTextPassword` was previously needed to (test) compile
   the examples in the CI pipeline, but now the CI pipeline is using a
   certificate to compile the examples.
+- Opt-in for the common test that validates the markdown links.
 
 ## 1.24.0.0
 
