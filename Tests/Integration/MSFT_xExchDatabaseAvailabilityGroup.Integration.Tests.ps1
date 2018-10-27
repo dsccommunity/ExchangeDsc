@@ -19,7 +19,7 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
-#Check if Exchange is installed on this machine. If not, we can't run tests
+# Check if Exchange is installed on this machine. If not, we can't run tests
 [System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
@@ -41,10 +41,10 @@ if ($null -ne $adModule)
 
         if ($exchangeInstalled)
         {
-            #Get required credentials to use for the test
+            # Get required credentials to use for the test
             $shellCredentials = Get-TestCredential
 
-            #Get the Server FQDN for using in URL's
+            # Get the Server FQDN for using in URL's
             if ($null -eq $serverFqdn)
             {
                 $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
@@ -54,14 +54,14 @@ if ($null -ne $adModule)
             {
                 $secondDAGMember = Read-Host -Prompt 'Enter the host name of the second DAG member to use for testing, or press ENTER to skip.'
 
-                #If they didn't enter anything, set to an empty string so we don't prompt again on a re-run of the test
+                # If they didn't enter anything, set to an empty string so we don't prompt again on a re-run of the test
                 if ($null -eq $secondDAGMember)
                 {
                     $secondDAGMember = ''
                 }
             }
 
-            #Make sure failover clustering is installed on both nodes. Start with this node.
+            # Make sure failover clustering is installed on both nodes. Start with this node.
             $fcNode1 = Get-WindowsFeature -Name Failover-Clustering -ComputerName $serverFqdn -ErrorAction SilentlyContinue
 
             if ($null -eq $fcNode1 -or !$fcNode1.Installed)
@@ -89,26 +89,26 @@ if ($null -ne $adModule)
                 $witness1 = Read-Host -Prompt 'Enter the FQDN of the first File Share Witness for testing'
             }
 
-            #Allow for the second witness to not be specified
+            # Allow for the second witness to not be specified
             if ($null -eq $witness2)
             {
                 $witness2 = Read-Host -Prompt 'Enter the FQDN of the second File Share Witness for testing, or press ENTER to skip.'
 
-                #If they didn't enter anything, set to an empty string so we don't prompt again on a re-run of the test
+                # If they didn't enter anything, set to an empty string so we don't prompt again on a re-run of the test
                 if ($null -eq $witness2)
                 {
                     $witness2 = ''
                 }
             }
 
-            #Remove the existing DAG
+            # Remove the existing DAG
             Initialize-TestForDAG -ServerName @($env:COMPUTERNAME,$secondDAGMember) `
                                   -DAGName $dagName `
                                   -DatabaseName $testDBName `
                                   -ShellCredentials $shellCredentials
 
             Describe 'Test Creating and Modifying a DAG, adding DAG members, creating a DAG database, and adding database copies' {
-                #Create a new DAG
+                # Create a new DAG
                 $dagTestParams = @{
                     Name = $dagName
                     Credential = $shellCredentials
@@ -131,7 +131,7 @@ if ($null -ne $adModule)
                     WitnessServer = $witness1
                 }
 
-                #Skip checking DatacenterActivationMode until we have DAG members
+                # Skip checking DatacenterActivationMode until we have DAG members
                 $dagExpectedGetResults = @{
                     Name = $dagName
                     AutoDagAutoReseedEnabled = $true
@@ -180,7 +180,7 @@ if ($null -ne $adModule)
                                         -ContextLabel 'Verify DatabaseAvailabilityGroupIpAddresses' `
                                         -ItLabel 'DatabaseAvailabilityGroupIpAddresses should contain two values'
 
-                #Add this server as a DAG member
+                # Add this server as a DAG member
                 Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
                 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "MSFT_xExchDatabaseAvailabilityGroupMember" -ChildPath "MSFT_xExchDatabaseAvailabilityGroupMember.psm1")))
 
@@ -200,10 +200,10 @@ if ($null -ne $adModule)
                                                  -ContextLabel 'Add first member to the test DAG' `
                                                  -ExpectedGetResults $dagMemberExpectedGetResults
 
-                #Do second DAG member tests if a second member was specified
+                # Do second DAG member tests if a second member was specified
                 if (([System.String]::IsNullOrEmpty($secondDAGMember)) -eq $false)
                 {
-                    #Add second DAG member
+                    # Add second DAG member
                     $dagMemberTestParams = @{
                         MailboxServer = $secondDAGMember
                         Credential = $shellCredentials
@@ -220,7 +220,7 @@ if ($null -ne $adModule)
                                                      -ContextLabel 'Add second member to the test DAG' `
                                                      -ExpectedGetResults $dagMemberExpectedGetResults
 
-                    #Test the DAG again, with props that only take effect once there are members
+                    # Test the DAG again, with props that only take effect once there are members
                     Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
                     Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
@@ -236,7 +236,7 @@ if ($null -ne $adModule)
                                             -ContextLabel 'Verify DatabaseAvailabilityGroupIpAddresses' `
                                             -ItLabel 'DatabaseAvailabilityGroupIpAddresses should contain two values'
 
-                    #Create a new DAG database
+                    # Create a new DAG database
                     Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
                     Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "MSFT_xExchMailboxDatabase" -ChildPath "MSFT_xExchMailboxDatabase.psm1")))
 
@@ -261,7 +261,7 @@ if ($null -ne $adModule)
                                                      -ContextLabel 'Create test database' `
                                                      -ExpectedGetResults $dagDBExpectedGetResults
 
-                    #Add DB Copy
+                    # Add DB Copy
                     Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
                     Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "MSFT_xExchMailboxDatabaseCopy" -ChildPath "MSFT_xExchMailboxDatabaseCopy.psm1")))
 

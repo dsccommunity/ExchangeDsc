@@ -374,10 +374,10 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-TransportService' -Verbose:$VerbosePreference
 
-    #Remove Credential and Ensure so we don't pass it into the next command
+    # Remove Credential and Ensure so we don't pass it into the next command
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
 
     $TransportService = Get-TransportService $Identity -ErrorAction SilentlyContinue
@@ -848,15 +848,15 @@ function Set-TargetResource
         $UseDowngradedExchangeServerAuth
     )
 
-    #Establish remote Powershell session
+    # Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-TransportService' -Verbose:$VerbosePreference
 
-    #Remove Credential and Ensure so we don't pass it into the next command
+    # Remove Credential and Ensure so we don't pass it into the next command
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
 
     try
     {
-        #if PipelineTracingSenderAddress exists and is $null remove it from $PSBoundParameters and add argument
+        # if PipelineTracingSenderAddress exists and is $null remove it from $PSBoundParameters and add argument
         if ($PSBoundParameters.ContainsKey('PipelineTracingSenderAddress'))
         {
             if ([System.String]::IsNullOrEmpty($PipelineTracingSenderAddress))
@@ -867,7 +867,7 @@ function Set-TargetResource
             }
         }
 
-        #if ExternalIPAddress exists and is $null remove it from $PSBoundParameters and add argument
+        # if ExternalIPAddress exists and is $null remove it from $PSBoundParameters and add argument
         if ($PSBoundParameters.ContainsKey('ExternalIPAddress'))
         {
             if ([System.String]::IsNullOrEmpty($ExternalIPAddress))
@@ -878,7 +878,7 @@ function Set-TargetResource
             }
         }
 
-        #if InternalDNSServers exists and is $null remove it from $PSBoundParameters and add argument
+        # if InternalDNSServers exists and is $null remove it from $PSBoundParameters and add argument
         if ($PSBoundParameters.ContainsKey('InternalDNSServers'))
         {
             if ([System.String]::IsNullOrEmpty($InternalDNSServers))
@@ -889,7 +889,7 @@ function Set-TargetResource
             }
         }
 
-        #if ExternalDNSServers exists and is $null remove it from $PSBoundParameters and add argument
+        # if ExternalDNSServers exists and is $null remove it from $PSBoundParameters and add argument
         if ($PSBoundParameters.ContainsKey('ExternalDNSServers'))
         {
             if ([System.String]::IsNullOrEmpty($ExternalDNSServers))
@@ -1294,7 +1294,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-TransportService' -Verbose:$VerbosePreference
 
     $TransportService = Get-TransportService $Identity -ErrorAction SilentlyContinue

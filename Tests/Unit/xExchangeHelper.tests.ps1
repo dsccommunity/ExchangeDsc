@@ -2716,7 +2716,7 @@ try
         }
 
         Describe 'xExchangeHelper\Restart-ExistingAppPool' -Tag 'Helper' {
-            #Allow override of IIS commands
+            # Allow override of IIS commands
             function Get-WebAppPoolState {}
             function Restart-WebAppPool {}
 

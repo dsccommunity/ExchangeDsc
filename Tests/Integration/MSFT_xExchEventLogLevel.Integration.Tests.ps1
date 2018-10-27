@@ -15,18 +15,18 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
-#Check if Exchange is installed on this machine. If not, we can't run tests
+# Check if Exchange is installed on this machine. If not, we can't run tests
 [System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
-    #Get required credentials to use for the test
+    # Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
     Describe 'Test Enabling and Disabling Event Log Levels' {
-        #Set event log level to high
+        # Set event log level to high
         $testParams = @{
             Identity = 'MSExchangeTransport\DSN'
             Level = 'High'
@@ -41,7 +41,7 @@ if ($exchangeInstalled)
                                          -ContextLabel 'Set MSExchangeTransport\DSN to High' `
                                          -ExpectedGetResults $expectedGetResults
 
-        #Set event log level to lowest
+        # Set event log level to lowest
         $testParams.Level = 'Lowest'
         $expectedGetResults.Level = 'Lowest'
 

@@ -70,7 +70,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OabVirtualDirectory', 'Set-OabVirtualDirectory', 'Get-OfflineAddressBook', 'Set-OfflineAddressBook' -Verbose:$VerbosePreference
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
@@ -81,7 +81,7 @@ function Get-TargetResource
     {
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'DomainController'
 
-        #Get all OAB's which this VDir distributes for, and add their names to an array
+        # Get all OAB's which this VDir distributes for, and add their names to an array
         $oabs = Get-OfflineAddressBook @PSBoundParameters | Where-Object {$_.VirtualDirectories -like "*$($Identity)*"}
 
         [System.String[]]$oabNames = @()
@@ -185,12 +185,12 @@ function Set-TargetResource
 
     if ($PSBoundParameters.ContainsKey('OABsToDistribute'))
     {
-        #Get existing Vdir props so we can tell if we need to add OAB distribution points
+        # Get existing Vdir props so we can tell if we need to add OAB distribution points
         $vdir = Get-TargetResource @PSBoundParameters
 
         foreach ($oab in $OABsToDistribute)
         {
-            #If we aren't currently distributing an OAB, add it
+            # If we aren't currently distributing an OAB, add it
             if ((Test-ArrayElementsInSecondArray -Array1 $oab -Array2 $vdir.OABsToDistribute -IgnoreCase) -eq $false)
             {
                 AddOabDistributionPoint @PSBoundParameters -TargetOabName "$($oab)"
@@ -199,7 +199,7 @@ function Set-TargetResource
     }
     else
     {
-        #Need to establish a remote Powershell session since it wasn't done in Get-TargetResource above
+        # Need to establish a remote Powershell session since it wasn't done in Get-TargetResource above
         Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-OabVirtualDirectory'
     }
 
@@ -364,7 +364,7 @@ function Test-TargetResource
     return $testResults
 }
 
-#Adds a specified OAB vdir to the distribution points for an OAB
+# Adds a specified OAB vdir to the distribution points for an OAB
 function AddOabDistributionPoint
 {
     [CmdletBinding()]
@@ -432,15 +432,15 @@ function AddOabDistributionPoint
         [System.Boolean]
         $WindowsAuthentication,
 
-        [Parameter(Mandatory = $true)] #Extra parameter added just for this function
+        [Parameter(Mandatory = $true)] # Extra parameter added just for this function
         [System.String]
         $TargetOabName
     )
 
-    #Keep track of the OAB vdir to add
+    # Keep track of the OAB vdir to add
     $vdirIdentity = $Identity
 
-    #Setup params for Get-OfflineAddressBook
+    # Setup params for Get-OfflineAddressBook
     Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $TargetOabName}
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
@@ -448,7 +448,7 @@ function AddOabDistributionPoint
 
     if ($null -ne $oab)
     {
-        #Assemble the list of existing Virtual Directories
+        # Assemble the list of existing Virtual Directories
         [System.String[]]$allVdirs = @()
 
 
@@ -461,10 +461,10 @@ function AddOabDistributionPoint
             $allVdirs += $entry
         }
 
-        #Add desired vdir to existing list
+        # Add desired vdir to existing list
         $allVdirs += $vdirIdentity
 
-        #Set back to the OAB
+        # Set back to the OAB
         Set-OfflineAddressBook @PSBoundParameters -VirtualDirectories $allVdirs
     }
     else
@@ -473,7 +473,7 @@ function AddOabDistributionPoint
     }
 }
 
-#Gets just the server netbios name from an OAB virtual directory distinguishedName
+# Gets just the server netbios name from an OAB virtual directory distinguishedName
 function ServerFromOABVdirDN
 {
     [CmdletBinding()]

@@ -15,17 +15,17 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
-#Check if Exchange is installed on this machine. If not, we can't run tests
+# Check if Exchange is installed on this machine. If not, we can't run tests
 [System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
-    #Get required credentials to use for the test
+    # Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
-    #Get the Server FQDN for using in URL's
+    # Get the Server FQDN for using in URL's
     if ($null -eq $serverFqdn)
     {
         $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
@@ -48,7 +48,7 @@ if ($exchangeInstalled)
 
     if ($webCertAuthInstalled -eq $true)
     {
-        #Get the thumbprint to use for ActiveSync Cert Based Auth
+        # Get the thumbprint to use for ActiveSync Cert Based Auth
         if ($null -eq $cbaCertThumbprint)
         {
             $cbaCertThumbprint = Read-Host -Prompt 'Enter the thumbprint of an Exchange certificate to use when enabling Certificate Based Authentication'
@@ -76,7 +76,7 @@ if ($exchangeInstalled)
             MobileClientCertificateAuthorityURL = 'http://whatever.com/CA'
             MobileClientCertificateProvisioningEnabled = $true
             MobileClientCertTemplateName = 'MyTemplateforEAS'
-            #Name = "$($Node.NodeName) EAS Site"
+            # Name = "$($Node.NodeName) EAS Site"
             RemoteDocumentsActionForUnknownServers = 'Block'
             RemoteDocumentsAllowedServers = @('AllowedA', 'AllowedB')
             RemoteDocumentsBlockedServers = @('BlockedA', 'BlockedB')
@@ -98,7 +98,7 @@ if ($exchangeInstalled)
             MobileClientCertificateAuthorityURL = 'http://whatever.com/CA'
             MobileClientCertificateProvisioningEnabled = $true
             MobileClientCertTemplateName = 'MyTemplateforEAS'
-            #Name = "$($Node.NodeName) EAS Site"
+            # Name = "$($Node.NodeName) EAS Site"
             RemoteDocumentsActionForUnknownServers = 'Block'
             SendWatsonReport = $false
             WindowsAuthEnabled = $false
@@ -210,7 +210,7 @@ if ($exchangeInstalled)
                                          -ContextLabel 'Try by setting External URL via ActiveSyncServer' `
                                          -ExpectedGetResults $expectedGetResults
 
-        #Set values back to default
+        # Set values back to default
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\Microsoft-Server-ActiveSync (Default Web Site)"
             Credential = $shellCredentials

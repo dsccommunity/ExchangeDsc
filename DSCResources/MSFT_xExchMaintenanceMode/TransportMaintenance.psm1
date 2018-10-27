@@ -247,7 +247,7 @@ function Invoke-FullyDrainTransport
         $MessageRedirectExclusions
     )
 
-    #drain active messages
+    # drain active messages
     Clear-ActiveMessage -Server $Target -TransportService $script:TransportService
 
     # redirect the remaining messages
@@ -544,7 +544,7 @@ function Get-ServersInDag
 
     if ($null -ne $dagServers)
     {
-        #Filter out servers who are in the local site, if $ExcludeLocalSite
+        # Filter out servers who are in the local site, if $ExcludeLocalSite
         if ($ExcludeLocalSite)
         {
             for ($i = $dagServers.Count - 1; $i -ge 0; $i--)
@@ -559,7 +559,7 @@ function Get-ServersInDag
             }
         }
 
-        #Filter out additional exclusions
+        # Filter out additional exclusions
         if ($null -ne $AdditionalExclusions)
         {
             foreach ($exclusion in $AdditionalExclusions)
@@ -897,7 +897,7 @@ function Initialize-TransportMaintenanceLog()
         $Server = $env:ComputerName
     )
 
-    #read MM log limits
+    # read MM log limits
     $transportService = Get-TransportService -Identity $Server
 
     # only configure the logging if we have the setting from Transport Service

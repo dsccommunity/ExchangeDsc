@@ -83,20 +83,20 @@ function Set-TargetResource
         throw "Jetstress was previously executed and resulted in a failed run. Clean up any $($Type)*.html files in the Jetstress install directory before trying to run this resource again."
     }
 
-    if ($jetstressRunning -eq $false) #Jetstress isn't running. Kick it off
+    if ($jetstressRunning -eq $false) # Jetstress isn't running. Kick it off
     {
         $initializingESE = $false
 
-        #If the ESE counters haven't been registered for Perfmon, Jetstress is going to need to initialize ESE and restart the process.
+        # If the ESE counters haven't been registered for Perfmon, Jetstress is going to need to initialize ESE and restart the process.
         if ((Test-Path -LiteralPath "$($env:SystemRoot)\Inf\ESE\eseperf.ini") -eq $false)
         {
             $initializingESE = $true
         }
 
-        #Create and start the Jetstress scheduled task
+        # Create and start the Jetstress scheduled task
         StartJetstress @PSBoundParameters
 
-        #Give an additional 60 seconds if ESE counters were just initialized.
+        # Give an additional 60 seconds if ESE counters were just initialized.
         if ($initializingESE -eq $true)
         {
             Write-Verbose -Message 'Jetstress has never initialized performance counters for ESE. Waiting a full 60 seconds for this to occurr'
@@ -138,7 +138,7 @@ function Set-TargetResource
             }
             else
             {
-                #Looks like Jetstress restarted itself successfully. Let's let it run.
+                # Looks like Jetstress restarted itself successfully. Let's let it run.
             }
         }
         else
@@ -146,7 +146,7 @@ function Set-TargetResource
             $jetstressRunning = IsJetstressRunning
         }
 
-        #Wait up to a minute for Jetstress to start. If it hasn't started by then, something went wrong
+        # Wait up to a minute for Jetstress to start. If it hasn't started by then, something went wrong
         $checkMaxTime = [DateTime]::Now.AddMinutes(1)
 
         while ($jetstressRunning -eq $false -and $checkMaxTime -gt [DateTime]::Now)
@@ -169,7 +169,7 @@ function Set-TargetResource
     {
         Write-Verbose -Message "Jetstress is still running at '$([DateTime]::Now)'."
 
-        #Wait for 5 minutes before logging to the screen again, but actually check every 5 seconds whether Jetstress has completed.
+        # Wait for 5 minutes before logging to the screen again, but actually check every 5 seconds whether Jetstress has completed.
         for ($i = 0; $i -lt 300 -and $jetstressRunning -eq $true; $i += 5)
         {
             $jetstressRunning = IsJetstressRunning
@@ -181,7 +181,7 @@ function Set-TargetResource
         }
     }
 
-    #Check the final status on the Jetstress run
+    # Check the final status on the Jetstress run
     if ($jetstressRunning -eq $false)
     {
         Write-Verbose -Message "Jetstress testing finished at '$([DateTime]::Now)'."
@@ -248,7 +248,7 @@ function Test-TargetResource
     }
 }
 
-#Checks whether the JetstressCmd.exe process is currently running
+# Checks whether the JetstressCmd.exe process is currently running
 function IsJetstressRunning
 {
     $process = Get-Process -Name JetstressCmd -ErrorAction SilentlyContinue
@@ -256,7 +256,7 @@ function IsJetstressRunning
     return ($null -ne $process)
 }
 
-#Used to create a scheduled task which will initiate the Jetstress run
+# Used to create a scheduled task which will initiate the Jetstress run
 function StartJetstress
 {
     [CmdletBinding()]
@@ -289,7 +289,7 @@ function StartJetstress
     Start-ExchangeScheduledTask -Path "$fullPath" -Arguments "$JetstressParams" -WorkingDirectory "$JetstressPath" -TaskName 'Jetstress' -MaxWaitMinutes $MaxWaitMinutes -Verbose:$VerbosePreference -TaskPriority 1
 }
 
-#Looks in the latest Type*.html file to determine whether the last Jetstress run passed
+# Looks in the latest Type*.html file to determine whether the last Jetstress run passed
 function JetstressTestSuccessful
 {
     [CmdletBinding()]

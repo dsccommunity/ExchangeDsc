@@ -15,20 +15,20 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
-#Check if Exchange is installed on this machine. If not, we can't run tests
+# Check if Exchange is installed on this machine. If not, we can't run tests
 [System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
-    #Get required credentials to use for the test
+    # Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
     Describe 'Test Setting Properties with xExchMailboxServer' {
         $serverVersion = Get-ExchangeVersionYear
 
-        #Make sure DB activation is not blocked
+        # Make sure DB activation is not blocked
         $testParams = @{
             Identity = $env:COMPUTERNAME
             Credential = $shellCredentials
@@ -142,7 +142,7 @@ if ($exchangeInstalled)
                                          -ContextLabel 'Set non-default values for all properties' `
                                          -ExpectedGetResults $expectedGetResults
 
-        #Block DB activation
+        # Block DB activation
         $testParams.DatabaseCopyActivationDisabledAndMoveNow = $true
         $testParams.DatabaseCopyAutoActivationPolicy = 'Blocked'
         $testParams.MaximumActiveDatabases = '24'
@@ -163,7 +163,7 @@ if ($exchangeInstalled)
                                          -ContextLabel 'Block DB Activation, Set WacDiscoveryEndpoint, and modify MaxDBValues' `
                                          -ExpectedGetResults $expectedGetResults
 
-        #Make sure DB activation is not blocked
+        # Make sure DB activation is not blocked
         $testParams = @{
             Identity = $env:COMPUTERNAME
             Credential = $shellCredentials
