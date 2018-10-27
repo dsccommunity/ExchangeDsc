@@ -11,6 +11,7 @@
   the examples in the CI pipeline, but now the CI pipeline is using a
   certificate to compile the examples.
 - Opt-in for the common test that validates the markdown links.
+- Fix typo of the word 'Certificate' in several example files.
 
 ## 1.24.0.0
 

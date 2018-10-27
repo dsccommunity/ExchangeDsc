@@ -14,7 +14,7 @@ $ConfigurationData = @{
             NodeName        = '*'
 
             <#
-                The location of the exported public certifcate which will be used to encrypt
+                The location of the exported public certificate which will be used to encrypt
                 credentials during compilation.
                 CertificateFile = 'C:\public-certificate.cer'
             #>
