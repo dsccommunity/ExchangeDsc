@@ -19,17 +19,17 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
-#Check if Exchange is installed on this machine. If not, we can't run tests
+# Check if Exchange is installed on this machine. If not, we can't run tests
 [System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
-    #Get required credentials to use for the test
+    # Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
-    #Get required credentials to use for the test
+    # Get required credentials to use for the test
     $certPassword = ConvertTo-SecureString 'Password1' -AsPlainText -Force
     $certCredentials = New-Object System.Management.Automation.PSCredential ('admin', $certPassword)
 
@@ -39,7 +39,7 @@ if ($exchangeInstalled)
     [System.String]$testCertPath2 = Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'Data' -ChildPath 'TestCert2.pfx'))
 
     Describe 'Test Installing, Enabling, and Removing Exchange Certificates' {
-        #Test installing and enabling test cert 1
+        # Test installing and enabling test cert 1
         $testParams = @{
             Thumbprint = $testCertThumbprint1
             Credential = $shellCredentials
@@ -59,7 +59,7 @@ if ($exchangeInstalled)
                                          -ContextLabel 'Install and Enable Test Certificate 1' `
                                          -ExpectedGetResults $expectedGetResults
 
-        #Test installing and enabling test cert2
+        # Test installing and enabling test cert2
         $testParams.Thumbprint = $testCertThumbprint2
         $testParams.CertFilePath = $testCertPath2
         $expectedGetResults.Thumbprint = $testCertThumbprint2
@@ -68,7 +68,7 @@ if ($exchangeInstalled)
                                          -ContextLabel 'Install and Enable Test Certificate 2' `
                                          -ExpectedGetResults $expectedGetResults
 
-        #Test removing test cert 1
+        # Test removing test cert 1
         $testParams.Thumbprint = $testCertThumbprint1
         $testParams.Ensure = 'Absent'
         $expectedGetResults = $null

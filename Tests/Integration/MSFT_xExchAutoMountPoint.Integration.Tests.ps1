@@ -14,8 +14,8 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 
 #endregion HEADER
 
-#Performs tests against all disks listed in DiskToDBMap, as well as
-#all Spare Volumes
+# Performs tests against all disks listed in DiskToDBMap, as well as
+# all Spare Volumes
 function Test-MountPointSetup
 {
     [CmdletBinding()]
@@ -62,25 +62,25 @@ function Test-MountPointSetup
         $VolumePrefix
     )
 
-    #Keep track of the disk numbers of database disks that we find
+    # Keep track of the disk numbers of database disks that we find
     $exDiskNumbers = @()
 
-    #Test each disk in the disk map
+    # Test each disk in the disk map
     foreach ($diskMap in $DiskToDBMap)
     {
-        #Keep track of whether we found an EXVOL mount point for this disk
+        # Keep track of whether we found an EXVOL mount point for this disk
         $foundExVolMountPoint = $false
 
-        #Keep track of the number of EXVOL mount points on this disk
+        # Keep track of the number of EXVOL mount points on this disk
         $exVolMPCount = 0
 
-        #Keep track of whether the EXVOL mount point is last in the list of mount points for the disk
+        # Keep track of whether the EXVOL mount point is last in the list of mount points for the disk
         $exVolLastInList = $false
 
-        #Create a generic EXVOL path name until we find the real one
+        # Create a generic EXVOL path name until we find the real one
         $exVolMPName = "$AutoDagVolumesRootFolderPath\$VolumePrefix##"
 
-        #Test individual databases for this disk
+        # Test individual databases for this disk
         foreach ($dbName in $diskMap.Split(','))
         {
             $dbPath = Join-Path $AutoDagDatabasesRootFolderPath $dbName
@@ -89,7 +89,7 @@ function Test-MountPointSetup
 
             if ($null -ne $dbPartition)
             {
-                #If we haven't looked at this disk yet, make sure it is partitioned and formatted correctly
+                # If we haven't looked at this disk yet, make sure it is partitioned and formatted correctly
                 if (!$exDiskNumbers.Contains($dbPartition.DiskNumber))
                 {
                     $exDiskNumbers += $dbPartition.DiskNumber
@@ -102,7 +102,7 @@ function Test-MountPointSetup
                 $null -ne $dbPartition | Should Be $true
             }
 
-            #If requested, make sure subfolders were created under the mount points
+            # If requested, make sure subfolders were created under the mount points
             if ($null -ne $dbPartition -and $CreateSubfolders)
             {
                 $dbdbPath = Join-Path $dbPath "$dbName.db"
@@ -117,8 +117,8 @@ function Test-MountPointSetup
                 }
             }
 
-            #If we haven't found it yet, check if the ExchangeVolumes mount point was added, and store
-            #what we know about it
+            # If we haven't found it yet, check if the ExchangeVolumes mount point was added, and store
+            # what we know about it
             if (!$foundExVolMountPoint)
             {
                 [String[]]$exVolAccessPaths = $dbPartition.AccessPaths | Where-Object {$_ -like "*$AutoDagVolumesRootFolderPath\$VolumePrefix*"}
@@ -150,7 +150,7 @@ function Test-MountPointSetup
         }
     }
 
-    #Now try to find and test any requested spare volumes
+    # Now try to find and test any requested spare volumes
     [Object[]]$otherExVolPartitions = Get-Partition | Where-Object {$_.AccessPaths -like "*$AutoDagVolumesRootFolderPath\$VolumePrefix*" -and $_.DiskNumber -NotIn $exDiskNumbers}
     [Object[]]$otherExVolDisks = $otherExVolPartitions.DiskNumber
 
@@ -168,8 +168,8 @@ function Test-MountPointSetup
     }
 }
 
-#Performs disk, volume, and partition level tests against
-#the specified partition
+# Performs disk, volume, and partition level tests against
+# the specified partition
 function Test-DiskAndPartitionSetup
 {
     [CmdletBinding()]
@@ -192,21 +192,21 @@ function Test-DiskAndPartitionSetup
         $UnitSize
     )
 
-    #Get the disk properties and test the partitioning scheme
+    # Get the disk properties and test the partitioning scheme
     $exDisk = Get-Disk -Number $Partition.DiskNumber
 
     It "PartitioningScheme for Disk $($Partition.DiskNumber) is $PartitioningScheme" {
         $exDisk.PartitionStyle -like $PartitioningScheme | Should Be $true
     }
 
-    #Get the properties exposed via PowerShell and test the file system
+    # Get the properties exposed via PowerShell and test the file system
     $exDiskVol = Get-Volume -Partition $Partition
 
     It "File System for Volume is $FileSystem" {
         $exDiskVol.FileSystem -like $FileSystem | Should Be $true
     }
 
-    #Use WMI/CIM to access the BlockSize, and test that the UnitSize was set correctly
+    # Use WMI/CIM to access the BlockSize, and test that the UnitSize was set correctly
     [Object[]]$exDiskVolExtendedProps = Get-CimInstance -Query "SELECT Blocksize FROM Win32_Volume WHERE Label='$($exDiskVol.FileSystemLabel)'"
 
     It "Only 1 disk exists with label '$($exDiskVol.FileSystemLabel)'" {
@@ -230,7 +230,7 @@ function Test-DiskAndPartitionSetup
     }
 }
 
-#Removes existing Exchange partitions and related folders
+# Removes existing Exchange partitions and related folders
 function Remove-MountPointAndFolderSetup
 {
     [CmdletBinding(SupportsShouldProcess=$True)]
@@ -245,20 +245,20 @@ function Remove-MountPointAndFolderSetup
         $AutoDagVolumesRootFolderPath
     )
 
-    #Find the disk numbers of any disk that currently has an Exchange partition on it
+    # Find the disk numbers of any disk that currently has an Exchange partition on it
     [Object[]]$exDiskNumbers = (Get-Partition | Where-Object {$_.AccessPaths -like "*$AutoDagDatabasesRootFolderPath*" -or $_.AccessPaths -like "*$AutoDagVolumesRootFolderPath*"}).DiskNumber
 
-    #Remove all partitions from any Exchange disk. This ensures the System Reserved
-    #partitions are also removed, which is necessary for xExchAutoMountPoint to find
-    #the disk as usable.
+    # Remove all partitions from any Exchange disk. This ensures the System Reserved
+    # partitions are also removed, which is necessary for xExchAutoMountPoint to find
+    # the disk as usable.
     foreach ($number in $exDiskNumbers)
     {
         Get-Disk -Number $number | Get-Partition | Remove-Partition -Confirm:$false
     }
 
-    #Remove any folders in the ExchangeDatabases and ExchangeVolumes directories.
-    #Do so using Directory.Delete(), as Remove-Item doesn't seem to work against
-    #current or former mount points, even with -Force.
+    # Remove any folders in the ExchangeDatabases and ExchangeVolumes directories.
+    # Do so using Directory.Delete(), as Remove-Item doesn't seem to work against
+    # current or former mount points, even with -Force.
     foreach($folder in Get-ChildItem -Path $AutoDagDatabasesRootFolderPath -ErrorAction SilentlyContinue | Where-Object {$_.GetType().Name -like 'DirectoryInfo'})
     {
         [System.IO.Directory]::Delete($folder.FullName,$true)
@@ -270,14 +270,14 @@ function Remove-MountPointAndFolderSetup
     }
 }
 
-#Define where Exchange databases and volumes will go
+# Define where Exchange databases and volumes will go
 [System.String]$autoDagDatabasesRootFolderPath = Join-Path $env:SystemDrive 'ExchangeDatabases'
 [System.String]$autoDagVolumesRootFolderPath = Join-Path $env:SystemDrive 'ExchangeVolumes'
 
-#Clean up any existing mount points or folders
+# Clean up any existing mount points or folders
 Remove-MountPointAndFolderSetup -AutoDagDatabasesRootFolderPath $autoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $autoDagVolumesRootFolderPath
 
-#Make sure we have enough empty disks to work with to perform required tests
+# Make sure we have enough empty disks to work with to perform required tests
 $unpartitionedDisks = Get-Disk | ForEach-Object {if (($_ | Get-Partition).Count -eq 0) {$_}}
 
 if ($unpartitionedDisks.Count -lt 2)
@@ -294,9 +294,9 @@ if ($existingExMountPoints.Count -gt 0)
     return
 }
 
-#Begin testing
+# Begin testing
 Describe 'Test xExchAutoMountPoint Scenarios' {
-    #Run through initial testing using 1 DB disk with 4 DB mount points, 1 spare, REFS file system, and GPT partitioning
+    # Run through initial testing using 1 DB disk with 4 DB mount points, 1 spare, REFS file system, and GPT partitioning
     $testParams = @{
         Identity = $env:COMPUTERNAME
         AutoDagDatabasesRootFolderPath = $autoDagDatabasesRootFolderPath
@@ -328,29 +328,29 @@ Describe 'Test xExchAutoMountPoint Scenarios' {
 
     Test-MountPointSetup -AutoDagDatabasesRootFolderPath $testParams.AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $testParams.AutoDagVolumesRootFolderPath -DiskToDBMap $testParams.DiskToDBMap -SpareVolumeCount $testParams.SpareVolumeCount -EnsureExchangeVolumeMountPointIsLast $testParams.EnsureExchangeVolumeMountPointIsLast -CreateSubfolders $testParams.CreateSubfolders -FileSystem $testParams.FileSystem -PartitioningScheme $testParams.PartitioningScheme -UnitSize $testParams.UnitSize -VolumePrefix $testParams.VolumePrefix
 
-    #Cleanup mount points before next round of testing
+    # Cleanup mount points before next round of testing
     Remove-MountPointAndFolderSetup -AutoDagDatabasesRootFolderPath $autoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $autoDagVolumesRootFolderPath
 
-    #Update test parameters and re-test
-    #Add an additional disk to the disk map
+    # Update test parameters and re-test
+    # Add an additional disk to the disk map
     $testParams.DiskToDBMap = $expectedGetResults.DiskToDBMap += ('IntegrationTestDB5,IntegrationTestDB6,IntegrationTestDB7,IntegrationTestDB8')
 
-    #Switch to using no spare volumes
+    # Switch to using no spare volumes
     $testParams.SpareVolumeCount = $expectedGetResults.SpareVolumeCount = 0
 
-    #Change file system to NTFS
+    # Change file system to NTFS
     $testParams.FileSystem = $expectedGetResults.FileSystem = 'NTFS'
 
-    #Change partitioning scheme to MBR
+    # Change partitioning scheme to MBR
     $testParams.PartitioningScheme = $expectedGetResults.PartitioningScheme = 'MBR'
 
-    #Specify unit size in bytes instead of kilobytes
+    # Specify unit size in bytes instead of kilobytes
     $testParams.UnitSize = $expectedGetResults.UnitSize = '65536'
 
-    #Don't ask for the EXVOL mount point to be added last
+    # Don't ask for the EXVOL mount point to be added last
     $testParams.EnsureExchangeVolumeMountPointIsLast = $false
 
-    #Don't create subfolders under mount points
+    # Don't create subfolders under mount points
     $testParams.CreateSubfolders = $false
 
     Test-TargetResourceFunctionality -Params $testParams `
@@ -360,5 +360,5 @@ Describe 'Test xExchAutoMountPoint Scenarios' {
     Test-MountPointSetup -AutoDagDatabasesRootFolderPath $testParams.AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $testParams.AutoDagVolumesRootFolderPath -DiskToDBMap $testParams.DiskToDBMap -SpareVolumeCount $testParams.SpareVolumeCount -EnsureExchangeVolumeMountPointIsLast $testParams.EnsureExchangeVolumeMountPointIsLast -CreateSubfolders $testParams.CreateSubfolders -FileSystem $testParams.FileSystem -PartitioningScheme $testParams.PartitioningScheme -UnitSize $testParams.UnitSize -VolumePrefix $testParams.VolumePrefix
 }
 
-#Clean up mount points and folders one last time
+# Clean up mount points and folders one last time
 Remove-MountPointAndFolderSetup -AutoDagDatabasesRootFolderPath $autoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $autoDagVolumesRootFolderPath

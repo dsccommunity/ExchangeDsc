@@ -212,7 +212,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxServer' -Verbose:$VerbosePreference
 
     $server = GetMailboxServer @PSBoundParameters
@@ -509,13 +509,13 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-MailboxServer' -Verbose:$VerbosePreference
 
-    #Setup params for next command
+    # Setup params for next command
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential'
 
-    #create array of Exchange 2013 only parameters
+    # create array of Exchange 2013 only parameters
     [array]$Exchange2013Only = 'CalendarRepairWorkCycle', 'CalendarRepairWorkCycleCheckpoint', 'MailboxProcessorWorkCycle', 'ManagedFolderAssistantSchedule', 'ManagedFolderWorkCycle',
     'ManagedFolderWorkCycleCheckpoint', 'OABGeneratorWorkCycle', 'OABGeneratorWorkCycleCheckpoint', 'PublicFolderWorkCycle', 'PublicFolderWorkCycleCheckpoint', 'SharingPolicyWorkCycle',
     'SharingPolicyWorkCycleCheckpoint', 'SharingSyncWorkCycle', 'SharingSyncWorkCycleCheckpoint', 'SiteMailboxWorkCycle', 'SiteMailboxWorkCycleCheckpoint', 'TopNWorkCycle', 'TopNWorkCycleCheckpoint',
@@ -524,14 +524,14 @@ function Set-TargetResource
     $serverVersion = Get-ExchangeVersionYear
     if ($serverVersion -eq '2013')
     {
-      #Check for non-existent parameters in Exchange 2013
+      # Check for non-existent parameters in Exchange 2013
       Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016', '2019'
     }
     elseif ($serverVersion -in '2016', '2019')
     {
       foreach ($Exchange2013Parameter in $Exchange2013Only)
       {
-        #Check for non-existent parameters in Exchange 2016
+        # Check for non-existent parameters in Exchange 2016
         Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2013Parameter" -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2013'
       }
     }
@@ -540,7 +540,7 @@ function Set-TargetResource
         Write-Verbose -Message 'Could not detect Exchange version'
     }
 
-    #Ensure an empty string is $null and not a string
+    # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     Set-MailboxServer @PSBoundParameters
@@ -761,7 +761,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxServer', 'Set-MailboxServer' -Verbose:$VerbosePreference
 
     #create array of Exchange 2013 only parameters
@@ -773,14 +773,14 @@ function Test-TargetResource
     $serverVersion = Get-ExchangeVersionYear
     if ($serverVersion -eq '2013')
     {
-      #Check for non-existent parameters in Exchange 2013
+      # Check for non-existent parameters in Exchange 2013
       Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016', '2019'
     }
     elseif ($serverVersion -in '2016', '2019')
     {
       foreach ($Exchange2013Parameter in $Exchange2013Only)
       {
-        #Check for non-existent parameters in Exchange 2016
+        # Check for non-existent parameters in Exchange 2016
         Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2013Parameter" -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2013'
       }
     }
@@ -793,13 +793,13 @@ function Test-TargetResource
 
     $testResults = $true
 
-    if ($null -eq $server) #Couldn't find the server, which is bad
+    if ($null -eq $server) # Couldn't find the server, which is bad
     {
         Write-Error -Message 'Unable to retrieve Mailbox Server settings for server'
 
         $testResults = $false
     }
-    else #Validate server params
+    else # Validate server params
     {
         if (!(Test-ExchangeSetting -Name 'AutoDatabaseMountDial' -Type 'String' -ExpectedValue $AutoDatabaseMountDial -ActualValue $server.AutoDatabaseMountDial -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
@@ -1040,7 +1040,7 @@ function Test-TargetResource
     return $testResults
 }
 
-#Runs Get-MailboxServer, only specifying Identity, and optionally DomainController
+# Runs Get-MailboxServer, only specifying Identity, and optionally DomainController
 function GetMailboxServer
 {
     [CmdletBinding()]

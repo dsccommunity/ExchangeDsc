@@ -234,7 +234,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ReceiveConnector' -Verbose:$VerbosePreference
 
     $connector = GetReceiveConnector @PSBoundParameters
@@ -533,7 +533,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*ReceiveConnector', '*ADPermission' -Verbose:$VerbosePreference
 
     $connector = GetReceiveConnector @PSBoundParameters
@@ -549,40 +549,40 @@ function Set-TargetResource
     }
     else
     {
-        #Remove Credential and Ensure so we don't pass it into the next command
+        # Remove Credential and Ensure so we don't pass it into the next command
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'Ensure'
 
         Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-        #We need to create the new connector
+        # We need to create the new connector
         if ($null -eq $connector)
         {
-            #Create a copy of the original parameters
+            # Create a copy of the original parameters
             $originalPSBoundParameters = @{} + $PSBoundParameters
 
-            #The following aren't valid for New-ReceiveConnector
+            # The following aren't valid for New-ReceiveConnector
             Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Identity', 'BareLinefeedRejectionEnabled', 'ExtendedRightAllowEntries', 'ExtendedRightDenyEntries'
 
-            #Parse out the server name and connector name from the given Identity
+            # Parse out the server name and connector name from the given Identity
             $serverName = $Identity.Substring(0, $Identity.IndexOf('\'))
             $connectorName = $Identity.Substring($Identity.IndexOf('\') + 1)
 
-            #Add in server and name parameters
+            # Add in server and name parameters
             Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
                 'Server' = $serverName
                 'Name' = $connectorName
             }
 
-            #Create the connector
+            # Create the connector
             $connector = New-ReceiveConnector @PSBoundParameters
 
-            #Ensure the connector exists, and if so, set us up so we can run Set-ReceiveConnector next
+            # Ensure the connector exists, and if so, set us up so we can run Set-ReceiveConnector next
             if ($null -ne $connector)
             {
-                #Remove the two props we added
+                # Remove the two props we added
                 Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server', 'Name'
 
-                #Add original props back
+                # Add original props back
                 Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
             }
             else
@@ -591,15 +591,15 @@ function Set-TargetResource
             }
         }
 
-        #The connector already exists, so use Set-ReceiveConnector
+        # The connector already exists, so use Set-ReceiveConnector
         if ($null -ne $connector)
         {
-            #Usage is not a valid command for Set-ReceiveConnector
+            # Usage is not a valid command for Set-ReceiveConnector
             Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Usage', 'ExtendedRightAllowEntries', 'ExtendedRightDenyEntries'
 
             Set-ReceiveConnector @PSBoundParameters
 
-            #set AD permissions
+            # set AD permissions
             if ($ExtendedRightAllowEntries)
             {
                 foreach ($ExtendedRightAllowEntry in $ExtendedRightAllowEntries)
@@ -861,12 +861,12 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ReceiveConnector', 'Get-ADPermission' -Verbose:$VerbosePreference
 
     $connector = GetReceiveConnector @PSBoundParameters
 
-    #get AD permissions if necessary
+    # get AD permissions if necessary
     if (($ExtendedRightAllowEntries) -or ($ExtendedRightDenyEntries))
     {
         $ADPermissions = $connector | Get-ADPermission | Where-Object {$_.IsInherited -eq $false}
@@ -891,7 +891,7 @@ function Test-TargetResource
         }
         else
         {
-            #remove "Custom" from PermissionGroups
+            # remove "Custom" from PermissionGroups
             $connector.PermissionGroups = ($connector.PermissionGroups -split ',' ) -notmatch 'Custom' -join ','
 
             if (!(Test-ExchangeSetting -Name 'AdvertiseClientSettings' -Type 'Boolean' -ExpectedValue $AdvertiseClientSettings -ActualValue $connector.AdvertiseClientSettings -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
@@ -1129,7 +1129,7 @@ function Test-TargetResource
                 $testResults = $false
             }
 
-            #check AD permissions if necessary
+            # check AD permissions if necessary
             if ($ExtendedRightAllowEntries)
             {
                 if (!(ExtendedRightExists -ADPermissions $ADPermissions -ExtendedRights $ExtendedRightAllowEntries -ShouldbeTrue:$True -Verbose:$VerbosePreference))
@@ -1151,7 +1151,7 @@ function Test-TargetResource
     return $testResults
 }
 
-#Runs Get-ReceiveConnector, only specifying Identity, ErrorAction, and optionally DomainController
+# Runs Get-ReceiveConnector, only specifying Identity, ErrorAction, and optionally DomainController
 function GetReceiveConnector
 {
     [CmdletBinding()]
@@ -1383,7 +1383,7 @@ function GetReceiveConnector
     return (Get-ReceiveConnector @PSBoundParameters -ErrorAction SilentlyContinue)
 }
 
-#Ensure that a connector Identity is in the proper form
+# Ensure that a connector Identity is in the proper form
 function ValidateIdentity
 {
     param
@@ -1399,7 +1399,7 @@ function ValidateIdentity
     }
 }
 
-#check a connector for specific extended rights
+# check a connector for specific extended rights
 function ExtendedRightExists
 {
     [cmdletbinding()]

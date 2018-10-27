@@ -35,7 +35,7 @@ function Test-TargetResourceFunctionality
         [System.Collections.Hashtable]$getResult = Get-TargetResource @Params -Verbose
         [System.Boolean]$testResult = Test-TargetResource @Params -Verbose
 
-        #The ExpectedGetResults are $null, so let's check that what we got back is $null
+        # The ExpectedGetResults are $null, so let's check that what we got back is $null
         if ($null -eq $ExpectedGetResults)
         {
             It 'Get-TargetResource: Should Be Null' {
@@ -71,7 +71,7 @@ function Test-TargetResourceFunctionality
                 }
             }
 
-            #Test each individual key in $ExpectedGetResult to see if they exist, and if the expected value matches
+            # Test each individual key in $ExpectedGetResult to see if they exist, and if the expected value matches
             foreach ($key in $ExpectedGetResults.Keys)
             {
                 $getContainsKey = $getResult.ContainsKey($key)
@@ -112,7 +112,7 @@ function Test-TargetResourceFunctionality
             }
         }
 
-        #Test the Test-TargetResource results
+        # Test the Test-TargetResource results
         It 'Test-TargetResource' {
             $testResult | Should Be $ExpectedTestResult
         }
@@ -189,7 +189,7 @@ function Test-Array2ContainsArray1
     }
 }
 
-#Creates a test OAB for DSC, or sees if it exists. If it is created or exists, return the name of the OAB.
+# Creates a test OAB for DSC, or sees if it exists. If it is created or exists, return the name of the OAB.
 function Get-TestOfflineAddressBook
 {
     [CmdletBinding()]
@@ -221,7 +221,7 @@ function Get-TestOfflineAddressBook
     return $testOabName
 }
 
-#Removes the test DAG if it exists, and any associated databases
+# Removes the test DAG if it exists, and any associated databases
 function Initialize-TestForDAG
 {
     [CmdletBinding()]
@@ -254,7 +254,7 @@ function Initialize-TestForDAG
 
     $existingDB = Get-MailboxDatabase -Identity "$($DatabaseName)" -Status -ErrorAction SilentlyContinue
 
-    #First remove the test database copies
+    # First remove the test database copies
     if ($null -ne $existingDB)
     {
         Get-MailboxDatabaseCopyStatus -Identity "$($DatabaseName)" | Where-Object -FilterScript {
@@ -262,19 +262,19 @@ function Initialize-TestForDAG
         } | Remove-MailboxDatabaseCopy -Confirm:$false
     }
 
-    #Now remove the actual DB's
+    # Now remove the actual DB's
     Get-MailboxDatabase | Where-Object -FilterScript {
         $_.Name -like "$($DatabaseName)"
     } | Remove-MailboxDatabase -Confirm:$false
 
-    #Remove the files
+    # Remove the files
     foreach ($server in $ServerName)
     {
         Get-ChildItem -LiteralPath "\\$($server)\c`$\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($DatabaseName)" `
                       -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
     }
 
-    #Last remove the test DAG
+    # Last remove the test DAG
     $dag = Get-DatabaseAvailabilityGroup -Identity "$($DAGName)" -ErrorAction SilentlyContinue
 
     if ($null -ne $dag)
@@ -294,7 +294,7 @@ function Initialize-TestForDAG
         throw 'Failed to remove test DAG'
     }
 
-    #Disable the DAG computer account
+    # Disable the DAG computer account
     $compAccount = Get-ADComputer -Identity $DAGName -ErrorAction SilentlyContinue
 
     if ($null -ne $compAccount -and $compAccount.Enabled -eq $true)

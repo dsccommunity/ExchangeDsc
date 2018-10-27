@@ -49,7 +49,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PowerShellVirtualDirectory' -Verbose:$VerbosePreference
 
     $vdir = GetPowerShellVirtualDirectory @PSBoundParameters
@@ -119,7 +119,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-PowerShellVirtualDirectory' -Verbose:$VerbosePreference
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
@@ -130,7 +130,7 @@ function Set-TargetResource
 
     if ($AllowServiceRestart -eq $true)
     {
-        #Remove existing PS sessions, as we're about to break them
+        # Remove existing PS sessions, as we're about to break them
         Remove-RemoteExchangeSession -Verbose:$VerbosePreference
 
         Write-Verbose -Message 'Recycling MSExchangePowerShellAppPool and MSExchangePowerShellFrontEndAppPool'
@@ -195,7 +195,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PowerShellVirtualDirectory' -Verbose:$VerbosePreference
 
     $vdir = GetPowerShellVirtualDirectory @PSBoundParameters

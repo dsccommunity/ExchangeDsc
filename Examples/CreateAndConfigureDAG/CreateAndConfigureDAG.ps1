@@ -5,16 +5,16 @@
 
 $ConfigurationData = @{
     AllNodes = @(
-        #Settings under 'NodeName = *' apply to all nodes.
+        # Settings under 'NodeName = *' apply to all nodes.
         @{
             NodeName                    = '*'
         },
 
-        #Individual target nodes are defined next
+        # Individual target nodes are defined next
         @{
             NodeName      = 'e15-1'
             Role          = 'FirstDAGMember'
-            DAGId         = 'DAG1' #Used to determine which DAG settings the servers should use. Corresponds to DAG1 hashtable entry below.
+            DAGId         = 'DAG1' # Used to determine which DAG settings the servers should use. Corresponds to DAG1 hashtable entry below.
         }
 
         @{
@@ -36,7 +36,7 @@ $ConfigurationData = @{
         }
     );
 
-    #Settings that are unique per DAG will go in separate hash table entries.
+    # Settings that are unique per DAG will go in separate hash table entries.
     DAG1 = @(
         @{
             ###DAG Settings###
@@ -46,8 +46,8 @@ $ConfigurationData = @{
             DatabaseAvailabilityGroupIPAddresses = '192.168.1.99', '192.168.2.99'
             WitnessServer                        = 'e14-1.contoso.local'
 
-            #xDatabaseAvailabilityGroupNetwork params
-            #New network params
+            # xDatabaseAvailabilityGroupNetwork params
+            # New network params
             DAGNet1NetworkName                   = 'MapiNetwork'
             DAGNet1ReplicationEnabled            = $false
             DAGNet1Subnets                       = '192.168.1.0/24', '192.168.2.0/24'
@@ -56,7 +56,7 @@ $ConfigurationData = @{
             DAGNet2ReplicationEnabled            = $true
             DAGNet2Subnets                       = '10.10.10.0/24', '10.10.11.0/24'
 
-            #Old network to remove
+            # Old network to remove
             OldNetworkName                       = 'MapiDagNetwork'
         }
     );
@@ -73,13 +73,13 @@ Configuration Example
 
     Import-DscResource -Module xExchange
 
-    #This section only configures a single DAG node, the first member of the DAG.
-    #The first member of the DAG will be responsible for DAG creation and maintaining its configuration
+    # This section only configures a single DAG node, the first member of the DAG.
+    # The first member of the DAG will be responsible for DAG creation and maintaining its configuration
     Node $AllNodes.Where{$_.Role -eq 'FirstDAGMember'}.NodeName
     {
-        $dagSettings = $ConfigurationData[$Node.DAGId] #Look up and retrieve the DAG settings for this node
+        $dagSettings = $ConfigurationData[$Node.DAGId] # Look up and retrieve the DAG settings for this node
 
-        #Create the DAG
+        # Create the DAG
         xExchDatabaseAvailabilityGroup DAG
         {
             Name                                 = $dagSettings.DAGName
@@ -97,7 +97,7 @@ Configuration Example
             WitnessServer                        = $dagSettings.WitnessServer
         }
 
-        #Add this server as member
+        # Add this server as member
         xExchDatabaseAvailabilityGroupMember DAGMember
         {
             MailboxServer     = $Node.NodeName
@@ -107,7 +107,7 @@ Configuration Example
             DependsOn         = '[xExchDatabaseAvailabilityGroup]DAG'
         }
 
-        #Create two new DAG Networks
+        # Create two new DAG Networks
         xExchDatabaseAvailabilityGroupNetwork DAGNet1
         {
             Name                      = $dagSettings.DAGNet1NetworkName
@@ -116,7 +116,7 @@ Configuration Example
             Ensure                    = 'Present'
             ReplicationEnabled        = $dagSettings.DAGNet1ReplicationEnabled
             Subnets                   = $dagSettings.DAGNet1Subnets
-            DependsOn                 = '[xExchDatabaseAvailabilityGroupMember]DAGMember' #Can't do work on DAG networks until at least one member is in the DAG...
+            DependsOn                 = '[xExchDatabaseAvailabilityGroupMember]DAGMember' # Can't do work on DAG networks until at least one member is in the DAG...
         }
 
         xExchDatabaseAvailabilityGroupNetwork DAGNet2
@@ -127,26 +127,26 @@ Configuration Example
             Ensure                    = 'Present'
             ReplicationEnabled        = $dagSettings.DAGNet2ReplicationEnabled
             Subnets                   = $dagSettings.DAGNet2Subnets
-            DependsOn                 = '[xExchDatabaseAvailabilityGroupMember]DAGMember' #Can't do work on DAG networks until at least one member is in the DAG...
+            DependsOn                 = '[xExchDatabaseAvailabilityGroupMember]DAGMember' # Can't do work on DAG networks until at least one member is in the DAG...
         }
 
-        #Remove the original DAG Network
+        # Remove the original DAG Network
         xExchDatabaseAvailabilityGroupNetwork DAGNetOld
         {
             Name                      = $dagSettings.OldNetworkName
             Credential                = $ExchangeAdminCredential
             DatabaseAvailabilityGroup = $dagSettings.DAGName
             Ensure                    = 'Absent'
-            DependsOn                 = '[xExchDatabaseAvailabilityGroupNetwork]DAGNet1', '[xExchDatabaseAvailabilityGroupNetwork]DAGNet2' #Dont remove the old one until the new one is in place
+            DependsOn                 = '[xExchDatabaseAvailabilityGroupNetwork]DAGNet1', '[xExchDatabaseAvailabilityGroupNetwork]DAGNet2' # Dont remove the old one until the new one is in place
         }
     }
 
-    #Next we'll add the remaining nodes to the DAG
+    # Next we'll add the remaining nodes to the DAG
     Node $AllNodes.Where{$_.Role -eq 'AdditionalDAGMember'}.NodeName
     {
-        $dagSettings = $ConfigurationData[$Node.DAGId] #Look up and retrieve the DAG settings for this node
+        $dagSettings = $ConfigurationData[$Node.DAGId] # Look up and retrieve the DAG settings for this node
 
-        #Can't join until the DAG exists...
+        # Can't join until the DAG exists...
         xExchWaitForDAG WaitForDAG
         {
             Identity   = $dagSettings.DAGName

@@ -9,8 +9,8 @@ Configuration Example
 
     node localhost
     {
-        #Create mount points for use with Jetstress. Here I prefer to use the same database names for ALL servers,
-        #that way I can use the same JetstressConfig.xml for all of them.
+        # Create mount points for use with Jetstress. Here I prefer to use the same database names for ALL servers,
+        # that way I can use the same JetstressConfig.xml for all of them.
         xExchAutoMountPoint AMPForJetstress
         {
             Identity                       = $Node.NodeName
@@ -22,7 +22,7 @@ Configuration Example
             CreateSubfolders               = $true
         }
 
-        #Copy the Jetstress install file
+        # Copy the Jetstress install file
         File CopyJetstress
         {
             Ensure          = 'Present'
@@ -30,7 +30,7 @@ Configuration Example
             DestinationPath = 'C:\Jetstress\Jetstress.msi'
         }
 
-        #Install Jetstress
+        # Install Jetstress
         Package InstallJetstress
         {
             Ensure    = 'Present'
@@ -40,7 +40,7 @@ Configuration Example
             DependsOn = '[xExchAutoMountPoint]AMPForJetstress', '[File]CopyJetstress'
         }
 
-        #Copy required ESE DLL's to the Jetstress installation directory
+        # Copy required ESE DLL's to the Jetstress installation directory
         File CopyESEDlls
         {
             Ensure          = 'Present'
@@ -51,7 +51,7 @@ Configuration Example
             DependsOn       = '[Package]InstallJetstress'
         }
 
-        #Copy JetstressConfig.xml to the Jetstress installation directory
+        # Copy JetstressConfig.xml to the Jetstress installation directory
         File CopyJetstressConfig
         {
             Ensure          = 'Present'
@@ -60,7 +60,7 @@ Configuration Example
             DependsOn       = '[Package]InstallJetstress'
         }
 
-        #Run the Jetstress test, and evaluate the results
+        # Run the Jetstress test, and evaluate the results
         xExchJetstress RunJetstress
         {
             Type            = 'Performance'

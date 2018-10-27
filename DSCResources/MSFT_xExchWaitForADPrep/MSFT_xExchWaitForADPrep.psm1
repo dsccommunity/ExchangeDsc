@@ -45,7 +45,7 @@ function Get-TargetResource
 
     if ($PSBoundParameters.ContainsKey('SchemaVersion'))
     {
-        #Check for existence of schema object
+        # Check for existence of schema object
         $schemaObj = GetADObject -Credential $credential -DistinguishedName "CN=ms-Exch-Schema-Version-Pt,$($dse.schemaNamingContext)" -Properties 'rangeUpper'
 
         if ($null -ne $schemaObj)
@@ -83,10 +83,10 @@ function Get-TargetResource
 
     if ($PSBoundParameters.ContainsKey('DomainVersion'))
     {
-        #Get this server's domain
+        # Get this server's domain
         [System.String]$machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
 
-        #Figure out all domains we need to inspect
+        # Figure out all domains we need to inspect
         [System.String[]]$targetDomains = @()
         $targetDomains += $machineDomain
 
@@ -103,7 +103,7 @@ function Get-TargetResource
             }
         }
 
-        #Populate the return value in a hashtable of domains and versions
+        # Populate the return value in a hashtable of domains and versions
         [Hashtable]$currentDomainVersions = @{}
 
         foreach ($domain in $targetDomains)
@@ -272,10 +272,10 @@ function Test-TargetResource
 
         if ($PSBoundParameters.ContainsKey('DomainVersion'))
         {
-            #Get this server's domain
+            # Get this server's domain
             [System.String]$machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
 
-            #Figure out all domains we need to inspect
+            # Figure out all domains we need to inspect
             [System.String[]]$targetDomains = @()
             $targetDomains += $machineDomain
 
@@ -292,7 +292,7 @@ function Test-TargetResource
                 }
             }
 
-            #Compare the desired DomainVersion with the actual version of each domain
+            # Compare the desired DomainVersion with the actual version of each domain
             foreach ($domain in $targetDomains)
             {
                 if (!(Test-ExchangeSetting -Name 'DomainVersion' -Type 'Int' -ExpectedValue $DomainVersion -ActualValue $adStatus.DomainVersion[$domain] -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
@@ -387,7 +387,7 @@ function GetADObject
         $getAdObjParams.Add('Properties', $Properties)
     }
 
-    #ErrorAction SilentlyContinue doesn't seem to work with Get-ADObject. Doing in Try/Catch instead
+    # ErrorAction SilentlyContinue doesn't seem to work with Get-ADObject. Doing in Try/Catch instead
     try
     {
         $object = Get-ADObject @getAdObjParams

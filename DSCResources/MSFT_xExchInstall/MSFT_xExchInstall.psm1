@@ -59,7 +59,7 @@ function Set-TargetResource
 
     if ($installStatus.ShouldStartInstall -eq $true)
     {
-        #Check if WSMan needs to be configured, as it will require an immediate reboot
+        # Check if WSMan needs to be configured, as it will require an immediate reboot
         $needReboot = Set-WSManConfigStatus
 
         if ($needReboot -eq $true)
@@ -95,7 +95,7 @@ function Set-TargetResource
 
     if ($waitingForSetup)
     {
-        #Now wait for setup to finish
+        # Now wait for setup to finish
         Wait-ForProcessStop -ProcessName 'ExSetup' -Verbose:$VerbosePreference | Out-Null
     }
 

@@ -13,6 +13,7 @@
 - Opt-in for the common test that validates the markdown links.
 - Fix typo of the word 'Certificate' in several example files.
 - Add spaces between array members.
+- Add spaces between comment hashtags and comments.
 
 ## 1.24.0.0
 

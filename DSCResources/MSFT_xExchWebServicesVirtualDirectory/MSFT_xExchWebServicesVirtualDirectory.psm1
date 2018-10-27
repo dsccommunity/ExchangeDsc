@@ -84,7 +84,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-WebServicesVirtualDirectory' -Verbose:$VerbosePreference
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
@@ -199,22 +199,22 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-WebServicesVirtualDirectory' -Verbose:$VerbosePreference
 
-    #Ensure an empty string is $null and not a string
+    # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    #Remove Credential and AllowServiceRestart because those parameters do not exist on Set-WebServicesVirtualDirectory
+    # Remove Credential and AllowServiceRestart because those parameters do not exist on Set-WebServicesVirtualDirectory
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
 
-    #verify SPNs depending on AllowDotlesSPN
+    # verify SPNs depending on AllowDotlesSPN
     if ( -not (Test-ExtendedProtectionSPNList -SPNList $ExtendedProtectionSPNList -Flags $ExtendedProtectionFlags))
     {
         throw 'SPN list contains DotlesSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags or invalid combination was used!'
     }
 
-    #Need to do -Force and -Confirm:$false here or else an unresolvable URL will prompt for confirmation
+    # Need to do -Force and -Confirm:$false here or else an unresolvable URL will prompt for confirmation
     Set-WebServicesVirtualDirectory @PSBoundParameters -Force -Confirm:$false
 
     if($AllowServiceRestart -eq $true)
@@ -314,10 +314,10 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-WebServicesVirtualDirectory' -Verbose:$VerbosePreference
 
-    #Ensure an empty string is $null and not a string
+    # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     $EwsVdir = GetWebServicesVirtualDirectory @PSBoundParameters

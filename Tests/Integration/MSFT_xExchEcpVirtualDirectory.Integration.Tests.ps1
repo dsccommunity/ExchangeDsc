@@ -15,17 +15,17 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
-#Check if Exchange is installed on this machine. If not, we can't run tests
+# Check if Exchange is installed on this machine. If not, we can't run tests
 [System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
-    #Get required credentials to use for the test
+    # Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
-    #Get the Server FQDN for using in URL's
+    # Get the Server FQDN for using in URL's
     if ($null -eq $serverFqdn)
     {
         $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
@@ -36,7 +36,7 @@ if ($exchangeInstalled)
             Identity =  "$($env:COMPUTERNAME)\ecp (Default Web Site)"
             Credential = $shellCredentials
             AdminEnabled = $false
-            #AdfsAuthentication = $false #Don't test AdfsAuthentication changes in dedicated ECP tests, as they have to be done to OWA at the same time
+            # AdfsAuthentication = $false #Don't test AdfsAuthentication changes in dedicated ECP tests, as they have to be done to OWA at the same time
             BasicAuthentication = $true
             DigestAuthentication = $false
             ExternalUrl = "https://$($serverFqdn)/ecp"
@@ -91,7 +91,7 @@ if ($exchangeInstalled)
                                          -ContextLabel 'Try with the opposite of each property value' `
                                          -ExpectedGetResults $expectedGetResults
 
-        #Set Authentication values back to default
+        # Set Authentication values back to default
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\ecp (Default Web Site)"
             Credential = $shellCredentials
