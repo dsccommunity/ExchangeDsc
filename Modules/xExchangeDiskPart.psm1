@@ -3,7 +3,16 @@ function StartDiskpart
 {
     [CmdletBinding()]
     [OutputType([System.String])]
-    Param ([Array]$Commands, [System.Boolean]$ShowOutput = $true)
+    param
+    (
+        [Parameter()]
+        [Array]
+        $Commands,
+        
+        [Parameter()]
+        [System.Boolean]
+        $ShowOutput = $true
+    )
 
     $Tempfile = [System.IO.Path]::GetTempFileName()
 
@@ -33,13 +42,13 @@ function GetDiskInfo
     [OutputType([System.Collections.Hashtable])]
     param()
 
-    [Hashtable]$diskInfo = @{
+    [Hashtable] $diskInfo = @{
         DiskToVolumeMap = @{}
         VolumeToMountPointMap = @{}
         DiskSizeMap = @{}
     }
 
-    [int[]]$diskNums = @()
+    [int[]] $diskNums = @()
 
     $diskList = StartDiskpart -Commands "List Disk" -ShowOutput $false
 
@@ -140,7 +149,7 @@ function GetDiskInfo
             }
             elseif ($line.Contains("There are no volumes."))
             {
-                [System.String[]]$emptyArray = @()
+                [System.String[]] $emptyArray = @()
                 $diskInfo.DiskToVolumeMap[$diskNum] = $emptyArray
 
                 break
@@ -157,7 +166,12 @@ function GetDiskInfo
 
 function StringArrayToCommaSeparatedString
 {
-    param([System.String[]]$Array)
+    param
+    (
+        [Parameter()]
+        [System.String[]]
+        $Array
+    )
 
     $string = ""
 
@@ -177,7 +191,20 @@ function StringArrayToCommaSeparatedString
 # Takes a hashtable, and adds the given key and value.
 function AddObjectToMapOfObjectArrays
 {
-    Param([Hashtable]$Map, $Key, $Value)
+    param
+    (
+        [Parameter()]
+        [Hashtable]
+        $Map,
+        
+        [Parameter()]
+        [Object]
+        $Key,
+        
+        [Parameter()]
+        [Object]
+        $Value
+    )
 
     if ($Map.ContainsKey($Key))
     {
@@ -185,7 +212,7 @@ function AddObjectToMapOfObjectArrays
     }
     else
     {
-        [object[]]$Array = $Value
+        [object[]] $Array = $Value
         $Map[$Key] = $Array
     }
 }

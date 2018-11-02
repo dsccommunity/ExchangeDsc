@@ -255,7 +255,7 @@ function Set-TargetResource
             if ($htStatus.State -ne "Inactive")
             {
                 Write-Verbose -Message 'Entering Transport Maintenance'
-                [System.String[]]$transportExclusions = GetMessageRedirectionExclusions -DomainController $DomainController
+                [System.String[]] $transportExclusions = GetMessageRedirectionExclusions -DomainController $DomainController
                 Start-TransportMaintenance -LoadLocalShell $false -MessageRedirectExclusions $transportExclusions -Verbose
             }
 
@@ -532,7 +532,7 @@ function Test-TargetResource
                 }
 
 
-                [int]$messagesQueued = GetQueueMessageCount -MaintenanceModeStatus $maintenanceModeStatus
+                [int] $messagesQueued = GetQueueMessageCount -MaintenanceModeStatus $maintenanceModeStatus
 
                 if ($messagesQueued -gt 0)
                 {
@@ -541,7 +541,7 @@ function Test-TargetResource
                 }
 
 
-                [int]$activeDBCount = GetActiveDBCount -MaintenanceModeStatus $maintenanceModeStatus -DomainController $DomainController
+                [int] $activeDBCount = GetActiveDBCount -MaintenanceModeStatus $maintenanceModeStatus -DomainController $DomainController
 
                 if ($activeDBCount -gt 0)
                 {
@@ -550,7 +550,7 @@ function Test-TargetResource
                 }
 
 
-                [int]$umCallCount = GetUMCallCount -MaintenanceModeStatus $maintenanceModeStatus -DomainController $DomainController
+                [int] $umCallCount = GetUMCallCount -MaintenanceModeStatus $maintenanceModeStatus -DomainController $DomainController
 
                 if ($umCallCount -gt 0)
                 {
@@ -677,7 +677,7 @@ function GetMaintenanceModeStatus
         }
     }
 
-    [System.Collections.Hashtable]$returnValue = @{
+    [System.Collections.Hashtable] $returnValue = @{
         ServerComponentState = $serverComponentState
         ClusterNode = $clusterNode
         Queues = $queues
@@ -701,7 +701,7 @@ function GetQueueMessageCount
         $MaintenanceModeStatus
     )
 
-    [UInt32]$messageCount = 0
+    [UInt32] $messageCount = 0
 
     if ($null -ne $MaintenanceModeStatus.Queues)
     {
@@ -735,7 +735,7 @@ function GetActiveDBCount
         $DomainController
     )
 
-    [UInt32]$activeDBCount = 0
+    [UInt32] $activeDBCount = 0
 
     # Get DB's with a status of Mounted, Mounting, Dismounted, or Dismounting
     $localDBs = $MaintenanceModeStatus.DBCopyStatus | Where-Object -FilterScript {$_.Status -like "Mount*" -or $_.Status -like "Dismount*"}
@@ -771,7 +771,7 @@ function GetUMCallCount
         $DomainController
     )
 
-    [Uint32]$umCallCount = 0
+    [Uint32] $umCallCount = 0
 
     $umCalls = GetUMActiveCalls -Server $env:COMPUTERNAME -DomainController $DomainController
 
@@ -802,7 +802,7 @@ function GetMessageRedirectionExclusions
         $DomainController
     )
 
-    [System.String[]]$exclusions = @()
+    [System.String[]] $exclusions = @()
 
     $mbxServer = GetMailboxServer -Identity $env:COMPUTERNAME -DomainController $DomainController
 
@@ -877,7 +877,7 @@ function IsExchangeAtDesiredVersion
 
         if ($null -ne $server)
         {
-            [System.String[]]$versionParts = $UpgradedServerVersion.Split('.')
+            [System.String[]] $versionParts = $UpgradedServerVersion.Split('.')
 
             if ($null -ne $versionParts -and $versionParts.Length -eq 4)
             {
@@ -915,7 +915,7 @@ function IsComponentCheckedByDefault
         $ComponentName
     )
 
-    [System.Boolean]$checkedByDefault = $false
+    [System.Boolean] $checkedByDefault = $false
 
     if ($ComponentName -like "ServerWideOffline" -or $ComponentName -like "UMCallRouter" -or $ComponentName -like "HubTransport" -or $ComponentName -like "Monitoring" -or $ComponentName -like "RecoveryActionsEnabled")
     {
@@ -937,7 +937,7 @@ function GetDAGMemberCount
         $DomainController
     )
 
-    [System.Int32]$count = 0
+    [System.Int32] $count = 0
 
     $server = GetMailboxServer -Identity $env:COMPUTERNAME -DomainController $DomainController
 
@@ -1002,7 +1002,7 @@ function WaitForUMToDrain
         $WaitMinutes = 5
     )
 
-    [System.Boolean]$umDrained = $false
+    [System.Boolean] $umDrained = $false
 
     $endTime = [DateTime]::Now.AddMinutes($WaitMinutes)
 
@@ -1064,7 +1064,7 @@ function ChangeComponentState
         $SetInactiveComponentsFromAnyRequesterToActive = $false
     )
 
-    [System.Boolean]$madeChange = $false
+    [System.Boolean] $madeChange = $false
 
     $componentState = $MaintenanceModeStatus.ServerComponentState | Where-Object -FilterScript {$_.Component -like "$($Component)"}
 
@@ -1154,7 +1154,7 @@ function MovePrimaryDatabasesBack
 
     $databases = GetMailboxDatabase -Server $env:COMPUTERNAME -Status -DomainController $DomainController
 
-    [System.String[]]$databasesWithActivationPrefOneNotOnThisServer = @()
+    [System.String[]] $databasesWithActivationPrefOneNotOnThisServer = @()
 
     if ($null -ne $databases)
     {

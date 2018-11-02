@@ -441,9 +441,9 @@ function CreateMissingExDatabases
             $diskInfo = GetDiskInfo
         }
 
-        [System.String[]]$dbsNeedingMountPoints = @()
+        [System.String[]] $dbsNeedingMountPoints = @()
 
-        [System.String[]]$allDBsRequestedForDisk = $DiskToDBMap[$i].Split(',')
+        [System.String[]] $allDBsRequestedForDisk = $DiskToDBMap[$i].Split(',')
 
         for ($j = 0; $j -lt $allDBsRequestedForDisk.Count; $j++)
         {
@@ -546,12 +546,12 @@ function GetDiskToDBMap
     $dbpath = Join-Path -Path "$($AutoDagDatabasesRootFolderPath)" -ChildPath ""
 
     # Will be the return value for DiskToDBMap
-    [System.String[]]$dbMap = @()
+    [System.String[]] $dbMap = @()
 
     # Loop through all existing mount points and figure out which ones are for DB's
     foreach ($key in $DiskInfo.VolumeToMountPointMap.Keys)
     {
-        [System.String]$mountPoints = ''
+        [System.String] $mountPoints = ''
 
         foreach ($mountPoint in $DiskInfo.VolumeToMountPointMap[$key])
         {
@@ -620,15 +620,15 @@ function GetExchangeVolume
 
     $targetVol = -1 # Our return variable
 
-    [object[]]$keysSorted = GetSortedExchangeVolumeKeys -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -VolumePrefix $VolumePrefix -DiskInfo $DiskInfo
+    [object[]] $keysSorted = GetSortedExchangeVolumeKeys -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -VolumePrefix $VolumePrefix -DiskInfo $DiskInfo
 
     # Loop through every volume
     foreach ($key in $keysSorted)
     {
-        [int]$intKey = $key
+        [int] $intKey = $key
 
         # Get mount points for this volume
-        [System.String[]]$mountPoints = $DiskInfo.VolumeToMountPointMap[$intKey]
+        [System.String[]] $mountPoints = $DiskInfo.VolumeToMountPointMap[$intKey]
 
         $hasExVol = $false # Whether any ExVol mount points exist on this disk
         $hasExDb = $false # Whether any ExDB mount points exist on this disk
@@ -700,12 +700,12 @@ function GetSortedExchangeVolumeKeys
         $DiskInfo
     )
 
-    [System.String[]]$sortedKeys = @() # The return value
+    [System.String[]] $sortedKeys = @() # The return value
 
-    [System.String]$pathBeforeVolumeNumber = Join-Path -Path $AutoDagVolumesRootFolderPath -ChildPath $VolumePrefix
+    [System.String] $pathBeforeVolumeNumber = Join-Path -Path $AutoDagVolumesRootFolderPath -ChildPath $VolumePrefix
 
     # First extract the actual volume number as an Int from the volume path, then add it to a new hashtable with the same key value
-    [Hashtable]$tempVolumeToMountPointMap = @{}
+    [Hashtable] $tempVolumeToMountPointMap = @{}
 
     foreach ($key in $DiskInfo.VolumeToMountPointMap.Keys)
     {
@@ -725,14 +725,14 @@ function GetSortedExchangeVolumeKeys
         {
             if ($volPath.EndsWith('\') -or $volPath.EndsWith('/'))
             {
-                [System.String]$exVolNumberStr = $volPath.Substring($pathBeforeVolumeNumber.Length, ($volPath.Length - $pathBeforeVolumeNumber.Length - 1))
+                [System.String] $exVolNumberStr = $volPath.Substring($pathBeforeVolumeNumber.Length, ($volPath.Length - $pathBeforeVolumeNumber.Length - 1))
             }
             else
             {
-                [System.String]$exVolNumberStr = $volPath.Substring($pathBeforeVolumeNumber.Length, ($volPath.Length - $pathBeforeVolumeNumber.Length))
+                [System.String] $exVolNumberStr = $volPath.Substring($pathBeforeVolumeNumber.Length, ($volPath.Length - $pathBeforeVolumeNumber.Length))
             }
 
-            [int]$exVolNumber = [int]::Parse($exVolNumberStr)
+            [int] $exVolNumber = [int]::Parse($exVolNumberStr)
             $tempVolumeToMountPointMap.Add($key, $exVolNumber)
         }
     }
@@ -740,13 +740,13 @@ function GetSortedExchangeVolumeKeys
     # Now go through the volume numbers, and add the keys to the return array in sorted value order
     while ($tempVolumeToMountPointMap.Count -gt 0)
     {
-        [object[]]$keys = $tempVolumeToMountPointMap.Keys
-        [int]$lowestKey = $keys[0]
-        [int]$lowestValue = $tempVolumeToMountPointMap[$keys[0]]
+        [object[]] $keys = $tempVolumeToMountPointMap.Keys
+        [int] $lowestKey = $keys[0]
+        [int] $lowestValue = $tempVolumeToMountPointMap[$keys[0]]
 
         for ($i = 1; $i -lt $tempVolumeToMountPointMap.Count; $i++)
         {
-            [int]$currentValue = $tempVolumeToMountPointMap[$keys[$i]]
+            [int] $currentValue = $tempVolumeToMountPointMap[$keys[$i]]
 
             if ($currentValue -lt $lowestValue)
             {
@@ -784,8 +784,8 @@ function FindFirstAvailableDisk
         {
             if ($MinDiskSize -ne '')
             {
-                [Uint64]$minSize = 0 + $MinDiskSize.Replace(' ', '')
-                [Uint64]$actualSize = 0 + $DiskInfo.DiskSizeMap[$key].Replace(' ', '')
+                [Uint64] $minSize = 0 + $MinDiskSize.Replace(' ', '')
+                [Uint64] $actualSize = 0 + $DiskInfo.DiskSizeMap[$key].Replace(' ', '')
 
                 if ($actualSize -gt $minSize)
                 {

@@ -126,7 +126,7 @@ function Test-TargetResource
 
     $installStatus = Get-ExchangeInstallStatus -Path $Path -Arguments $Arguments -Verbose:$VerbosePreference
 
-    [System.Boolean]$shouldStartOrWaitForInstall = $false
+    [System.Boolean] $shouldStartOrWaitForInstall = $false
 
     if ($installStatus.ShouldStartInstall -eq $true)
     {

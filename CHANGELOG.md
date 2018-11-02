@@ -17,6 +17,7 @@
   remaining resource files.
 - Add WaitForComputerObject parameter to xExchWaitForDAG
 - Add spaces between comment hashtags and comments.
+- Add space between variable types and variables.
 
 ## 1.24.0.0
 

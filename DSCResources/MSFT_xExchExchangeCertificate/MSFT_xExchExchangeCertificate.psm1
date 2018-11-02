@@ -153,7 +153,7 @@ function Set-TargetResource
         # If the cert is null and it's supposed to be present, then we need to import one
         if ($Ensure -eq 'Present')
         {
-            $cert = Import-ExchangeCertificate -FileData ([Byte[]]$(Get-Content -Path "$($CertFilePath)" -Encoding Byte -ReadCount 0)) -Password:$CertCreds.Password -Server $env:COMPUTERNAME
+            $cert = Import-ExchangeCertificate -FileData ([Byte[]] $(Get-Content -Path "$($CertFilePath)" -Encoding Byte -ReadCount 0)) -Password:$CertCreds.Password -Server $env:COMPUTERNAME
         }
     }
     else
