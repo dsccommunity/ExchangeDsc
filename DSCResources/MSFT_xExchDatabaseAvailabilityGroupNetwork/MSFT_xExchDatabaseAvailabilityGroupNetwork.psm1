@@ -19,7 +19,7 @@ function Get-TargetResource
         $DatabaseAvailabilityGroup,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure,
 
@@ -81,7 +81,7 @@ function Set-TargetResource
         $DatabaseAvailabilityGroup,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure,
 
@@ -129,7 +129,7 @@ function Set-TargetResource
     else
     {
         #Remove Credential and Ensure so we don't pass it into the next command
-        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','Ensure'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'Ensure'
 
         Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
@@ -141,7 +141,7 @@ function Set-TargetResource
         else #Set props on the existing network
         {
             Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $dagId}
-            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Name','DatabaseAvailabilityGroup'
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Name', 'DatabaseAvailabilityGroup'
 
             Set-DatabaseAvailabilityGroupNetwork @PSBoundParameters
         }
@@ -169,7 +169,7 @@ function Test-TargetResource
         $DatabaseAvailabilityGroup,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure,
 
@@ -256,7 +256,7 @@ function GetDatabaseAvailabilityGroupNetwork
         $DatabaseAvailabilityGroup,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure,
 
@@ -281,7 +281,7 @@ function GetDatabaseAvailabilityGroupNetwork
         'Identity' = "$($DatabaseAvailabilityGroup)\$($Name)"
         'ErrorAction' = 'SilentlyContinue'
     }
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','ErrorAction','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'ErrorAction', 'DomainController'
 
     return (Get-DatabaseAvailabilityGroupNetwork @PSBoundParameters)
 }

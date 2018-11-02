@@ -120,7 +120,7 @@ if ($null -ne $adModule)
                     AutoDagTotalNumberOfServers = 2
                     AutoDagTotalNumberOfDatabases = 2
                     AutoDagVolumesRootFolderPath = 'C:\ExchangeVolumes'
-                    DatabaseAvailabilityGroupIpAddresses = '192.168.1.99','192.168.2.99'
+                    DatabaseAvailabilityGroupIpAddresses = '192.168.1.99', '192.168.2.99'
                     DatacenterActivationMode = 'DagOnly'
                     ManualDagNetworkConfiguration = $true
                     NetworkCompression = 'Enabled'
@@ -160,7 +160,7 @@ if ($null -ne $adModule)
 
                 $serverVersion = Get-ExchangeVersionYear
 
-                if ($serverVersion -in '2016','2019')
+                if ($serverVersion -in '2016', '2019')
                 {
                     $dagTestParams.Add('FileSystem', 'ReFS')
                     $dagTestParams.Add('AutoDagAutoRedistributeEnabled', $true)

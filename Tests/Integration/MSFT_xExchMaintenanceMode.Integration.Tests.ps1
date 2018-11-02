@@ -42,7 +42,7 @@ function Test-ServerIsOutOfMaintenanceMode
         #>
         [System.String[]] $expectedActiveComponentsList = Get-VersionSpecificComponentsToActivate
 
-        $expectedActiveComponentsList += 'ServerWideOffline','HubTransport','FrontendTransport','Monitoring','RecoveryActionsEnabled'
+        $expectedActiveComponentsList += 'ServerWideOffline', 'HubTransport', 'FrontendTransport', 'Monitoring', 'RecoveryActionsEnabled'
 
         foreach ($expectedActiveComponent in $expectedActiveComponentsList)
         {
@@ -164,7 +164,7 @@ function Get-VersionSpecificComponentsToActivate
                                                'HighAvailability',
                                                'SharedCache')
 
-    if ($serverVersion -in '2013','2016')
+    if ($serverVersion -in '2013', '2016')
     {
         $componentsToActivate += 'UMCallRouter'
     }
@@ -318,7 +318,7 @@ if ($exchangeInstalled)
     if ($null -eq $isDagMember)
     {
         Get-RemoteExchangeSession -Credential $shellCredentials `
-                                 -CommandsToLoad 'Get-MailboxServer','Get-MailboxDatabaseCopyStatus','Get-MailboxDatabase'
+                                 -CommandsToLoad 'Get-MailboxServer', 'Get-MailboxDatabaseCopyStatus', 'Get-MailboxDatabase'
 
         $mbxServer = Get-MailboxServer $env:COMPUTERNAME
 

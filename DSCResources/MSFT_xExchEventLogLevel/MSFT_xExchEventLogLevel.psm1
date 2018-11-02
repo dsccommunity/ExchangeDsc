@@ -15,7 +15,7 @@ function Get-TargetResource
         $Credential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Lowest','Low','Medium','High','Expert')]
+        [ValidateSet('Lowest', 'Low', 'Medium', 'High', 'Expert')]
         [System.String]
         $Level
     )
@@ -54,7 +54,7 @@ function Set-TargetResource
         $Credential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Lowest','Low','Medium','High','Expert')]
+        [ValidateSet('Lowest', 'Low', 'Medium', 'High', 'Expert')]
         [System.String]
         $Level
     )
@@ -84,7 +84,7 @@ function Test-TargetResource
         $Credential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Lowest','Low','Medium','High','Expert')]
+        [ValidateSet('Lowest', 'Low', 'Medium', 'High', 'Expert')]
         [System.String]
         $Level
     )

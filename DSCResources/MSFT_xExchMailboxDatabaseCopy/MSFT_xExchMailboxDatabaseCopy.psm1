@@ -51,7 +51,7 @@ function Get-TargetResource
 
     #Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential `
-                             -CommandsToLoad 'Get-MailboxDatabase','*DatabaseCopy*','Set-AdServerSettings' `
+                             -CommandsToLoad 'Get-MailboxDatabase', '*DatabaseCopy*', 'Set-AdServerSettings' `
                              -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
@@ -187,7 +187,7 @@ function Set-TargetResource
         $originalPSBoundParameters = @{} + $PSBoundParameters
 
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters `
-                         -ParamsToRemove 'Credential','AllowServiceRestart','AdServerSettingsPreferredServer'
+                         -ParamsToRemove 'Credential', 'AllowServiceRestart', 'AdServerSettingsPreferredServer'
 
         #Only send in ActivationPreference if it is less than or equal to the future copy count after adding this copy
         if ($PSBoundParameters.ContainsKey('ActivationPreference') -and $ActivationPreference -gt $copyCount)
@@ -252,7 +252,7 @@ function Set-TargetResource
     {
         Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = "$($Identity)\$($MailboxServer)"}
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters `
-                         -ParamsToRemove 'Credential','AllowServiceRestart','MailboxServer','AdServerSettingsPreferredServer','SeedingPostponed'
+                         -ParamsToRemove 'Credential', 'AllowServiceRestart', 'MailboxServer', 'AdServerSettingsPreferredServer', 'SeedingPostponed'
 
         if ($PSBoundParameters.ContainsKey('ActivationPreference') -and $ActivationPreference -gt $copyCount)
         {
@@ -395,7 +395,7 @@ function GetMailboxDatabase
         $AdServerSettingsPreferredServer
     )
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     return (Get-MailboxDatabase @PSBoundParameters -Status -ErrorAction SilentlyContinue)
 }

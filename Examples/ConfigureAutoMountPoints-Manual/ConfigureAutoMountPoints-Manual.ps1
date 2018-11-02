@@ -6,12 +6,12 @@ $ConfigurationData = @{
     AllNodes = @(
         @{
             NodeName    = 'e15-1'
-            DiskToDBMap = 'DB1,DB2','DB3,DB4'
+            DiskToDBMap = 'DB1,DB2', 'DB3,DB4'
         }
 
         @{
             NodeName    = 'e15-2'
-            DiskToDBMap = 'DB1,DB2','DB3,DB4'
+            DiskToDBMap = 'DB1,DB2', 'DB3,DB4'
         }
     )
 }

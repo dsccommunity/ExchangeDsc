@@ -29,7 +29,7 @@ if ($exchangeInstalled)
 
     $serverVersion = Get-ExchangeVersionYear
 
-    if ($serverVersion -in '2013','2016')
+    if ($serverVersion -in '2013', '2016')
     {
         #Check if the test UM Dial Plan exists, and if not, create it
         Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-UMDialPlan'

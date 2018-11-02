@@ -35,13 +35,13 @@ if ($exchangeInstalled)
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\Rpc (Default Web Site)"
             Credential = $shellCredentials
-            ExtendedProtectionFlags = 'Proxy','ProxyCoHosting'
+            ExtendedProtectionFlags = 'Proxy', 'ProxyCoHosting'
             ExtendedProtectionSPNList = @()
             ExtendedProtectionTokenChecking = 'Allow'
             ExternalClientAuthenticationMethod = 'Ntlm'
             ExternalClientsRequireSsl = $true
             ExternalHostname = $serverFqdn
-            IISAuthenticationMethods = 'Basic','Ntlm','Negotiate'
+            IISAuthenticationMethods = 'Basic', 'Ntlm', 'Negotiate'
             InternalClientAuthenticationMethod = 'Negotiate'
             InternalHostname = $serverFqdn
             InternalClientsRequireSsl = $true

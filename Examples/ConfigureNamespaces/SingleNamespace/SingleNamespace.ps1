@@ -38,7 +38,7 @@ Configuration Example
             Identity                       = $Node.NodeName
             Credential                     = $ExchangeAdminCredential
             AutoDiscoverServiceInternalUri = 'https://mail.contoso.local/autodiscover/autodiscover.xml'
-            AutoDiscoverSiteScope          = 'Site1','Site2'
+            AutoDiscoverSiteScope          = 'Site1', 'Site2'
         }
 
         xExchActiveSyncVirtualDirectory ASVdir
@@ -63,7 +63,7 @@ Configuration Example
             Credential               = $ExchangeAdminCredential
             ExternalUrl              = 'https://mail.contoso.local/mapi'
             InternalUrl              = 'https://mail.contoso.local/mapi'
-            IISAuthenticationMethods = 'NTLM','Negotiate'  #IISAuthenticationMethods is a required parameter for Set-MapiVirtualDirectory
+            IISAuthenticationMethods = 'NTLM', 'Negotiate'  #IISAuthenticationMethods is a required parameter for Set-MapiVirtualDirectory
             AllowServiceRestart      = $true               #Since we are changing the default auth method, we allow the app pool to be restarted right away so the change goes into effect immediately
         }
 

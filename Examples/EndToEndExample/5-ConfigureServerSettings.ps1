@@ -70,7 +70,7 @@ $ConfigurationData = @{
             DAGName                              = 'DAG01'
             AutoDagTotalNumberOfServers          = 12
             AutoDagDatabaseCopiesPerVolume       = 4
-            DatabaseAvailabilityGroupIPAddresses = '192.168.1.31','192.168.2.31'
+            DatabaseAvailabilityGroupIPAddresses = '192.168.1.31', '192.168.2.31'
             WitnessServer                        = 'e14-1.contoso.local'
             DbNameReplacements                   = @{"nn" = "01"}
             Thumbprint                           = "0079D0F68F44C7DA5252B4779F872F46DFAF0CBC"
@@ -155,7 +155,7 @@ Configuration Example
             AllowExtraServices      = $true
             CertCreds               = $ExchangeCertCredential
             CertFilePath            = 'C:\Binaries\Certificates\ExchangeCert.pfx'
-            Services                = 'IIS','POP','IMAP','SMTP'
+            Services                = 'IIS', 'POP', 'IMAP', 'SMTP'
             DependsOn               = '[File]CopyExchangeCert'
         }
 
@@ -191,7 +191,7 @@ Configuration Example
             Credential               = $ExchangeAdminCredential
             ExternalUrl              = "https://$($casSettingsAll.ExternalNamespace)/mapi"
             InternalUrl              = "https://$($casSettingsPerSite.InternalNamespace)/mapi"
-            IISAuthenticationMethods = 'Ntlm','OAuth','Negotiate'
+            IISAuthenticationMethods = 'Ntlm', 'OAuth', 'Negotiate'
         }
 
         xExchOabVirtualDirectory OABVdir

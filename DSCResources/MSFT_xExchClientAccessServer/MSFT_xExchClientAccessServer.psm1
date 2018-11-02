@@ -146,7 +146,7 @@ function Set-TargetResource
 
     $serverVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
 
-    if ($serverVersion -in '2016','2019')
+    if ($serverVersion -in '2016', '2019')
     {
         $setCasCmd = 'Set-ClientAccessService'
     }
@@ -327,7 +327,7 @@ function GetClientAccessServer
     )
 
     #Remove params we don't want to pass into the next command
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     $serverVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
     if (($null -ne $AlternateServiceAccountCredential) -or ($RemoveAlternateServiceAccountCredentials))
@@ -335,7 +335,7 @@ function GetClientAccessServer
         $PSBoundParameters.Add('IncludeAlternateServiceAccountCredentialPassword',$true)
     }
 
-    if ($serverVersion -in '2016','2019')
+    if ($serverVersion -in '2016', '2019')
     {
         return (Get-ClientAccessService @PSBoundParameters)
     }

@@ -268,7 +268,7 @@ function Set-TargetResource
         $WSSAccessOnPrivateComputersEnabled,
 
         [Parameter()]
-        [ValidateSet('FullDomain','UserName','PrincipalName')]
+        [ValidateSet('FullDomain', 'UserName', 'PrincipalName')]
         [System.String]
         $LogonFormat,
 
@@ -286,7 +286,7 @@ function Set-TargetResource
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     #Remove Credential and AllowServiceRestart because those parameters do not exist on Set-OwaVirtualDirectory
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
 
     Set-OwaVirtualDirectory @PSBoundParameters
 
@@ -680,7 +680,7 @@ function GetOwaVirtualDirectory
         $DefaultDomain
     )
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     return (Get-OwaVirtualDirectory @PSBoundParameters)
 }

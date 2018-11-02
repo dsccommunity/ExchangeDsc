@@ -113,7 +113,7 @@ function Get-TargetResource
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxTransportService' -Verbose:$VerbosePreference
 
     #Remove Credential and Ensure so we don't pass it into the next command
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
 
     $mbxTransportService = Get-MailboxTransportService $Identity -ErrorAction SilentlyContinue
 
@@ -257,7 +257,7 @@ function Set-TargetResource
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-MailboxTransportService' -Verbose:$VerbosePreference
 
     #Remove Credential and Ensure so we don't pass it into the next command
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
 
     #if PipelineTracingSenderAddress exists and is empty, set it to $null so Set-MailboxTransportService nulls out the stored value
     if ($PSBoundParameters.ContainsKey('PipelineTracingSenderAddress') -and [System.String]::IsNullOrEmpty($PipelineTracingSenderAddress))

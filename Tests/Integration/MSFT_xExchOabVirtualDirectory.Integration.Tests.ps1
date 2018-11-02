@@ -41,7 +41,7 @@ if ($exchangeInstalled)
             OABsToDistribute = $testOabName
             BasicAuthentication = $false
             OAuthAuthentication = $false
-            ExtendedProtectionFlags = 'Proxy','ProxyCoHosting'
+            ExtendedProtectionFlags = 'Proxy', 'ProxyCoHosting'
             ExtendedProtectionSPNList = @()
             ExtendedProtectionTokenChecking = 'Allow'
             InternalUrl = "http://$($serverFqdn)/OAB"

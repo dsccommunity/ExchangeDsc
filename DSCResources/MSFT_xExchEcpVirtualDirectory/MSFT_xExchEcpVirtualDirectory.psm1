@@ -51,7 +51,7 @@ function Get-TargetResource
         $FormsAuthentication,
 
         [Parameter()]
-        [ValidateSet('Off','Low','High','Error')]
+        [ValidateSet('Off', 'Low', 'High', 'Error')]
         [System.String]
         $GzipLevel,
 
@@ -164,7 +164,7 @@ function Set-TargetResource
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     #Remove Credential and AllowServiceRestart because those parameters do not exist on Set-OwaVirtualDirectory
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
 
     Set-EcpVirtualDirectory @PSBoundParameters
 
@@ -384,7 +384,7 @@ function GetEcpVirtualDirectory
         $WindowsAuthentication
     )
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     return (Get-EcpVirtualDirectory @PSBoundParameters)
 }

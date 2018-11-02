@@ -83,7 +83,7 @@ function GetDiskInfo
     #Now get info on the disks
     foreach ($diskNum in $diskNums)
     {
-        $diskDetails = StartDiskpart -Commands "Select Disk $($diskNum)","Detail Disk" -ShowOutput $false
+        $diskDetails = StartDiskpart -Commands "Select Disk $($diskNum)", "Detail Disk" -ShowOutput $false
 
         $foundVolumes = $false
 

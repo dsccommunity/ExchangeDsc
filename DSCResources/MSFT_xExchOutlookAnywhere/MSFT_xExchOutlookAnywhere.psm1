@@ -31,12 +31,12 @@ function Get-TargetResource
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('Allow','None','Require')]
+        [ValidateSet('Allow', 'None', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
         [Parameter()]
-        [ValidateSet('Ntlm','Basic','Negotiate')]
+        [ValidateSet('Ntlm', 'Basic', 'Negotiate')]
         [System.String]
         $ExternalClientAuthenticationMethod,
 
@@ -53,7 +53,7 @@ function Get-TargetResource
         $IISAuthenticationMethods,
 
         [Parameter()]
-        [ValidateSet('Ntlm','Basic','Negotiate')]
+        [ValidateSet('Ntlm', 'Basic', 'Negotiate')]
         [System.String]
         $InternalClientAuthenticationMethod,
 
@@ -129,12 +129,12 @@ function Set-TargetResource
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('Allow','None','Require')]
+        [ValidateSet('Allow', 'None', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
         [Parameter()]
-        [ValidateSet('Ntlm','Basic','Negotiate')]
+        [ValidateSet('Ntlm', 'Basic', 'Negotiate')]
         [System.String]
         $ExternalClientAuthenticationMethod,
 
@@ -151,7 +151,7 @@ function Set-TargetResource
         $IISAuthenticationMethods,
 
         [Parameter()]
-        [ValidateSet('Ntlm','Basic','Negotiate')]
+        [ValidateSet('Ntlm', 'Basic', 'Negotiate')]
         [System.String]
         $InternalClientAuthenticationMethod,
 
@@ -176,7 +176,7 @@ function Set-TargetResource
     #Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
 
     Set-OutlookAnywhere @PSBoundParameters
 
@@ -226,12 +226,12 @@ function Test-TargetResource
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('Allow','None','Require')]
+        [ValidateSet('Allow', 'None', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
         [Parameter()]
-        [ValidateSet('Ntlm','Basic','Negotiate')]
+        [ValidateSet('Ntlm', 'Basic', 'Negotiate')]
         [System.String]
         $ExternalClientAuthenticationMethod,
 
@@ -248,7 +248,7 @@ function Test-TargetResource
         $IISAuthenticationMethods,
 
         [Parameter()]
-        [ValidateSet('Ntlm','Basic','Negotiate')]
+        [ValidateSet('Ntlm', 'Basic', 'Negotiate')]
         [System.String]
         $InternalClientAuthenticationMethod,
 
@@ -377,12 +377,12 @@ function GetOutlookAnywhere
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('Allow','None','Require')]
+        [ValidateSet('Allow', 'None', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
         [Parameter()]
-        [ValidateSet('Ntlm','Basic','Negotiate')]
+        [ValidateSet('Ntlm', 'Basic', 'Negotiate')]
         [System.String]
         $ExternalClientAuthenticationMethod,
 
@@ -399,7 +399,7 @@ function GetOutlookAnywhere
         $IISAuthenticationMethods,
 
         [Parameter()]
-        [ValidateSet('Ntlm','Basic','Negotiate')]
+        [ValidateSet('Ntlm', 'Basic', 'Negotiate')]
         [System.String]
         $InternalClientAuthenticationMethod,
 
@@ -416,7 +416,7 @@ function GetOutlookAnywhere
         $SSLOffloading
     )
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     return (Get-OutlookAnywhere @PSBoundParameters)
 }

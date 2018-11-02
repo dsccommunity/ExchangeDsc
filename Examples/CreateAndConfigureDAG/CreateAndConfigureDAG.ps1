@@ -43,18 +43,18 @@ $ConfigurationData = @{
             DAGName                              = 'TestDAG1'
             AutoDagTotalNumberOfServers          = 4
             AutoDagDatabaseCopiesPerVolume       = 2
-            DatabaseAvailabilityGroupIPAddresses = '192.168.1.99','192.168.2.99'
+            DatabaseAvailabilityGroupIPAddresses = '192.168.1.99', '192.168.2.99'
             WitnessServer                        = 'e14-1.contoso.local'
 
             #xDatabaseAvailabilityGroupNetwork params
             #New network params
             DAGNet1NetworkName                   = 'MapiNetwork'
             DAGNet1ReplicationEnabled            = $false
-            DAGNet1Subnets                       = '192.168.1.0/24','192.168.2.0/24'
+            DAGNet1Subnets                       = '192.168.1.0/24', '192.168.2.0/24'
 
             DAGNet2NetworkName                   = 'ReplNetwork'
             DAGNet2ReplicationEnabled            = $true
-            DAGNet2Subnets                       = '10.10.10.0/24','10.10.11.0/24'
+            DAGNet2Subnets                       = '10.10.10.0/24', '10.10.11.0/24'
 
             #Old network to remove
             OldNetworkName                       = 'MapiDagNetwork'
@@ -137,7 +137,7 @@ Configuration Example
             Credential                = $ExchangeAdminCredential
             DatabaseAvailabilityGroup = $dagSettings.DAGName
             Ensure                    = 'Absent'
-            DependsOn                 = '[xExchDatabaseAvailabilityGroupNetwork]DAGNet1','[xExchDatabaseAvailabilityGroupNetwork]DAGNet2' #Dont remove the old one until the new one is in place
+            DependsOn                 = '[xExchDatabaseAvailabilityGroupNetwork]DAGNet1', '[xExchDatabaseAvailabilityGroupNetwork]DAGNet2' #Dont remove the old one until the new one is in place
         }
     }
 

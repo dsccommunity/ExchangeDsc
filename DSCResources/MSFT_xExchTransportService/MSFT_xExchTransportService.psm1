@@ -111,7 +111,7 @@ function Get-TargetResource
         $ExternalDNSAdapterGuid,
 
         [Parameter()]
-        [ValidateSet('Any','UseTcpOnly','UseUdpOnly')]
+        [ValidateSet('Any', 'UseTcpOnly', 'UseUdpOnly')]
         [System.String]
         $ExternalDNSProtocolOption,
 
@@ -132,7 +132,7 @@ function Get-TargetResource
         $InternalDNSAdapterGuid,
 
         [Parameter()]
-        [ValidateSet('Any','UseTcpOnly','UseUdpOnly')]
+        [ValidateSet('Any', 'UseTcpOnly', 'UseUdpOnly')]
         [System.String]
         $InternalDNSProtocolOption,
 
@@ -141,7 +141,7 @@ function Get-TargetResource
         $InternalDNSServers,
 
         [Parameter()]
-        [ValidateSet('None','Verbose')]
+        [ValidateSet('None', 'Verbose')]
         [System.String]
         $IntraOrgConnectorProtocolLoggingLevel,
 
@@ -378,7 +378,7 @@ function Get-TargetResource
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-TransportService' -Verbose:$VerbosePreference
 
     #Remove Credential and Ensure so we don't pass it into the next command
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
 
     $TransportService = Get-TransportService $Identity -ErrorAction SilentlyContinue
     if ($null -ne $TransportService)
@@ -587,7 +587,7 @@ function Set-TargetResource
         $ExternalDNSAdapterGuid,
 
         [Parameter()]
-        [ValidateSet('Any','UseTcpOnly','UseUdpOnly')]
+        [ValidateSet('Any', 'UseTcpOnly', 'UseUdpOnly')]
         [System.String]
         $ExternalDNSProtocolOption,
 
@@ -608,7 +608,7 @@ function Set-TargetResource
         $InternalDNSAdapterGuid,
 
         [Parameter()]
-        [ValidateSet('Any','UseTcpOnly','UseUdpOnly')]
+        [ValidateSet('Any', 'UseTcpOnly', 'UseUdpOnly')]
         [System.String]
         $InternalDNSProtocolOption,
 
@@ -617,7 +617,7 @@ function Set-TargetResource
         $InternalDNSServers,
 
         [Parameter()]
-        [ValidateSet('None','Verbose')]
+        [ValidateSet('None', 'Verbose')]
         [System.String]
         $IntraOrgConnectorProtocolLoggingLevel,
 
@@ -852,7 +852,7 @@ function Set-TargetResource
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-TransportService' -Verbose:$VerbosePreference
 
     #Remove Credential and Ensure so we don't pass it into the next command
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
 
     try
     {
@@ -1031,7 +1031,7 @@ function Test-TargetResource
         $ExternalDNSAdapterGuid,
 
         [Parameter()]
-        [ValidateSet('Any','UseTcpOnly','UseUdpOnly')]
+        [ValidateSet('Any', 'UseTcpOnly', 'UseUdpOnly')]
         [System.String]
         $ExternalDNSProtocolOption,
 
@@ -1052,7 +1052,7 @@ function Test-TargetResource
         $InternalDNSAdapterGuid,
 
         [Parameter()]
-        [ValidateSet('Any','UseTcpOnly','UseUdpOnly')]
+        [ValidateSet('Any', 'UseTcpOnly', 'UseUdpOnly')]
         [System.String]
         $InternalDNSProtocolOption,
 
@@ -1061,7 +1061,7 @@ function Test-TargetResource
         $InternalDNSServers,
 
         [Parameter()]
-        [ValidateSet('None','Verbose')]
+        [ValidateSet('None', 'Verbose')]
         [System.String]
         $IntraOrgConnectorProtocolLoggingLevel,
 

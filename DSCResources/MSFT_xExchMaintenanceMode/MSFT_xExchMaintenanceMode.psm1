@@ -23,7 +23,7 @@ function Get-TargetResource
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('None','Lossless','GoodAvailability','BestAvailability','BestEffort')]
+        [ValidateSet('None', 'Lossless', 'GoodAvailability', 'BestAvailability', 'BestEffort')]
         [System.String]
         $MountDialOverride = 'None',
 
@@ -148,7 +148,7 @@ function Set-TargetResource
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('None','Lossless','GoodAvailability','BestAvailability','BestEffort')]
+        [ValidateSet('None', 'Lossless', 'GoodAvailability', 'BestAvailability', 'BestEffort')]
         [System.String]
         $MountDialOverride = 'None',
 
@@ -282,7 +282,7 @@ function Set-TargetResource
                     Verbose = $true
                 }
 
-                if ((Get-ExchangeVersionYear) -in '2016','2019')
+                if ((Get-ExchangeVersionYear) -in '2016', '2019')
                 {
                     $startDagScriptParams.Add('pauseClusterNode', $true)
                 }
@@ -418,7 +418,7 @@ function Test-TargetResource
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('None','Lossless','GoodAvailability','BestAvailability','BestEffort')]
+        [ValidateSet('None', 'Lossless', 'GoodAvailability', 'BestAvailability', 'BestEffort')]
         [System.String]
         $MountDialOverride = 'None',
 
@@ -578,7 +578,7 @@ function Test-TargetResource
                 $testResults = $false
             }
 
-            if ($serverVersion -in '2013','2016')
+            if ($serverVersion -in '2013', '2016')
             {
                 if ($null -eq ($activeComponents | Where-Object {$_.Component -eq "UMCallRouter"}))
                 {
@@ -1115,7 +1115,7 @@ function MovePrimaryDatabasesBack
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('None','Lossless','GoodAvailability','BestAvailability','BestEffort')]
+        [ValidateSet('None', 'Lossless', 'GoodAvailability', 'BestAvailability', 'BestEffort')]
         [System.String]
         $MountDialOverride,
 
@@ -1455,7 +1455,7 @@ function GetUMActiveCalls
 
     $serverVersion = Get-ExchangeVersionYear
 
-    if ($serverVersion -in '2013','2016')
+    if ($serverVersion -in '2013', '2016')
     {
         if ([System.String]::IsNullOrEmpty($DomainController))
         {
@@ -1486,7 +1486,7 @@ function MoveActiveMailboxDatabase
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('None','Lossless','GoodAvailability','BestAvailability','BestEffort')]
+        [ValidateSet('None', 'Lossless', 'GoodAvailability', 'BestAvailability', 'BestEffort')]
         [System.String]
         $MountDialOverride,
 
@@ -1587,7 +1587,7 @@ function MoveActiveMailboxDatabase
         $moveDBParams.Add("SkipMaximumActiveDatabasesChecks", $true)
     }
 
-    if ((Get-ExchangeVersionYear) -in '2016','2019')
+    if ((Get-ExchangeVersionYear) -in '2016', '2019')
     {
         if ($SkipAllChecks)
         {
@@ -1606,7 +1606,7 @@ function MoveActiveMailboxDatabase
     }
 
     #Remove the PSBoundParameters we just re-formatted
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'SkipActiveCopyChecks','SkipClientExperienceChecks','SkipLagChecks','SkipMaximumActiveDatabasesChecks','SkipMoveSuppressionChecks','SkipHealthChecks','SkipCpuChecks','SkipAllChecks'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'SkipActiveCopyChecks', 'SkipClientExperienceChecks', 'SkipLagChecks', 'SkipMaximumActiveDatabasesChecks', 'SkipMoveSuppressionChecks', 'SkipHealthChecks', 'SkipCpuChecks', 'SkipAllChecks'
 
     #Execute mailbox DB move
     Move-ActiveMailboxDatabase @PSBoundParameters @moveDBParams

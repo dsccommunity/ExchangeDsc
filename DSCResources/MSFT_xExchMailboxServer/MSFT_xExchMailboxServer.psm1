@@ -15,7 +15,7 @@ function Get-TargetResource
         $Credential,
 
         [Parameter()]
-        [ValidateSet('BestAvailability','GoodAvailability','Lossless')]
+        [ValidateSet('BestAvailability', 'GoodAvailability', 'Lossless')]
         [System.String]
         $AutoDatabaseMountDial,
 
@@ -48,7 +48,7 @@ function Get-TargetResource
         $CalendarRepairMissingItemFixDisabled,
 
         [Parameter()]
-        [ValidateSet('ValidateOnly','RepairAndValidate')]
+        [ValidateSet('ValidateOnly', 'RepairAndValidate')]
         [System.String]
         $CalendarRepairMode,
 
@@ -65,7 +65,7 @@ function Get-TargetResource
         $DatabaseCopyActivationDisabledAndMoveNow,
 
         [Parameter()]
-        [ValidateSet('Blocked','IntrasiteOnly','Unrestricted')]
+        [ValidateSet('Blocked', 'IntrasiteOnly', 'Unrestricted')]
         [System.String]
         $DatabaseCopyAutoActivationPolicy,
 
@@ -251,7 +251,7 @@ function Get-TargetResource
 
         $serverVersion = Get-ExchangeVersionYear
 
-        if ($serverVersion -in '2016','2019')
+        if ($serverVersion -in '2016', '2019')
         {
             $returnValue.Add('WacDiscoveryEndpoint', [System.String]$server.WacDiscoveryEndpoint)
         }
@@ -312,7 +312,7 @@ function Set-TargetResource
         $Credential,
 
         [Parameter()]
-        [ValidateSet('BestAvailability','GoodAvailability','Lossless')]
+        [ValidateSet('BestAvailability', 'GoodAvailability', 'Lossless')]
         [System.String]
         $AutoDatabaseMountDial,
 
@@ -345,7 +345,7 @@ function Set-TargetResource
         $CalendarRepairMissingItemFixDisabled,
 
         [Parameter()]
-        [ValidateSet('ValidateOnly','RepairAndValidate')]
+        [ValidateSet('ValidateOnly', 'RepairAndValidate')]
         [System.String]
         $CalendarRepairMode,
 
@@ -362,7 +362,7 @@ function Set-TargetResource
         $DatabaseCopyActivationDisabledAndMoveNow,
 
         [Parameter()]
-        [ValidateSet('Blocked','IntrasiteOnly','Unrestricted')]
+        [ValidateSet('Blocked', 'IntrasiteOnly', 'Unrestricted')]
         [System.String]
         $DatabaseCopyAutoActivationPolicy,
 
@@ -516,18 +516,18 @@ function Set-TargetResource
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential'
 
     #create array of Exchange 2013 only parameters
-    [array]$Exchange2013Only = 'CalendarRepairWorkCycle','CalendarRepairWorkCycleCheckpoint','MailboxProcessorWorkCycle','ManagedFolderAssistantSchedule','ManagedFolderWorkCycle',
-    'ManagedFolderWorkCycleCheckpoint','OABGeneratorWorkCycle','OABGeneratorWorkCycleCheckpoint','PublicFolderWorkCycle','PublicFolderWorkCycleCheckpoint','SharingPolicyWorkCycle',
-    'SharingPolicyWorkCycleCheckpoint','SharingSyncWorkCycle','SharingSyncWorkCycleCheckpoint','SiteMailboxWorkCycle','SiteMailboxWorkCycleCheckpoint','TopNWorkCycle','TopNWorkCycleCheckpoint',
-    'UMReportingWorkCycle','UMReportingWorkCycleCheckpoint'
+    [array]$Exchange2013Only = 'CalendarRepairWorkCycle', 'CalendarRepairWorkCycleCheckpoint', 'MailboxProcessorWorkCycle', 'ManagedFolderAssistantSchedule', 'ManagedFolderWorkCycle',
+    'ManagedFolderWorkCycleCheckpoint', 'OABGeneratorWorkCycle', 'OABGeneratorWorkCycleCheckpoint', 'PublicFolderWorkCycle', 'PublicFolderWorkCycleCheckpoint', 'SharingPolicyWorkCycle',
+    'SharingPolicyWorkCycleCheckpoint', 'SharingSyncWorkCycle', 'SharingSyncWorkCycleCheckpoint', 'SiteMailboxWorkCycle', 'SiteMailboxWorkCycleCheckpoint', 'TopNWorkCycle', 'TopNWorkCycleCheckpoint',
+    'UMReportingWorkCycle', 'UMReportingWorkCycleCheckpoint'
 
     $serverVersion = Get-ExchangeVersionYear
     if ($serverVersion -eq '2013')
     {
       #Check for non-existent parameters in Exchange 2013
-      Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016','2019'
+      Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016', '2019'
     }
-    elseif ($serverVersion -in '2016','2019')
+    elseif ($serverVersion -in '2016', '2019')
     {
       foreach ($Exchange2013Parameter in $Exchange2013Only)
       {
@@ -564,7 +564,7 @@ function Test-TargetResource
         $Credential,
 
         [Parameter()]
-        [ValidateSet('BestAvailability','GoodAvailability','Lossless')]
+        [ValidateSet('BestAvailability', 'GoodAvailability', 'Lossless')]
         [System.String]
         $AutoDatabaseMountDial,
 
@@ -597,7 +597,7 @@ function Test-TargetResource
         $CalendarRepairMissingItemFixDisabled,
 
         [Parameter()]
-        [ValidateSet('ValidateOnly','RepairAndValidate')]
+        [ValidateSet('ValidateOnly', 'RepairAndValidate')]
         [System.String]
         $CalendarRepairMode,
 
@@ -614,7 +614,7 @@ function Test-TargetResource
         $DatabaseCopyActivationDisabledAndMoveNow,
 
         [Parameter()]
-        [ValidateSet('Blocked','IntrasiteOnly','Unrestricted')]
+        [ValidateSet('Blocked', 'IntrasiteOnly', 'Unrestricted')]
         [System.String]
         $DatabaseCopyAutoActivationPolicy,
 
@@ -762,21 +762,21 @@ function Test-TargetResource
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxServer','Set-MailboxServer' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxServer', 'Set-MailboxServer' -Verbose:$VerbosePreference
 
     #create array of Exchange 2013 only parameters
-    [array]$Exchange2013Only = 'CalendarRepairWorkCycle','CalendarRepairWorkCycleCheckpoint','MailboxProcessorWorkCycle','ManagedFolderAssistantSchedule','ManagedFolderWorkCycle',
-    'ManagedFolderWorkCycleCheckpoint','OABGeneratorWorkCycle','OABGeneratorWorkCycleCheckpoint','PublicFolderWorkCycle','PublicFolderWorkCycleCheckpoint','SharingPolicyWorkCycle',
-    'SharingPolicyWorkCycleCheckpoint','SharingSyncWorkCycle','SharingSyncWorkCycleCheckpoint','SiteMailboxWorkCycle','SiteMailboxWorkCycleCheckpoint','TopNWorkCycle','TopNWorkCycleCheckpoint',
-    'UMReportingWorkCycle','UMReportingWorkCycleCheckpoint'
+    [array]$Exchange2013Only = 'CalendarRepairWorkCycle', 'CalendarRepairWorkCycleCheckpoint', 'MailboxProcessorWorkCycle', 'ManagedFolderAssistantSchedule', 'ManagedFolderWorkCycle',
+    'ManagedFolderWorkCycleCheckpoint', 'OABGeneratorWorkCycle', 'OABGeneratorWorkCycleCheckpoint', 'PublicFolderWorkCycle', 'PublicFolderWorkCycleCheckpoint', 'SharingPolicyWorkCycle',
+    'SharingPolicyWorkCycleCheckpoint', 'SharingSyncWorkCycle', 'SharingSyncWorkCycleCheckpoint', 'SiteMailboxWorkCycle', 'SiteMailboxWorkCycleCheckpoint', 'TopNWorkCycle', 'TopNWorkCycleCheckpoint',
+    'UMReportingWorkCycle', 'UMReportingWorkCycleCheckpoint'
 
     $serverVersion = Get-ExchangeVersionYear
     if ($serverVersion -eq '2013')
     {
       #Check for non-existent parameters in Exchange 2013
-      Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016','2019'
+      Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016', '2019'
     }
-    elseif ($serverVersion -in '2016','2019')
+    elseif ($serverVersion -in '2016', '2019')
     {
       foreach ($Exchange2013Parameter in $Exchange2013Only)
       {
@@ -1056,7 +1056,7 @@ function GetMailboxServer
         $Credential,
 
         [Parameter()]
-        [ValidateSet('BestAvailability','GoodAvailability','Lossless')]
+        [ValidateSet('BestAvailability', 'GoodAvailability', 'Lossless')]
         [System.String]
         $AutoDatabaseMountDial,
 
@@ -1089,7 +1089,7 @@ function GetMailboxServer
         $CalendarRepairMissingItemFixDisabled,
 
         [Parameter()]
-        [ValidateSet('ValidateOnly','RepairAndValidate')]
+        [ValidateSet('ValidateOnly', 'RepairAndValidate')]
         [System.String]
         $CalendarRepairMode,
 
@@ -1106,7 +1106,7 @@ function GetMailboxServer
         $DatabaseCopyActivationDisabledAndMoveNow,
 
         [Parameter()]
-        [ValidateSet('Blocked','IntrasiteOnly','Unrestricted')]
+        [ValidateSet('Blocked', 'IntrasiteOnly', 'Unrestricted')]
         [System.String]
         $DatabaseCopyAutoActivationPolicy,
 
@@ -1251,7 +1251,7 @@ function GetMailboxServer
         $WacDiscoveryEndpoint
     )
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     return (Get-MailboxServer @PSBoundParameters)
 }
