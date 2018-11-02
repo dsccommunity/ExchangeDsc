@@ -253,39 +253,39 @@ function Get-TargetResource
 
         if ($serverVersion -in '2016', '2019')
         {
-            $returnValue.Add('WacDiscoveryEndpoint', [System.String]$server.WacDiscoveryEndpoint)
+            $returnValue.Add('WacDiscoveryEndpoint', [System.String] $server.WacDiscoveryEndpoint)
         }
         elseif ($serverVersion -eq '2013')
         {
             if ($null -ne $server.ManagedFolderAssistantSchedule)
             {
-                $mfaSchedule = [System.String[]]$server.ManagedFolderAssistantSchedule
+                $mfaSchedule = [System.String[]] $server.ManagedFolderAssistantSchedule
             }
             else
             {
-                $mfaSchedule = [System.String[]]@()
+                $mfaSchedule = [System.String[]] @()
             }
 
-            $returnValue.Add('CalendarRepairWorkCycle', [System.String]$server.CalendarRepairWorkCycle)
-            $returnValue.Add('CalendarRepairWorkCycleCheckpoint', [System.String]$server.CalendarRepairWorkCycleCheckpoint)
-            $returnValue.Add('MailboxProcessorWorkCycle', [System.String]$server.MailboxProcessorWorkCycle)
+            $returnValue.Add('CalendarRepairWorkCycle', [System.String] $server.CalendarRepairWorkCycle)
+            $returnValue.Add('CalendarRepairWorkCycleCheckpoint', [System.String] $server.CalendarRepairWorkCycleCheckpoint)
+            $returnValue.Add('MailboxProcessorWorkCycle', [System.String] $server.MailboxProcessorWorkCycle)
             $returnValue.Add('ManagedFolderAssistantSchedule', $mfaSchedule)
-            $returnValue.Add('ManagedFolderWorkCycle', [System.String]$server.ManagedFolderWorkCycle)
-            $returnValue.Add('ManagedFolderWorkCycleCheckpoint', [System.String]$server.ManagedFolderWorkCycleCheckpoint)
-            $returnValue.Add('OABGeneratorWorkCycle', [System.String]$server.OABGeneratorWorkCycle)
-            $returnValue.Add('OABGeneratorWorkCycleCheckpoint', [System.String]$server.OABGeneratorWorkCycleCheckpoint)
-            $returnValue.Add('PublicFolderWorkCycle', [System.String]$server.PublicFolderWorkCycle)
-            $returnValue.Add('PublicFolderWorkCycleCheckpoint', [System.String]$server.PublicFolderWorkCycleCheckpoint)
-            $returnValue.Add('SharingPolicyWorkCycle', [System.String]$server.SharingPolicyWorkCycle)
-            $returnValue.Add('SharingPolicyWorkCycleCheckpoint', [System.String]$server.SharingPolicyWorkCycleCheckpoint)
-            $returnValue.Add('SharingSyncWorkCycle', [System.String]$server.SharingSyncWorkCycle)
-            $returnValue.Add('SharingSyncWorkCycleCheckpoint', [System.String]$server.SharingSyncWorkCycleCheckpoint)
-            $returnValue.Add('SiteMailboxWorkCycle', [System.String]$server.SiteMailboxWorkCycle)
-            $returnValue.Add('SiteMailboxWorkCycleCheckpoint', [System.String]$server.SiteMailboxWorkCycleCheckpoint)
-            $returnValue.Add('TopNWorkCycle', [System.String]$server.TopNWorkCycle)
-            $returnValue.Add('TopNWorkCycleCheckpoint', [System.String]$server.TopNWorkCycleCheckpoint)
-            $returnValue.Add('UMReportingWorkCycle', [System.String]$server.UMReportingWorkCycle)
-            $returnValue.Add('UMReportingWorkCycleCheckpoint', [System.String]$server.UMReportingWorkCycleCheckpoint)
+            $returnValue.Add('ManagedFolderWorkCycle', [System.String] $server.ManagedFolderWorkCycle)
+            $returnValue.Add('ManagedFolderWorkCycleCheckpoint', [System.String] $server.ManagedFolderWorkCycleCheckpoint)
+            $returnValue.Add('OABGeneratorWorkCycle', [System.String] $server.OABGeneratorWorkCycle)
+            $returnValue.Add('OABGeneratorWorkCycleCheckpoint', [System.String] $server.OABGeneratorWorkCycleCheckpoint)
+            $returnValue.Add('PublicFolderWorkCycle', [System.String] $server.PublicFolderWorkCycle)
+            $returnValue.Add('PublicFolderWorkCycleCheckpoint', [System.String] $server.PublicFolderWorkCycleCheckpoint)
+            $returnValue.Add('SharingPolicyWorkCycle', [System.String] $server.SharingPolicyWorkCycle)
+            $returnValue.Add('SharingPolicyWorkCycleCheckpoint', [System.String] $server.SharingPolicyWorkCycleCheckpoint)
+            $returnValue.Add('SharingSyncWorkCycle', [System.String] $server.SharingSyncWorkCycle)
+            $returnValue.Add('SharingSyncWorkCycleCheckpoint', [System.String] $server.SharingSyncWorkCycleCheckpoint)
+            $returnValue.Add('SiteMailboxWorkCycle', [System.String] $server.SiteMailboxWorkCycle)
+            $returnValue.Add('SiteMailboxWorkCycleCheckpoint', [System.String] $server.SiteMailboxWorkCycleCheckpoint)
+            $returnValue.Add('TopNWorkCycle', [System.String] $server.TopNWorkCycle)
+            $returnValue.Add('TopNWorkCycleCheckpoint', [System.String] $server.TopNWorkCycleCheckpoint)
+            $returnValue.Add('UMReportingWorkCycle', [System.String] $server.UMReportingWorkCycle)
+            $returnValue.Add('UMReportingWorkCycleCheckpoint', [System.String] $server.UMReportingWorkCycleCheckpoint)
         }
         else
         {
@@ -516,7 +516,7 @@ function Set-TargetResource
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential'
 
     #create array of Exchange 2013 only parameters
-    [array]$Exchange2013Only = 'CalendarRepairWorkCycle', 'CalendarRepairWorkCycleCheckpoint', 'MailboxProcessorWorkCycle', 'ManagedFolderAssistantSchedule', 'ManagedFolderWorkCycle',
+    [array] $Exchange2013Only = 'CalendarRepairWorkCycle', 'CalendarRepairWorkCycleCheckpoint', 'MailboxProcessorWorkCycle', 'ManagedFolderAssistantSchedule', 'ManagedFolderWorkCycle',
     'ManagedFolderWorkCycleCheckpoint', 'OABGeneratorWorkCycle', 'OABGeneratorWorkCycleCheckpoint', 'PublicFolderWorkCycle', 'PublicFolderWorkCycleCheckpoint', 'SharingPolicyWorkCycle',
     'SharingPolicyWorkCycleCheckpoint', 'SharingSyncWorkCycle', 'SharingSyncWorkCycleCheckpoint', 'SiteMailboxWorkCycle', 'SiteMailboxWorkCycleCheckpoint', 'TopNWorkCycle', 'TopNWorkCycleCheckpoint',
     'UMReportingWorkCycle', 'UMReportingWorkCycleCheckpoint'
@@ -765,7 +765,7 @@ function Test-TargetResource
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxServer', 'Set-MailboxServer' -Verbose:$VerbosePreference
 
     #create array of Exchange 2013 only parameters
-    [array]$Exchange2013Only = 'CalendarRepairWorkCycle', 'CalendarRepairWorkCycleCheckpoint', 'MailboxProcessorWorkCycle', 'ManagedFolderAssistantSchedule', 'ManagedFolderWorkCycle',
+    [array] $Exchange2013Only = 'CalendarRepairWorkCycle', 'CalendarRepairWorkCycleCheckpoint', 'MailboxProcessorWorkCycle', 'ManagedFolderAssistantSchedule', 'ManagedFolderWorkCycle',
     'ManagedFolderWorkCycleCheckpoint', 'OABGeneratorWorkCycle', 'OABGeneratorWorkCycleCheckpoint', 'PublicFolderWorkCycle', 'PublicFolderWorkCycleCheckpoint', 'SharingPolicyWorkCycle',
     'SharingPolicyWorkCycleCheckpoint', 'SharingSyncWorkCycle', 'SharingSyncWorkCycleCheckpoint', 'SiteMailboxWorkCycle', 'SiteMailboxWorkCycleCheckpoint', 'TopNWorkCycle', 'TopNWorkCycleCheckpoint',
     'UMReportingWorkCycle', 'UMReportingWorkCycleCheckpoint'

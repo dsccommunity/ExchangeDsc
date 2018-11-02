@@ -26,14 +26,14 @@ function Test-TargetResourceFunctionality
     )
 
     Context $ContextLabel {
-        [System.Boolean]$testResult = Test-TargetResource @Params -Verbose
+        [System.Boolean] $testResult = Test-TargetResource @Params -Verbose
 
         Write-Verbose -Message "Test-TargetResource results before running Set-TargetResource: $testResult"
 
         Set-TargetResource @Params -Verbose
 
-        [System.Collections.Hashtable]$getResult = Get-TargetResource @Params -Verbose
-        [System.Boolean]$testResult = Test-TargetResource @Params -Verbose
+        [System.Collections.Hashtable] $getResult = Get-TargetResource @Params -Verbose
+        [System.Boolean] $testResult = Test-TargetResource @Params -Verbose
 
         #The ExpectedGetResults are $null, so let's check that what we got back is $null
         if ($null -eq $ExpectedGetResults)
@@ -146,7 +146,7 @@ function Test-ArrayContentsEqual
     )
 
     Context $ContextLabel {
-        [System.Collections.Hashtable]$getResult = Get-TargetResource @TestParams
+        [System.Collections.Hashtable] $getResult = Get-TargetResource @TestParams
 
         It $ItLabel {
             Compare-ArrayContent -Array1 $DesiredArrayContents -Array2 $getResult."$($GetResultParameterName)" -IgnoreCase | Should Be $true
@@ -181,7 +181,7 @@ function Test-Array2ContainsArray1
     )
 
     Context $ContextLabel {
-        [System.Collections.Hashtable]$getResult = Get-TargetResource @TestParams
+        [System.Collections.Hashtable] $getResult = Get-TargetResource @TestParams
 
         It $ItLabel {
             Test-ArrayElementsInSecondArray -Array1 $DesiredArrayContents -Array2 $getResult."$GetResultParameterName" -IgnoreCase | Should Be $true
@@ -202,7 +202,7 @@ function Get-TestOfflineAddressBook
         $ShellCredentials
     )
 
-    [System.String]$testOabName = 'Offline Address Book (DSC Test)'
+    [System.String] $testOabName = 'Offline Address Book (DSC Test)'
 
     Get-RemoteExchangeSession -Credential $ShellCredentials -CommandsToLoad '*-OfflineAddressBook'
 
@@ -321,7 +321,7 @@ function Get-TestCredential
 
     if ($null -eq $Global:TestCredential)
     {
-        [PSCredential]$Global:TestCredential = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
+        [PSCredential] $Global:TestCredential = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
     }
 
     return $Global:TestCredential

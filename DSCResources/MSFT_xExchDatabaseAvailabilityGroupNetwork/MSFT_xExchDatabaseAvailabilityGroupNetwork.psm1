@@ -297,7 +297,7 @@ function SubnetsToArray
 
     if ($null -ne $Subnets -and $Subnets.Count -gt 0)
     {
-        [System.String[]]$SubnetsOut = $Subnets[0].SubnetId
+        [System.String[]] $SubnetsOut = $Subnets[0].SubnetId
 
         for ($i = 1; $i -lt $Subnets.Count; $i++)
         {

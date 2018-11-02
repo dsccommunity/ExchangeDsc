@@ -6,10 +6,10 @@
 #>
 
 #region HEADER
-[System.String]$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-[System.String]$script:DSCModuleName = 'xExchange'
-[System.String]$script:DSCResourceFriendlyName = 'xExchTransportService'
-[System.String]$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[System.String] $script:DSCModuleName = 'xExchange'
+[System.String] $script:DSCResourceFriendlyName = 'xExchTransportService'
+[System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
@@ -144,12 +144,12 @@ if ($exchangeInstalled)
          ExternalDNSAdapterEnabled               = $true
          ExternalDNSAdapterGuid                  = '00000000-0000-0000-0000-000000000000'
          ExternalDNSProtocolOption               = 'any'
-         ExternalDNSServers                      = [System.String[]]@()
+         ExternalDNSServers                      = [System.String[]] @()
          ExternalIPAddress                       = ''
          InternalDNSAdapterEnabled               = $true
          InternalDNSAdapterGuid                  = '00000000-0000-0000-0000-000000000000'
          InternalDNSProtocolOption               = 'any'
-         InternalDNSServers                      = [System.String[]]@()
+         InternalDNSServers                      = [System.String[]] @()
          IntraOrgConnectorProtocolLoggingLevel   = 'none'
          IntraOrgConnectorSmtpMaxMessagesPerConnection = '20'
          IrmLogEnabled                           = $true
@@ -215,8 +215,8 @@ if ($exchangeInstalled)
      $testParams.ExternalDNSServers = '10.1.1.10'
      $testParams.PipelineTracingSenderAddress = 'john.doe@contoso.com'
 
-     $expectedGetResults.InternalDNSServers = [System.String]@('192.168.1.10')
-     $expectedGetResults.ExternalDNSServers = [System.String]@('10.1.1.10')
+     $expectedGetResults.InternalDNSServers = [System.String] @('192.168.1.10')
+     $expectedGetResults.ExternalDNSServers = [System.String] @('10.1.1.10')
      $expectedGetResults.PipelineTracingSenderAddress = 'john.doe@contoso.com'
 
      Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Modify Transport Service configuration' -ExpectedGetResults $expectedGetResults
@@ -226,8 +226,8 @@ if ($exchangeInstalled)
      $testParams.ExternalDNSServers = ''
      $testParams.PipelineTracingSenderAddress = ''
 
-     $expectedGetResults.InternalDNSServers = [System.String[]]@()
-     $expectedGetResults.ExternalDNSServers = [System.String[]]@()
+     $expectedGetResults.InternalDNSServers = [System.String[]] @()
+     $expectedGetResults.ExternalDNSServers = [System.String[]] @()
      $expectedGetResults.PipelineTracingSenderAddress = ''
 
      Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Revert Transport Service configuration' -ExpectedGetResults $expectedGetResults

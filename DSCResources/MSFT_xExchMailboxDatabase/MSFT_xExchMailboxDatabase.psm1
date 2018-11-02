@@ -178,7 +178,7 @@ function Get-TargetResource
 
         if ($serverVersion -in '2016', '2019')
         {
-            $returnValue.Add('IsExcludedFromProvisioningReason', [System.String]$db.IsExcludedFromProvisioningReason)
+            $returnValue.Add('IsExcludedFromProvisioningReason', [System.String] $db.IsExcludedFromProvisioningReason)
         }
     }
 

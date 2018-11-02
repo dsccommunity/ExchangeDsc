@@ -362,7 +362,7 @@ function JetstressTestSuccessful
                     {
                         Write-Verbose -Message "File '$($latest.FullName)' has an 'Achieved Transactional I/O per Second' value of '$result'"
 
-                        [Decimal]$decResult = [Decimal]::Parse($result)
+                        [Decimal] $decResult = [Decimal]::Parse($result)
 
                         if ($decResult -ge $MinAchievedIOPS)
                         {

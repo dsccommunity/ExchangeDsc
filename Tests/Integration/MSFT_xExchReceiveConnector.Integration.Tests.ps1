@@ -6,10 +6,10 @@
 #>
 
 #region HEADER
-[System.String]$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-[System.String]$script:DSCModuleName = 'xExchange'
-[System.String]$script:DSCResourceFriendlyName = 'xExchReceiveConnector'
-[System.String]$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[System.String] $script:DSCModuleName = 'xExchange'
+[System.String] $script:DSCResourceFriendlyName = 'xExchReceiveConnector'
+[System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
@@ -124,7 +124,7 @@ if ($exchangeInstalled)
          MessageRateLimit                        = 'Unlimited'
          MessageRateSource                       = 'IPAddress'
          OrarEnabled                             = $false
-         PermissionGroups                        = [System.String[]]@('AnonymousUsers', 'ExchangeServers', 'Custom')
+         PermissionGroups                        = [System.String[]] @('AnonymousUsers', 'ExchangeServers', 'Custom')
          PipeliningEnabled                       = $true
          ProtocolLoggingLevel                    = 'Verbose'
          RemoteIPRanges                          = '192.16.7.99'

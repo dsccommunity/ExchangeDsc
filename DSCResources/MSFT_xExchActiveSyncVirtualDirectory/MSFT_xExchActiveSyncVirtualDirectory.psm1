@@ -1105,7 +1105,7 @@ function Test-ISAPIFilter
                                                      -Location $WebSite `
                                                      -Filter 'system.webServer/isapiFilters' `
                                                      -Name '.'
-        [System.Boolean]$ReturnValue = $false
+        [System.Boolean] $ReturnValue = $false
     }
     Process
     {

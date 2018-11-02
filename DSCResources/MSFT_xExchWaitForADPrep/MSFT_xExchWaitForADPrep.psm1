@@ -84,10 +84,10 @@ function Get-TargetResource
     if ($PSBoundParameters.ContainsKey('DomainVersion'))
     {
         #Get this server's domain
-        [System.String]$machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
+        [System.String] $machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
 
         #Figure out all domains we need to inspect
-        [System.String[]]$targetDomains = @()
+        [System.String[]] $targetDomains = @()
         $targetDomains += $machineDomain
 
         if ($null -ne $ExchangeDomains)
@@ -104,7 +104,7 @@ function Get-TargetResource
         }
 
         #Populate the return value in a hashtable of domains and versions
-        [Hashtable]$currentDomainVersions = @{}
+        [Hashtable] $currentDomainVersions = @{}
 
         foreach ($domain in $targetDomains)
         {
@@ -273,10 +273,10 @@ function Test-TargetResource
         if ($PSBoundParameters.ContainsKey('DomainVersion'))
         {
             #Get this server's domain
-            [System.String]$machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
+            [System.String] $machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
 
             #Figure out all domains we need to inspect
-            [System.String[]]$targetDomains = @()
+            [System.String[]] $targetDomains = @()
             $targetDomains += $machineDomain
 
             if ($null -ne $ExchangeDomains)

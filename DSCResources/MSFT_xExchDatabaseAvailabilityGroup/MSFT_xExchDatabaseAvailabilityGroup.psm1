@@ -151,9 +151,9 @@ function Get-TargetResource
 
         if ($serverVersion -in '2016', '2019')
         {
-            $returnValue.Add("AutoDagAutoRedistributeEnabled", [System.Boolean]$dag.AutoDagAutoRedistributeEnabled)
-            $returnValue.Add("FileSystem", [System.String]$dag.FileSystem)
-            $returnValue.Add("PreferenceMoveFrequency", [System.String]$dag.PreferenceMoveFrequency)
+            $returnValue.Add("AutoDagAutoRedistributeEnabled", [System.Boolean] $dag.AutoDagAutoRedistributeEnabled)
+            $returnValue.Add("FileSystem", [System.String] $dag.FileSystem)
+            $returnValue.Add("PreferenceMoveFrequency", [System.String] $dag.PreferenceMoveFrequency)
         }
     }
 
@@ -282,7 +282,7 @@ function Set-TargetResource
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup', 'Set-DatabaseAvailabilityGroup', 'New-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
     #create array of Exchange 2016 only parameters
-    [array]$Exchange2016Only = 'AutoDagAutoRedistributeEnabled', 'FileSystem', 'PreferenceMoveFrequency'
+    [array] $Exchange2016Only = 'AutoDagAutoRedistributeEnabled', 'FileSystem', 'PreferenceMoveFrequency'
 
     $serverVersion = Get-ExchangeVersionYear
 
@@ -474,7 +474,7 @@ function Test-TargetResource
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
     #create array of Exchange 2016 only parameters
-    [array]$Exchange2016Only = 'AutoDagAutoRedistributeEnabled', 'FileSystem', 'PreferenceMoveFrequency'
+    [array] $Exchange2016Only = 'AutoDagAutoRedistributeEnabled', 'FileSystem', 'PreferenceMoveFrequency'
 
     $serverVersion = Get-ExchangeVersionYear
 
