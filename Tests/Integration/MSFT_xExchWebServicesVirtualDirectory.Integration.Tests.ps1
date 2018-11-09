@@ -38,8 +38,8 @@ if ($exchangeInstalled)
             BasicAuthentication = $false
             CertificateAuthentication = $false
             DigestAuthentication = $false
-            ExtendedProtectionFlags = @('AllowDotlessSPN','NoServicenameCheck')
-            ExtendedProtectionSPNList = @('http/mail.fabrikam.com','http/mail.fabrikam.local','http/wxweqc')
+            ExtendedProtectionFlags = @('AllowDotlessSPN', 'NoServicenameCheck')
+            ExtendedProtectionSPNList = @('http/mail.fabrikam.com', 'http/mail.fabrikam.local', 'http/wxweqc')
             ExtendedProtectionTokenChecking = 'Allow'
             ExternalUrl = "http://$($serverFqdn)/ews/exchange.asmx"
             GzipLevel = 'High'
@@ -91,7 +91,7 @@ if ($exchangeInstalled)
         }
 
         Context 'Test invalid combination in ExtendedProtectionFlags' {
-            $testParams.ExtendedProtectionFlags = @('NoServicenameCheck','None')
+            $testParams.ExtendedProtectionFlags = @('NoServicenameCheck', 'None')
 
             It 'Should hit exception for invalid combination ExtendedProtectionFlags' {
                 { Set-TargetResource @testParams } | Should -Throw

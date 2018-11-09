@@ -31,7 +31,7 @@ function Get-TargetResource
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('None','Proxy','NoServiceNameCheck','AllowDotlessSpn','ProxyCohosting')]
+        [ValidateSet('None', 'Proxy', 'NoServiceNameCheck', 'AllowDotlessSpn', 'ProxyCohosting')]
         [System.String[]]
         $ExtendedProtectionFlags,
 
@@ -40,7 +40,7 @@ function Get-TargetResource
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
@@ -114,7 +114,7 @@ function Set-TargetResource
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('None','Proxy','NoServiceNameCheck','AllowDotlessSpn','ProxyCohosting')]
+        [ValidateSet('None', 'Proxy', 'NoServiceNameCheck', 'AllowDotlessSpn', 'ProxyCohosting')]
         [System.String[]]
         $ExtendedProtectionFlags,
 
@@ -123,7 +123,7 @@ function Set-TargetResource
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
@@ -149,7 +149,7 @@ function Set-TargetResource
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     #Remove Credential parameter does not exist on Set-OwaVirtualDirectory
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
 
     #verify SPNs depending on AllowDotlesSPN
     if ( -not (Test-ExtendedProtectionSPNList -SPNList $ExtendedProtectionSPNList -Flags $ExtendedProtectionFlags))
@@ -203,7 +203,7 @@ function Test-TargetResource
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('None','Proxy','NoServiceNameCheck','AllowDotlessSpn','ProxyCohosting')]
+        [ValidateSet('None', 'Proxy', 'NoServiceNameCheck', 'AllowDotlessSpn', 'ProxyCohosting')]
         [System.String[]]
         $ExtendedProtectionFlags,
 
@@ -212,7 +212,7 @@ function Test-TargetResource
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
@@ -324,7 +324,7 @@ function Get-AutodiscoverVirtualDirectoryInternal
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('None','Proxy','NoServiceNameCheck','AllowDotlessSpn','ProxyCohosting')]
+        [ValidateSet('None', 'Proxy', 'NoServiceNameCheck', 'AllowDotlessSpn', 'ProxyCohosting')]
         [System.String[]]
         $ExtendedProtectionFlags,
 
@@ -333,7 +333,7 @@ function Get-AutodiscoverVirtualDirectoryInternal
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
@@ -350,7 +350,7 @@ function Get-AutodiscoverVirtualDirectoryInternal
         $WSSecurityAuthentication
     )
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     return (Get-AutodiscoverVirtualDirectory @PSBoundParameters)
 }

@@ -55,7 +55,7 @@ function Get-TargetResource
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('None','Proxy','NoServiceNameCheck','AllowDotlessSpn','ProxyCohosting')]
+        [ValidateSet('None', 'Proxy', 'NoServiceNameCheck', 'AllowDotlessSpn', 'ProxyCohosting')]
         [System.String[]]
         $ExtendedProtectionFlags,
 
@@ -64,7 +64,7 @@ function Get-TargetResource
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
@@ -105,7 +105,7 @@ function Get-TargetResource
         $Name,
 
         [Parameter()]
-        [ValidateSet('Allow','Block')]
+        [ValidateSet('Allow', 'Block')]
         [System.String]
         $RemoteDocumentsActionForUnknownServers,
 
@@ -228,7 +228,7 @@ function Set-TargetResource
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('None','Proxy','NoServiceNameCheck','AllowDotlessSpn','ProxyCohosting')]
+        [ValidateSet('None', 'Proxy', 'NoServiceNameCheck', 'AllowDotlessSpn', 'ProxyCohosting')]
         [System.String[]]
         $ExtendedProtectionFlags,
 
@@ -237,7 +237,7 @@ function Set-TargetResource
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
@@ -278,7 +278,7 @@ function Set-TargetResource
         $Name,
 
         [Parameter()]
-        [ValidateSet('Allow','Block')]
+        [ValidateSet('Allow', 'Block')]
         [System.String]
         $RemoteDocumentsActionForUnknownServers,
 
@@ -314,7 +314,7 @@ function Set-TargetResource
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     #Remove Credential and AllowServiceRestart because those parameters do not exist on Set-ActiveSyncVirtualDirectory
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart','AutoCertBasedAuth','AutoCertBasedAuthThumbprint','AutoCertBasedAuthHttpsBindings'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart', 'AutoCertBasedAuth', 'AutoCertBasedAuthThumbprint', 'AutoCertBasedAuthHttpsBindings'
 
     #verify SPNs depending on AllowDotlesSPN
     if ( -not (Test-ExtendedProtectionSPNList -SPNList $ExtendedProtectionSPNList -Flags $ExtendedProtectionFlags))
@@ -436,7 +436,7 @@ function Test-TargetResource
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('None','Proxy','NoServiceNameCheck','AllowDotlessSpn','ProxyCohosting')]
+        [ValidateSet('None', 'Proxy', 'NoServiceNameCheck', 'AllowDotlessSpn', 'ProxyCohosting')]
         [System.String[]]
         $ExtendedProtectionFlags,
 
@@ -445,7 +445,7 @@ function Test-TargetResource
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
@@ -486,7 +486,7 @@ function Test-TargetResource
         $Name,
 
         [Parameter()]
-        [ValidateSet('Allow','Block')]
+        [ValidateSet('Allow', 'Block')]
         [System.String]
         $RemoteDocumentsActionForUnknownServers,
 
@@ -742,7 +742,7 @@ function Get-ActiveSyncVirtualDirectoryInternal
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('None','Proxy','NoServiceNameCheck','AllowDotlessSpn','ProxyCohosting')]
+        [ValidateSet('None', 'Proxy', 'NoServiceNameCheck', 'AllowDotlessSpn', 'ProxyCohosting')]
         [System.String[]]
         $ExtendedProtectionFlags,
 
@@ -751,7 +751,7 @@ function Get-ActiveSyncVirtualDirectoryInternal
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
@@ -792,7 +792,7 @@ function Get-ActiveSyncVirtualDirectoryInternal
         $Name,
 
         [Parameter()]
-        [ValidateSet('Allow','Block')]
+        [ValidateSet('Allow', 'Block')]
         [System.String]
         $RemoteDocumentsActionForUnknownServers,
 
@@ -817,7 +817,7 @@ function Get-ActiveSyncVirtualDirectoryInternal
         $WindowsAuthEnabled
     )
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     return (Get-ActiveSyncVirtualDirectory @PSBoundParameters)
 }

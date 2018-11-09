@@ -88,7 +88,7 @@ if ($exchangeInstalled)
             SubjectLogForManagedFoldersEnabled = $true
         }
 
-        if ($serverVersion -in '2016','2019')
+        if ($serverVersion -in '2016', '2019')
         {
             $testParams.Add('WacDiscoveryEndpoint', '')
             $expectedGetResults.Add('WacDiscoveryEndpoint', '')
@@ -153,7 +153,7 @@ if ($exchangeInstalled)
         $expectedGetResults.MaximumActiveDatabases = '24'
         $expectedGetResults.MaximumPreferredActiveDatabases = '12'
 
-        if ($serverVersion -in '2016','2019')
+        if ($serverVersion -in '2016', '2019')
         {
             $testParams['WacDiscoveryEndpoint'] = 'https://localhost/hosting/discovery'
             $expectedGetResults['WacDiscoveryEndpoint'] = 'https://localhost/hosting/discovery'
@@ -220,7 +220,7 @@ if ($exchangeInstalled)
             SubjectLogForManagedFoldersEnabled = $false
         }
 
-        if ($serverVersion -in '2016','2019')
+        if ($serverVersion -in '2016', '2019')
         {
             $testParams['CalendarRepairIntervalEndWindow'] = '7'
             $expectedGetResults['CalendarRepairIntervalEndWindow'] = '7'

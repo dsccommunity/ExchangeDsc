@@ -47,12 +47,12 @@ if ($exchangeInstalled)
             AllowExtraServices = $true
             CertCreds = $certCredentials
             CertFilePath = $testCertPath1
-            Services = 'IIS','POP','IMAP','SMTP'
+            Services = 'IIS', 'POP', 'IMAP', 'SMTP'
         }
 
         $expectedGetResults = @{
             Thumbprint = $testCertThumbprint1
-            Services = 'IIS','POP','IMAP','SMTP'
+            Services = 'IIS', 'POP', 'IMAP', 'SMTP'
         }
 
         Test-TargetResourceFunctionality -Params $testParams `

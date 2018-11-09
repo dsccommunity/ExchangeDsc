@@ -2696,8 +2696,8 @@ function Stop-ServiceForcefully
     # Wait in case it needs time to take effect
     Wait-Event -Timeout 5
 
-    $processFullPath = (Get-CimInstance -query "SELECT PathName FROM Win32_Service WHERE Name = '$ServiceName'").PathName.Replace('"','')
-    $processName = (Split-Path $processFullPath -Leaf).Replace('.exe','')
+    $processFullPath = (Get-CimInstance -query "SELECT PathName FROM Win32_Service WHERE Name = '$ServiceName'").PathName.Replace('"', '')
+    $processName = (Split-Path $processFullPath -Leaf).Replace('.exe', '')
 
     $process = Get-Process -Name $processName -ErrorAction SilentlyContinue
     if ($null -ne $process)

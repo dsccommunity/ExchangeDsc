@@ -63,7 +63,7 @@ function Get-TargetResource
         $DatabaseAvailabilityGroupIpAddresses,
 
         [Parameter()]
-        [ValidateSet('Off','DagOnly')]
+        [ValidateSet('Off', 'DagOnly')]
         [System.String]
         $DatacenterActivationMode,
 
@@ -72,7 +72,7 @@ function Get-TargetResource
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('NTFS','ReFS')]
+        [ValidateSet('NTFS', 'ReFS')]
         [System.String]
         $FileSystem,
 
@@ -81,12 +81,12 @@ function Get-TargetResource
         $ManualDagNetworkConfiguration,
 
         [Parameter()]
-        [ValidateSet('Disabled','Enabled','InterSubnetOnly','SeedOnly')]
+        [ValidateSet('Disabled', 'Enabled', 'InterSubnetOnly', 'SeedOnly')]
         [System.String]
         $NetworkCompression,
 
         [Parameter()]
-        [ValidateSet('Disabled','Enabled','InterSubnetOnly','SeedOnly')]
+        [ValidateSet('Disabled', 'Enabled', 'InterSubnetOnly', 'SeedOnly')]
         [System.String]
         $NetworkEncryption,
 
@@ -149,7 +149,7 @@ function Get-TargetResource
 
         $serverVersion = Get-ExchangeVersionYear
 
-        if ($serverVersion -in '2016','2019')
+        if ($serverVersion -in '2016', '2019')
         {
             $returnValue.Add("AutoDagAutoRedistributeEnabled", [System.Boolean]$dag.AutoDagAutoRedistributeEnabled)
             $returnValue.Add("FileSystem", [System.String]$dag.FileSystem)
@@ -224,7 +224,7 @@ function Set-TargetResource
         $DatabaseAvailabilityGroupIpAddresses,
 
         [Parameter()]
-        [ValidateSet('Off','DagOnly')]
+        [ValidateSet('Off', 'DagOnly')]
         [System.String]
         $DatacenterActivationMode,
 
@@ -233,7 +233,7 @@ function Set-TargetResource
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('NTFS','ReFS')]
+        [ValidateSet('NTFS', 'ReFS')]
         [System.String]
         $FileSystem,
 
@@ -242,12 +242,12 @@ function Set-TargetResource
         $ManualDagNetworkConfiguration,
 
         [Parameter()]
-        [ValidateSet('Disabled','Enabled','InterSubnetOnly','SeedOnly')]
+        [ValidateSet('Disabled', 'Enabled', 'InterSubnetOnly', 'SeedOnly')]
         [System.String]
         $NetworkCompression,
 
         [Parameter()]
-        [ValidateSet('Disabled','Enabled','InterSubnetOnly','SeedOnly')]
+        [ValidateSet('Disabled', 'Enabled', 'InterSubnetOnly', 'SeedOnly')]
         [System.String]
         $NetworkEncryption,
 
@@ -279,10 +279,10 @@ function Set-TargetResource
     Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup','Set-DatabaseAvailabilityGroup','New-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup', 'Set-DatabaseAvailabilityGroup', 'New-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
     #create array of Exchange 2016 only parameters
-    [array]$Exchange2016Only = 'AutoDagAutoRedistributeEnabled','FileSystem','PreferenceMoveFrequency'
+    [array]$Exchange2016Only = 'AutoDagAutoRedistributeEnabled', 'FileSystem', 'PreferenceMoveFrequency'
 
     $serverVersion = Get-ExchangeVersionYear
 
@@ -294,7 +294,7 @@ function Set-TargetResource
             Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2016Parameter"  -ResourceName 'xExchDatabaseAvailabilityGroup' -ParamExistsInVersion '2016'
         }
     }
-    elseif ($serverVersion -in '2016','2019')
+    elseif ($serverVersion -in '2016', '2019')
     {
         Write-Verbose -Message "No need to remove parameters"
     }
@@ -314,7 +314,7 @@ function Set-TargetResource
         $originalPSBoundParameters = @{} + $PSBoundParameters
 
         #Remove parameters that don't exist in New-DatabaseAvailabilityGroup
-        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Name","DatabaseAvailabilityGroupIpAddresses","WitnessDirectory","WitnessServer","DomainController"
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Name", "DatabaseAvailabilityGroupIpAddresses", "WitnessDirectory", "WitnessServer", "DomainController"
 
         #Create the DAG
         $dag = New-DatabaseAvailabilityGroup @PSBoundParameters
@@ -335,7 +335,7 @@ function Set-TargetResource
     {
         #convert Name to Identity, and Remove Credential
         Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = $PSBoundParameters["Name"]}
-        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Name","Credential"
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Name", "Credential"
 
         #If not all members are in DAG yet, remove params that require them to be
         if ($dag.Servers.Count -lt $AutoDagTotalNumberOfServers)
@@ -416,7 +416,7 @@ function Test-TargetResource
         $DatabaseAvailabilityGroupIpAddresses,
 
         [Parameter()]
-        [ValidateSet('Off','DagOnly')]
+        [ValidateSet('Off', 'DagOnly')]
         [System.String]
         $DatacenterActivationMode,
 
@@ -425,7 +425,7 @@ function Test-TargetResource
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('NTFS','ReFS')]
+        [ValidateSet('NTFS', 'ReFS')]
         [System.String]
         $FileSystem,
 
@@ -434,12 +434,12 @@ function Test-TargetResource
         $ManualDagNetworkConfiguration,
 
         [Parameter()]
-        [ValidateSet('Disabled','Enabled','InterSubnetOnly','SeedOnly')]
+        [ValidateSet('Disabled', 'Enabled', 'InterSubnetOnly', 'SeedOnly')]
         [System.String]
         $NetworkCompression,
 
         [Parameter()]
-        [ValidateSet('Disabled','Enabled','InterSubnetOnly','SeedOnly')]
+        [ValidateSet('Disabled', 'Enabled', 'InterSubnetOnly', 'SeedOnly')]
         [System.String]
         $NetworkEncryption,
 
@@ -474,7 +474,7 @@ function Test-TargetResource
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
     #create array of Exchange 2016 only parameters
-    [array]$Exchange2016Only = 'AutoDagAutoRedistributeEnabled','FileSystem','PreferenceMoveFrequency'
+    [array]$Exchange2016Only = 'AutoDagAutoRedistributeEnabled', 'FileSystem', 'PreferenceMoveFrequency'
 
     $serverVersion = Get-ExchangeVersionYear
 
@@ -486,7 +486,7 @@ function Test-TargetResource
             Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2016Parameter"  -ResourceName 'xExchDatabaseAvailabilityGroup' -ParamExistsInVersion '2016'
         }
     }
-    elseif ($serverVersion -in '2016','2019')
+    elseif ($serverVersion -in '2016', '2019')
     {
         Write-Verbose -Message "No need to remove parameters"
     }
@@ -693,7 +693,7 @@ function GetDatabaseAvailabilityGroup
         $DatabaseAvailabilityGroupIpAddresses,
 
         [Parameter()]
-        [ValidateSet('Off','DagOnly')]
+        [ValidateSet('Off', 'DagOnly')]
         [System.String]
         $DatacenterActivationMode,
 
@@ -702,7 +702,7 @@ function GetDatabaseAvailabilityGroup
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('NTFS','ReFS')]
+        [ValidateSet('NTFS', 'ReFS')]
         [System.String]
         $FileSystem,
 
@@ -711,12 +711,12 @@ function GetDatabaseAvailabilityGroup
         $ManualDagNetworkConfiguration,
 
         [Parameter()]
-        [ValidateSet('Disabled','Enabled','InterSubnetOnly','SeedOnly')]
+        [ValidateSet('Disabled', 'Enabled', 'InterSubnetOnly', 'SeedOnly')]
         [System.String]
         $NetworkCompression,
 
         [Parameter()]
-        [ValidateSet('Disabled','Enabled','InterSubnetOnly','SeedOnly')]
+        [ValidateSet('Disabled', 'Enabled', 'InterSubnetOnly', 'SeedOnly')]
         [System.String]
         $NetworkEncryption,
 
@@ -749,7 +749,7 @@ function GetDatabaseAvailabilityGroup
         'Identity' = $PSBoundParameters['Name']
         'ErrorAction' = 'SilentlyContinue'
     }
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','ErrorAction','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'ErrorAction', 'DomainController'
 
     return (Get-DatabaseAvailabilityGroup @PSBoundParameters -Status)
 }

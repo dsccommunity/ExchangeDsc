@@ -19,7 +19,7 @@ $ConfigurationData = @{
             Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673'
 
             #DiskToDBMap used by xExchAutoMountPoint specifically for Jetstress purposes
-            JetstressDiskToDBMap = 'DB1,DB2,DB3,DB4','DB5,DB6,DB7,DB8'
+            JetstressDiskToDBMap = 'DB1,DB2,DB3,DB4', 'DB5,DB6,DB7,DB8'
 
             #The base file server UNC path that will be used for copying things like certificates, Exchange binaries, and Jetstress binaries
             FileServerBase = '\\rras-1.contoso.local\Binaries'
@@ -90,7 +90,7 @@ Configuration Example
             Path      = 'C:\Binaries\Jetstress\Jetstress.msi'
             Name      = 'Microsoft Exchange Jetstress 2013'
             ProductId = '75189587-0D84-4404-8F02-79C39728FA64'
-            DependsOn = '[xExchAutoMountPoint]AMPForJetstress','[File]CopyJetstress'
+            DependsOn = '[xExchAutoMountPoint]AMPForJetstress', '[File]CopyJetstress'
         }
 
         #Copy required ESE DLL's to the Jetstress installation directory
@@ -122,7 +122,7 @@ Configuration Example
             JetstressPath   = 'C:\Program Files\Exchange Jetstress'
             JetstressParams = '/c "C:\Program Files\Exchange Jetstress\JetstressConfig.xml"'
             MinAchievedIOPS = 100
-            DependsOn       = '[File]CopyESEDlls','[File]CopyJetstressConfig'
+            DependsOn       = '[File]CopyESEDlls', '[File]CopyJetstressConfig'
         }
     }
 }

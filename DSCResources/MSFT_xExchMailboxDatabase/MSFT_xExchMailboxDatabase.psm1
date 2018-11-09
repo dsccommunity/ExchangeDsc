@@ -51,7 +51,7 @@ function Get-TargetResource
         $CircularLoggingEnabled,
 
         [Parameter()]
-        [ValidateSet('None','SecondCopy','SecondDatacenter','AllDatacenters','AllCopies')]
+        [ValidateSet('None', 'SecondCopy', 'SecondDatacenter', 'AllDatacenters', 'AllCopies')]
         [System.String]
         $DataMoveReplicationConstraint,
 
@@ -135,7 +135,7 @@ function Get-TargetResource
     Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase','Set-AdServerSettings' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase', 'Set-AdServerSettings' -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
@@ -176,7 +176,7 @@ function Get-TargetResource
 
         $serverVersion = Get-ExchangeVersionYear
 
-        if ($serverVersion -in '2016','2019')
+        if ($serverVersion -in '2016', '2019')
         {
             $returnValue.Add('IsExcludedFromProvisioningReason', [System.String]$db.IsExcludedFromProvisioningReason)
         }
@@ -237,7 +237,7 @@ function Set-TargetResource
         $CircularLoggingEnabled,
 
         [Parameter()]
-        [ValidateSet('None','SecondCopy','SecondDatacenter','AllDatacenters','AllCopies')]
+        [ValidateSet('None', 'SecondCopy', 'SecondDatacenter', 'AllDatacenters', 'AllCopies')]
         [System.String]
         $DataMoveReplicationConstraint,
 
@@ -322,14 +322,14 @@ function Set-TargetResource
 
     #Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential `
-                             -CommandsToLoad '*MailboxDatabase','Move-DatabasePath','Mount-Database','Set-AdServerSettings'`
+                             -CommandsToLoad '*MailboxDatabase', 'Move-DatabasePath', 'Mount-Database', 'Set-AdServerSettings'`
                              -Verbose:$VerbosePreference
 
     #Check for non-existent parameters in Exchange 2013
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
                                     -ParamName 'IsExcludedFromProvisioningReason' `
                                     -ResourceName 'xExchMailboxDatabase' `
-                                    -ParamExistsInVersion '2016','2019'
+                                    -ParamExistsInVersion '2016', '2019'
 
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
@@ -345,7 +345,7 @@ function Set-TargetResource
         #Create a copy of the original parameters
         $originalPSBoundParameters = @{} + $PSBoundParameters
 
-        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Name','Server','EdbFilePath','LogFolderPath','DomainController'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Name', 'Server', 'EdbFilePath', 'LogFolderPath', 'DomainController'
 
         #Create the database
         $db = New-MailboxDatabase @PSBoundParameters
@@ -406,13 +406,13 @@ function Set-TargetResource
         Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters `
                       -ParamsToAdd @{'Identity' = $Name}
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters `
-                         -ParamsToRemove 'Name','Server','DatabaseCopyCount','AllowServiceRestart','EdbFilePath','LogFolderPath','Credential','AdServerSettingsPreferredServer','SkipInitialDatabaseMount'
+                         -ParamsToRemove 'Name', 'Server', 'DatabaseCopyCount', 'AllowServiceRestart', 'EdbFilePath', 'LogFolderPath', 'Credential', 'AdServerSettingsPreferredServer', 'SkipInitialDatabaseMount'
 
         #Remove parameters that depend on all copies being added
         if ($db.DatabaseCopies.Count -lt $DatabaseCopyCount)
         {
             Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters `
-                             -ParamsToRemove 'CircularLoggingEnabled','DataMoveReplicationConstraint'
+                             -ParamsToRemove 'CircularLoggingEnabled', 'DataMoveReplicationConstraint'
         }
 
         Set-MailboxDatabase @PSBoundParameters
@@ -473,7 +473,7 @@ function Test-TargetResource
         $CircularLoggingEnabled,
 
         [Parameter()]
-        [ValidateSet('None','SecondCopy','SecondDatacenter','AllDatacenters','AllCopies')]
+        [ValidateSet('None', 'SecondCopy', 'SecondDatacenter', 'AllDatacenters', 'AllCopies')]
         [System.String]
         $DataMoveReplicationConstraint,
 
@@ -558,14 +558,14 @@ function Test-TargetResource
 
     #Establish remote Powershell session
     Get-RemoteExchangeSession -Credential $Credential `
-                             -CommandsToLoad 'Get-MailboxDatabase','Get-Mailbox','Set-AdServerSettings'`
+                             -CommandsToLoad 'Get-MailboxDatabase', 'Get-Mailbox', 'Set-AdServerSettings'`
                              -Verbose:$VerbosePreference
 
     #Check for non-existent parameters in Exchange 2013
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
                                     -ParamName 'IsExcludedFromProvisioningReason' `
                                     -ResourceName 'xExchMailboxDatabase' `
-                                    -ParamExistsInVersion '2016','2019'
+                                    -ParamExistsInVersion '2016', '2019'
 
     if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
@@ -772,7 +772,7 @@ function GetMailboxDatabase
         $CircularLoggingEnabled,
 
         [Parameter()]
-        [ValidateSet('None','SecondCopy','SecondDatacenter','AllDatacenters','AllCopies')]
+        [ValidateSet('None', 'SecondCopy', 'SecondDatacenter', 'AllDatacenters', 'AllCopies')]
         [System.String]
         $DataMoveReplicationConstraint,
 
@@ -854,7 +854,7 @@ function GetMailboxDatabase
     )
 
     Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $Name}
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     return (Get-MailboxDatabase @PSBoundParameters -ErrorAction SilentlyContinue)
 }
@@ -911,7 +911,7 @@ function MoveDatabaseOrLogPath
         $CircularLoggingEnabled,
 
         [Parameter()]
-        [ValidateSet('None','SecondCopy','SecondDatacenter','AllDatacenters','AllCopies')]
+        [ValidateSet('None', 'SecondCopy', 'SecondDatacenter', 'AllDatacenters', 'AllCopies')]
         [System.String]
         $DataMoveReplicationConstraint,
 
@@ -993,7 +993,7 @@ function MoveDatabaseOrLogPath
     )
 
     Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $Name}
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController','EdbFilePath','LogFolderPath'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController', 'EdbFilePath', 'LogFolderPath'
 
     Move-DatabasePath @PSBoundParameters -Confirm:$false -Force
 }
@@ -1050,7 +1050,7 @@ function MountDatabase
         $CircularLoggingEnabled,
 
         [Parameter()]
-        [ValidateSet('None','SecondCopy','SecondDatacenter','AllDatacenters','AllCopies')]
+        [ValidateSet('None', 'SecondCopy', 'SecondDatacenter', 'AllDatacenters', 'AllCopies')]
         [System.String]
         $DataMoveReplicationConstraint,
 
@@ -1132,7 +1132,7 @@ function MountDatabase
     )
 
     Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $Name}
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     $previousError = Get-PreviousError
 

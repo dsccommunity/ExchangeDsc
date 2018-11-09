@@ -65,22 +65,22 @@ if ($exchangeInstalled)
             BasicAuthEnabled = $true
             ClientCertAuth = 'Ignore'
             CompressionEnabled = $true
-            ExtendedProtectionFlags = @('AllowDotlessspn','NoServicenameCheck')
-            ExtendedProtectionSPNList = @('http/mail.fabrikam.com','http/mail.fabrikam.local','http/wxweqc')
+            ExtendedProtectionFlags = @('AllowDotlessspn', 'NoServicenameCheck')
+            ExtendedProtectionSPNList = @('http/mail.fabrikam.com', 'http/mail.fabrikam.local', 'http/wxweqc')
             ExtendedProtectionTokenChecking = 'Allow'
-            ExternalAuthenticationMethods = @('Basic','Kerberos')
+            ExternalAuthenticationMethods = @('Basic', 'Kerberos')
             ExternalUrl = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
             InstallIsapiFilter = $true
-            InternalAuthenticationMethods = @('Basic','Kerberos')
+            InternalAuthenticationMethods = @('Basic', 'Kerberos')
             InternalUrl = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
             MobileClientCertificateAuthorityURL = 'http://whatever.com/CA'
             MobileClientCertificateProvisioningEnabled = $true
             MobileClientCertTemplateName = 'MyTemplateforEAS'
             #Name = "$($Node.NodeName) EAS Site"
             RemoteDocumentsActionForUnknownServers = 'Block'
-            RemoteDocumentsAllowedServers = @('AllowedA','AllowedB')
-            RemoteDocumentsBlockedServers = @('BlockedA','BlockedB')
-            RemoteDocumentsInternalDomainSuffixList = @('InternalA','InternalB')
+            RemoteDocumentsAllowedServers = @('AllowedA', 'AllowedB')
+            RemoteDocumentsBlockedServers = @('BlockedA', 'BlockedB')
+            RemoteDocumentsInternalDomainSuffixList = @('InternalA', 'InternalB')
             SendWatsonReport = $false
             WindowsAuthEnabled = $false
         }
@@ -93,7 +93,7 @@ if ($exchangeInstalled)
             CompressionEnabled = $true
             ExtendedProtectionTokenChecking = 'Allow'
             ExternalUrl = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
-            InternalAuthenticationMethods = @('Basic','Kerberos')
+            InternalAuthenticationMethods = @('Basic', 'Kerberos')
             InternalUrl = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
             MobileClientCertificateAuthorityURL = 'http://whatever.com/CA'
             MobileClientCertificateProvisioningEnabled = $true
@@ -187,7 +187,7 @@ if ($exchangeInstalled)
         }
 
         Context 'Test invalid combination in ExtendedProtectionFlags' {
-            $testParams.ExtendedProtectionFlags = @('NoServicenameCheck','None')
+            $testParams.ExtendedProtectionFlags = @('NoServicenameCheck', 'None')
 
             It 'Should hit exception for invalid combination ExtendedProtectionFlags' {
                 { Set-TargetResource @testParams } | Should -Throw

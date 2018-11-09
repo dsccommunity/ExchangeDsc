@@ -27,7 +27,7 @@ if ($exchangeInstalled)
 
     $serverVersion = Get-ExchangeVersionYear
 
-    if ($serverVersion -in '2013','2016')
+    if ($serverVersion -in '2013', '2016')
     {
         Describe 'Test Setting Properties with xExchUMCallRouterSettings' {
             $testParams = @{

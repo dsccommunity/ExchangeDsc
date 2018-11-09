@@ -28,7 +28,7 @@ $ConfigurationData = @{
             ExternalNLBFqdn            = 'mail.contoso.local'
 
             #ClientAccessServer Settings
-            AutoDiscoverSiteScope      = 'Site1','Site3','Site5'
+            AutoDiscoverSiteScope      = 'Site1', 'Site3', 'Site5'
 
             #OAB Settings
             OABsToDistribute           = 'Default Offline Address Book - Site1'
@@ -41,7 +41,7 @@ $ConfigurationData = @{
             ExternalNLBFqdn            = 'mail.contoso.local'
 
             #ClientAccessServer Settings
-            AutoDiscoverSiteScope      = 'Site2','Site4','Site6'
+            AutoDiscoverSiteScope      = 'Site2', 'Site4', 'Site6'
 
             #OAB Settings
             OABsToDistribute           = 'Default Offline Address Book - Site2'
@@ -100,7 +100,7 @@ Configuration Example
             WindowsAuthEnabled          = $false
             AllowServiceRestart         = $true
 
-            DependsOn                   = '[WindowsFeature]WebClientAuth','[WindowsFeature]WebCertAuth'
+            DependsOn                   = '[WindowsFeature]WebClientAuth', '[WindowsFeature]WebCertAuth'
             #NOTE: If CBA is being configured, this should also be dependent on the cert whose thumbprint is being used. See EndToEndExample.
         }
 
@@ -124,7 +124,7 @@ Configuration Example
             Identity                 = "$($Node.NodeName)\mapi (Default Web Site)"
             Credential               = $ExchangeAdminCredential
             ExternalUrl              = "https://$($casSettings.ExternalNLBFqdn)/mapi"
-            IISAuthenticationMethods = 'NTLM','Negotiate'
+            IISAuthenticationMethods = 'NTLM', 'Negotiate'
             InternalUrl              = "https://$($casSettings.InternalNLBFqdn)/mapi"
             AllowServiceRestart      = $true
         }

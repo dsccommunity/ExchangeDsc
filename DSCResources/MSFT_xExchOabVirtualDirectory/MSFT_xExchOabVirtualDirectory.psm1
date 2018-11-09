@@ -71,9 +71,9 @@ function Get-TargetResource
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OabVirtualDirectory','Set-OabVirtualDirectory','Get-OfflineAddressBook','Set-OfflineAddressBook' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OabVirtualDirectory', 'Set-OabVirtualDirectory', 'Get-OfflineAddressBook', 'Set-OfflineAddressBook' -Verbose:$VerbosePreference
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     $vdir = Get-OabVirtualDirectory @PSBoundParameters
 
@@ -203,7 +203,7 @@ function Set-TargetResource
         Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-OabVirtualDirectory'
     }
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart','OABsToDistribute'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart', 'OABsToDistribute'
 
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
@@ -442,7 +442,7 @@ function AddOabDistributionPoint
 
     #Setup params for Get-OfflineAddressBook
     Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $TargetOabName}
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     $oab = Get-OfflineAddressBook @PSBoundParameters
 

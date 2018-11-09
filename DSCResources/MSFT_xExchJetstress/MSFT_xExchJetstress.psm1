@@ -6,7 +6,7 @@ function Get-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Performance','Stress','DatabaseBackup','SoftRecovery')]
+        [ValidateSet('Performance', 'Stress', 'DatabaseBackup', 'SoftRecovery')]
         [System.String]
         $Type,
 
@@ -52,7 +52,7 @@ function Set-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Performance','Stress','DatabaseBackup','SoftRecovery')]
+        [ValidateSet('Performance', 'Stress', 'DatabaseBackup', 'SoftRecovery')]
         [System.String]
         $Type,
 
@@ -211,7 +211,7 @@ function Test-TargetResource
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Performance','Stress','DatabaseBackup','SoftRecovery')]
+        [ValidateSet('Performance', 'Stress', 'DatabaseBackup', 'SoftRecovery')]
         [System.String]
         $Type,
 
@@ -263,7 +263,7 @@ function StartJetstress
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Performance','Stress','DatabaseBackup','SoftRecovery')]
+        [ValidateSet('Performance', 'Stress', 'DatabaseBackup', 'SoftRecovery')]
         [System.String]
         $Type,
 
@@ -297,7 +297,7 @@ function JetstressTestSuccessful
     param
     (
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Performance','Stress','DatabaseBackup','SoftRecovery')]
+        [ValidateSet('Performance', 'Stress', 'DatabaseBackup', 'SoftRecovery')]
         [System.String]
         $Type,
 

@@ -15,7 +15,7 @@ function Get-TargetResource
         $Credential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure,
 
@@ -100,7 +100,7 @@ function Get-TargetResource
         $EnhancedStatusCodesEnabled,
 
         [Parameter()]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         [System.String]
         $ExtendedProtectionPolicy,
 
@@ -161,7 +161,7 @@ function Get-TargetResource
         $MessageRateLimit,
 
         [Parameter()]
-        [ValidateSet('None','IPAddress','User','All')]
+        [ValidateSet('None', 'IPAddress', 'User', 'All')]
         [System.String]
         $MessageRateSource,
 
@@ -178,7 +178,7 @@ function Get-TargetResource
         $PipeliningEnabled,
 
         [Parameter()]
-        [ValidateSet('None','Verbose')]
+        [ValidateSet('None', 'Verbose')]
         [System.String]
         $ProtocolLoggingLevel,
 
@@ -199,7 +199,7 @@ function Get-TargetResource
         $ServiceDiscoveryFqdn,
 
         [Parameter()]
-        [ValidateSet('Enabled','Disabled','EnabledWithoutValue')]
+        [ValidateSet('Enabled', 'Disabled', 'EnabledWithoutValue')]
         [System.String]
         $SizeEnabled,
 
@@ -220,12 +220,12 @@ function Get-TargetResource
         $TlsDomainCapabilities,
 
         [Parameter()]
-        [ValidateSet('FrontendTransport','HubTransport')]
+        [ValidateSet('FrontendTransport', 'HubTransport')]
         [System.String]
         $TransportRole,
 
         [Parameter()]
-        [ValidateSet('Client','Internal','Internet','Partner','Custom')]
+        [ValidateSet('Client', 'Internal', 'Internet', 'Partner', 'Custom')]
         [System.String]
         $Usage
     )
@@ -314,7 +314,7 @@ function Set-TargetResource
         $Credential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure,
 
@@ -399,7 +399,7 @@ function Set-TargetResource
         $EnhancedStatusCodesEnabled,
 
         [Parameter()]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         [System.String]
         $ExtendedProtectionPolicy,
 
@@ -460,7 +460,7 @@ function Set-TargetResource
         $MessageRateLimit,
 
         [Parameter()]
-        [ValidateSet('None','IPAddress','User','All')]
+        [ValidateSet('None', 'IPAddress', 'User', 'All')]
         [System.String]
         $MessageRateSource,
 
@@ -477,7 +477,7 @@ function Set-TargetResource
         $PipeliningEnabled,
 
         [Parameter()]
-        [ValidateSet('None','Verbose')]
+        [ValidateSet('None', 'Verbose')]
         [System.String]
         $ProtocolLoggingLevel,
 
@@ -498,7 +498,7 @@ function Set-TargetResource
         $ServiceDiscoveryFqdn,
 
         [Parameter()]
-        [ValidateSet('Enabled','Disabled','EnabledWithoutValue')]
+        [ValidateSet('Enabled', 'Disabled', 'EnabledWithoutValue')]
         [System.String]
         $SizeEnabled,
 
@@ -519,12 +519,12 @@ function Set-TargetResource
         $TlsDomainCapabilities,
 
         [Parameter()]
-        [ValidateSet('FrontendTransport','HubTransport')]
+        [ValidateSet('FrontendTransport', 'HubTransport')]
         [System.String]
         $TransportRole,
 
         [Parameter()]
-        [ValidateSet('Client','Internal','Internet','Partner','Custom')]
+        [ValidateSet('Client', 'Internal', 'Internet', 'Partner', 'Custom')]
         [System.String]
         $Usage
     )
@@ -534,7 +534,7 @@ function Set-TargetResource
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*ReceiveConnector','*ADPermission' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*ReceiveConnector', '*ADPermission' -Verbose:$VerbosePreference
 
     $connector = GetReceiveConnector @PSBoundParameters
 
@@ -542,7 +542,7 @@ function Set-TargetResource
     {
         if ($null -ne $connector)
         {
-            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
             Remove-ReceiveConnector @PSBoundParameters -Confirm:$false
         }
@@ -550,7 +550,7 @@ function Set-TargetResource
     else
     {
         #Remove Credential and Ensure so we don't pass it into the next command
-        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','Ensure'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'Ensure'
 
         Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
@@ -561,7 +561,7 @@ function Set-TargetResource
             $originalPSBoundParameters = @{} + $PSBoundParameters
 
             #The following aren't valid for New-ReceiveConnector
-            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Identity','BareLinefeedRejectionEnabled','ExtendedRightAllowEntries','ExtendedRightDenyEntries'
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Identity', 'BareLinefeedRejectionEnabled', 'ExtendedRightAllowEntries', 'ExtendedRightDenyEntries'
 
             #Parse out the server name and connector name from the given Identity
             $serverName = $Identity.Substring(0, $Identity.IndexOf('\'))
@@ -580,7 +580,7 @@ function Set-TargetResource
             if ($null -ne $connector)
             {
                 #Remove the two props we added
-                Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server','Name'
+                Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server', 'Name'
 
                 #Add original props back
                 Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
@@ -595,7 +595,7 @@ function Set-TargetResource
         if ($null -ne $connector)
         {
             #Usage is not a valid command for Set-ReceiveConnector
-            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Usage','ExtendedRightAllowEntries','ExtendedRightDenyEntries'
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Usage', 'ExtendedRightAllowEntries', 'ExtendedRightDenyEntries'
 
             Set-ReceiveConnector @PSBoundParameters
 
@@ -642,7 +642,7 @@ function Test-TargetResource
         $Credential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure,
 
@@ -727,7 +727,7 @@ function Test-TargetResource
         $EnhancedStatusCodesEnabled,
 
         [Parameter()]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         [System.String]
         $ExtendedProtectionPolicy,
 
@@ -788,7 +788,7 @@ function Test-TargetResource
         $MessageRateLimit,
 
         [Parameter()]
-        [ValidateSet('None','IPAddress','User','All')]
+        [ValidateSet('None', 'IPAddress', 'User', 'All')]
         [System.String]
         $MessageRateSource,
 
@@ -805,7 +805,7 @@ function Test-TargetResource
         $PipeliningEnabled,
 
         [Parameter()]
-        [ValidateSet('None','Verbose')]
+        [ValidateSet('None', 'Verbose')]
         [System.String]
         $ProtocolLoggingLevel,
 
@@ -826,7 +826,7 @@ function Test-TargetResource
         $ServiceDiscoveryFqdn,
 
         [Parameter()]
-        [ValidateSet('Enabled','Disabled','EnabledWithoutValue')]
+        [ValidateSet('Enabled', 'Disabled', 'EnabledWithoutValue')]
         [System.String]
         $SizeEnabled,
 
@@ -847,12 +847,12 @@ function Test-TargetResource
         $TlsDomainCapabilities,
 
         [Parameter()]
-        [ValidateSet('FrontendTransport','HubTransport')]
+        [ValidateSet('FrontendTransport', 'HubTransport')]
         [System.String]
         $TransportRole,
 
         [Parameter()]
-        [ValidateSet('Client','Internal','Internet','Partner','Custom')]
+        [ValidateSet('Client', 'Internal', 'Internet', 'Partner', 'Custom')]
         [System.String]
         $Usage
     )
@@ -862,7 +862,7 @@ function Test-TargetResource
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ReceiveConnector','Get-ADPermission' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ReceiveConnector', 'Get-ADPermission' -Verbose:$VerbosePreference
 
     $connector = GetReceiveConnector @PSBoundParameters
 
@@ -1167,7 +1167,7 @@ function GetReceiveConnector
         $Credential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure,
 
@@ -1248,7 +1248,7 @@ function GetReceiveConnector
         $EnhancedStatusCodesEnabled,
 
         [Parameter()]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         [System.String]
         $ExtendedProtectionPolicy,
 
@@ -1309,7 +1309,7 @@ function GetReceiveConnector
         $MessageRateLimit,
 
         [Parameter()]
-        [ValidateSet('None','IPAddress','User','All')]
+        [ValidateSet('None', 'IPAddress', 'User', 'All')]
         [System.String]
         $MessageRateSource,
 
@@ -1326,7 +1326,7 @@ function GetReceiveConnector
         $PipeliningEnabled,
 
         [Parameter()]
-        [ValidateSet('None','Verbose')]
+        [ValidateSet('None', 'Verbose')]
         [System.String]
         $ProtocolLoggingLevel,
 
@@ -1347,7 +1347,7 @@ function GetReceiveConnector
         $ServiceDiscoveryFqdn,
 
         [Parameter()]
-        [ValidateSet('Enabled','Disabled','EnabledWithoutValue')]
+        [ValidateSet('Enabled', 'Disabled', 'EnabledWithoutValue')]
         [System.String]
         $SizeEnabled,
 
@@ -1368,17 +1368,17 @@ function GetReceiveConnector
         $TlsDomainCapabilities,
 
         [Parameter()]
-        [ValidateSet('FrontendTransport','HubTransport')]
+        [ValidateSet('FrontendTransport', 'HubTransport')]
         [System.String]
         $TransportRole,
 
         [Parameter()]
-        [ValidateSet('Client','Internal','Internet','Partner','Custom')]
+        [ValidateSet('Client', 'Internal', 'Internet', 'Partner', 'Custom')]
         [System.String]
         $Usage
     )
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     return (Get-ReceiveConnector @PSBoundParameters -ErrorAction SilentlyContinue)
 }

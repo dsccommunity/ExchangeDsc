@@ -68,7 +68,7 @@ if ($exchangeInstalled)
                                          -ExpectedGetResults $expectedGetResults
 
         #Now try multiple sites in the site scope
-        $testParams.AutoDiscoverSiteScope = 'Site1','Site2'
+        $testParams.AutoDiscoverSiteScope = 'Site1', 'Site2'
         $expectedGetResults = @{}
 
         Test-TargetResourceFunctionality -Params $testParams `

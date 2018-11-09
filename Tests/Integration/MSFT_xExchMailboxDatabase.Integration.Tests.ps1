@@ -58,7 +58,7 @@ if ($exchangeInstalled)
     #Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
-    Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-MailboxDatabase','*-Mailbox','*-Recipient','Get-AcceptedDomain'
+    Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-MailboxDatabase', '*-Mailbox', '*-Recipient', 'Get-AcceptedDomain'
 
     $TestDBName = 'Mailbox Database Test 123'
 
@@ -178,7 +178,7 @@ if ($exchangeInstalled)
 
         $serverVersion = Get-ExchangeVersionYear
 
-        if ($serverVersion -in '2016','2019')
+        if ($serverVersion -in '2016', '2019')
         {
             $testParams.Add('IsExcludedFromProvisioningReason', 'Testing Excluding the Database')
             $expectedGetResults.Add('IsExcludedFromProvisioningReason', 'Testing Excluding the Database')

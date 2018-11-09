@@ -36,8 +36,8 @@ if ($exchangeInstalled)
             Credential = $shellCredentials
             BasicAuthentication = $true
             DigestAuthentication = $false
-            ExtendedProtectionFlags = @('AllowDotlessspn','NoServicenameCheck')
-            ExtendedProtectionSPNList = @('http/mail.fabrikam.com','http/mail.fabrikam.local','http/wxweqc')
+            ExtendedProtectionFlags = @('AllowDotlessspn', 'NoServicenameCheck')
+            ExtendedProtectionSPNList = @('http/mail.fabrikam.com', 'http/mail.fabrikam.local', 'http/wxweqc')
             ExtendedProtectionTokenChecking = 'Allow'
             OAuthAuthentication = $true
             WindowsAuthentication = $true
@@ -86,7 +86,7 @@ if ($exchangeInstalled)
         }
 
         Context 'Test invalid combination in ExtendedProtectionFlags' {
-            $testParams.ExtendedProtectionFlags = @('NoServicenameCheck','None')
+            $testParams.ExtendedProtectionFlags = @('NoServicenameCheck', 'None')
 
             It 'Should hit exception for invalid combination ExtendedProtectionFlags' {
                 { Set-TargetResource @testParams } | Should -Throw

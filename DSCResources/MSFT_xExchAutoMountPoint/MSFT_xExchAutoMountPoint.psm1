@@ -36,7 +36,7 @@ function Get-TargetResource
         $CreateSubfolders = $false,
 
         [Parameter()]
-        [ValidateSet('NTFS','REFS')]
+        [ValidateSet('NTFS', 'REFS')]
         [System.String]
         $FileSystem = 'NTFS',
 
@@ -45,7 +45,7 @@ function Get-TargetResource
         $MinDiskSize = '',
 
         [Parameter()]
-        [ValidateSet('MBR','GPT')]
+        [ValidateSet('MBR', 'GPT')]
         [System.String]
         $PartitioningScheme = 'GPT',
 
@@ -115,7 +115,7 @@ function Set-TargetResource
         $CreateSubfolders = $false,
 
         [Parameter()]
-        [ValidateSet('NTFS','REFS')]
+        [ValidateSet('NTFS', 'REFS')]
         [System.String]
         $FileSystem = 'NTFS',
 
@@ -124,7 +124,7 @@ function Set-TargetResource
         $MinDiskSize = '',
 
         [Parameter()]
-        [ValidateSet('MBR','GPT')]
+        [ValidateSet('MBR', 'GPT')]
         [System.String]
         $PartitioningScheme = 'GPT',
 
@@ -220,7 +220,7 @@ function Test-TargetResource
         $CreateSubfolders = $false,
 
         [Parameter()]
-        [ValidateSet('NTFS','REFS')]
+        [ValidateSet('NTFS', 'REFS')]
         [System.String]
         $FileSystem = 'NTFS',
 
@@ -229,7 +229,7 @@ function Test-TargetResource
         $MinDiskSize = '',
 
         [Parameter()]
-        [ValidateSet('MBR','GPT')]
+        [ValidateSet('MBR', 'GPT')]
         [System.String]
         $PartitioningScheme = 'GPT',
 
@@ -316,7 +316,7 @@ function CreateMissingExVolumes
         $CreateSubfolders = $false,
 
         [Parameter()]
-        [ValidateSet('NTFS','REFS')]
+        [ValidateSet('NTFS', 'REFS')]
         [System.String]
         $FileSystem = 'NTFS',
 
@@ -325,7 +325,7 @@ function CreateMissingExVolumes
         $MinDiskSize = '',
 
         [Parameter()]
-        [ValidateSet('MBR','GPT')]
+        [ValidateSet('MBR', 'GPT')]
         [System.String]
         $PartitioningScheme = 'GPT',
 
@@ -412,7 +412,7 @@ function CreateMissingExDatabases
         $CreateSubfolders = $false,
 
         [Parameter()]
-        [ValidateSet('NTFS','REFS')]
+        [ValidateSet('NTFS', 'REFS')]
         [System.String]
         $FileSystem = 'NTFS',
 
@@ -421,7 +421,7 @@ function CreateMissingExDatabases
         $MinDiskSize = '',
 
         [Parameter()]
-        [ValidateSet('MBR','GPT')]
+        [ValidateSet('MBR', 'GPT')]
         [System.String]
         $PartitioningScheme = 'GPT',
 
@@ -987,7 +987,7 @@ function SendVolumeMountPointToEndOfList
                 $folderName = $folderName.Substring(0, $folderName.Length - 1)
             }
 
-            StartDiskpart -Commands "select volume $($VolumeNumber)","remove mount=`"$($folderName)`"","assign mount=`"$($folderName)`"" -Verbose:$VerbosePreference | Out-Null
+            StartDiskpart -Commands "select volume $($VolumeNumber)", "remove mount=`"$($folderName)`"", "assign mount=`"$($folderName)`"" -Verbose:$VerbosePreference | Out-Null
             break
         }
     }
@@ -1008,7 +1008,7 @@ function PrepareVolume
         $Folder,
 
         [Parameter()]
-        [ValidateSet('NTFS','REFS')]
+        [ValidateSet('NTFS', 'REFS')]
         [System.String]
         $FileSystem = 'NTFS',
 
@@ -1026,18 +1026,18 @@ function PrepareVolume
     )
 
     #Initialize the disk and put in MBR format
-    StartDiskpart -Commands "select disk $($DiskNumber)",'clean' -Verbose:$VerbosePreference | Out-Null
-    StartDiskpart -Commands "select disk $($DiskNumber)",'online disk' -Verbose:$VerbosePreference | Out-Null
-    StartDiskpart -Commands "select disk $($DiskNumber)",'attributes disk clear readonly','convert MBR' -Verbose:$VerbosePreference | Out-Null
-    StartDiskpart -Commands "select disk $($DiskNumber)",'offline disk' -Verbose:$VerbosePreference | Out-Null
+    StartDiskpart -Commands "select disk $($DiskNumber)", 'clean' -Verbose:$VerbosePreference | Out-Null
+    StartDiskpart -Commands "select disk $($DiskNumber)", 'online disk' -Verbose:$VerbosePreference | Out-Null
+    StartDiskpart -Commands "select disk $($DiskNumber)", 'attributes disk clear readonly', 'convert MBR' -Verbose:$VerbosePreference | Out-Null
+    StartDiskpart -Commands "select disk $($DiskNumber)", 'offline disk' -Verbose:$VerbosePreference | Out-Null
 
     #Online the disk
-    StartDiskpart -Commands "select disk $($DiskNumber)",'attributes disk clear readonly','online disk' -Verbose:$VerbosePreference | Out-Null
+    StartDiskpart -Commands "select disk $($DiskNumber)", 'attributes disk clear readonly', 'online disk' -Verbose:$VerbosePreference | Out-Null
 
     #Convert to GPT if requested
     if ($PartitioningScheme -eq 'GPT')
     {
-        StartDiskpart -Commands "select disk $($DiskNumber)",'convert GPT noerr' -Verbose:$VerbosePreference | Out-Null
+        StartDiskpart -Commands "select disk $($DiskNumber)", 'convert GPT noerr' -Verbose:$VerbosePreference | Out-Null
     }
 
     #Create the directory if it doesn't exist
@@ -1051,11 +1051,11 @@ function PrepareVolume
     {
         $formatString = "Format FS=$($FileSystem) UNIT=$($UnitSize) Label=$($Label) QUICK"
 
-        StartDiskpart -Commands "select disk $($DiskNumber)","create partition primary","$($formatString)","assign mount=`"$($Folder)`"" -Verbose:$VerbosePreference | Out-Null
+        StartDiskpart -Commands "select disk $($DiskNumber)", "create partition primary", "$($formatString)", "assign mount=`"$($Folder)`"" -Verbose:$VerbosePreference | Out-Null
     }
     else #if ($FileSystem -eq "REFS")
     {
-        StartDiskpart -Commands "select disk $($DiskNumber)","create partition primary" -Verbose:$VerbosePreference | Out-Null
+        StartDiskpart -Commands "select disk $($DiskNumber)", "create partition primary" -Verbose:$VerbosePreference | Out-Null
 
         if ($UnitSize.ToLower().EndsWith('k'))
         {
@@ -1096,7 +1096,7 @@ function AddMountPoint
         mkdir -Path "$($Folder)" | Out-Null
     }
 
-    StartDiskpart -Commands "select volume $($VolumeNumber)","assign mount=`"$($Folder)`"" -Verbose:$VerbosePreference | Out-Null
+    StartDiskpart -Commands "select volume $($VolumeNumber)", "assign mount=`"$($Folder)`"" -Verbose:$VerbosePreference | Out-Null
 }
 
 Export-ModuleMember -Function *-TargetResource

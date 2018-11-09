@@ -71,7 +71,7 @@ if ($exchangeInstalled)
          MessageRateLimit                        = 'Unlimited'
          MessageRateSource                       = 'IPAddress'
          OrarEnabled                             = $false
-         PermissionGroups                        = 'AnonymousUsers','ExchangeServers'
+         PermissionGroups                        = 'AnonymousUsers', 'ExchangeServers'
          PipeliningEnabled                       = $true
          ProtocolLoggingLevel                    = 'Verbose'
          RemoteIPRanges                          = '192.16.7.99'
@@ -124,7 +124,7 @@ if ($exchangeInstalled)
          MessageRateLimit                        = 'Unlimited'
          MessageRateSource                       = 'IPAddress'
          OrarEnabled                             = $false
-         PermissionGroups                        = [System.String[]]@('AnonymousUsers','ExchangeServers','Custom')
+         PermissionGroups                        = [System.String[]]@('AnonymousUsers', 'ExchangeServers', 'Custom')
          PipeliningEnabled                       = $true
          ProtocolLoggingLevel                    = 'Verbose'
          RemoteIPRanges                          = '192.16.7.99'

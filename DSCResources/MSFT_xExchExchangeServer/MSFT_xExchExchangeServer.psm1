@@ -46,7 +46,7 @@ function Get-TargetResource
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer','Set-ExchangeServer' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer', 'Set-ExchangeServer' -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('WorkloadManagementPolicy') -and (Test-CmdletHasParameter -CmdletName 'Set-ExchangeServer' -ParameterName 'WorkloadManagementPolicy') -eq $false)
     {
@@ -127,7 +127,7 @@ function Set-TargetResource
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer','Set-ExchangeServer' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer', 'Set-ExchangeServer' -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('WorkloadManagementPolicy') -and (Test-CmdletHasParameter -CmdletName 'Set-ExchangeServer' -ParameterName 'WorkloadManagementPolicy') -eq $false)
     {
@@ -146,7 +146,7 @@ function Set-TargetResource
     }
 
     #Setup params for next command
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
 
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
@@ -216,7 +216,7 @@ function Test-TargetResource
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     #Establish remote Powershell session
-    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer','Set-ExchangeServer' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer', 'Set-ExchangeServer' -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('WorkloadManagementPolicy') -and (Test-CmdletHasParameter -CmdletName 'Set-ExchangeServer' -ParameterName 'WorkloadManagementPolicy') -eq $false)
     {
@@ -315,7 +315,7 @@ function GetExchangeServer
         $AllowServiceRestart = $false
     )
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     return (Get-ExchangeServer @PSBoundParameters)
 }

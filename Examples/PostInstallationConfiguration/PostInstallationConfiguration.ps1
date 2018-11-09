@@ -32,7 +32,7 @@ $ConfigurationData = @{
             CASId         = 'Site1CAS' #Used to determine which CAS settings the server should use. Corresponds to Site1CAS hashtable entry below.
 
             #DB's that should be on the same disk must be in the same string, and comma separated. In this example, DB1 and DB2 will go on one disk, and DB3 and DB4 will go on another
-            DiskToDBMap   = 'DB1,DB2','DB3,DB4'
+            DiskToDBMap   = 'DB1,DB2', 'DB3,DB4'
 
             #Configure the databases whose primary copies will reside on this server
             PrimaryDBList = @{
@@ -54,7 +54,7 @@ $ConfigurationData = @{
             DAGId         = 'DAG1'
             CASID         = 'Site1CAS'
 
-            DiskToDBMap   = 'DB1,DB2','DB3,DB4'
+            DiskToDBMap   = 'DB1,DB2', 'DB3,DB4'
 
             PrimaryDBList = @{
                 DB2 = @{Name = 'DB2'; EdbFilePath = 'C:\ExchangeDatabases\DB2\DB2.db\DB2.edb'; LogFolderPath = 'C:\ExchangeDatabases\DB2\DB2.log'};
@@ -75,7 +75,7 @@ $ConfigurationData = @{
             DAGName                              = 'TestDAG1'
             AutoDagTotalNumberOfServers          = 4
             AutoDagDatabaseCopiesPerVolume       = 2
-            DatabaseAvailabilityGroupIPAddresses = '192.168.1.99','192.168.2.99'
+            DatabaseAvailabilityGroupIPAddresses = '192.168.1.99', '192.168.2.99'
             ManualDagNetworkConfiguration        = $true
             ReplayLagManagerEnabled              = $true
             SkipDagValidation                    = $true
@@ -85,11 +85,11 @@ $ConfigurationData = @{
             #New network params
             DAGNet1NetworkName                   = 'MapiNetwork'
             DAGNet1ReplicationEnabled            = $false
-            DAGNet1Subnets                       = '192.168.1.0/24','192.168.2.0/24'
+            DAGNet1Subnets                       = '192.168.1.0/24', '192.168.2.0/24'
 
             DAGNet2NetworkName                   = 'ReplNetwork'
             DAGNet2ReplicationEnabled            = $true
-            DAGNet2Subnets                       = '10.10.10.0/24','10.10.11.0/24'
+            DAGNet2Subnets                       = '10.10.10.0/24', '10.10.11.0/24'
 
             #Old network to remove
             OldNetworkName                       = 'MapiDagNetwork'
@@ -97,7 +97,7 @@ $ConfigurationData = @{
             #Certificate Settings
             Thumbprint                           = '7D959B3A37E45978445F8EC8F01D200D00C3141F'
             CertFilePath                         = 'c:\certexport1.pfx'
-            Services                             = 'IIS','POP','IMAP','SMTP'
+            Services                             = 'IIS', 'POP', 'IMAP', 'SMTP'
         }
     );
 
@@ -216,7 +216,7 @@ Configuration Example
             Credential                = $ExchangeAdminCredential
             DatabaseAvailabilityGroup = $dagSettings.DAGName
             Ensure                    = 'Absent'
-            DependsOn                 = '[xExchDatabaseAvailabilityGroupNetwork]DAGNet1','[xExchDatabaseAvailabilityGroupNetwork]DAGNet2' #Dont remove the old one until the new one is in place
+            DependsOn                 = '[xExchDatabaseAvailabilityGroupNetwork]DAGNet1', '[xExchDatabaseAvailabilityGroupNetwork]DAGNet2' #Dont remove the old one until the new one is in place
         }
     }
 
@@ -312,7 +312,7 @@ Configuration Example
             InternalUrl                 = "https://$($casSettings.InternalNLBFqdn)/Microsoft-Server-ActiveSync"
             WindowsAuthEnabled          = $false
             AllowServiceRestart         = $true
-            DependsOn                   = '[WindowsFeature]WebClientAuth','[WindowsFeature]WebCertAuth','[xExchExchangeCertificate]Certificate' #Can't configure CBA until we have a valid cert, and have required features
+            DependsOn                   = '[WindowsFeature]WebClientAuth', '[WindowsFeature]WebCertAuth', '[xExchExchangeCertificate]Certificate' #Can't configure CBA until we have a valid cert, and have required features
         }
 
         #Ensures forms based auth and configures URLs
@@ -335,7 +335,7 @@ Configuration Example
             Identity                 = "$($Node.NodeName)\mapi (Default Web Site)"
             Credential               = $ExchangeAdminCredential
             ExternalUrl              = "https://$($casSettings.ExternalNLBFqdn)/mapi"
-            IISAuthenticationMethods = 'NTLM','Negotiate'
+            IISAuthenticationMethods = 'NTLM', 'Negotiate'
             InternalUrl              = "https://$($casSettings.InternalNLBFqdn)/mapi"
             AllowServiceRestart      = $true
         }
@@ -411,11 +411,11 @@ Configuration Example
             Identity         = "$($Node.NodeName)\Internal SMTP Servers to $($Node.NodeName)"
             Credential       = $ExchangeAdminCredential
             Ensure           = 'Present'
-            AuthMechanism    = 'Tls','ExternalAuthoritative'
+            AuthMechanism    = 'Tls', 'ExternalAuthoritative'
             Bindings         = '0.0.0.0:25'
             MaxMessageSize   = '25MB'
-            PermissionGroups = 'AnonymousUsers','ExchangeServers'
-            RemoteIPRanges   = '192.168.1.101','192.168.1.102'
+            PermissionGroups = 'AnonymousUsers', 'ExchangeServers'
+            RemoteIPRanges   = '192.168.1.101', '192.168.1.102'
             TransportRole    = 'FrontendTransport'
             Usage            = 'Custom'
         }

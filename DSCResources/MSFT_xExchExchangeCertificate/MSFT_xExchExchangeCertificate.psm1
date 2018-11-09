@@ -15,7 +15,7 @@ function Get-TargetResource
         $Credential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure,
 
@@ -75,7 +75,7 @@ function Set-TargetResource
         $Credential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure,
 
@@ -213,7 +213,7 @@ function Test-TargetResource
         $Credential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure,
 
@@ -293,7 +293,7 @@ function GetExchangeCertificate
         $Credential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Present','Absent')]
+        [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure,
 
@@ -321,7 +321,7 @@ function GetExchangeCertificate
     )
 
     #Remove params we don't want to pass into the next command
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Thumbprint','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Thumbprint', 'DomainController'
 
     return (Get-ExchangeCertificate @PSBoundParameters -ErrorAction SilentlyContinue -Server $env:COMPUTERNAME)
 }

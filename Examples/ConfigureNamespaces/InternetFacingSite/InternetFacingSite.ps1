@@ -97,7 +97,7 @@ Configuration Example
             Credential               = $ExchangeAdminCredential
             ExternalUrl              = $casSettings.ExternalUrlMAPI
             InternalUrl              = "https://$($casSettings.InternalNLBFqdn)/mapi"
-            IISAuthenticationMethods = 'NTLM','Negotiate'  #IISAuthenticationMethods is a required parameter for Set-MapiVirtualDirectory
+            IISAuthenticationMethods = 'NTLM', 'Negotiate'  #IISAuthenticationMethods is a required parameter for Set-MapiVirtualDirectory
             AllowServiceRestart      = $true               #Since we are changing the default auth method, we allow the app pool to be restarted right away so the change goes into effect immediately
         }
 

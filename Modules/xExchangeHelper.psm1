@@ -221,7 +221,7 @@ function Test-ExchangePresent
 
     $version = Get-ExchangeVersionYear
 
-    if ($version -in '2013','2016','2019')
+    if ($version -in '2013', '2016', '2019')
     {
         return $true
     }
@@ -334,7 +334,7 @@ function Get-DetailedInstalledVersion
 
     if ($null -ne $uninstallKey)
     {
-        $uninstallKeyPath = $uninstallKey.Name.ToLower().Replace('hkey_local_machine','hklm:')
+        $uninstallKeyPath = $uninstallKey.Name.ToLower().Replace('hkey_local_machine', 'hklm:')
 
         $displayVersion = Get-ItemProperty -Path $uninstallKeyPath -Name 'DisplayVersion' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty DisplayVersion
 
@@ -1350,7 +1350,7 @@ function Remove-NotApplicableParamsForVersion
         $ResourceName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('2013','2016','2019')]
+        [ValidateSet('2013', '2016', '2019')]
         [System.String[]]
         $ParamExistsInVersion
     )
