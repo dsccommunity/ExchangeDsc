@@ -65,7 +65,7 @@ try
             Mock -CommandName Write-FunctionEntry -Verifiable
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
 
-            Context 'When Set-TargetResource is called and the wait for the DAG is successful' {
+            Context 'When the wait for the DAG is successful' {
                 It 'Should return without throwing an exception' {
                     Mock -CommandName Wait-ForDatabaseAvailabilityGroup -Verifiable -MockWith { return 'DAG' }
 
@@ -73,7 +73,7 @@ try
                 }
             }
 
-            Context 'When Set-TargetResource is called and the wait for the DAG is not successful' {
+            Context 'When the wait for the DAG is not successful' {
                 It 'Should throw an exception' {
                     Mock -CommandName Wait-ForDatabaseAvailabilityGroup -Verifiable
 
@@ -90,7 +90,7 @@ try
             Mock -CommandName Write-FunctionEntry -Verifiable
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
 
-            Context 'When Test-TargetResource is called and the DAG does not exist' {
+            Context 'When the DAG does not exist' {
                 It 'Should return false' {
                     Mock -CommandName Get-DatabaseAvailabilityGroupInternal -Verifiable
                     Mock -CommandName Get-DAGComputerObject -Verifiable
@@ -100,7 +100,7 @@ try
                 }
             }
 
-            Context 'When Test-TargetResource is called, the DAG exists, the computer does not exist, but WaitForComputerObject is not specified' {
+            Context 'When the DAG exists, the computer does not exist, and WaitForComputerObject is not specified' {
                 It 'Should return true' {
                     Mock -CommandName Get-DatabaseAvailabilityGroupInternal -Verifiable -MockWith { return 'DAG' }
                     Mock -CommandName Get-DAGComputerObject -Verifiable
@@ -109,7 +109,7 @@ try
                 }
             }
 
-            Context 'When Test-TargetResource is called, the DAG exists, the computer does not exist, and WaitForComputerObject is specified' {
+            Context 'When the DAG exists, the computer does not, and WaitForComputerObject is specified' {
                 It 'Should return false' {
                     Mock -CommandName Get-DatabaseAvailabilityGroupInternal -Verifiable -MockWith { return 'DAG' }
                     Mock -CommandName Get-DAGComputerObject -Verifiable
@@ -123,7 +123,7 @@ try
                 }
             }
 
-            Context 'When Test-TargetResource is called, the DAG exists, the computer exists, and WaitForComputerObject is specified' {
+            Context 'When the DAG exists, the computer exists, and WaitForComputerObject is specified' {
                 It 'Should return true' {
                     Mock -CommandName Get-DatabaseAvailabilityGroupInternal -Verifiable -MockWith { return 'DAG' }
                     Mock -CommandName Get-DAGComputerObject -Verifiable -MockWith { return 'Computer' }
@@ -175,7 +175,7 @@ try
                 }
             }
 
-            Context 'When Get-DAGComputerObject is called, Get-ADComputer throws an exception, and WaitForComputerObject is specified' {
+            Context 'When Get-ADComputer throws an exception, and WaitForComputerObject is specified' {
                 It 'Should write a warning' {
                     Mock -CommandName Get-ADComputer -Verifiable -MockWith { throw 'Exception' }
                     Mock -CommandName Write-Warning -Verifiable
@@ -197,7 +197,7 @@ try
             $basicTargetResourceParams.Add('RetryIntervalSec', 1)
             $basicTargetResourceParams.Add('RetryCount', 1)
 
-            Context 'When Wait-ForDatabaseAvailabilityGroup is called and the DAG does not exist' {
+            Context 'When the DAG does not exist' {
                 It 'Should return false' {
                     Mock -CommandName Get-DatabaseAvailabilityGroupInternal -Verifiable
                     Mock -CommandName Get-DAGComputerObject -Verifiable
@@ -208,7 +208,7 @@ try
                 }
             }
 
-            Context 'When Wait-ForDatabaseAvailabilityGroup is called, the DAG exists, the computer does not exist, but WaitForComputerObject is not specified' {
+            Context 'When the DAG exists, the computer does not, and WaitForComputerObject is not specified' {
                 It 'Should return true' {
                     Mock -CommandName Get-DatabaseAvailabilityGroupInternal -Verifiable -MockWith { return 'DAG' }
                     Mock -CommandName Get-DAGComputerObject -Verifiable
@@ -217,7 +217,7 @@ try
                 }
             }
 
-            Context 'When Wait-ForDatabaseAvailabilityGroup is called, the DAG exists, the computer does not exist, and WaitForComputerObject is specified' {
+            Context 'When the DAG exists, the computer does not, and WaitForComputerObject is specified' {
                 It 'Should return false' {
                     Mock -CommandName Get-DatabaseAvailabilityGroupInternal -Verifiable -MockWith { return 'DAG' }
                     Mock -CommandName Get-DAGComputerObject -Verifiable
@@ -232,7 +232,7 @@ try
                 }
             }
 
-            Context 'When Wait-ForDatabaseAvailabilityGroup is called, the DAG exists, the computer exists, and WaitForComputerObject is specified' {
+            Context 'When the DAG exists, the computer exists, and WaitForComputerObject is specified' {
                 It 'Should return true' {
                     Mock -CommandName Get-DatabaseAvailabilityGroupInternal -Verifiable -MockWith { return 'DAG' }
                     Mock -CommandName Get-DAGComputerObject -Verifiable -MockWith { return 'Computer' }
