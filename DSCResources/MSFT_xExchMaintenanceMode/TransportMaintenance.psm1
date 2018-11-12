@@ -663,7 +663,7 @@ function Get-TransportMaintenanceLogFileList()
     param
     (
         [Parameter(Mandatory = $true)]
-        [Object]
+        [System.Object]
         $TransportService,
 
         [Parameter(Mandatory = $true)]
@@ -690,7 +690,7 @@ function Register-TransportMaintenanceLog
     param
     (
         [Parameter(Mandatory = $true)]
-        [Object]
+        [System.Object]
         $TransportService,
 
         [Parameter(Mandatory = $true)]
@@ -760,7 +760,7 @@ function Remove-TransportMaintenanceLogsOverMaxAge
     param
     (
         [Parameter(Mandatory = $true)]
-        [Object]
+        [System.Object]
         $TransportService,
 
         [Parameter(Mandatory = $true)]
@@ -792,7 +792,7 @@ function Remove-TransportMaintenanceLogsOverMaxDirectorySize
     param
     (
         [Parameter(Mandatory = $true)]
-        [Object]
+        [System.Object]
         $TransportService,
 
         [Parameter(Mandatory = $true)]
@@ -843,7 +843,7 @@ function Get-MaintenanceLogPath
     param
     (
         [Parameter(Mandatory = $true)]
-        [Object]
+        [System.Object]
         $TransportService,
 
         [Parameter()]
@@ -1181,11 +1181,11 @@ function Write-EventOfEntry
         $Event,
 
         [Parameter(Mandatory = $true)]
-        [Object]
+        [System.Object]
         $Entry,
 
         [Parameter()]
-        [hashtable]
+        [System.Collections.Hashtable]
         $Reason
     )
 
@@ -1289,7 +1289,7 @@ function Write-SkippedEvent
         $Count,
 
         [Parameter()]
-        [hashtable]
+        [System.Collections.Hashtable]
         $Reason
     )
 
@@ -1336,7 +1336,7 @@ function Write-InfoEvent
         $Count,
 
         [Parameter()]
-        [hashtable]
+        [System.Collections.Hashtable]
         $Reason
     )
 
@@ -1366,7 +1366,7 @@ function Remove-CompletedEntriesFromHashtable
     param
     (
         [Parameter(Mandatory = $true)]
-        [HashTable]
+        [System.Collections.Hashtable]
         $Tracker,
 
         [Parameter()]
@@ -1427,7 +1427,7 @@ function Update-EntriesTracker
     param
     (
         [Parameter(Mandatory = $true)]
-        [HashTable]
+        [System.Collections.Hashtable]
         $Tracker,
 
         [Parameter(Mandatory = $true)]
@@ -2305,7 +2305,7 @@ function Clear-ActiveMessage
         $Server,
 
         [Parameter()]
-        [object]
+        [System.Object]
         $TransportService
     )
 

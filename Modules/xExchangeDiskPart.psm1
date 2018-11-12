@@ -6,9 +6,9 @@ function StartDiskpart
     param
     (
         [Parameter()]
-        [Array]
+        [System.Array]
         $Commands,
-        
+
         [Parameter()]
         [System.Boolean]
         $ShowOutput = $true
@@ -42,7 +42,7 @@ function GetDiskInfo
     [OutputType([System.Collections.Hashtable])]
     param()
 
-    [Hashtable] $diskInfo = @{
+    [System.Collections.Hashtable] $diskInfo = @{
         DiskToVolumeMap = @{}
         VolumeToMountPointMap = @{}
         DiskSizeMap = @{}
@@ -166,6 +166,8 @@ function GetDiskInfo
 
 function StringArrayToCommaSeparatedString
 {
+    [CmdletBinding()]
+    [OutputType([System.String])]
     param
     (
         [Parameter()]
@@ -191,18 +193,19 @@ function StringArrayToCommaSeparatedString
 # Takes a hashtable, and adds the given key and value.
 function AddObjectToMapOfObjectArrays
 {
+    [CmdletBinding()]
     param
     (
         [Parameter()]
-        [Hashtable]
+        [System.Collections.Hashtable]
         $Map,
-        
+
         [Parameter()]
-        [Object]
+        [System.Object]
         $Key,
-        
+
         [Parameter()]
-        [Object]
+        [System.Object]
         $Value
     )
 

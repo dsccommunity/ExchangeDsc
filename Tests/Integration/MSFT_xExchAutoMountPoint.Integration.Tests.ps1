@@ -176,7 +176,7 @@ function Test-DiskAndPartitionSetup
     param
     (
         [Parameter()]
-        [Object]
+        [System.Object]
         $Partition,
 
         [Parameter()]

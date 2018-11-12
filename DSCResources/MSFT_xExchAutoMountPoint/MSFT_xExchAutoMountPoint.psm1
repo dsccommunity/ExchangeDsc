@@ -441,9 +441,9 @@ function CreateMissingExDatabases
             $diskInfo = GetDiskInfo
         }
 
-        [System.String[]] $dbsNeedingMountPoints = @()
+        $dbsNeedingMountPoints = @()
 
-        [System.String[]] $allDBsRequestedForDisk = $DiskToDBMap[$i].Split(',')
+        $allDBsRequestedForDisk = $DiskToDBMap[$i].Split(',')
 
         for ($j = 0; $j -lt $allDBsRequestedForDisk.Count; $j++)
         {
@@ -705,7 +705,7 @@ function GetSortedExchangeVolumeKeys
     [System.String] $pathBeforeVolumeNumber = Join-Path -Path $AutoDagVolumesRootFolderPath -ChildPath $VolumePrefix
 
     # First extract the actual volume number as an Int from the volume path, then add it to a new hashtable with the same key value
-    [Hashtable] $tempVolumeToMountPointMap = @{}
+    [System.Collections.Hashtable] $tempVolumeToMountPointMap = @{}
 
     foreach ($key in $DiskInfo.VolumeToMountPointMap.Keys)
     {
