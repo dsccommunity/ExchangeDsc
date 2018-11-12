@@ -153,7 +153,8 @@ Configuration Example
         # Create primary databases
         foreach ($DB in $primaryDbList)
         {
-            $resourceId = "MDB_$($DB.Name)" # Need to define a unique ID for each database
+            # Need to define a unique ID for each database
+            $resourceId = "MDB_$($DB.Name)"
 
             xExchMailboxDatabase $resourceId
             {

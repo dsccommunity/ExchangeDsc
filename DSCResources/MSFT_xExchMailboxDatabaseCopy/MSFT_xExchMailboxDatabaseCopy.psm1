@@ -49,7 +49,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential `
                              -CommandsToLoad 'Get-MailboxDatabase', '*DatabaseCopy*', 'Set-AdServerSettings' `
                              -Verbose:$VerbosePreference

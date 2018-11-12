@@ -42,7 +42,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Name' = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroupNetwork' -Verbose:$VerbosePreference
 
     $dagNet = GetDatabaseAvailabilityGroupNetwork @PSBoundParameters
@@ -104,7 +104,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Name' = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*DatabaseAvailabilityGroup*' -Verbose:$VerbosePreference
 
     $dagId = "$($DatabaseAvailabilityGroup)\$($Name)"
@@ -192,7 +192,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Name' = $Name; 'DatabaseAvailabilityGroup' = $DatabaseAvailabilityGroup} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroupNetwork' -Verbose:$VerbosePreference
 
     $dagNet = GetDatabaseAvailabilityGroupNetwork @PSBoundParameters

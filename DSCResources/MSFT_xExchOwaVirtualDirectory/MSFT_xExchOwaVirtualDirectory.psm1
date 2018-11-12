@@ -121,7 +121,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OwaVirtualDirectory' -Verbose:$VerbosePreference
 
     $OwaVdir = GetOwaVirtualDirectory @PSBoundParameters
@@ -279,7 +279,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-OwaVirtualDirectory' -Verbose:$VerbosePreference
 
     # Ensure an empty string is $null and not a string
@@ -424,7 +424,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OwaVirtualDirectory' -Verbose:$VerbosePreference
 
     # Ensure an empty string is $null and not a string

@@ -397,7 +397,7 @@ function GetFolderNoTrailingSlash
     return $Folder
 }
 
-# Simple string parsing method to determine what the parent folder of a folder is given the child folder's path
+# Simple string parsing method to determine a folder's parent
 function GetParentFolderFromString
 {
     param

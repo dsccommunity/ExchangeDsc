@@ -38,7 +38,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PopSettings' -Verbose:$VerbosePreference
 
     $pop = GetPopSettings @PSBoundParameters
@@ -94,7 +94,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-PopSettings' -Verbose:$VerbosePreference
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
@@ -153,7 +153,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PopSettings' -Verbose:$VerbosePreference
 
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters

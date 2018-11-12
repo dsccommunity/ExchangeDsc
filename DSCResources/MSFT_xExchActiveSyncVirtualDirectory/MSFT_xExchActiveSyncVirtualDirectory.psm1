@@ -134,7 +134,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ActiveSyncVirtualDirectory' -Verbose:$VerbosePreference
 
     $easVdir = Get-ActiveSyncVirtualDirectoryInternal @PSBoundParameters
@@ -307,7 +307,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-ActiveSyncVirtualDirectory' -Verbose:$VerbosePreference
 
     # Ensure an empty string is $null and not a string
@@ -316,7 +316,7 @@ function Set-TargetResource
     # Remove Credential and AllowServiceRestart because those parameters do not exist on Set-ActiveSyncVirtualDirectory
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart', 'AutoCertBasedAuth', 'AutoCertBasedAuthThumbprint', 'AutoCertBasedAuthHttpsBindings'
 
-    # verify SPNs depending on AllowDotlesSPN
+    # Verify SPNs depending on AllowDotlesSPN
     if ( -not (Test-ExtendedProtectionSPNList -SPNList $ExtendedProtectionSPNList -Flags $ExtendedProtectionFlags))
     {
         throw 'SPN list contains DotlesSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags or invalid combination was used!'
@@ -325,8 +325,9 @@ function Set-TargetResource
     # Configure everything but CBA
     Set-ActiveSyncVirtualDirectory @PSBoundParameters
 
-    if ($AutoCertBasedAuth) # Need to configure CBA
+    if ($AutoCertBasedAuth)
     {
+        # Need to configure CBA
         Test-PreReqsForCertBasedAuth
 
         if (-not ([System.String]::IsNullOrEmpty($AutoCertBasedAuthThumbprint)))
@@ -338,8 +339,9 @@ function Set-TargetResource
             throw 'AutoCertBasedAuthThumbprint must be specified when AutoCertBasedAuth is set to true'
         }
 
-        if($AllowServiceRestart) # Need to restart all of IIS for auth settings to stick
+        if($AllowServiceRestart)
         {
+            # Need to restart all of IIS for auth settings to stick
             Write-Verbose -Message 'Restarting IIS'
 
             iisreset /noforce /timeout:300
@@ -365,7 +367,7 @@ function Set-TargetResource
         }
     }
 
-    # install IsapiFilter manually as workaround as Exchange Cmdlet doesn't do it
+    # Install IsapiFilter manually as workaround as Exchange Cmdlet doesn't do it
     if ($InstallIsapiFilter)
     {
         if (-not (Test-ISAPIFilter))
@@ -515,7 +517,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ActiveSyncVirtualDirectory' -Verbose:$VerbosePreference
 
     # Ensure an empty string is $null and not a string
@@ -1099,7 +1101,7 @@ function Test-ISAPIFilter
         $ISAPIFilterName = 'Exchange ActiveSync ISAPI Filter'
     )
 
-    Begin
+    begin
     {
         $ISAPIFilters = Get-WebConfigurationProperty -PSPath 'MACHINE/WEBROOT/APPHOST' `
                                                      -Location $WebSite `
@@ -1107,7 +1109,7 @@ function Test-ISAPIFilter
                                                      -Name '.'
         [System.Boolean]$ReturnValue = $false
     }
-    Process
+    process
     {
         if ($ISAPIFilters.Collection.Count -gt 0)
         {
@@ -1118,7 +1120,7 @@ function Test-ISAPIFilter
             }
         }
     }
-    End
+    end
     {
         return $ReturnValue
     }

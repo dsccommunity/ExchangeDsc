@@ -44,7 +44,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Thumbprint' = $Thumbprint} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -Verbose:$VerbosePreference
 
     $cert = GetExchangeCertificate @PSBoundParameters
@@ -104,7 +104,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Thumbprint' = $Thumbprint} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*ExchangeCertificate' -Verbose:$VerbosePreference
 
     $cert = GetExchangeCertificate @PSBoundParameters
@@ -182,7 +182,7 @@ function Set-TargetResource
         }
     }
 
-    # Start UM services that we started
+    # Start UM services that were stopped earlier
     if ($needUMServiceReset -eq $true)
     {
         Write-Verbose -Message 'Starting service MSExchangeUM'
@@ -242,7 +242,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Thumbprint' = $Thumbprint} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -Verbose:$VerbosePreference
 
     $cert = GetExchangeCertificate @PSBoundParameters

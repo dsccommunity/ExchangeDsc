@@ -45,7 +45,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer', 'Set-ExchangeServer' -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('WorkloadManagementPolicy') -and (Test-CmdletHasParameter -CmdletName 'Set-ExchangeServer' -ParameterName 'WorkloadManagementPolicy') -eq $false)
@@ -126,7 +126,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer', 'Set-ExchangeServer' -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('WorkloadManagementPolicy') -and (Test-CmdletHasParameter -CmdletName 'Set-ExchangeServer' -ParameterName 'WorkloadManagementPolicy') -eq $false)
@@ -215,7 +215,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer', 'Set-ExchangeServer' -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('WorkloadManagementPolicy') -and (Test-CmdletHasParameter -CmdletName 'Set-ExchangeServer' -ParameterName 'WorkloadManagementPolicy') -eq $false)
@@ -228,8 +228,9 @@ function Test-TargetResource
 
     $testResults = $true
 
-    if ($null -eq $server) # Couldn't find the server, which is bad
+    if ($null -eq $server)
     {
+        # Couldn't find the server, which is bad
         Write-Error -Message 'Unable to retrieve Exchange Server settings for server'
 
         $testResults = $false

@@ -32,7 +32,7 @@ function Get-TargetResource
 
     Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMService' -SupportedVersions '2013', '2016'
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMService' -Verbose:$VerbosePreference
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
@@ -84,7 +84,7 @@ function Set-TargetResource
 
     Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMService' -SupportedVersions '2013', '2016'
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMService' -Verbose:$VerbosePreference
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential'

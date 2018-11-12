@@ -3,7 +3,7 @@
 class MSFT_xExchReceiveConnector : OMI_BaseResource
 {
     [Key] String Identity; //Identity of the Receive Connector. Needs to be in format 'SERVERNAME\CONNECTORNAME' (no quotes)
-    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange
     [Required, ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure; //Whether the connector should be present or not
 
     //Remaining properties correspond directly to Set-ReceiveConnector parameters

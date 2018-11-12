@@ -52,7 +52,8 @@ Configuration Example
         # Create primary databases
         foreach ($DB in $primaryDbList)
         {
-            $resourceId = "MDB:$($DB.Name)" # Need to define a unique ID for each database
+            # Need to define a unique ID for each database
+            $resourceId = "MDB:$($DB.Name)"
 
             xExchMailboxDatabase $resourceId
             {
@@ -73,8 +74,11 @@ Configuration Example
         # Create the copies
         foreach ($DB in $copyDbList)
         {
-            $waitResourceId = "WaitForDB_$($DB.Name)" # Unique ID for the xExchWaitForMailboxDatabase resource
-            $copyResourceId = "MDBCopy_$($DB.Name)" # Unique ID for the xExchMailboxDatabaseCopy resource
+            # Unique ID for the xExchWaitForMailboxDatabase resource
+            $waitResourceId = "WaitForDB_$($DB.Name)"
+
+            # Unique ID for the xExchMailboxDatabaseCopy resource
+            $copyResourceId = "MDBCopy_$($DB.Name)"
 
             # Need to wait for a primary copy to be created before we add a copy
             xExchWaitForMailboxDatabase $waitResourceId

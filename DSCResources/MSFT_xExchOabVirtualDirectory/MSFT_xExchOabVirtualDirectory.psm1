@@ -70,7 +70,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OabVirtualDirectory', 'Set-OabVirtualDirectory', 'Get-OfflineAddressBook', 'Set-OfflineAddressBook' -Verbose:$VerbosePreference
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
@@ -199,7 +199,7 @@ function Set-TargetResource
     }
     else
     {
-        # Need to establish a remote Powershell session since it wasn't done in Get-TargetResource above
+        # Need to establish a remote PowerShell session since it wasn't done in Get-TargetResource above
         Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-OabVirtualDirectory'
     }
 

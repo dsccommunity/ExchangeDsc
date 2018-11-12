@@ -77,7 +77,7 @@ function Get-TargetResource
     # Load TransportMaintenanceMode Helper
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)"))\TransportMaintenance.psm1" -Verbose:0
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-*' -Verbose:$VerbosePreference
 
     $maintenanceModeStatus = GetMaintenanceModeStatus -EnteringMaintenanceMode $Enabled -DomainController $DomainController
@@ -217,7 +217,7 @@ function Set-TargetResource
         return
     }
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*' -Verbose:$VerbosePreference
 
     # If the request is to put the server in maintenance mode, make sure we aren't already at the (optional) requested Exchange Server version
@@ -478,7 +478,7 @@ function Test-TargetResource
         return $true
     }
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-*' -Verbose:$VerbosePreference
 
     $serverVersion = Get-ExchangeVersionYear
@@ -1030,8 +1030,10 @@ function WaitForUMToDrain
     return $umDrained
 }
 
-# Checks whether a Component is at the specified State, if not, changes the component to the state.
-# Returns whether a change was made to the component state
+<#
+    Checks whether a Component is at the specified State, if not, changes the component to the state.
+    Returns whether a change was made to the component state
+#>
 function ChangeComponentState
 {
     [CmdletBinding()]
@@ -1102,7 +1104,7 @@ function ChangeComponentState
     return $madeChange
 }
 
-# Finds any databases which have an Activation Preference of 1 for this server, which are not currently hosted on this server, and moves them back
+# Finds all databases which have an Activation Preference of 1 for this server, which are not currently hosted on this server, and moves them back
 function MovePrimaryDatabasesBack
 {
     [CmdletBinding()]

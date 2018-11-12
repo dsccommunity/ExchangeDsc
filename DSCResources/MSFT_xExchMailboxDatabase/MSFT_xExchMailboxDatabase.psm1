@@ -134,7 +134,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase', 'Set-AdServerSettings' -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
@@ -320,7 +320,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential `
                              -CommandsToLoad '*MailboxDatabase', 'Move-DatabasePath', 'Mount-Database', 'Set-AdServerSettings'`
                              -Verbose:$VerbosePreference
@@ -556,7 +556,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential `
                              -CommandsToLoad 'Get-MailboxDatabase', 'Get-Mailbox', 'Set-AdServerSettings'`
                              -Verbose:$VerbosePreference

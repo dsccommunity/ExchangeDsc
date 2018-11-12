@@ -29,7 +29,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'MailboxServer' = $MailboxServer;'DAGName' = $DAGName} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
     # Setup params
@@ -92,7 +92,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'MailboxServer' = $MailboxServer;'DAGName' = $DAGName} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Add-DatabaseAvailabilityGroupServer' -Verbose:$VerbosePreference
 
     # Setup params
@@ -149,7 +149,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'MailboxServer' = $MailboxServer;'DAGName' = $DAGName} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
     # Setup params

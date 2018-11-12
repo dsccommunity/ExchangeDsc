@@ -584,7 +584,7 @@ function GetDiskToDBMap
 # Looks for a volume where an Exchange Volume or Database mount point can be added.
 # If ExistingDB is not specified, looks for a spare volume that has no mount points yet.
 # If ExistingDB is specified, finds the volume number where that DB exists, only if there is room to
-# create the requested database mount points.
+# Create the requested database mount points.
 function GetExchangeVolume
 {
     param
@@ -1053,7 +1053,7 @@ function PrepareVolume
 
         StartDiskpart -Commands "select disk $($DiskNumber)", "create partition primary", "$($formatString)", "assign mount=`"$($Folder)`"" -Verbose:$VerbosePreference | Out-Null
     }
-    else # if ($FileSystem -eq "REFS")
+    else # If ($FileSystem -eq "REFS")
     {
         StartDiskpart -Commands "select disk $($DiskNumber)", "create partition primary" -Verbose:$VerbosePreference | Out-Null
 

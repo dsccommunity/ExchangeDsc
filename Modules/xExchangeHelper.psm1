@@ -16,7 +16,7 @@ function Get-ExistingRemoteExchangeSession
     {
         if ($session.State -eq 'Opened')
         {
-            Write-Verbose -Message 'Reusing existing Remote Powershell Session to Exchange'
+            Write-Verbose -Message 'Reusing existing Remote PowerShell Session to Exchange'
         }
         else # Session is in an unexpected state. Remove it so we can rebuild it
         {
@@ -82,7 +82,7 @@ function Get-RemoteExchangeSession
     # If the session is still null here, things went wrong. Throw exception
     if ($null -eq $session)
     {
-        throw 'Failed to establish remote Powershell session to local server.'
+        throw 'Failed to establish remote PowerShell session to local server.'
     }
     else # Import the session globally
     {
@@ -116,7 +116,7 @@ function New-RemoteExchangeSession
         throw 'A supported version of Exchange is either not present, or not fully installed on this machine.'
     }
 
-    Write-Verbose -Message 'Creating new Remote Powershell session to Exchange'
+    Write-Verbose -Message 'Creating new Remote PowerShell session to Exchange'
 
     # Get local server FQDN
     $machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()

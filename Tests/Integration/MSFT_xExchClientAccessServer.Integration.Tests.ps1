@@ -97,7 +97,7 @@ if ($exchangeInstalled)
                                 -ContextLabel 'Verify AutoDiscoverSiteScope' `
                                 -ItLabel 'AutoDiscoverSiteScope should be empty'
 
-        # create AlternateServiceAccount credentials
+        # Create AlternateServiceAccount credentials
         if ($null -eq $asaCredentials)
         {
             $UserASA = 'Fabrikam\ASA'
