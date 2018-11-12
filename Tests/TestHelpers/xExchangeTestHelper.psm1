@@ -3,7 +3,7 @@
         Function to be used within pester for end to end testing of
         Get/Set/Test-TargetResource. Function first calls Set-TargetResource
         with provided parameters, then runs Get and Test-TargetResource, and
-        ensures they match $ExpectedGetResults and $ExpectedTestResult
+        ensures they match $ExpectedGetResults and $ExpectedTestResult.
 
     .PARAMETER Params
         The Parameters to pass when calling Get/Set/Test-TargetResource.

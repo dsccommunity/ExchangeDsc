@@ -61,7 +61,7 @@ try
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }
 
-            Context 'When Get-TargetResource is called and a null ADRootDSE is returned from Get-ADRootDSEInternal' {
+            Context 'When a null ADRootDSE is returned from Get-ADRootDSEInternal' {
                 It 'Should throw an exception' {
                     Mock -CommandName Get-ADRootDSE -Verifiable
 
@@ -81,7 +81,7 @@ try
 
             Mock -CommandName Write-FunctionEntry -Verifiable
 
-            Context 'When Set-TargetResource is called and Wait-ForTrueTestTargetResource returns true' {
+            Context 'When Wait-ForTrueTestTargetResource returns true' {
                 It 'Should not throw' {
                     Mock -CommandName Wait-ForTrueTestTargetResource -MockWith { return $true }
 
@@ -89,7 +89,7 @@ try
                 }
             }
 
-            Context 'When Set-TargetResource is called and Wait-ForTrueTestTargetResource returns false' {
+            Context 'When Wait-ForTrueTestTargetResource returns false' {
                 It 'Should throw' {
                     Mock -CommandName Wait-ForTrueTestTargetResource -MockWith { return $false }
 
@@ -113,7 +113,7 @@ try
                 }
             }
 
-            Context 'When Test-TargetResource is called and SchemaVersion is less than the desired version' {
+            Context 'When SchemaVersion is less than the desired version' {
                 It 'Should return false' {
                     Mock -CommandName Get-TargetResource -Verifiable -MockWith {
                         return @{
@@ -125,7 +125,7 @@ try
                 }
             }
 
-            Context 'When Test-TargetResource is called and SchemaVersion is greater than or equal to the desired version' {
+            Context 'When SchemaVersion is greater than or equal to the desired version' {
                 It 'Should return true' {
                     Mock -CommandName Get-TargetResource -Verifiable -MockWith {
                         return @{
@@ -138,7 +138,7 @@ try
                 }
             }
 
-            Context 'When Test-TargetResource is called and OrganizationVersion is less than the desired version' {
+            Context 'When OrganizationVersion is less than the desired version' {
                 It 'Should return false' {
                     Mock -CommandName Get-TargetResource -Verifiable -MockWith {
                         return @{
@@ -150,7 +150,7 @@ try
                 }
             }
 
-            Context 'When Test-TargetResource is called and OrganizationVersion is greater than or equal to the desired version' {
+            Context 'When OrganizationVersion is greater than or equal to the desired version' {
                 It 'Should return true' {
                     Mock -CommandName Get-TargetResource -Verifiable -MockWith {
                         return @{
@@ -163,7 +163,7 @@ try
                 }
             }
 
-            Context 'When Test-TargetResource is called and DomainVersion is less than the desired version' {
+            Context 'When DomainVersion is less than the desired version' {
                 It 'Should return false' {
                     Mock -CommandName Get-TargetResource -Verifiable -MockWith {
                         return @{
@@ -178,7 +178,7 @@ try
                 }
             }
 
-            Context 'When Test-TargetResource is called and DomainVersion is greater than or equal to the desired version' {
+            Context 'When DomainVersion is greater than or equal to the desired version' {
                 It 'Should return true' {
                     Mock -CommandName Get-TargetResource -Verifiable -MockWith {
                         return @{
@@ -226,7 +226,7 @@ try
             $testProps = @('Prop1', 'Prop2')
             $testCreds = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
 
-            Context 'When Get-ADObjectInternal is called with Searching -eq False and Get-ADObject returns a valid object' {
+            Context 'When Searching -eq False and Get-ADObject returns a valid object' {
                 It 'Should return the object' {
                     Mock -CommandName Get-ADObject -Verifiable -MockWith { return 'SomeObject' }
 
@@ -234,7 +234,7 @@ try
                 }
             }
 
-            Context 'When Get-ADObjectInternal is called with Searching -eq True and Get-ADObject returns a valid object' {
+            Context 'When Searching -eq True and Get-ADObject returns a valid object' {
                 It 'Should return the object' {
                     Mock -CommandName Get-ADObject -Verifiable -MockWith { return 'SomeObject' }
 
@@ -257,7 +257,7 @@ try
                 Assert-VerifiableMock
             }
 
-            Context 'When Get-SchemaVersion is called and Get-ADObjectInternal returns a valid schema object' {
+            Context 'When Get-ADObjectInternal returns a valid schema object' {
                 It 'Should return an Int value' {
                     $rangeUpper = 1024
 
@@ -271,7 +271,7 @@ try
                 }
             }
 
-            Context 'When Get-SchemaVersion is called and Get-ADObjectInternal returns null' {
+            Context 'When Get-ADObjectInternal returns null' {
                 It 'Should return null' {
                     Mock -CommandName Get-ADObjectInternal -Verifiable
                     Mock -CommandName Write-Warning -Verifiable
@@ -286,7 +286,7 @@ try
                 Assert-VerifiableMock
             }
 
-            Context 'When Get-OrganizationVersion is called and both Get-ADObjectInternal calls return valid objects' {
+            Context 'When both Get-ADObjectInternal calls return valid objects' {
                 It 'Should return an Int value' {
                     $rangeUpper = 1024
                     $objectVersion = 1025
@@ -307,7 +307,7 @@ try
                 }
             }
 
-            Context 'When Get-OrganizationVersion is called and the first Get-ADObjectInternal call returns null' {
+            Context 'When the first Get-ADObjectInternal call returns null' {
                 It 'Should return null' {
                     Mock -CommandName Get-ADObjectInternal -Verifiable
                     Mock -CommandName Write-Warning -Verifiable
@@ -348,7 +348,7 @@ try
             Mock -CommandName Get-EachExchangeDomainFQDN -Verifiable -MockWith { return $domainVersions.Keys }
             Mock -CommandName Get-DomainDNFromFQDN -Verifiable
 
-            Context 'When Get-DomainsVersion is called and domain information is successfully retrieved' {
+            Context 'When domain information is successfully retrieved' {
                 It 'Should return a Hashtable of domain versions' {
                     Mock -CommandName Get-ADObjectInternal -Verifiable -MockWith {
                         return @{
@@ -368,7 +368,7 @@ try
                 }
             }
 
-            Context 'When Get-DomainsVersion is called and domain information cannot be retrieved' {
+            Context 'When domain information cannot be retrieved' {
                 It 'Should return a Hashtable of domains with null values' {
                     Mock -CommandName Get-ADObjectInternal -Verifiable
                     Mock -CommandName Write-Warning -Verifiable
@@ -399,7 +399,7 @@ try
                 }
             }
 
-            Context 'When Get-EachExchangeDomainFQDN is called with no ExchangeDomains specified' {
+            Context 'When no ExchangeDomains are specified' {
                 It 'Should return just the Exchange Server domain' {
                     $exchangeDomainFqdns = Get-EachExchangeDomainFQDN
 
@@ -408,7 +408,7 @@ try
                 }
             }
 
-            Context 'When Get-EachExchangeDomainFQDN is called with ExchangeDomains specified' {
+            Context 'When ExchangeDomains are specified' {
                 It 'Should return the Exchange Server domain plus any Exchange Domains' {
                     $exchangeDomains = @(
                         'domain2.local'
@@ -434,7 +434,7 @@ try
                 Assert-VerifiableMock
             }
 
-            Context 'When Wait-ForTrueTestTargetResource is called and Test-TargetResource returns true' {
+            Context 'When Test-TargetResource returns true' {
                 It 'Should return true' {
                     Mock -CommandName Test-TargetResource -Verifiable -MockWith { return $true }
                     Mock -CommandName Start-Sleep
@@ -445,7 +445,7 @@ try
                 }
             }
 
-            Context 'When Wait-ForTrueTestTargetResource is called and Test-TargetResource returns false' {
+            Context 'When Test-TargetResource returns false' {
                 It 'Should return false' {
                     Mock -CommandName Test-TargetResource -Verifiable -MockWith { return $false }
                     Mock -CommandName Start-Sleep -Verifiable

@@ -64,7 +64,7 @@ try
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }
 
-            Context 'When Get-TargetResource is called and IsExchangeTrialEdition is set to true' {
+            Context 'When IsExchangeTrialEdition is set to true' {
                 It 'Should return an empty ProductKey' {
                     $defaultValue = $getGetExchangeServerStandardOutput.IsExchangeTrialEdition
                     $getGetExchangeServerStandardOutput.IsExchangeTrialEdition = $true

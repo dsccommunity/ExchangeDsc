@@ -63,7 +63,7 @@ try
                 Assert-VerifiableMock
             }
 
-            Context 'When Set-TargetResource is called, ShouldStartInstall is true, and Set-WSManConfigStatus requires a reboot' {
+            Context 'When ShouldStartInstall is true, and Set-WSManConfigStatus requires a reboot' {
                 It 'Should force a reboot' {
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
                         return @{
@@ -77,7 +77,7 @@ try
                 }
             }
 
-            Context 'When Set-TargetResource is called, ShouldStartInstall is true, and Set-WSManConfigStatus does not require a reboot' {
+            Context 'When ShouldStartInstall is true, and Set-WSManConfigStatus does not require a reboot' {
                 It 'Should start the install, wait for it to complete, then detect setup is successful' {
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
                         return @{
@@ -94,7 +94,7 @@ try
                 }
             }
 
-            Context 'When Set-TargetResource is called and tries to start install, but does not detect the setup process' {
+            Context 'When it tries to start install, but does not detect the setup process' {
                 It 'Should throw an exception' {
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
                         return @{
@@ -109,7 +109,7 @@ try
                 }
             }
 
-            Context 'When Set-TargetResource is called and setup is already running' {
+            Context 'When setup is already running' {
                 It 'Should wait for the install, then detect setup is successful' {
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
                         return @{
@@ -124,7 +124,7 @@ try
                 }
             }
 
-            Context 'When Set-TargetResource is called and setup is complete' {
+            Context 'When setup is complete' {
                 It 'Should do nothing' {
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
                         return @{

@@ -2496,7 +2496,7 @@ function Get-StringFromHashtable
         $Separator = ';'
     )
 
-    [System.Text.StringBuilder] $stringBuilder = New-Object -TypeName System.Text.StringBuilder
+    $stringBuilder = New-Object -TypeName System.Text.StringBuilder
 
     foreach ($key in ($Hashtable.Keys | Sort-Object))
     {

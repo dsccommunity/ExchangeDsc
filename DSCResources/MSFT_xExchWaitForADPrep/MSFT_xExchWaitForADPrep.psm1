@@ -80,7 +80,7 @@ function Get-TargetResource
     Write-FunctionEntry -Verbose:$VerbosePreference
 
     $adRootDSE = Get-ADRootDSEInternal -Credential $Credential
-    
+
     if ($null -eq $adRootDSE)
     {
         throw 'Unable to retrieve ADRootDSE'

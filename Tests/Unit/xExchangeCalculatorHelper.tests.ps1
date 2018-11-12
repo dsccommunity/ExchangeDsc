@@ -42,7 +42,7 @@ try
                 }
             )
 
-            Context 'When Get-DBMapFromServersCsv is called, a valid Servers.csv is discovered, and data for the server is found' {
+            Context 'When a valid Servers.csv is discovered, and data for the server is found' {
                 It 'Should return a valid DiskToDBMap array' -TestCases $differentVersionValidCsvPaths {
                     param
                     (
@@ -58,7 +58,7 @@ try
                 }
             }
 
-            Context 'When Get-DBMapFromServersCsv is called and the specified Servers.csv does not exist' {
+            Context 'When the specified Servers.csv does not exist' {
                 It 'Should throw an exception' {
                     Mock -CommandName Test-Path -Verifiable -MockWith { return $false }
 
@@ -67,7 +67,7 @@ try
                 }
             }
 
-            Context 'When Get-DBMapFromServersCsv is called and the server cannot be found in the CSV file' {
+            Context 'When the server cannot be found in the CSV file' {
                 It 'Should throw an exception' {
                     Mock -CommandName Test-Path -Verifiable -MockWith { return $true }
                     Mock -CommandName Import-Csv -Verifiable
@@ -77,7 +77,7 @@ try
                 }
             }
 
-            Context 'When Get-DBMapFromServersCsv is called and the server cannot be found in the CSV file' {
+            Context 'When the server cannot be found in the CSV file' {
                 It 'Should throw an exception' {
                     Mock -CommandName Test-Path -Verifiable -MockWith { return $true }
                     Mock -CommandName Import-Csv -Verifiable -MockWith {
@@ -92,7 +92,7 @@ try
                 }
             }
 
-            Context 'When Get-DBMapFromServersCsv is called and the server cannot be found in the CSV file' {
+            Context 'When the server cannot be found in the CSV file' {
                 It 'Should throw an exception' {
                     Mock -CommandName Test-Path -Verifiable -MockWith { return $true }
                     Mock -CommandName Import-Csv -Verifiable -MockWith {
@@ -128,7 +128,7 @@ try
                 }
             )
 
-            Context 'When Get-DBListFromMailboxDatabasesCsv is called, a valid MailboxDatabases.csv is discovered, and data for the server is found' {
+            Context 'When a valid MailboxDatabases.csv is discovered, and data for the server is found' {
                 It 'Should return a valid database list' -TestCases $differentVersionValidCsvPaths {
                     param
                     (
@@ -152,7 +152,7 @@ try
                 }
             }
 
-            Context 'When Get-DBListFromMailboxDatabasesCsv is called and the specified MailboxDatabases.csv does not exist' {
+            Context 'When the specified MailboxDatabases.csv does not exist' {
                 It 'Should throw an exception' {
                     Mock -CommandName Test-Path -Verifiable -MockWith { return $false }
 
@@ -161,7 +161,7 @@ try
                 }
             }
 
-            Context 'When Get-DBListFromMailboxDatabasesCsv is called and the specified MailboxDatabases.csv does not have a DBFilePath or EDBFilePath column' {
+            Context 'When the specified MailboxDatabases.csv does not have a DBFilePath or EDBFilePath column' {
                 It 'Should throw an exception' {
                     Mock -CommandName Test-Path -Verifiable -MockWith { return $true }
                     Mock -CommandName Update-StringContent -Verifiable -MockWith { return $StringIn }
@@ -186,7 +186,7 @@ try
                 }
             )
 
-            Context 'When Get-DBListFromMailboxDatabaseCopiesCsv is called, a valid MailboxDatabaseCopies.csv is discovered, and data for the server is found' {
+            Context 'When a valid MailboxDatabaseCopies.csv is discovered, and data for the server is found' {
                 It 'Should return a valid database copy list' -TestCases $differentVersionValidCsvPaths {
                     param
                     (
@@ -210,7 +210,7 @@ try
                 }
             }
 
-            Context 'When Get-DBListFromMailboxDatabaseCopiesCsv is called and the specified MailboxDatabaseCopies.csv does not exist' {
+            Context 'When the specified MailboxDatabaseCopies.csv does not exist' {
                 It 'Should throw an exception' {
                     Mock -CommandName Test-Path -Verifiable -MockWith { return $false }
 
@@ -231,7 +231,7 @@ try
                 @{StringIn = 'a b c'}
             )
 
-            Context 'When Update-StringContent is called and Replacements is either not specified or is empty' {
+            Context 'When Replacements is either not specified or is empty' {
                 It 'Should return the same string that was input' -TestCases $noModificationStrings {
                     param
                     (
@@ -262,7 +262,7 @@ try
                 }
             )
 
-            Context 'When Update-StringContent is called with replacements' {
+            Context 'When Replacements is specified' {
                 It 'Should return the string with the requested replacements' -TestCases $replacementCases {
                     param
                     (

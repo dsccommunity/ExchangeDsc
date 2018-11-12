@@ -72,7 +72,7 @@ try
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }
 
-            Context 'When Get-TargetResource is called and AutoDiscoverSiteScope is not null' {
+            Context 'When AutoDiscoverSiteScope is not null' {
                 It 'Should try to convert AutoDiscoverSiteScope to an array' {
                     $siteScopeOut = @('Site1','Site2')
 

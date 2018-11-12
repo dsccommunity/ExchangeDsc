@@ -106,13 +106,13 @@ try
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
             Mock -CommandName GetMailboxServer -Verifiable -MockWith { return $getMailboxServerStandardOutput }
 
-            Context 'When Get-TargetResource is called against Exchange 2016 or 2019' {
+            Context 'When Exchange version is 2016 or 2019' {
                 Mock -CommandName Get-ExchangeVersionYear -Verifiable -MockWith { return '2016' }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }
 
-            Context 'When Get-TargetResource is called against Exchange 2013' {
+            Context 'When Exchange version is 2013' {
                 Mock -CommandName Get-ExchangeVersionYear -Verifiable -MockWith { return '2013' }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
