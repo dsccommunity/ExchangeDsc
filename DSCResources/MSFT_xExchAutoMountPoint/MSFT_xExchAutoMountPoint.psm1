@@ -510,12 +510,12 @@ function CreateMissingExDatabases
 
                         if ((Test-Path -LiteralPath "$($dbFolder)") -eq $false)
                         {
-                            mkdir -Path "$($dbFolder)"
+                            New-Item -ItemType Directory -Path "$($dbFolder)"
                         }
 
                         if ((Test-Path -LiteralPath "$($logFolder)") -eq $false)
                         {
-                            mkdir -Path "$($logFolder)"
+                            New-Item -ItemType Directory -Path "$($logFolder)"
                         }
                     }
                 }
@@ -1043,7 +1043,7 @@ function PrepareVolume
     # Create the directory if it doesn't exist
     if ((Test-Path $Folder) -eq $False)
     {
-        mkdir -Path "$($Folder)" | Out-Null
+        New-Item -ItemType Directory -Path "$($Folder)" | Out-Null
     }
 
     # Create the partition and format the drive
@@ -1093,7 +1093,7 @@ function AddMountPoint
     # Create the directory if it doesn't exist
     if ((Test-Path $Folder) -eq $False)
     {
-        mkdir -Path "$($Folder)" | Out-Null
+        New-Item -ItemType Directory -Path "$($Folder)" | Out-Null
     }
 
     StartDiskpart -Commands "select volume $($VolumeNumber)", "assign mount=`"$($Folder)`"" -Verbose:$VerbosePreference | Out-Null

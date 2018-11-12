@@ -162,7 +162,7 @@ function Set-TargetResource
         {
             if ((Test-Path -LiteralPath "$($OutputSaveLocation)") -eq $false)
             {
-                mkdir -Path "$($OutputSaveLocation)"
+                New-Item -ItemType Directory -Path "$($OutputSaveLocation)"
             }
 
             $outputFiles = Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object -FilterScript {
