@@ -66,7 +66,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-EcpVirtualDirectory' -Verbose:$VerbosePreference
 
     $EcpVdir = GetEcpVirtualDirectory @PSBoundParameters
@@ -157,13 +157,13 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-EcpVirtualDirectory' -Verbose:$VerbosePreference
 
-    #Ensure an empty string is $null and not a string
+    # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    #Remove Credential and AllowServiceRestart because those parameters do not exist on Set-OwaVirtualDirectory
+    # Remove Credential and AllowServiceRestart because those parameters do not exist on Set-OwaVirtualDirectory
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
 
     Set-EcpVirtualDirectory @PSBoundParameters
@@ -248,10 +248,10 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-EcpVirtualDirectory' -Verbose:$VerbosePreference
 
-    #Ensure an empty string is $null and not a string
+    # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     $EcpVdir = GetEcpVirtualDirectory @PSBoundParameters

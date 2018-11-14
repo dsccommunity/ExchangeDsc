@@ -15,7 +15,7 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
-#Check if Exchange is installed on this machine. If not, we can't run tests
+# Check if Exchange is installed on this machine. If not, we can't run tests
 [System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
@@ -83,7 +83,7 @@ function Set-ThenAssertOutOfMaintenanceMode
 
     Write-Verbose -Message 'Ensuring server is out of maintenance mode'
 
-    #Take server out of maintenance mode
+    # Take server out of maintenance mode
     $testParams = @{
         Enabled                                       = $false
         Credential                                    = $shellCredentials
@@ -311,10 +311,10 @@ if ($null -eq (Get-Module -ListAvailable ActiveDirectory -ErrorAction SilentlyCo
 
 if ($exchangeInstalled)
 {
-    #Get required credentials to use for the test
+    # Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
-    #Make sure server is a DAG member
+    # Make sure server is a DAG member
     if ($null -eq $isDagMember)
     {
         Get-RemoteExchangeSession -Credential $shellCredentials `
@@ -342,7 +342,7 @@ if ($exchangeInstalled)
         return
     }
 
-    #Get Domain Controller
+    # Get Domain Controller
     [System.Object[]] $foundDCs = Get-ADDomainController
 
     if ($foundDCs.Count -gt 0)
@@ -372,21 +372,21 @@ if ($exchangeInstalled)
     }
 
     Describe 'Test Putting a Server in and out of Maintenance Mode' {
-        #Put server in maintenance mode
+        # Put server in maintenance mode
         $testParams = @{
             Enabled                        = $true
             Credential                     = $shellCredentials
             AdditionalComponentsToActivate = Get-VersionSpecificComponentsToActivate
-            MountDialOverride              = 'BestEffort' #Copy queue can get behind when rapidly failing over DB's for tests, so set this to BestEffort
+            MountDialOverride              = 'BestEffort' # Copy queue can get behind when rapidly failing over DB's for tests, so set this to BestEffort
             MovePreferredDatabasesBack     = $true
-            SkipClientExperienceChecks     = $true #Content Index takes a while to become healthy after failing over. Override for tests.
-            SkipLagChecks                  = $true #Copy queue can get behind when rapidly failing over DB's for tests, so skip LAG checks just in case
-            SkipMoveSuppressionChecks      = $true #Exchange 2016 only allows a DB to be failed over 4 times in an hour. Override for tests.
+            SkipClientExperienceChecks     = $true # Content Index takes a while to become healthy after failing over. Override for tests.
+            SkipLagChecks                  = $true # Copy queue can get behind when rapidly failing over DB's for tests, so skip LAG checks just in case
+            SkipMoveSuppressionChecks      = $true # Exchange 2016 only allows a DB to be failed over 4 times in an hour. Override for tests.
         }
 
         $expectedGetResults = @{
             Enabled              = $true
-            ActiveComponentCount = 2 #Monitoring and RecoveryActionsEnabled should still be Active after this
+            ActiveComponentCount = 2 # Monitoring and RecoveryActionsEnabled should still be Active after this
             ActiveDBCount        = 0
             ActiveUMCallCount    = 0
             ClusterState         = 'Paused'
@@ -398,7 +398,7 @@ if ($exchangeInstalled)
                                          -ExpectedGetResults $expectedGetResults
         Wait-Verbose -Verbose
 
-        #Take server out of maintenance mode
+        # Take server out of maintenance mode
         $testParams.Enabled = $false
 
         $expectedGetResults = @{
@@ -412,7 +412,7 @@ if ($exchangeInstalled)
         Test-ServerIsOutOfMaintenanceMode
         Wait-Verbose -Verbose
 
-        #Test passing in UpgradedServerVersion that is lower than the current server version
+        # Test passing in UpgradedServerVersion that is lower than the current server version
         $testParams = @{
             Enabled                    = $true
             Credential                 = $shellCredentials
@@ -434,7 +434,7 @@ if ($exchangeInstalled)
                                          -ExpectedGetResults $expectedGetResults
         Wait-Verbose -Verbose
 
-        #Test using Domain Controller switch to put server in maintenance mode
+        # Test using Domain Controller switch to put server in maintenance mode
         $testParams = @{
             Enabled                    = $true
             Credential                 = $shellCredentials
@@ -448,7 +448,7 @@ if ($exchangeInstalled)
 
         $expectedGetResults = @{
             Enabled              = $true
-            ActiveComponentCount = 2 #Monitoring and RecoveryActionsEnabled should still be Active after this
+            ActiveComponentCount = 2 # Monitoring and RecoveryActionsEnabled should still be Active after this
             ActiveDBCount        = 0
             ActiveUMCallCount    = 0
             ClusterState         = 'Paused'
@@ -460,7 +460,7 @@ if ($exchangeInstalled)
                                          -ExpectedGetResults $expectedGetResults
         Wait-Verbose -Verbose
 
-        #Test using Domain Controller switch to take server out of maintenance mode
+        # Test using Domain Controller switch to take server out of maintenance mode
         $testParams.Enabled = $false
 
         $expectedGetResults = @{
@@ -474,8 +474,8 @@ if ($exchangeInstalled)
         Test-ServerIsOutOfMaintenanceMode
         Wait-Verbose -Verbose
 
-        #Test SetInactiveComponentsFromAnyRequesterToActive Parameter
-        #First put the server in maintenance mode
+        # Test SetInactiveComponentsFromAnyRequesterToActive Parameter
+        # First put the server in maintenance mode
         $testParams = @{
             Enabled                                       = $true
             Credential                                    = $shellCredentials
@@ -497,10 +497,10 @@ if ($exchangeInstalled)
 
         if ($testResults -eq $true)
         {
-            #Manually set a component to Inactive as the HealthApi
+            # Manually set a component to Inactive as the HealthApi
             Set-ServerComponentState -Identity $env:COMPUTERNAME -Component 'ImapProxy' -State 'Inactive' -Requester 'HealthApi'
 
-            #Do a failed attempt to take server out of maintenance mode
+            # Do a failed attempt to take server out of maintenance mode
             $testParams.Enabled = $false
 
             Set-TargetResource @testParams -Verbose
@@ -510,7 +510,7 @@ if ($exchangeInstalled)
                 $testResults | Should Be $false
             }
 
-            #Now set SetInactiveComponentsFromAnyRequesterToActive to true and try again. This should succeed
+            # Now set SetInactiveComponentsFromAnyRequesterToActive to true and try again. This should succeed
             $testParams.SetInactiveComponentsFromAnyRequesterToActive = $true
 
             Set-TargetResource @testParams -Verbose

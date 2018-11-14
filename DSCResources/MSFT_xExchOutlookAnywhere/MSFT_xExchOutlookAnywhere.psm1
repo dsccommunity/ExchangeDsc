@@ -72,7 +72,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OutlookAnywhere' -Verbose:$VerbosePreference
 
     $RpcVdir = GetOutlookAnywhere @PSBoundParameters
@@ -170,10 +170,10 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-OutlookAnywhere' -Verbose:$VerbosePreference
 
-    #Ensure an empty string is $null and not a string
+    # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
@@ -267,10 +267,10 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OutlookAnywhere' -Verbose:$VerbosePreference
 
-    #Ensure an empty string is $null and not a string
+    # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     $RpcVdir = GetOutlookAnywhere @PSBoundParameters
@@ -310,7 +310,7 @@ function Test-TargetResource
             $testResults = $false
         }
 
-        #ExternalClientsRequireSsl will only actually return as $true if ExternalHostname was also set
+        # ExternalClientsRequireSsl will only actually return as $true if ExternalHostname was also set
         if (![System.String]::IsNullOrEmpty($ExternalHostname) -and !(Test-ExchangeSetting -Name 'ExternalClientsRequireSsl' -Type 'Boolean' -ExpectedValue $ExternalClientsRequireSsl -ActualValue $RpcVdir.ExternalClientsRequireSsl -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
@@ -342,7 +342,7 @@ function Test-TargetResource
         }
     }
 
-    #If the code made it this far all properties are in a desired state
+    # If the code made it this far all properties are in a desired state
     return $testResults
 }
 

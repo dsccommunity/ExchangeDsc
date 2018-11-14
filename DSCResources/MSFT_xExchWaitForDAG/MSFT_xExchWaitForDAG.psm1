@@ -59,7 +59,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
     $dag = Get-DatabaseAvailabilityGroupInternal @PSBoundParameters
@@ -134,7 +134,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
     $foundDAG = Wait-ForDatabaseAvailabilityGroup @PSBoundParameters
@@ -207,7 +207,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    # Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
     $dag = Get-DatabaseAvailabilityGroupInternal @PSBoundParameters

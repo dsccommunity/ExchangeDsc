@@ -9,7 +9,7 @@ $ConfigurationData = @{
             NodeName                    = '*'
         },
 
-        #Individual target nodes are defined next
+        # Individual target nodes are defined next
         @{
             NodeName = 'e15-1'
         }
@@ -63,8 +63,8 @@ Configuration Example
             Credential               = $ExchangeAdminCredential
             ExternalUrl              = 'https://mail.contoso.local/mapi'
             InternalUrl              = 'https://mail.contoso.local/mapi'
-            IISAuthenticationMethods = 'NTLM', 'Negotiate'  #IISAuthenticationMethods is a required parameter for Set-MapiVirtualDirectory
-            AllowServiceRestart      = $true               #Since we are changing the default auth method, we allow the app pool to be restarted right away so the change goes into effect immediately
+            IISAuthenticationMethods = 'NTLM', 'Negotiate'  # IISAuthenticationMethods is a required parameter for Set-MapiVirtualDirectory
+            AllowServiceRestart      = $true               # Since we are changing the default auth method, we allow the app pool to be restarted right away so the change goes into effect immediately
         }
 
         xExchOabVirtualDirectory OABVdir
@@ -80,12 +80,12 @@ Configuration Example
             Identity                           = "$($Node.NodeName)\Rpc (Default Web Site)"
             Credential                         = $ExchangeAdminCredential
             ExternalHostName                   = 'mail.contoso.local'
-            ExternalClientAuthenticationMethod = 'Ntlm' #ExternalClientAuthenticationMethod is a required parameter for Set-OutlookAnywhere if ExternalHostName is specified
-            ExternalClientsRequireSsl          = $true  #ExternalClientsRequireSsl is a required parameter for Set-OutlookAnywhere if ExternalHostName is specified
+            ExternalClientAuthenticationMethod = 'Ntlm' # ExternalClientAuthenticationMethod is a required parameter for Set-OutlookAnywhere if ExternalHostName is specified
+            ExternalClientsRequireSsl          = $true  # ExternalClientsRequireSsl is a required parameter for Set-OutlookAnywhere if ExternalHostName is specified
             InternalHostName                   = 'mail.contoso.local'
-            InternalClientAuthenticationMethod = 'Ntlm' #ExternalClientAuthenticationMethod is a required parameter for Set-OutlookAnywhere if InternalHostName is specified
-            InternalClientsRequireSSL          = $true  #ExternalClientsRequireSsl is a required parameter for Set-OutlookAnywhere if InternalHostName is specified
-            AllowServiceRestart                = $true  #Since we are changing the default auth method, we allow the app pool to be restarted right away so the change goes into effect immediately
+            InternalClientAuthenticationMethod = 'Ntlm' # ExternalClientAuthenticationMethod is a required parameter for Set-OutlookAnywhere if InternalHostName is specified
+            InternalClientsRequireSSL          = $true  # ExternalClientsRequireSsl is a required parameter for Set-OutlookAnywhere if InternalHostName is specified
+            AllowServiceRestart                = $true  # Since we are changing the default auth method, we allow the app pool to be restarted right away so the change goes into effect immediately
         }
 
         xExchOwaVirtualDirectory OWAVdir

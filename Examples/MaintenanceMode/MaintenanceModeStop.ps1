@@ -15,14 +15,14 @@ $ConfigurationData = @{
                 CertificateFile = 'C:\public-certificate.cer'
             #>
 
-            #Thumbprint of the certificate being used for decrypting credentials
+            # Thumbprint of the certificate being used for decrypting credentials
             Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673'
 
             Site1DC         = 'dc-1'
             Site2DC         = 'dc-2'
         }
 
-        #Individual target nodes are defined next
+        # Individual target nodes are defined next
         @{
             NodeName = 'e15-1'
             NodeFqdn = 'e15-1.contoso.local'

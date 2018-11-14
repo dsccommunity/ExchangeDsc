@@ -212,7 +212,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxServer' -Verbose:$VerbosePreference
 
     $server = GetMailboxServer @PSBoundParameters
@@ -505,13 +505,13 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-MailboxServer' -Verbose:$VerbosePreference
 
-    #Setup params for next command
+    # Setup params for next command
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential'
 
-    #create array of Exchange 2013 only parameters
+    # Create array of Exchange 2013 only parameters
     [array]$Exchange2013Only = 'CalendarRepairWorkCycle', 'CalendarRepairWorkCycleCheckpoint', 'MailboxProcessorWorkCycle', 'ManagedFolderAssistantSchedule', 'ManagedFolderWorkCycle',
     'ManagedFolderWorkCycleCheckpoint', 'OABGeneratorWorkCycle', 'OABGeneratorWorkCycleCheckpoint', 'PublicFolderWorkCycle', 'PublicFolderWorkCycleCheckpoint', 'SharingPolicyWorkCycle',
     'SharingPolicyWorkCycleCheckpoint', 'SharingSyncWorkCycle', 'SharingSyncWorkCycleCheckpoint', 'SiteMailboxWorkCycle', 'SiteMailboxWorkCycleCheckpoint', 'TopNWorkCycle', 'TopNWorkCycleCheckpoint',
@@ -533,7 +533,7 @@ function Set-TargetResource
         }
     }
 
-    #Ensure an empty string is $null and not a string
+    # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     Set-MailboxServer @PSBoundParameters
@@ -754,7 +754,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxServer', 'Set-MailboxServer' -Verbose:$VerbosePreference
 
     #create array of Exchange 2013 only parameters
@@ -783,13 +783,14 @@ function Test-TargetResource
 
     $testResults = $true
 
-    if ($null -eq $server) #Couldn't find the server, which is bad
+    if ($null -eq $server)
     {
+        # Couldn't find the server, which is bad
         Write-Error -Message 'Unable to retrieve Mailbox Server settings for server'
 
         $testResults = $false
     }
-    else #Validate server params
+    else # Validate server params
     {
         if (!(Test-ExchangeSetting -Name 'AutoDatabaseMountDial' -Type 'String' -ExpectedValue $AutoDatabaseMountDial -ActualValue $server.AutoDatabaseMountDial -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
@@ -1030,7 +1031,7 @@ function Test-TargetResource
     return $testResults
 }
 
-#Runs Get-MailboxServer, only specifying Identity, and optionally DomainController
+# Runs Get-MailboxServer, only specifying Identity, and optionally DomainController
 function GetMailboxServer
 {
     [CmdletBinding()]

@@ -15,18 +15,18 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
-#Check if Exchange is installed on this machine. If not, we can't run tests
+# Check if Exchange is installed on this machine. If not, we can't run tests
 [System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
-    #Get required credentials to use for the test
+    # Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
     Describe 'Set and modify a Receive Connector' {
-    #Set configuration with default values
+    # Set configuration with default values
 
     $extendedRightAllowEntries = $(New-CimInstance -ClassName MSFT_KeyValuePair -Namespace root/microsoft/Windows/DesiredStateConfiguration  -ClientOnly -Property @{
                                         Key = 'NT AUTHORITY\ANONYMOUS LOGON'; `
@@ -47,7 +47,7 @@ if ($exchangeInstalled)
          ConnectionInactivityTimeout             = '00:05:00'
          ConnectionTimeout                       = '00:10:00'
          DefaultDomain                           = ''
-         #DomainController                        = ''
+         # DomainController                        = ''
          DeliveryStatusNotificationEnabled       = $true
          DomainSecureEnabled                     = $false
          EightBitMimeEnabled                     = $true
@@ -100,7 +100,7 @@ if ($exchangeInstalled)
          ConnectionInactivityTimeout             = '00:05:00'
          ConnectionTimeout                       = '00:10:00'
          DefaultDomain                           = ''
-         #DomainController                        = ''
+         # DomainController                        = ''
          DeliveryStatusNotificationEnabled       = $true
          DomainSecureEnabled                     = $false
          EightBitMimeEnabled                     = $true
@@ -141,7 +141,7 @@ if ($exchangeInstalled)
 
      Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Create Receive Connector' -ExpectedGetResults $expectedGetResults
 
-     #modify configuration
+     # modify configuration
      $extendedRightDenyEntries = $(New-CimInstance -ClassName MSFT_KeyValuePair -Namespace root/microsoft/Windows/DesiredStateConfiguration `
                                             -Property @{Key = 'Domain Users'; Value = 'ms-Exch-Bypass-Anti-Spam'} -ClientOnly)
 
@@ -150,7 +150,7 @@ if ($exchangeInstalled)
 
      Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Modify Receive Connector' -ExpectedGetResults $expectedGetResults
 
-     #modify configuration
+     # modify configuration
      $testParams.Ensure = 'Absent'
      $expectedGetResults = $null
 

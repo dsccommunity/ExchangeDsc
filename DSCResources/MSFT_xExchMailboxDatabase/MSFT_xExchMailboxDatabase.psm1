@@ -134,7 +134,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase', 'Set-AdServerSettings' -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
@@ -320,12 +320,12 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential `
                              -CommandsToLoad '*MailboxDatabase', 'Move-DatabasePath', 'Mount-Database', 'Set-AdServerSettings'`
                              -Verbose:$VerbosePreference
 
-    #Check for non-existent parameters in Exchange 2013
+    # Check for non-existent parameters in Exchange 2013
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
                                     -ParamName 'IsExcludedFromProvisioningReason' `
                                     -ResourceName 'xExchMailboxDatabase' `
@@ -340,19 +340,19 @@ function Set-TargetResource
 
     $db = GetMailboxDatabase @PSBoundParameters
 
-    if ($null -eq $db) #Need to create a new DB
+    if ($null -eq $db) # Need to create a new DB
     {
-        #Create a copy of the original parameters
+        # Create a copy of the original parameters
         $originalPSBoundParameters = @{} + $PSBoundParameters
 
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Name', 'Server', 'EdbFilePath', 'LogFolderPath', 'DomainController'
 
-        #Create the database
+        # Create the database
         $db = New-MailboxDatabase @PSBoundParameters
 
         if ($null -ne $db)
         {
-            #Add original props back
+            # Add original props back
             Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
 
             if ($AllowServiceRestart -eq $true)
@@ -366,10 +366,10 @@ function Set-TargetResource
                 Write-Warning -Message 'The configuration will not take effect until MSExchangeIS is manually restarted.'
             }
 
-            #If MountAtStartup is not explicitly set to $false, mount the new database
+            # If MountAtStartup is not explicitly set to $false, mount the new database
             if ($PSBoundParameters.ContainsKey('SkipInitialDatabaseMount') -eq $true -and $SkipInitialDatabaseMount -eq $true)
             {
-                #Don't mount the DB, regardless of what else is set.
+                # Don't mount the DB, regardless of what else is set.
             }
             elseif ($PSBoundParameters.ContainsKey('MountAtStartup') -eq $false -or $MountAtStartup -eq $true)
             {
@@ -384,9 +384,9 @@ function Set-TargetResource
         }
     }
 
-    if ($null -ne $db) #Set props on existing DB
+    if ($null -ne $db) # Set props on existing DB
     {
-        #First check if a DB or log move is required
+        # First check if a DB or log move is required
         if (($PSBoundParameters.ContainsKey('EdbFilePath') -and (Compare-StringToString -String1 $db.EdbFilePath.PathName -String2 $EdbFilePath -IgnoreCase) -eq $false) -or
             ($PSBoundParameters.ContainsKey('LogFolderPath') -and (Compare-StringToString -String1 $db.LogFolderPath.PathName -String2 $LogFolderPath -IgnoreCase) -eq $false))
         {
@@ -402,13 +402,13 @@ function Set-TargetResource
             }
         }
 
-        #setup params
+        # setup params
         Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters `
                       -ParamsToAdd @{'Identity' = $Name}
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters `
                          -ParamsToRemove 'Name', 'Server', 'DatabaseCopyCount', 'AllowServiceRestart', 'EdbFilePath', 'LogFolderPath', 'Credential', 'AdServerSettingsPreferredServer', 'SkipInitialDatabaseMount'
 
-        #Remove parameters that depend on all copies being added
+        # Remove parameters that depend on all copies being added
         if ($db.DatabaseCopies.Count -lt $DatabaseCopyCount)
         {
             Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters `
@@ -556,12 +556,12 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential `
                              -CommandsToLoad 'Get-MailboxDatabase', 'Get-Mailbox', 'Set-AdServerSettings'`
                              -Verbose:$VerbosePreference
 
-    #Check for non-existent parameters in Exchange 2013
+    # Check for non-existent parameters in Exchange 2013
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
                                     -ParamName 'IsExcludedFromProvisioningReason' `
                                     -ResourceName 'xExchMailboxDatabase' `
@@ -599,7 +599,7 @@ function Test-TargetResource
             $testResults = $false
         }
 
-        #Only check these if all copies have been added
+        # Only check these if all copies have been added
         if ($db.DatabaseCopies.Count -ge $DatabaseCopyCount)
         {
             if (!(Test-ExchangeSetting -Name 'CircularLoggingEnabled' -Type 'Boolean' -ExpectedValue $CircularLoggingEnabled -ActualValue $db.CircularLoggingEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
@@ -668,7 +668,7 @@ function Test-TargetResource
             $testResults = $false
         }
 
-        #Strip leading slash off the OAB now so it's easier to check
+        # Strip leading slash off the OAB now so it's easier to check
         if ($PSBoundParameters.ContainsKey('OfflineAddressBook'))
         {
             if ($OfflineAddressBook.StartsWith('\'))
@@ -720,7 +720,7 @@ function Test-TargetResource
     return $testResults
 }
 
-#Runs Get-MailboxDatabase, only specifying Identity and optionally DomainController
+# Runs Get-MailboxDatabase, only specifying Identity and optionally DomainController
 function GetMailboxDatabase
 {
     [CmdletBinding()]
@@ -859,7 +859,7 @@ function GetMailboxDatabase
     return (Get-MailboxDatabase @PSBoundParameters -ErrorAction SilentlyContinue)
 }
 
-#Moves the database or log path. Doesn't validate that the DB is in a good condition to move. Caller should do that.
+# Moves the database or log path. Doesn't validate that the DB is in a good condition to move. Caller should do that.
 function MoveDatabaseOrLogPath
 {
     [CmdletBinding()]
@@ -998,7 +998,7 @@ function MoveDatabaseOrLogPath
     Move-DatabasePath @PSBoundParameters -Confirm:$false -Force
 }
 
-#Mounts the specified database
+# Mounts the specified database
 function MountDatabase
 {
     [CmdletBinding()]

@@ -15,14 +15,14 @@ $ConfigurationData = @{
                 CertificateFile = 'C:\public-certificate.cer'
             #>
 
-            #Thumbprint of the certificate being used for decrypting credentials
+            # Thumbprint of the certificate being used for decrypting credentials
             Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673'
 
             Site1DC         = 'dc-1'
             Site2DC         = 'dc-2'
         }
 
-        #Individual target nodes are defined next
+        # Individual target nodes are defined next
         @{
             NodeName = 'e15-1'
             NodeFqdn = 'e15-1.contoso.local'
@@ -47,12 +47,12 @@ Configuration Example
         LocalConfigurationManager
         {
             CertificateId     = $Node.Thumbprint
-            ConfigurationMode = 'ApplyOnly' #Set to ApplyOnly, as we probably don't want to continuously check our config during Maintenance
+            ConfigurationMode = 'ApplyOnly' # Set to ApplyOnly, as we probably don't want to continuously check our config during Maintenance
         }
 
         xExchMailboxServer SetMbxServerSite1
         {
-            Identity                         = $Node.NodeName #Use a different server Identity for each xExchMailboxServer resource to satisfy the Key requirement. Use HOSTNAME here.
+            Identity                         = $Node.NodeName # Use a different server Identity for each xExchMailboxServer resource to satisfy the Key requirement. Use HOSTNAME here.
             Credential                       = $ExchangeAdminCredential
             DatabaseCopyAutoActivationPolicy = 'Blocked'
             DomainController                 = $Node.Site1DC
@@ -60,7 +60,7 @@ Configuration Example
 
         xExchMailboxServer SetMbxServerSite2
         {
-            Identity                         = $Node.NodeFqdn #Use a different server Identity for each xExchMailboxServer resource to satisfy the Key requirement. Use FQDN here.
+            Identity                         = $Node.NodeFqdn # Use a different server Identity for each xExchMailboxServer resource to satisfy the Key requirement. Use FQDN here.
             Credential                       = $ExchangeAdminCredential
             DatabaseCopyAutoActivationPolicy = 'Blocked'
             DomainController                 = $Node.Site2DC

@@ -22,7 +22,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-EventLogLevel' -Verbose:$VerbosePreference
 
     $eventLogLevel = Get-EventLogLevel -Identity "$($env:COMPUTERNAME)\$($Identity)"
@@ -61,7 +61,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-EventLogLevel' -Verbose:$VerbosePreference
 
     Set-EventLogLevel -Identity "$($env:COMPUTERNAME)\$($Identity)" -Level $Level
@@ -91,7 +91,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-EventLogLevel' -Verbose:$VerbosePreference
 
     $eventLogLevel = Get-EventLogLevel -Identity "$($env:COMPUTERNAME)\$($Identity)"

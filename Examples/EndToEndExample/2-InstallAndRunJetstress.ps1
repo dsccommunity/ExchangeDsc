@@ -15,13 +15,13 @@ $ConfigurationData = @{
                 CertificateFile = 'C:\public-certificate.cer'
             #>
 
-            #Thumbprint of the certificate being used for decrypting credentials
+            # Thumbprint of the certificate being used for decrypting credentials
             Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673'
 
-            #DiskToDBMap used by xExchAutoMountPoint specifically for Jetstress purposes
+            # DiskToDBMap used by xExchAutoMountPoint specifically for Jetstress purposes
             JetstressDiskToDBMap = 'DB1,DB2,DB3,DB4', 'DB5,DB6,DB7,DB8'
 
-            #The base file server UNC path that will be used for copying things like certificates, Exchange binaries, and Jetstress binaries
+            # The base file server UNC path that will be used for copying things like certificates, Exchange binaries, and Jetstress binaries
             FileServerBase = '\\rras-1.contoso.local\Binaries'
 
             #endregion
@@ -61,8 +61,8 @@ Configuration Example
 
     Node $AllNodes.NodeName
     {
-        #Create mount points for use with Jetstress. Here I prefer to use the same database names for ALL servers,
-        #that way I can use the same JetstressConfig.xml for all of them.
+        # Create mount points for use with Jetstress. Here I prefer to use the same database names for ALL servers,
+        # that way I can use the same JetstressConfig.xml for all of them.
         xExchAutoMountPoint AMPForJetstress
         {
             Identity                       = $Node.NodeName
@@ -74,7 +74,7 @@ Configuration Example
             CreateSubfolders               = $true
         }
 
-        #Copy the Jetstress install file
+        # Copy the Jetstress install file
         File CopyJetstress
         {
             Ensure          = 'Present'
@@ -83,7 +83,7 @@ Configuration Example
             Credential      = $ExchangeAdminCredential
         }
 
-        #Install Jetstress
+        # Install Jetstress
         Package InstallJetstress
         {
             Ensure    = 'Present'
@@ -93,7 +93,7 @@ Configuration Example
             DependsOn = '[xExchAutoMountPoint]AMPForJetstress', '[File]CopyJetstress'
         }
 
-        #Copy required ESE DLL's to the Jetstress installation directory
+        # Copy required ESE DLL's to the Jetstress installation directory
         File CopyESEDlls
         {
             Ensure          = 'Present'
@@ -105,7 +105,7 @@ Configuration Example
             DependsOn       = '[Package]InstallJetstress'
         }
 
-        #Copy JetstressConfig.xml to the Jetstress installation directory
+        # Copy JetstressConfig.xml to the Jetstress installation directory
         File CopyJetstressConfig
         {
             Ensure          = 'Present'
@@ -115,7 +115,7 @@ Configuration Example
             DependsOn       = '[Package]InstallJetstress'
         }
 
-        #Run the Jetstress test, and evaluate the results
+        # Run the Jetstress test, and evaluate the results
         xExchJetstress RunJetstress
         {
             Type            = 'Performance'

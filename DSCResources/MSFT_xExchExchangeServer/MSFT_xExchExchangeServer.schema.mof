@@ -3,7 +3,7 @@
 class MSFT_xExchExchangeServer : OMI_BaseResource
 {
     [Key] String Identity; //The hostname of the Exchange Server to configure
-    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange
     [Write] Boolean AllowServiceRestart;
 
     //Remaining properties correspond directly to Set-ExchangeServer parameters
@@ -13,7 +13,7 @@ class MSFT_xExchExchangeServer : OMI_BaseResource
     [Write] String InternetWebProxy;
     [Write] String MonitoringGroup;
     [Write] String ProductKey;
-    [Write] String WorkloadManagementPolicy;    
+    [Write] String WorkloadManagementPolicy;
 };
 
 

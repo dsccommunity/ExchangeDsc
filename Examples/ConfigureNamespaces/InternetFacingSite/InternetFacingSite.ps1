@@ -9,7 +9,7 @@ $ConfigurationData = @{
             NodeName                    = '*'
         },
 
-        #Individual target nodes are defined next
+        # Individual target nodes are defined next
         @{
             NodeName = 'e15-1'
             CASID    = 'Site1CAS'
@@ -21,7 +21,7 @@ $ConfigurationData = @{
         }
     );
 
-    #CAS settings that are unique per site will go in separate hash table entries.
+    # CAS settings that are unique per site will go in separate hash table entries.
     Site1CAS = @(
         @{
             ExternalUrlActiveSync   = 'https://mail.contoso.local/Microsoft-Server-ActiveSync'
@@ -65,7 +65,8 @@ Configuration Example
 
     Node $AllNodes.NodeName
     {
-        $casSettings = $ConfigurationData[$Node.CASId] #Look up and retrieve the CAS settings for this node
+        # Look up and retrieve the CAS settings for this node
+        $casSettings = $ConfigurationData[$Node.CASId]
 
         xExchClientAccessServer CAS
         {
@@ -97,8 +98,10 @@ Configuration Example
             Credential               = $ExchangeAdminCredential
             ExternalUrl              = $casSettings.ExternalUrlMAPI
             InternalUrl              = "https://$($casSettings.InternalNLBFqdn)/mapi"
-            IISAuthenticationMethods = 'NTLM', 'Negotiate'  #IISAuthenticationMethods is a required parameter for Set-MapiVirtualDirectory
-            AllowServiceRestart      = $true               #Since we are changing the default auth method, we allow the app pool to be restarted right away so the change goes into effect immediately
+            # IISAuthenticationMethods is a required parameter for Set-MapiVirtualDirectory
+            IISAuthenticationMethods = 'NTLM', 'Negotiate'
+            # Since we are changing the default auth method, we allow the app pool to be restarted right away so the change goes into effect immediately
+            AllowServiceRestart      = $true
         }
 
         xExchOabVirtualDirectory OABVdir
@@ -114,12 +117,17 @@ Configuration Example
             Identity                           = "$($Node.NodeName)\Rpc (Default Web Site)"
             Credential                         = $ExchangeAdminCredential
             ExternalHostName                   = $casSettings.ExternalUrlOA
-            ExternalClientAuthenticationMethod = 'Ntlm' #ExternalClientAuthenticationMethod is a required parameter for Set-OutlookAnywhere if ExternalHostName is specified
-            ExternalClientsRequireSsl          = $true  #ExternalClientsRequireSsl is a required parameter for Set-OutlookAnywhere if ExternalHostName is specified
+            # ExternalClientAuthenticationMethod is a required parameter for Set-OutlookAnywhere if ExternalHostName is specified
+            ExternalClientAuthenticationMethod = 'Ntlm'
+            # ExternalClientsRequireSsl is a required parameter for Set-OutlookAnywhere if ExternalHostName is specified
+            ExternalClientsRequireSsl          = $true
             InternalHostName                   = $casSettings.InternalNLBFqdn
-            InternalClientAuthenticationMethod = 'Ntlm' #ExternalClientAuthenticationMethod is a required parameter for Set-OutlookAnywhere if InternalHostName is specified
-            InternalClientsRequireSSL          = $true  #ExternalClientsRequireSsl is a required parameter for Set-OutlookAnywhere if InternalHostName is specified
-            AllowServiceRestart                = $true  #Since we are changing the default auth method, we allow the app pool to be restarted right away so the change goes into effect immediately
+            # ExternalClientAuthenticationMethod is a required parameter for Set-OutlookAnywhere if InternalHostName is specified
+            InternalClientAuthenticationMethod = 'Ntlm'
+            # ExternalClientsRequireSsl is a required parameter for Set-OutlookAnywhere if InternalHostName is specified
+            InternalClientsRequireSSL          = $true
+            # Since we are changing the default auth method, we allow the app pool to be restarted right away so the change goes into effect immediately
+            AllowServiceRestart                = $true
         }
 
         xExchOwaVirtualDirectory OWAVdir

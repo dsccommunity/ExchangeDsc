@@ -97,7 +97,7 @@ function Set-TargetResource
         throw 'Jetstress must be uninstalled before using the xExchJetstressCleanup resource'
     }
 
-    #If a config file was specified, pull the database and log paths out and put them into $DatabasePaths and $LogPaths
+    # If a config file was specified, pull the database and log paths out and put them into $DatabasePaths and $LogPaths
     if ($PSBoundParameters.ContainsKey('ConfigFilePath'))
     {
         [xml]$configFile = LoadConfigXml -ConfigFilePath "$($ConfigFilePath)"
@@ -108,12 +108,12 @@ function Set-TargetResource
 
     [System.String[]]$FoldersToRemove = $DatabasePaths + $LogPaths
 
-    #Now delete the specified directories
-    [Hashtable]$ParentFoldersToRemove = @{} #Only used if $DeleteAssociatedMountPoints is $true
+    # Now delete the specified directories
+    [Hashtable]$ParentFoldersToRemove = @{} # Only used if $DeleteAssociatedMountPoints is $true
 
     foreach ($path in $FoldersToRemove)
     {
-        #Get the parent folder for the specified path
+        # Get the parent folder for the specified path
         $parent = GetParentFolderFromString -Folder "$($path)"
 
         if (([System.String]::IsNullOrEmpty($parent) -eq $false -and $ParentFoldersToRemove.ContainsKey($parent) -eq $false))
@@ -124,7 +124,7 @@ function Set-TargetResource
         RemoveFolder -Path "$($path)"
     }
 
-    #Delete associated mount points if requested
+    # Delete associated mount points if requested
     if ($DeleteAssociatedMountPoints -eq $true -and $ParentFoldersToRemove.Count -gt 0)
     {
         $diskInfo = GetDiskInfo
@@ -153,10 +153,10 @@ function Set-TargetResource
         }
     }
 
-    #Clean up binaries if requested
+    # Clean up binaries if requested
     if ($RemoveBinaries -eq $true -and (Test-Path -LiteralPath "$($JetstressPath)") -eq $true)
     {
-        #Move output files if requested
+        # Move output files if requested
         if ([System.String]::IsNullOrEmpty($OutputSaveLocation) -eq $false)
         {
             if ((Test-Path -LiteralPath "$($OutputSaveLocation)") -eq $false)
@@ -176,20 +176,20 @@ function Set-TargetResource
             $outputFiles | Move-Item -Destination "$($OutputSaveLocation)" -Confirm:$false -Force
         }
 
-        #Now remove the Jetstress folder
+        # Now remove the Jetstress folder
 
-        #If the config file is in the Jetstress directory, remove everything but the config file, or else running Test-TargetResource after removing the directory will fail
+        # If the config file is in the Jetstress directory, remove everything but the config file, or else running Test-TargetResource after removing the directory will fail
         if ((GetFolderNoTrailingSlash -Folder "$($JetstressPath)") -like (GetParentFolderFromString -Folder "$($ConfigFilePath)"))
         {
             Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object {$_.FullName -notlike "$($ConfigFilePath)"} | Remove-Item -Recurse -Confirm:$false -Force
         }
-        else #No config file in this directory. Remove the whole thing
+        else # No config file in this directory. Remove the whole thing
         {
             RemoveFolder -Path "$($JetstressPath)"
         }
     }
 
-    #Test if we successfully cleaned up Jetstress. If so, flag or initiate a reboot
+    # Test if we successfully cleaned up Jetstress. If so, flag or initiate a reboot
     $cleanedUp = Test-TargetResource @PSBoundParameters
 
     if ($cleanedUp -eq $true)
@@ -250,7 +250,7 @@ function Test-TargetResource
     }
     else
     {
-        #If a config file was specified, pull the database and log paths out and put them into $DatabasePaths and $LogPaths
+        # If a config file was specified, pull the database and log paths out and put them into $DatabasePaths and $LogPaths
         if ($PSBoundParameters.ContainsKey('ConfigFilePath'))
         {
             [xml]$configFile = LoadConfigXml -ConfigFilePath "$($ConfigFilePath)"
@@ -262,12 +262,12 @@ function Test-TargetResource
             [System.String[]]$FoldersToRemove = $DatabasePaths + $LogPaths
         }
 
-        #First make sure DB and log folders were cleaned up
+        # First make sure DB and log folders were cleaned up
         $diskInfo = GetDiskInfo
 
         foreach ($folder in $FoldersToRemove)
         {
-            #If DeleteAssociatedMountPoints was requested, make sure the parent folder doesn't have a mount point
+            # If DeleteAssociatedMountPoints was requested, make sure the parent folder doesn't have a mount point
             if ($DeleteAssociatedMountPoints -eq $true)
             {
                 $parent = GetParentFolderFromString -Folder "$($folder)"
@@ -279,7 +279,7 @@ function Test-TargetResource
                 }
             }
 
-            #Now check the folder itself
+            # Now check the folder itself
             if ((Test-Path -LiteralPath "$($folder)") -eq $true)
             {
                 Write-Verbose -Message "Folder '$($folder)' still exists."
@@ -287,7 +287,7 @@ function Test-TargetResource
             }
         }
 
-        #Now check for binaries
+        # Now check for binaries
         if ($RemoveBinaries -eq $true -and (Test-Path -LiteralPath "$($JetstressPath)") -eq $true)
         {
             if ((GetFolderNoTrailingSlash -Folder "$($JetstressPath)") -like (GetParentFolderFromString -Folder "$($ConfigFilePath)"))
@@ -316,7 +316,7 @@ function Test-TargetResource
     return $testResults
 }
 
-#Verifies that parameters for Jetstress were passed in correctly. Throws an exception if not.
+# Verifies that parameters for Jetstress were passed in correctly. Throws an exception if not.
 function VerifyParameters
 {
     [CmdletBinding()]
@@ -379,7 +379,7 @@ function VerifyParameters
     }
 }
 
-#Get a string for a folder without the trailing slash
+# Get a string for a folder without the trailing slash
 function GetFolderNoTrailingSlash
 {
     param
@@ -397,7 +397,7 @@ function GetFolderNoTrailingSlash
     return $Folder
 }
 
-#Simple string parsing method to determine what the parent folder of a folder is given the child folder's path
+# Simple string parsing method to determine a folder's parent
 function GetParentFolderFromString
 {
     param
@@ -414,7 +414,7 @@ function GetParentFolderFromString
     return $parent
 }
 
-#Removes the specified folder, if it exists, and all subdirectories
+# Removes the specified folder, if it exists, and all subdirectories
 function RemoveFolder
 {
     [CmdletBinding()]
@@ -436,7 +436,7 @@ function RemoveFolder
     }
 }
 
-#Loads the specified JetstressConfig.xml file and puts it into an [xml] variable
+# Loads the specified JetstressConfig.xml file and puts it into an [xml] variable
 function LoadConfigXml
 {
     [CmdletBinding()]
@@ -472,7 +472,7 @@ function LoadConfigXml
     return $configFile
 }
 
-#Checks whether Jetstress is installed by looking for Jetstress 2013's Product GUID
+# Checks whether Jetstress is installed by looking for Jetstress 2013's Product GUID
 function Get-IsJetstressInstalled
 {
     return ($null -ne (Get-Item 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{75189587-0D84-4404-8F02-79C39728FA64}' -ErrorAction SilentlyContinue))

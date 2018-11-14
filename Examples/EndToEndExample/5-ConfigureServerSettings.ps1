@@ -15,10 +15,10 @@ $ConfigurationData = @{
                 CertificateFile = 'C:\public-certificate.cer'
             #>
 
-            #Thumbprint of the certificate being used for decrypting credentials
+            # Thumbprint of the certificate being used for decrypting credentials
             Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673'
 
-            #The base file server UNC path that will be used for copying things like certificates, Exchange binaries, and Jetstress binaries
+            # The base file server UNC path that will be used for copying things like certificates, Exchange binaries, and Jetstress binaries
             FileServerBase = '\\rras-1.contoso.local\Binaries'
 
             #endregion
@@ -79,14 +79,14 @@ $ConfigurationData = @{
     #endregion
 
     #region CAS Settings
-    #Settings that will apply to all CAS
+    # Settings that will apply to all CAS
     AllCAS = @(
         @{
             ExternalNamespace = 'mail.contoso.local'
         }
     )
 
-    #Settings that will apply only to Quincy CAS
+    # Settings that will apply only to Quincy CAS
     Site1CAS = @(
         @{
             InternalNamespace          = 'mail-site1.contoso.local'
@@ -96,7 +96,7 @@ $ConfigurationData = @{
         }
     );
 
-    #Settings that will apply only to Phoenix CAS
+    # Settings that will apply only to Phoenix CAS
     Site2CAS = @(
         @{
             InternalNamespace          = 'mail-site2.contoso.local'
@@ -128,17 +128,17 @@ Configuration Example
         $ExchangeFileCopyCredential
     )
 
-    #Import required DSC Modules
+    # Import required DSC Modules
     Import-DscResource -Module xExchange
     Import-DscResource -Module xWebAdministration
 
     Node $AllNodes.NodeName
     {
-        $dagSettings        = $ConfigurationData[$Node.DAGId] #Get DAG settings for this node
-        $casSettingsAll     = $ConfigurationData.AllCAS #Get CAS settings for all sites
-        $casSettingsPerSite = $ConfigurationData[$Node.CASId] #Get site specific CAS settings for this node
+        $dagSettings        = $ConfigurationData[$Node.DAGId] # Get DAG settings for this node
+        $casSettingsAll     = $ConfigurationData.AllCAS # Get CAS settings for all sites
+        $casSettingsPerSite = $ConfigurationData[$Node.CASId] # Get site specific CAS settings for this node
 
-        #Copy an certificate .PFX that had been previously exported, import it, and enable services on it
+        # Copy an certificate .PFX that had been previously exported, import it, and enable services on it
         File CopyExchangeCert
         {
             Ensure          = 'Present'
@@ -160,7 +160,7 @@ Configuration Example
         }
 
         ###CAS specific settings###
-        #The following section shows how to configure commonly configured URL's on various virtual directories
+        # The following section shows how to configure commonly configured URL's on various virtual directories
         xExchClientAccessServer CAS
         {
             Identity                       = $Node.NodeName
@@ -215,7 +215,7 @@ Configuration Example
             InternalHostName                   = $casSettingsPerSite.InternalNamespace
         }
 
-        #Configure OWA Lync Integration in the web.config
+        # Configure OWA Lync Integration in the web.config
         xWebConfigKeyValue OWAIMCertificateThumbprint
         {
             WebsitePath   = "IIS:\Sites\Exchange Back End\owa"
@@ -234,7 +234,7 @@ Configuration Example
             Value         = $casSettingsPerSite.InstantMessagingServerName
         }
 
-        #Sets OWA url's, and enables Lync integration on the OWA front end directory
+        # Sets OWA url's, and enables Lync integration on the OWA front end directory
         xExchOwaVirtualDirectory OWAVdir
         {
             Identity                              = "$($Node.NodeName)\owa (Default Web Site)"
@@ -245,7 +245,7 @@ Configuration Example
             InstantMessagingCertificateThumbprint = $dagSettings.Thumbprint
             InstantMessagingServerName            = $casSettingsPerSite.InstantMessagingServerName
             InstantMessagingType                  = 'Ocs'
-            DependsOn                             = '[xExchExchangeCertificate]Certificate' #Can't configure the IM cert until it's valid
+            DependsOn                             = '[xExchExchangeCertificate]Certificate' # Can't configure the IM cert until it's valid
         }
 
         xExchWebServicesVirtualDirectory EWSVdir

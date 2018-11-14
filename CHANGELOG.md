@@ -16,6 +16,7 @@
 - Add initial set of Unit Tests (mostly Get-TargetResource tests) for all
   remaining resource files.
 - Add WaitForComputerObject parameter to xExchWaitForDAG
+- Add spaces between comment hashtags and comments.
 
 ## 1.24.0.0
 

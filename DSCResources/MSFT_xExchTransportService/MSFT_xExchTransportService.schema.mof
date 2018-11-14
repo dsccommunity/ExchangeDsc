@@ -2,7 +2,7 @@
 class MSFT_xExchTransportService : OMI_BaseResource
 {
     [Key] String Identity; //Exchange server
-    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange
     [Write] Boolean AllowServiceRestart; //Whether it is OK to restart service MSExchangeTransport;
     [Write] String ActiveUserStatisticsLogMaxAge;
     [Write] String ActiveUserStatisticsLogMaxDirectorySize;

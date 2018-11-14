@@ -1346,7 +1346,7 @@ try
                     Mock -CommandName Get-ExistingRemoteExchangeSession -Verifiable -MockWith { return $null }
                     Mock -CommandName New-RemoteExchangeSession -Verifiable -MockWith { return $null }
 
-                    { Get-RemoteExchangeSession } | Should -Throw -ExpectedMessage 'Failed to establish remote Powershell session to local server.'
+                    { Get-RemoteExchangeSession } | Should -Throw -ExpectedMessage 'Failed to establish remote PowerShell session to local server.'
                 }
             }
         }
@@ -2716,7 +2716,7 @@ try
         }
 
         Describe 'xExchangeHelper\Restart-ExistingAppPool' -Tag 'Helper' {
-            #Allow override of IIS commands
+            # Allow override of IIS commands
             function Get-WebAppPoolState {}
             function Restart-WebAppPool {}
 

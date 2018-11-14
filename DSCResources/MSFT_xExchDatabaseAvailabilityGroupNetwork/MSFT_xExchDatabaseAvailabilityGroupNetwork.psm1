@@ -42,7 +42,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Name' = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroupNetwork' -Verbose:$VerbosePreference
 
     $dagNet = GetDatabaseAvailabilityGroupNetwork @PSBoundParameters
@@ -104,7 +104,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Name' = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*DatabaseAvailabilityGroup*' -Verbose:$VerbosePreference
 
     $dagId = "$($DatabaseAvailabilityGroup)\$($Name)"
@@ -113,7 +113,7 @@ function Set-TargetResource
 
     if ($Ensure -eq 'Absent')
     {
-        #Only try to remove the network if it has 0 associated subnets
+        # Only try to remove the network if it has 0 associated subnets
         if ($null -ne $dagNet)
         {
             if ($null -eq $dagNet.Subnets -or $dagNet.Subnets.Count -eq 0)
@@ -128,17 +128,17 @@ function Set-TargetResource
     }
     else
     {
-        #Remove Credential and Ensure so we don't pass it into the next command
+        # Remove Credential and Ensure so we don't pass it into the next command
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'Ensure'
 
         Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-        if ($null -eq $dagNet) #Need to create a new network
+        if ($null -eq $dagNet) # Need to create a new network
         {
             $dagNet = New-DatabaseAvailabilityGroupNetwork @PSBoundParameters
             Set-DatabaseAvailabilityGroup -Identity $DatabaseAvailabilityGroup -DiscoverNetworks
         }
-        else #Set props on the existing network
+        else # Set props on the existing network
         {
             Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $dagId}
             Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Name', 'DatabaseAvailabilityGroup'
@@ -192,7 +192,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Name' = $Name; 'DatabaseAvailabilityGroup' = $DatabaseAvailabilityGroup} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroupNetwork' -Verbose:$VerbosePreference
 
     $dagNet = GetDatabaseAvailabilityGroupNetwork @PSBoundParameters
@@ -236,7 +236,7 @@ function Test-TargetResource
     return $testResults
 }
 
-#Runs Get-DatabaseAvailabilityGroupNetwork, only specifying Identity, and optionally DomainController
+# Runs Get-DatabaseAvailabilityGroupNetwork, only specifying Identity, and optionally DomainController
 function GetDatabaseAvailabilityGroupNetwork
 {
     [CmdletBinding()]
@@ -286,7 +286,7 @@ function GetDatabaseAvailabilityGroupNetwork
     return (Get-DatabaseAvailabilityGroupNetwork @PSBoundParameters)
 }
 
-#Takes an array of Microsoft.Exchange.Data.DatabaseAvailabilityGroupNetworkSubnet objects and converts the SubnetId props to a string[]
+# Takes an array of Microsoft.Exchange.Data.DatabaseAvailabilityGroupNetworkSubnet objects and converts the SubnetId props to a string[]
 function SubnetsToArray
 {
     param

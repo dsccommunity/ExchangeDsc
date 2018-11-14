@@ -3,9 +3,9 @@
 class MSFT_xExchMailboxDatabase : OMI_BaseResource
 {
     [Key] String Name; //Name of the database
-    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange    
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange
     [Required] Uint32 DatabaseCopyCount; //The number of copies that the database will have once fully configured
-    [Required] String Server; //Server to create the database on 
+    [Required] String Server; //Server to create the database on
     [Required] String EdbFilePath; //Full path to where the database file will be located
     [Required] String LogFolderPath; //Folder where logs for the DB will exist
     [Write] String AdServerSettingsPreferredServer; //An optional domain controller to pass to Set-AdServerSettings -PreferredServer

@@ -139,7 +139,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Verbose:$VerbosePreference
 
-    #First see if we need to assign any disks to ExVol's
+    # First see if we need to assign any disks to ExVol's
     $diskInfo = GetDiskInfo
 
     $exVolCount = GetInUseMountPointCount -RootFolder $AutoDagVolumesRootFolderPath -DiskInfo $diskInfo
@@ -150,7 +150,7 @@ function Set-TargetResource
         CreateMissingExVolumes @PSBoundParameters -CurrentVolCount $exVolCount -RequiredVolCount $requiredVolCount
     }
 
-    #Now see if we need any DB mount points
+    # Now see if we need any DB mount points
     $diskInfo = GetDiskInfo
 
     $exDbCount = GetInUseMountPointCount -RootFolder $AutoDagDatabasesRootFolderPath -DiskInfo $diskInfo
@@ -161,7 +161,7 @@ function Set-TargetResource
         CreateMissingExDatabases @PSBoundParameters
     }
 
-    #Now see if any Mount Points are ordered incorrectly. Jetstress wants ExchangeDatabase mount points to be listed before ExchangeVolume mount points
+    # Now see if any Mount Points are ordered incorrectly. Jetstress wants ExchangeDatabase mount points to be listed before ExchangeVolume mount points
     $diskInfo = GetDiskInfo
 
     if ($EnsureExchangeVolumeMountPointIsLast -eq $true)
@@ -174,7 +174,7 @@ function Set-TargetResource
             {
                 SendVolumeMountPointToEndOfList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -VolumeNumber $volNum -DiskInfo $diskInfo
 
-                #Update DiskInfo for next iteration
+                # Update DiskInfo for next iteration
                 $diskInfo = GetDiskInfo
             }
             else
@@ -246,7 +246,7 @@ function Test-TargetResource
 
     $diskInfo = GetDiskInfo
 
-    #Check if the number of assigned EXVOL's is less than the requested number of DB disks plus spares
+    # Check if the number of assigned EXVOL's is less than the requested number of DB disks plus spares
     $mountPointCount = GetInUseMountPointCount -RootFolder $AutoDagVolumesRootFolderPath -DiskInfo $diskInfo
 
     $testResults = $true
@@ -256,7 +256,7 @@ function Test-TargetResource
         Write-InvalidSettingVerbose -SettingName 'MountPointCount' -ExpectedValue ($DiskToDBMap.Count + $SpareVolumeCount) -ActualValue $mountPointCount -Verbose:$VerbosePreference
         $testResults = $false
     }
-    else #Loop through all requested DB's and see if they have a mount point yet
+    else # Loop through all requested DB's and see if they have a mount point yet
     {
         foreach ($value in $DiskToDBMap)
         {
@@ -271,7 +271,7 @@ function Test-TargetResource
         }
     }
 
-    #Now check if any ExchangeVolume mount points are higher ordered than ExchangeDatabase mount points. ExchangeDatabase MP's must be listed first for logical disk counters to function properly
+    # Now check if any ExchangeVolume mount points are higher ordered than ExchangeDatabase mount points. ExchangeDatabase MP's must be listed first for logical disk counters to function properly
     if ($EnsureExchangeVolumeMountPointIsLast -eq $true -and (VolumeMountPointNotLastInList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -DiskInfo $diskInfo) -ne -1)
     {
         Write-Verbose -Message "One or more volumes have an $($AutoDagVolumesRootFolderPath) mount point ordered before a $($AutoDagDatabasesRootFolderPath) mount point"
@@ -281,7 +281,7 @@ function Test-TargetResource
     return $testResults
 }
 
-#Creates mount points for any Exchange Volumes we are missing
+# Creates mount points for any Exchange Volumes we are missing
 function CreateMissingExVolumes
 {
     [CmdletBinding()]
@@ -348,7 +348,7 @@ function CreateMissingExVolumes
 
     for ($i = $CurrentVolCount; $i -lt $RequiredVolCount; $i++)
     {
-        if ($i -ne $CurrentVolCount) #Need to update disk info if we've gone through the loop already
+        if ($i -ne $CurrentVolCount) # Need to update disk info if we've gone through the loop already
         {
             $diskInfo = GetDiskInfo
         }
@@ -377,7 +377,7 @@ function CreateMissingExVolumes
     }
 }
 
-#Looks for databases that have never had a mount point created, and gives them a mount point
+# Looks for databases that have never had a mount point created, and gives them a mount point
 function CreateMissingExDatabases
 {
     [CmdletBinding()]
@@ -436,7 +436,7 @@ function CreateMissingExDatabases
 
     for ($i = 0; $i -lt $DiskToDBMap.Count; $i++)
     {
-        if ($i -gt 0) #Need to refresh current disk info
+        if ($i -gt 0) # Need to refresh current disk info
         {
             $diskInfo = GetDiskInfo
         }
@@ -451,12 +451,12 @@ function CreateMissingExDatabases
 
             $path = Join-Path -Path "$($AutoDagDatabasesRootFolderPath)" -ChildPath "$($current)"
 
-            #We only want to touch datases who have never had a mount point created. After that, AutoReseed will handle it.
+            # We only want to touch datases who have never had a mount point created. After that, AutoReseed will handle it.
             if ((Test-Path -Path "$($path)") -eq $false)
             {
                 $dbsNeedingMountPoints += $current
             }
-            else #Since the folder already exists, need to check and error if the mount point doesn't
+            else # Since the folder already exists, need to check and error if the mount point doesn't
             {
                 if ((MountPointExists -Path $path) -eq -1)
                 {
@@ -465,15 +465,15 @@ function CreateMissingExDatabases
             }
         }
 
-        if ($dbsNeedingMountPoints.Count -eq $allDBsRequestedForDisk.Count) #No DB mount points for this disk have been created yet
+        if ($dbsNeedingMountPoints.Count -eq $allDBsRequestedForDisk.Count) # No DB mount points for this disk have been created yet
         {
             $targetVolume = GetExchangeVolume -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -DBsPerDisk $allDBsRequestedForDisk.Count -VolumePrefix $VolumePrefix -DiskInfo $diskInfo
         }
-        elseif ($dbsNeedingMountPoints.Count -gt 0) #We just need to create some mount points
+        elseif ($dbsNeedingMountPoints.Count -gt 0) # We just need to create some mount points
         {
             $existingDB = ''
 
-            #Find a DB that's already had its mount point created
+            # Find a DB that's already had its mount point created
             foreach ($db in $allDBsRequestedForDisk)
             {
                 if (($dbsNeedingMountPoints.Contains($db) -eq $false))
@@ -488,7 +488,7 @@ function CreateMissingExDatabases
                 $targetVolume = GetExchangeVolume -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -ExistingDB $existingDB -DBsPerDisk $allDBsRequestedForDisk.Count -DBsToCreate $dbsNeedingMountPoints.Count -VolumePrefix $VolumePrefix -DiskInfo $diskInfo
             }
         }
-        else #All DB's requested for this disk are good. Just continue on in the loop
+        else # All DB's requested for this disk are good. Just continue on in the loop
         {
             continue
         }
@@ -528,7 +528,7 @@ function CreateMissingExDatabases
     }
 }
 
-#Builds a map of the DBs that already exist on disk
+# Builds a map of the DBs that already exist on disk
 function GetDiskToDBMap
 {
     param
@@ -542,13 +542,13 @@ function GetDiskToDBMap
         $DiskInfo
     )
 
-    #Get the DB path to a point where we know there will be a trailing \
+    # Get the DB path to a point where we know there will be a trailing \
     $dbpath = Join-Path -Path "$($AutoDagDatabasesRootFolderPath)" -ChildPath ""
 
-    #Will be the return value for DiskToDBMap
+    # Will be the return value for DiskToDBMap
     [System.String[]]$dbMap = @()
 
-    #Loop through all existing mount points and figure out which ones are for DB's
+    # Loop through all existing mount points and figure out which ones are for DB's
     foreach ($key in $DiskInfo.VolumeToMountPointMap.Keys)
     {
         [System.String]$mountPoints = ''
@@ -581,10 +581,10 @@ function GetDiskToDBMap
     return $dbMap
 }
 
-#Looks for a volume where an Exchange Volume or Database mount point can be added.
-#If ExistingDB is not specified, looks for a spare volume that has no mount points yet.
-#If ExistingDB is specified, finds the volume number where that DB exists, only if there is room to
-#create the requested database mount points.
+# Looks for a volume where an Exchange Volume or Database mount point can be added.
+# If ExistingDB is not specified, looks for a spare volume that has no mount points yet.
+# If ExistingDB is specified, finds the volume number where that DB exists, only if there is room to
+# Create the requested database mount points.
 function GetExchangeVolume
 {
     param
@@ -618,23 +618,23 @@ function GetExchangeVolume
         $DiskInfo
     )
 
-    $targetVol = -1 #Our return variable
+    $targetVol = -1 # Our return variable
 
     [object[]]$keysSorted = GetSortedExchangeVolumeKeys -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -VolumePrefix $VolumePrefix -DiskInfo $DiskInfo
 
-    #Loop through every volume
+    # Loop through every volume
     foreach ($key in $keysSorted)
     {
         [int]$intKey = $key
 
-        #Get mount points for this volume
+        # Get mount points for this volume
         [System.String[]]$mountPoints = $DiskInfo.VolumeToMountPointMap[$intKey]
 
-        $hasExVol = $false #Whether any ExVol mount points exist on this disk
-        $hasExDb = $false #Whether any ExDB mount points exist on this disk
-        $hasExistingDB = $false #Whether $ExistingDB exists as a mount point on this disk
+        $hasExVol = $false # Whether any ExVol mount points exist on this disk
+        $hasExDb = $false # Whether any ExDB mount points exist on this disk
+        $hasExistingDB = $false # Whether $ExistingDB exists as a mount point on this disk
 
-        #Inspect each individual mount point
+        # Inspect each individual mount point
         foreach($mountPoint in $mountPoints)
         {
             if ($mountPoint.StartsWith($AutoDagVolumesRootFolderPath))
@@ -700,18 +700,18 @@ function GetSortedExchangeVolumeKeys
         $DiskInfo
     )
 
-    [System.String[]]$sortedKeys = @() #The return value
+    [System.String[]]$sortedKeys = @() # The return value
 
     [System.String]$pathBeforeVolumeNumber = Join-Path -Path $AutoDagVolumesRootFolderPath -ChildPath $VolumePrefix
 
-    #First extract the actual volume number as an Int from the volume path, then add it to a new hashtable with the same key value
+    # First extract the actual volume number as an Int from the volume path, then add it to a new hashtable with the same key value
     [Hashtable]$tempVolumeToMountPointMap = @{}
 
     foreach ($key in $DiskInfo.VolumeToMountPointMap.Keys)
     {
         $volPath = ''
 
-        #Loop through each mount point on this volume and find the EXVOL mount point
+        # Loop through each mount point on this volume and find the EXVOL mount point
         foreach ($value in $DiskInfo.VolumeToMountPointMap[$key])
         {
             if ($value.StartsWith($pathBeforeVolumeNumber))
@@ -737,7 +737,7 @@ function GetSortedExchangeVolumeKeys
         }
     }
 
-    #Now go through the volume numbers, and add the keys to the return array in sorted value order
+    # Now go through the volume numbers, and add the keys to the return array in sorted value order
     while ($tempVolumeToMountPointMap.Count -gt 0)
     {
         [object[]]$keys = $tempVolumeToMountPointMap.Keys
@@ -762,7 +762,7 @@ function GetSortedExchangeVolumeKeys
     return $sortedKeys
 }
 
-#Finds the lowest disk number that doesn't have any volumes associated, and is larger than the requested size
+# Finds the lowest disk number that doesn't have any volumes associated, and is larger than the requested size
 function FindFirstAvailableDisk
 {
     param
@@ -802,8 +802,8 @@ function FindFirstAvailableDisk
     return $diskNum
 }
 
-#Looks in the volumes root folder and finds the first number we can give to a volume folder
-#based off of what folders have already been created
+# Looks in the volumes root folder and finds the first number we can give to a volume folder
+# based off of what folders have already been created
 function FindFirstAvailableVolumeNumber
 {
     param
@@ -817,7 +817,7 @@ function FindFirstAvailableVolumeNumber
         $VolumePrefix
     )
 
-    if((Test-Path -LiteralPath "$($AutoDagVolumesRootFolderPath)") -eq $false) #If the ExVol folder doesn't already exist, then we can start with 1
+    if((Test-Path -LiteralPath "$($AutoDagVolumesRootFolderPath)") -eq $false) # If the ExVol folder doesn't already exist, then we can start with 1
     {
         return 1
     }
@@ -838,7 +838,7 @@ function FindFirstAvailableVolumeNumber
     return -1
 }
 
-#Counts and returns the number of DB's in the disk to db map
+# Counts and returns the number of DB's in the disk to db map
 function GetDesiredDatabaseCount
 {
     param
@@ -858,7 +858,7 @@ function GetDesiredDatabaseCount
     return $count
 }
 
-#Checks if a database already has a mountpoint created
+# Checks if a database already has a mountpoint created
 function DBHasMountPoint
 {
     param
@@ -892,7 +892,7 @@ function DBHasMountPoint
     return $false
 }
 
-#Gets the count of in use mount points matching the given critera
+# Gets the count of in use mount points matching the given critera
 function GetInUseMountPointCount
 {
     param
@@ -922,8 +922,8 @@ function GetInUseMountPointCount
     return $count
 }
 
-#Checks all volumes, and sees if any of them have ExchangeVolume mount points that show up before other (like ExchangeDatabase) mount points.
-#If so, it returns the volume number. If not, it returns -1
+# Checks all volumes, and sees if any of them have ExchangeVolume mount points that show up before other (like ExchangeDatabase) mount points.
+# If so, it returns the volume number. If not, it returns -1
 function VolumeMountPointNotLastInList
 {
     param
@@ -956,8 +956,8 @@ function VolumeMountPointNotLastInList
     return -1
 }
 
-#For volumes that have multiple mount points including an ExchangeVolume mount point, sends removes and re-adds the ExchangeVolume
-#mount point so that it is at the end of the list of mount points
+# For volumes that have multiple mount points including an ExchangeVolume mount point, sends removes and re-adds the ExchangeVolume
+# mount point so that it is at the end of the list of mount points
 function SendVolumeMountPointToEndOfList
 {
     [CmdletBinding()]
@@ -993,7 +993,7 @@ function SendVolumeMountPointToEndOfList
     }
 }
 
-#Takes an empty disk, initalizes and formats it, and gives it an ExchangeVolume mount point
+# Takes an empty disk, initalizes and formats it, and gives it an ExchangeVolume mount point
 function PrepareVolume
 {
     [CmdletBinding()]
@@ -1025,35 +1025,35 @@ function PrepareVolume
         $Label
     )
 
-    #Initialize the disk and put in MBR format
+    # Initialize the disk and put in MBR format
     StartDiskpart -Commands "select disk $($DiskNumber)", 'clean' -Verbose:$VerbosePreference | Out-Null
     StartDiskpart -Commands "select disk $($DiskNumber)", 'online disk' -Verbose:$VerbosePreference | Out-Null
     StartDiskpart -Commands "select disk $($DiskNumber)", 'attributes disk clear readonly', 'convert MBR' -Verbose:$VerbosePreference | Out-Null
     StartDiskpart -Commands "select disk $($DiskNumber)", 'offline disk' -Verbose:$VerbosePreference | Out-Null
 
-    #Online the disk
+    # Online the disk
     StartDiskpart -Commands "select disk $($DiskNumber)", 'attributes disk clear readonly', 'online disk' -Verbose:$VerbosePreference | Out-Null
 
-    #Convert to GPT if requested
+    # Convert to GPT if requested
     if ($PartitioningScheme -eq 'GPT')
     {
         StartDiskpart -Commands "select disk $($DiskNumber)", 'convert GPT noerr' -Verbose:$VerbosePreference | Out-Null
     }
 
-    #Create the directory if it doesn't exist
+    # Create the directory if it doesn't exist
     if ((Test-Path $Folder) -eq $False)
     {
         mkdir -Path "$($Folder)" | Out-Null
     }
 
-    #Create the partition and format the drive
+    # Create the partition and format the drive
     if ($FileSystem -eq 'NTFS')
     {
         $formatString = "Format FS=$($FileSystem) UNIT=$($UnitSize) Label=$($Label) QUICK"
 
         StartDiskpart -Commands "select disk $($DiskNumber)", "create partition primary", "$($formatString)", "assign mount=`"$($Folder)`"" -Verbose:$VerbosePreference | Out-Null
     }
-    else #if ($FileSystem -eq "REFS")
+    else # If ($FileSystem -eq "REFS")
     {
         StartDiskpart -Commands "select disk $($DiskNumber)", "create partition primary" -Verbose:$VerbosePreference | Out-Null
 
@@ -1075,7 +1075,7 @@ function PrepareVolume
     }
 }
 
-#Adds a mount point to an existing volume
+# Adds a mount point to an existing volume
 function AddMountPoint
 {
     [CmdletBinding()]
@@ -1090,7 +1090,7 @@ function AddMountPoint
         $Folder
     )
 
-    #Create the directory if it doesn't exist
+    # Create the directory if it doesn't exist
     if ((Test-Path $Folder) -eq $False)
     {
         mkdir -Path "$($Folder)" | Out-Null

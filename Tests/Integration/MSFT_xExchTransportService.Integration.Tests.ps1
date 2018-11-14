@@ -15,18 +15,18 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
-#Check if Exchange is installed on this machine. If not, we can't run tests
+# Check if Exchange is installed on this machine. If not, we can't run tests
 [System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
-    #Get required credentials to use for the test
+    # Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
     Describe 'Set and modify Transport Service configuration' {
-    #Set configuration with default values
+    # Set configuration with default values
     $testParams = @{
          Identity                                = $env:computername
          Credential                              = $shellCredentials
@@ -210,7 +210,7 @@ if ($exchangeInstalled)
 
      Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Set default Transport Service configuration' -ExpectedGetResults $expectedGetResults
 
-     #modify configuration
+     # modify configuration
      $testParams.InternalDNSServers = '192.168.1.10'
      $testParams.ExternalDNSServers = '10.1.1.10'
      $testParams.PipelineTracingSenderAddress = 'john.doe@contoso.com'
@@ -221,7 +221,7 @@ if ($exchangeInstalled)
 
      Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Modify Transport Service configuration' -ExpectedGetResults $expectedGetResults
 
-     #modify configuration
+     # modify configuration
      $testParams.InternalDNSServers = ''
      $testParams.ExternalDNSServers = ''
      $testParams.PipelineTracingSenderAddress = ''

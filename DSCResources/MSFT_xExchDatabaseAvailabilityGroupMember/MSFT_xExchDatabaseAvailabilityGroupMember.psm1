@@ -29,10 +29,10 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'MailboxServer' = $MailboxServer;'DAGName' = $DAGName} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
-    #Setup params
+    # Setup params
     Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $PSBoundParameters['DAGName']}
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
@@ -40,7 +40,7 @@ function Get-TargetResource
 
     if ($null -ne $dag -and $null -ne $dag.Servers)
     {
-        #See if this server is already in the DAG
+        # See if this server is already in the DAG
         $server = $dag.Servers | Where-Object {$_.Name -eq "$($MailboxServer)"}
 
         if ($null -ne $server)
@@ -92,22 +92,22 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'MailboxServer' = $MailboxServer;'DAGName' = $DAGName} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Add-DatabaseAvailabilityGroupServer' -Verbose:$VerbosePreference
 
-    #Setup params
+    # Setup params
     Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $PSBoundParameters['DAGName']}
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DAGName', 'Credential'
 
     $failoverClusteringRole = Get-WindowsFeature -Name Failover-Clustering -ErrorAction SilentlyContinue
 
-    #Make sure the Failover-Clustering role is installed before trying to add the member to the DAG
+    # Make sure the Failover-Clustering role is installed before trying to add the member to the DAG
     if ($null -eq $failoverClusteringRole -or !$failoverClusteringRole.Installed)
     {
         Write-Error -Message 'The Failover-Clustering role must be fully installed before the server can be added to the cluster.'
         return
     }
-    #Force a reboot if the cluster is in an InstallPending state
+    # Force a reboot if the cluster is in an InstallPending state
     elseif ($failoverClusteringRole.InstallState -like 'InstallPending')
     {
         Write-Warning -Message 'A reboot is required to finish installing the Failover-Clustering role. This must occur before the server can be added to the DAG.'
@@ -149,10 +149,10 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'MailboxServer' = $MailboxServer;'DAGName' = $DAGName} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
-    #Setup params
+    # Setup params
     Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $PSBoundParameters['DAGName']}
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 

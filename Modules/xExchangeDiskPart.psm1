@@ -1,4 +1,4 @@
-#Adds the array of commands to a single temp file, and has disk part execute the temp file
+# Adds the array of commands to a single temp file, and has disk part execute the temp file
 function StartDiskpart
 {
     [CmdletBinding()]
@@ -26,7 +26,7 @@ function StartDiskpart
     return $Output
 }
 
-#Uses diskpart to obtain information on the disks and volumes that already exist on the system
+# Uses diskpart to obtain information on the disks and volumes that already exist on the system
 function GetDiskInfo
 {
     [CmdletBinding()]
@@ -45,14 +45,14 @@ function GetDiskInfo
 
     $foundDisks = $false
 
-    #First parse out the list of disks
+    # First parse out the list of disks
     foreach ($line in $diskList)
     {
         if ($foundDisks -eq $true)
         {
             if ($line.Contains("Disk "))
             {
-                #First find the disk number
+                # First find the disk number
                 $startIndex = "  Disk ".Length
                 $endIndex = "  --------  ".Length
                 $diskNumStr = $line.Substring($startIndex, $endIndex - $startIndex).Trim()
@@ -63,7 +63,7 @@ function GetDiskInfo
                     $diskNums += $diskNum
                 }
 
-                #Now find the disk size
+                # Now find the disk size
                 $startIndex = "  --------  -------------  ".Length
                 $endIndex = "  --------  -------------  -------  ".Length
                 $diskSize = $line.Substring($startIndex, $endIndex - $startIndex).Trim()
@@ -74,13 +74,13 @@ function GetDiskInfo
                 }
             }
         }
-        elseif ($line.Contains("--------  -------------  -------  -------  ---  ---")) #Scroll forward until we find the where the list of disks starts
+        elseif ($line.Contains("--------  -------------  -------  -------  ---  ---")) # Scroll forward until we find the where the list of disks starts
         {
             $foundDisks = $true
         }
     }
 
-    #Now get info on the disks
+    # Now get info on the disks
     foreach ($diskNum in $diskNums)
     {
         $diskDetails = StartDiskpart -Commands "Select Disk $($diskNum)", "Detail Disk" -ShowOutput $false
@@ -95,7 +95,7 @@ function GetDiskInfo
             {
                 if ($line.StartsWith("  Volume "))
                 {
-                    #First find the volume number
+                    # First find the volume number
                     $volStart = "  Volume ".Length
                     $volEnd = "  ----------  ".Length
                     $volStr = $line.Substring($volStart, $volEnd - $volStart).Trim()
@@ -106,7 +106,7 @@ function GetDiskInfo
 
                         AddObjectToMapOfObjectArrays -Map $diskInfo.DiskToVolumeMap -Key $diskNum -Value $volNum
 
-                        #Now parse out the drive letter if it's set
+                        # Now parse out the drive letter if it's set
                         $letterStart = "  ----------  ".Length
                         $letterEnd = $line.IndexOf("  ----------  ---  ") + "  ----------  ---  ".Length
                         $letter = $line.Substring($letterStart, $letterEnd - $letterStart).Trim()
@@ -116,14 +116,14 @@ function GetDiskInfo
                             AddObjectToMapOfObjectArrays -Map $diskInfo.VolumeToMountPointMap -Key $volNum -Value $letter
                         }
 
-                        #Now find all the mount points
+                        # Now find all the mount points
                         do
                         {
                             $line = $diskDetails[++$i]
 
-                            if ($null -eq $line -or $line.StartsWith("  Volume ") -or $line.Trim().Length -eq 0) #We've hit the next volume, or the end of all info
+                            if ($null -eq $line -or $line.StartsWith("  Volume ") -or $line.Trim().Length -eq 0) # We've hit the next volume, or the end of all info
                             {
-                                $i-- #Move $i back one as we may have overrun the start of the next volume info
+                                $i-- # Move $i back one as we may have overrun the start of the next volume info
                                 break
                             }
                             else
@@ -174,7 +174,7 @@ function StringArrayToCommaSeparatedString
     return $string
 }
 
-#Takes a hashtable, and adds the given key and value.
+# Takes a hashtable, and adds the given key and value.
 function AddObjectToMapOfObjectArrays
 {
     Param([Hashtable]$Map, $Key, $Value)
@@ -190,8 +190,8 @@ function AddObjectToMapOfObjectArrays
     }
 }
 
-#Checks whether the mount point specified in the given path already exists as a mount point
-#Returns the volume number if it does exist, else -1
+# Checks whether the mount point specified in the given path already exists as a mount point
+# Returns the volume number if it does exist, else -1
 function MountPointExists
 {
     [CmdletBinding()]
@@ -211,7 +211,7 @@ function MountPointExists
     {
         foreach ($value in $DiskInfo.VolumeToMountPointMap[$key])
         {
-            #Make sure both paths end with the same character
+            # Make sure both paths end with the same character
             if (($value.EndsWith("\")) -eq $false)
             {
                 $value += "\"
@@ -222,7 +222,7 @@ function MountPointExists
                 $Path += "\"
             }
 
-            #Do the comparison
+            # Do the comparison
             if ($value -like $Path)
             {
                 return $key

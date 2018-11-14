@@ -134,7 +134,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ActiveSyncVirtualDirectory' -Verbose:$VerbosePreference
 
     $easVdir = Get-ActiveSyncVirtualDirectoryInternal @PSBoundParameters
@@ -307,26 +307,27 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-ActiveSyncVirtualDirectory' -Verbose:$VerbosePreference
 
-    #Ensure an empty string is $null and not a string
+    # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    #Remove Credential and AllowServiceRestart because those parameters do not exist on Set-ActiveSyncVirtualDirectory
+    # Remove Credential and AllowServiceRestart because those parameters do not exist on Set-ActiveSyncVirtualDirectory
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart', 'AutoCertBasedAuth', 'AutoCertBasedAuthThumbprint', 'AutoCertBasedAuthHttpsBindings'
 
-    #verify SPNs depending on AllowDotlesSPN
+    # Verify SPNs depending on AllowDotlesSPN
     if ( -not (Test-ExtendedProtectionSPNList -SPNList $ExtendedProtectionSPNList -Flags $ExtendedProtectionFlags))
     {
         throw 'SPN list contains DotlesSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags or invalid combination was used!'
     }
 
-    #Configure everything but CBA
+    # Configure everything but CBA
     Set-ActiveSyncVirtualDirectory @PSBoundParameters
 
-    if ($AutoCertBasedAuth) #Need to configure CBA
+    if ($AutoCertBasedAuth)
     {
+        # Need to configure CBA
         Test-PreReqsForCertBasedAuth
 
         if (-not ([System.String]::IsNullOrEmpty($AutoCertBasedAuthThumbprint)))
@@ -338,8 +339,9 @@ function Set-TargetResource
             throw 'AutoCertBasedAuthThumbprint must be specified when AutoCertBasedAuth is set to true'
         }
 
-        if($AllowServiceRestart) #Need to restart all of IIS for auth settings to stick
+        if($AllowServiceRestart)
         {
+            # Need to restart all of IIS for auth settings to stick
             Write-Verbose -Message 'Restarting IIS'
 
             iisreset /noforce /timeout:300
@@ -350,7 +352,7 @@ function Set-TargetResource
         }
     }
 
-    #Only bounce the app pool if we didn't already restart IIS for CBA
+    # Only bounce the app pool if we didn't already restart IIS for CBA
     if (-not $AutoCertBasedAuth)
     {
         if($AllowServiceRestart)
@@ -365,7 +367,7 @@ function Set-TargetResource
         }
     }
 
-    #install IsapiFilter manually as workaround as Exchange Cmdlet doesn't do it
+    # Install IsapiFilter manually as workaround as Exchange Cmdlet doesn't do it
     if ($InstallIsapiFilter)
     {
         if (-not (Test-ISAPIFilter))
@@ -515,10 +517,10 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ActiveSyncVirtualDirectory' -Verbose:$VerbosePreference
 
-    #Ensure an empty string is $null and not a string
+    # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     $easVdir = Get-ActiveSyncVirtualDirectoryInternal @PSBoundParameters
@@ -837,7 +839,7 @@ function Enable-CertBasedAuth
 
     $appCmdExe = "$($env:SystemRoot)\System32\inetsrv\appcmd.exe"
 
-    #Enable cert auth in IIS, and require SSL on the AS vdir
+    # Enable cert auth in IIS, and require SSL on the AS vdir
     $output = &$appCmdExe set config -section:system.webServer/security/authentication/clientCertificateMappingAuthentication /enabled:'True' /commit:apphost
     Write-Verbose -Message "$output"
 
@@ -850,8 +852,8 @@ function Enable-CertBasedAuth
     $output = &$appCmdExe set config 'Default Web Site/Microsoft-Server-ActiveSync' -section:system.webServer/security/authentication/clientCertificateMappingAuthentication /enabled:'True' /commit:apphost
     Write-Verbose -Message "$output"
 
-    #Set DSMapperUsage to enabled on all the required SSL bindings
-    $appId = '{4dc3e181-e14b-4a21-b022-59fc669b0914}' #The appId of all IIS applications
+    # Set DSMapperUsage to enabled on all the required SSL bindings
+    $appId = '{4dc3e181-e14b-4a21-b022-59fc669b0914}' # The appId of all IIS applications
 
     foreach ($binding in $AutoCertBasedAuthHttpsBindings)
     {
@@ -963,7 +965,7 @@ function Enable-DSMapperUsage
         [System.String]
         $AppId
     )
-    #See if a binding already exists, and if so, delete it
+    # See if a binding already exists, and if so, delete it
     $bindingOutput = netsh http show sslcert ipport=$($IpPortCombo)
 
     if (Test-IsSslBinding $bindingOutput)
@@ -972,7 +974,7 @@ function Enable-DSMapperUsage
         Write-Verbose -Message "$output"
     }
 
-    #Add the binding back with new settings
+    # Add the binding back with new settings
     $output = netsh http add sslcert ipport=$($IpPortCombo) certhash=$($CertThumbprint) appid=$($AppId) dsmapperusage=enable certstorename=MY
     Write-Verbose -Message "$output"
 }
@@ -1099,7 +1101,7 @@ function Test-ISAPIFilter
         $ISAPIFilterName = 'Exchange ActiveSync ISAPI Filter'
     )
 
-    Begin
+    begin
     {
         $ISAPIFilters = Get-WebConfigurationProperty -PSPath 'MACHINE/WEBROOT/APPHOST' `
                                                      -Location $WebSite `
@@ -1107,7 +1109,7 @@ function Test-ISAPIFilter
                                                      -Name '.'
         [System.Boolean]$ReturnValue = $false
     }
-    Process
+    process
     {
         if ($ISAPIFilters.Collection.Count -gt 0)
         {
@@ -1118,7 +1120,7 @@ function Test-ISAPIFilter
             }
         }
     }
-    End
+    end
     {
         return $ReturnValue
     }

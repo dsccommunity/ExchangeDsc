@@ -3,7 +3,7 @@
 class MSFT_xExchDatabaseAvailabilityGroupNetwork : OMI_BaseResource
 {
     [Key] String Name; //The name of the DAG network
-    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange
     [Required] String DatabaseAvailabilityGroup; //The DAG where the network will live
     [Required, ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure; //Whethe the DAG network should exist or not
 

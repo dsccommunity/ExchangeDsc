@@ -15,13 +15,13 @@ $ConfigurationData = @{
                 CertificateFile = 'C:\public-certificate.cer'
             #>
 
-            #Thumbprint of the certificate being used for decrypting credentials
+            # Thumbprint of the certificate being used for decrypting credentials
             Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673'
 
-            #The product key to license Exchange 2013
+            # The product key to license Exchange 2013
             ProductKey = '12345-12345-12345-12345-12345'
 
-            #The base file server UNC path that will be used for copying things like certificates, Exchange binaries, and Jetstress binaries
+            # The base file server UNC path that will be used for copying things like certificates, Exchange binaries, and Jetstress binaries
             FileServerBase = '\\rras-1.contoso.local\Binaries'
 
             #endregion
@@ -69,7 +69,7 @@ Configuration Example
 
     Node $AllNodes.NodeName
     {
-        #Copy the Exchange setup files locally
+        # Copy the Exchange setup files locally
         File ExchangeBinaries
         {
             Ensure          = 'Present'
@@ -80,14 +80,14 @@ Configuration Example
             Credential      = $ExchangeAdminCredential
         }
 
-        #Check if a reboot is needed before installing Exchange
+        # Check if a reboot is needed before installing Exchange
         xPendingReboot BeforeExchangeInstall
         {
             Name      = "BeforeExchangeInstall"
             DependsOn = '[File]ExchangeBinaries'
         }
 
-        #Do the Exchange install
+        # Do the Exchange install
         xExchInstall InstallExchange
         {
             Path       = "C:\Binaries\E2K13CU8\Setup.exe"
@@ -96,7 +96,7 @@ Configuration Example
             DependsOn  = '[xPendingReboot]BeforeExchangeInstall'
         }
 
-        #This section licenses the server
+        # This section licenses the server
         xExchExchangeServer EXServer
         {
             Identity            = $Node.NodeName
@@ -106,7 +106,7 @@ Configuration Example
             DependsOn           = '[xExchInstall]InstallExchange'
         }
 
-        #See if a reboot is required after installing Exchange
+        # See if a reboot is required after installing Exchange
         xPendingReboot AfterExchangeInstall
         {
             Name      = "AfterExchangeInstall"

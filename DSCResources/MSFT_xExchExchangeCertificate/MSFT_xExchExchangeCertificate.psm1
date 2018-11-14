@@ -19,7 +19,7 @@ function Get-TargetResource
         [System.String]
         $Ensure,
 
-        #Only used by Test-TargetResource
+        # Only used by Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $AllowExtraServices = $false,
@@ -44,7 +44,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Thumbprint' = $Thumbprint} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -Verbose:$VerbosePreference
 
     $cert = GetExchangeCertificate @PSBoundParameters
@@ -79,7 +79,7 @@ function Set-TargetResource
         [System.String]
         $Ensure,
 
-        #Only used by Test-TargetResource
+        # Only used by Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $AllowExtraServices = $false,
@@ -104,12 +104,12 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Thumbprint' = $Thumbprint} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*ExchangeCertificate' -Verbose:$VerbosePreference
 
     $cert = GetExchangeCertificate @PSBoundParameters
 
-    #Check whether any UM services are being enabled, and if they weren't enable before. If so, we should stop those services, enable the cert, then start them up
+    # Check whether any UM services are being enabled, and if they weren't enable before. If so, we should stop those services, enable the cert, then start them up
     $needUMServiceReset = $false
     $needUMCallRouterServiceReset = $false
 
@@ -134,7 +134,7 @@ function Set-TargetResource
         }
     }
 
-    #Stop required services before working with the cert
+    # Stop required services before working with the cert
     if ($needUMServiceReset -eq $true)
     {
         Write-Verbose -Message 'Stopping service MSExchangeUM before enabling the UM service on the certificate'
@@ -147,10 +147,10 @@ function Set-TargetResource
         Stop-Service -Name MSExchangeUMCR -Confirm:$false
     }
 
-    #The desired cert is not present. Deal with that scenario.
+    # The desired cert is not present. Deal with that scenario.
     if ($null -eq $cert)
     {
-        #If the cert is null and it's supposed to be present, then we need to import one
+        # If the cert is null and it's supposed to be present, then we need to import one
         if ($Ensure -eq 'Present')
         {
             $cert = Import-ExchangeCertificate -FileData ([Byte[]]$(Get-Content -Path "$($CertFilePath)" -Encoding Byte -ReadCount 0)) -Password:$CertCreds.Password -Server $env:COMPUTERNAME
@@ -158,14 +158,14 @@ function Set-TargetResource
     }
     else
     {
-        #cert is present and it shouldn't be. Remove it
+        # cert is present and it shouldn't be. Remove it
         if ($Ensure -eq 'Absent')
         {
             Remove-ExchangeCertificate -Thumbprint $Thumbprint -Confirm:$false -Server $env:COMPUTERNAME
         }
     }
 
-    #Cert is present. Set props on it
+    # Cert is present. Set props on it
     if ($Ensure -eq 'Present')
     {
         if ($null -ne $cert)
@@ -182,7 +182,7 @@ function Set-TargetResource
         }
     }
 
-    #Start UM services that we started
+    # Start UM services that were stopped earlier
     if ($needUMServiceReset -eq $true)
     {
         Write-Verbose -Message 'Starting service MSExchangeUM'
@@ -217,7 +217,7 @@ function Test-TargetResource
         [System.String]
         $Ensure,
 
-        #Only used by Test-TargetResource
+        # Only used by Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $AllowExtraServices = $false,
@@ -242,7 +242,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Thumbprint' = $Thumbprint} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -Verbose:$VerbosePreference
 
     $cert = GetExchangeCertificate @PSBoundParameters
@@ -277,7 +277,7 @@ function Test-TargetResource
     return $testResults
 }
 
-#Runs Get-ExchangeCertificate, only specifying Thumbprint, ErrorAction, and optionally DomainController
+# Runs Get-ExchangeCertificate, only specifying Thumbprint, ErrorAction, and optionally DomainController
 function GetExchangeCertificate
 {
     [CmdletBinding()]
@@ -297,7 +297,7 @@ function GetExchangeCertificate
         [System.String]
         $Ensure,
 
-        #Only used by Test-TargetResource
+        # Only used by Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $AllowExtraServices = $false,
@@ -320,7 +320,7 @@ function GetExchangeCertificate
         $Services
     )
 
-    #Remove params we don't want to pass into the next command
+    # Remove params we don't want to pass into the next command
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Thumbprint', 'DomainController'
 
     return (Get-ExchangeCertificate @PSBoundParameters -ErrorAction SilentlyContinue -Server $env:COMPUTERNAME)

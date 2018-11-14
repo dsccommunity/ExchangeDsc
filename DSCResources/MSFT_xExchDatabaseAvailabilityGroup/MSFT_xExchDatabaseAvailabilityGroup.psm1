@@ -117,7 +117,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
     $dag = GetDatabaseAvailabilityGroup @PSBoundParameters
@@ -278,7 +278,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup', 'Set-DatabaseAvailabilityGroup', 'New-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
     #create array of Exchange 2016 only parameters
@@ -290,7 +290,7 @@ function Set-TargetResource
     {
         foreach ($Exchange2016Parameter in $Exchange2016Only)
         {
-            #Check for non-existent parameters in Exchange 2013
+            # Check for non-existent parameters in Exchange 2013
             Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2016Parameter"  -ResourceName 'xExchDatabaseAvailabilityGroup' -ParamExistsInVersion '2016'
         }
     }
@@ -307,21 +307,21 @@ function Set-TargetResource
 
     $dag = GetDatabaseAvailabilityGroup @PSBoundParameters
 
-    #We need to create the DAG
+    # We need to create the DAG
     if ($null -eq $dag)
     {
-        #Create a copy of the original parameters
+        # Create a copy of the original parameters
         $originalPSBoundParameters = @{} + $PSBoundParameters
 
-        #Remove parameters that don't exist in New-DatabaseAvailabilityGroup
+        # Remove parameters that don't exist in New-DatabaseAvailabilityGroup
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Name", "DatabaseAvailabilityGroupIpAddresses", "WitnessDirectory", "WitnessServer", "DomainController"
 
-        #Create the DAG
+        # Create the DAG
         $dag = New-DatabaseAvailabilityGroup @PSBoundParameters
 
         if ($null -ne $dag)
         {
-            #Add original props back
+            # Add original props back
             Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
         }
         else
@@ -330,14 +330,14 @@ function Set-TargetResource
         }
     }
 
-    #Modify existing DAG
+    # Modify existing DAG
     if ($null -ne $dag)
     {
-        #convert Name to Identity, and Remove Credential
+        # convert Name to Identity, and Remove Credential
         Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = $PSBoundParameters["Name"]}
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Name", "Credential"
 
-        #If not all members are in DAG yet, remove params that require them to be
+        # If not all members are in DAG yet, remove params that require them to be
         if ($dag.Servers.Count -lt $AutoDagTotalNumberOfServers)
         {
             if ($PSBoundParameters.ContainsKey("DatacenterActivationMode") -and $DatacenterActivationMode -like "DagOnly")
@@ -470,10 +470,10 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
-    #create array of Exchange 2016 only parameters
+    # Create array of Exchange 2016 only parameters
     [array]$Exchange2016Only = 'AutoDagAutoRedistributeEnabled', 'FileSystem', 'PreferenceMoveFrequency'
 
     $serverVersion = Get-ExchangeVersionYear
@@ -482,7 +482,7 @@ function Test-TargetResource
     {
         foreach ($Exchange2016Parameter in $Exchange2016Only)
         {
-            #Check for non-existent parameters in Exchange 2013
+            # Check for non-existent parameters in Exchange 2013
             Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2016Parameter"  -ResourceName 'xExchDatabaseAvailabilityGroup' -ParamExistsInVersion '2016'
         }
     }
@@ -597,7 +597,7 @@ function Test-TargetResource
             $testResults = $false
         }
 
-        #Replication port only comes back correctly from Get-DatabaseAvailabilityGroup if it has been set when there is 1 or more servers in the DAG
+        # Replication port only comes back correctly from Get-DatabaseAvailabilityGroup if it has been set when there is 1 or more servers in the DAG
         if ($dag.Servers.Count -gt 0)
         {
             if (!(Test-ExchangeSetting -Name 'ReplicationPort' -Type 'Int' -ExpectedValue $ReplicationPort -ActualValue $dag.ReplicationPort -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
@@ -616,7 +616,7 @@ function Test-TargetResource
             $testResults = $false
         }
 
-        #Verify these props only if all members are in the DAG
+        # Verify these props only if all members are in the DAG
         if ($dag.Servers.Count -ge $AutoDagTotalNumberOfServers)
         {
             if (!(Test-ExchangeSetting -Name 'DatacenterActivationMode' -Type 'String' -ExpectedValue $DatacenterActivationMode -ActualValue $dag.DatacenterActivationMode -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
@@ -629,7 +629,7 @@ function Test-TargetResource
     return $testResults
 }
 
-#Runs Get-DatabaseAvailabilityGroup, only specifying Identity, ErrorAction, and optionally DomainController
+# Runs Get-DatabaseAvailabilityGroup, only specifying Identity, ErrorAction, and optionally DomainController
 function GetDatabaseAvailabilityGroup
 {
     [CmdletBinding()]
