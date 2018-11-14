@@ -8,10 +8,10 @@
 #>
 
 #region HEADER
-[System.String]$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-[System.String]$script:DSCModuleName = 'xExchange'
-[System.String]$script:DSCResourceFriendlyName = 'xExchExchangeServer'
-[System.String]$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[System.String] $script:DSCModuleName = 'xExchange'
+[System.String] $script:DSCResourceFriendlyName = 'xExchExchangeServer'
+[System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
@@ -56,7 +56,7 @@ function Test-ExchDscServerPrepped
     param()
 
     Context 'Server has had relevant properties nulled out for xExchExchangeServer tests' {
-        [System.Collections.Hashtable]$getResult = Get-TargetResource @testParams -Verbose
+        [System.Collections.Hashtable] $getResult = Get-TargetResource @testParams -Verbose
 
         It 'InternetWebProxy should be empty' {
             [System.String]::IsNullOrEmpty($getResult.InternetWebProxy) | Should Be $true

@@ -4,10 +4,10 @@
 #>
 
 #region HEADER
-[System.String]$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-[System.String]$script:DSCModuleName = 'xExchange'
-[System.String]$script:DSCResourceFriendlyName = 'xExchAutoMountPoint'
-[System.String]$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[System.String] $script:DSCModuleName = 'xExchange'
+[System.String] $script:DSCResourceFriendlyName = 'xExchAutoMountPoint'
+[System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
@@ -121,7 +121,7 @@ function Test-MountPointSetup
             # what we know about it
             if (!$foundExVolMountPoint)
             {
-                [String[]]$exVolAccessPaths = $dbPartition.AccessPaths | Where-Object {$_ -like "*$AutoDagVolumesRootFolderPath\$VolumePrefix*"}
+                [String[]] $exVolAccessPaths = $dbPartition.AccessPaths | Where-Object {$_ -like "*$AutoDagVolumesRootFolderPath\$VolumePrefix*"}
 
                 if ($exVolAccessPaths.Count -gt 0)
                 {
@@ -151,8 +151,8 @@ function Test-MountPointSetup
     }
 
     # Now try to find and test any requested spare volumes
-    [Object[]]$otherExVolPartitions = Get-Partition | Where-Object {$_.AccessPaths -like "*$AutoDagVolumesRootFolderPath\$VolumePrefix*" -and $_.DiskNumber -NotIn $exDiskNumbers}
-    [Object[]]$otherExVolDisks = $otherExVolPartitions.DiskNumber
+    [Object[]] $otherExVolPartitions = Get-Partition | Where-Object {$_.AccessPaths -like "*$AutoDagVolumesRootFolderPath\$VolumePrefix*" -and $_.DiskNumber -NotIn $exDiskNumbers}
+    [Object[]] $otherExVolDisks = $otherExVolPartitions.DiskNumber
 
     It "Extra $VolumePrefix Partition Count Same as Disk Count" {
         $otherExVolPartitions.Count -eq $otherExVolDisks.Count | Should Be $true
@@ -176,7 +176,7 @@ function Test-DiskAndPartitionSetup
     param
     (
         [Parameter()]
-        [Object]
+        [System.Object]
         $Partition,
 
         [Parameter()]
@@ -207,7 +207,7 @@ function Test-DiskAndPartitionSetup
     }
 
     # Use WMI/CIM to access the BlockSize, and test that the UnitSize was set correctly
-    [Object[]]$exDiskVolExtendedProps = Get-CimInstance -Query "SELECT Blocksize FROM Win32_Volume WHERE Label='$($exDiskVol.FileSystemLabel)'"
+    [Object[]] $exDiskVolExtendedProps = Get-CimInstance -Query "SELECT Blocksize FROM Win32_Volume WHERE Label='$($exDiskVol.FileSystemLabel)'"
 
     It "Only 1 disk exists with label '$($exDiskVol.FileSystemLabel)'" {
         $exDiskVolExtendedProps.Count -eq 1 | Should Be $true
@@ -217,11 +217,11 @@ function Test-DiskAndPartitionSetup
     {
         if ($UnitSize.ToLower().EndsWith('k'))
         {
-            [UInt64]$UnitSizeBytes = [UInt64]::Parse($UnitSize.Substring(0, $UnitSize.Length - 1)) * 1024
+            [UInt64] $UnitSizeBytes = [UInt64]::Parse($UnitSize.Substring(0, $UnitSize.Length - 1)) * 1024
         }
         else
         {
-            [UInt64]$UnitSizeBytes = [UInt64]::Parse($UnitSize)
+            [UInt64] $UnitSizeBytes = [UInt64]::Parse($UnitSize)
         }
 
         It "Volume Unit Size == $UnitSize" {
@@ -246,7 +246,7 @@ function Remove-MountPointAndFolderSetup
     )
 
     # Find the disk numbers of any disk that currently has an Exchange partition on it
-    [Object[]]$exDiskNumbers = (Get-Partition | Where-Object {$_.AccessPaths -like "*$AutoDagDatabasesRootFolderPath*" -or $_.AccessPaths -like "*$AutoDagVolumesRootFolderPath*"}).DiskNumber
+    [Object[]] $exDiskNumbers = (Get-Partition | Where-Object {$_.AccessPaths -like "*$AutoDagDatabasesRootFolderPath*" -or $_.AccessPaths -like "*$AutoDagVolumesRootFolderPath*"}).DiskNumber
 
     # Remove all partitions from any Exchange disk. This ensures the System Reserved
     # partitions are also removed, which is necessary for xExchAutoMountPoint to find
@@ -271,8 +271,8 @@ function Remove-MountPointAndFolderSetup
 }
 
 # Define where Exchange databases and volumes will go
-[System.String]$autoDagDatabasesRootFolderPath = Join-Path $env:SystemDrive 'ExchangeDatabases'
-[System.String]$autoDagVolumesRootFolderPath = Join-Path $env:SystemDrive 'ExchangeVolumes'
+[System.String] $autoDagDatabasesRootFolderPath = Join-Path $env:SystemDrive 'ExchangeDatabases'
+[System.String] $autoDagVolumesRootFolderPath = Join-Path $env:SystemDrive 'ExchangeVolumes'
 
 # Clean up any existing mount points or folders
 Remove-MountPointAndFolderSetup -AutoDagDatabasesRootFolderPath $autoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $autoDagVolumesRootFolderPath

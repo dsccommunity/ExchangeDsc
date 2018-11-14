@@ -1103,11 +1103,12 @@ function Test-ISAPIFilter
 
     begin
     {
+        $ReturnValue = $false
+
         $ISAPIFilters = Get-WebConfigurationProperty -PSPath 'MACHINE/WEBROOT/APPHOST' `
                                                      -Location $WebSite `
                                                      -Filter 'system.webServer/isapiFilters' `
                                                      -Name '.'
-        [System.Boolean]$ReturnValue = $false
     }
     process
     {

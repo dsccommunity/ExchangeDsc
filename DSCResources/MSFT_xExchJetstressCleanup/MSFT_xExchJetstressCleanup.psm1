@@ -100,16 +100,17 @@ function Set-TargetResource
     # If a config file was specified, pull the database and log paths out and put them into $DatabasePaths and $LogPaths
     if ($PSBoundParameters.ContainsKey('ConfigFilePath'))
     {
-        [xml]$configFile = LoadConfigXml -ConfigFilePath "$($ConfigFilePath)"
+        [xml] $configFile = LoadConfigXml -ConfigFilePath "$($ConfigFilePath)"
 
-        [System.String[]]$DatabasePaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path
-        [System.String[]]$LogPaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
+        [System.String[]] $DatabasePaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path
+        [System.String[]] $LogPaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
     }
 
-    [System.String[]]$FoldersToRemove = $DatabasePaths + $LogPaths
+    [System.String[]] $FoldersToRemove = $DatabasePaths + $LogPaths
 
     # Now delete the specified directories
-    [Hashtable]$ParentFoldersToRemove = @{} # Only used if $DeleteAssociatedMountPoints is $true
+    # Variable Only used if $DeleteAssociatedMountPoints is $true
+    [Hashtable] $ParentFoldersToRemove = @{} 
 
     foreach ($path in $FoldersToRemove)
     {
@@ -161,7 +162,7 @@ function Set-TargetResource
         {
             if ((Test-Path -LiteralPath "$($OutputSaveLocation)") -eq $false)
             {
-                mkdir -Path "$($OutputSaveLocation)"
+                New-Item -ItemType Directory -Path "$($OutputSaveLocation)"
             }
 
             $outputFiles = Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object -FilterScript {
@@ -253,13 +254,13 @@ function Test-TargetResource
         # If a config file was specified, pull the database and log paths out and put them into $DatabasePaths and $LogPaths
         if ($PSBoundParameters.ContainsKey('ConfigFilePath'))
         {
-            [xml]$configFile = LoadConfigXml -ConfigFilePath "$($ConfigFilePath)"
+            [xml] $configFile = LoadConfigXml -ConfigFilePath "$($ConfigFilePath)"
 
-            [System.String[]]$FoldersToRemove = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path + $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
+            [System.String[]] $FoldersToRemove = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path + $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
         }
         else
         {
-            [System.String[]]$FoldersToRemove = $DatabasePaths + $LogPaths
+            [System.String[]] $FoldersToRemove = $DatabasePaths + $LogPaths
         }
 
         # First make sure DB and log folders were cleaned up
@@ -448,12 +449,12 @@ function LoadConfigXml
         $ConfigFilePath
     )
 
-    [xml]$configFile = Get-Content -LiteralPath "$($ConfigFilePath)"
+    [xml] $configFile = Get-Content -LiteralPath "$($ConfigFilePath)"
 
     if ($null -ne $configFile)
     {
-        [System.String[]]$DatabasePaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path
-        [System.String[]]$LogPaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
+        [System.String[]] $DatabasePaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path
+        [System.String[]] $LogPaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
 
         if ($null -eq $DatabasePaths -or $DatabasePaths.Count -eq 0)
         {
