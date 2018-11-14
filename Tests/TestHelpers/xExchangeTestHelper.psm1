@@ -1,7 +1,22 @@
 <#
-    Function to be used within pester for end to end testing of Get/Set/Test-TargetResource
-    Function first calls Set-TargetResource with provided parameters, then runs Get and Test-TargetResource,
-    and ensures they match $ExpectedGetResults and $ExpectedTestResult
+    .SYNOPSIS
+        Function to be used within pester for end to end testing of
+        Get/Set/Test-TargetResource. Function first calls Set-TargetResource
+        with provided parameters, then runs Get and Test-TargetResource, and
+        ensures they match $ExpectedGetResults and $ExpectedTestResult.
+
+    .PARAMETER Params
+        The Parameters to pass when calling Get/Set/Test-TargetResource.
+
+    .PARAMETER ContextLabel
+        The label to use within the Context block of tests.
+
+    .PARAMETER ExpectedGetResults
+        A hashtable containing the expected return values from
+        Get-TargetResource.
+
+    .PARAMETER ExpectedTestResult
+        The expected return value from Test-TargetResource.
 #>
 function Test-TargetResourceFunctionality
 {
@@ -26,58 +41,38 @@ function Test-TargetResourceFunctionality
     )
 
     Context $ContextLabel {
-        [System.Boolean]$testResult = Test-TargetResource @Params -Verbose
+        if ($null -eq ($Params.Keys | Where-Object -FilterScript {$_ -like 'Verbose'}))
+        {
+            $Params.Add('Verbose', $true)
+        }
+
+        [System.Boolean] $testResult = Test-TargetResource @Params
 
         Write-Verbose -Message "Test-TargetResource results before running Set-TargetResource: $testResult"
 
-        Set-TargetResource @Params -Verbose
+        Set-TargetResource @Params
 
-        [System.Collections.Hashtable]$getResult = Get-TargetResource @Params -Verbose
-        [System.Boolean]$testResult = Test-TargetResource @Params -Verbose
+        [System.Collections.Hashtable] $getResult = Get-TargetResource @Params
+        [System.Boolean] $testResult = Test-TargetResource @Params
 
-        #The ExpectedGetResults are $null, so let's check that what we got back is $null
+        # The ExpectedGetResults are $null, so let's check that what we got back is $null
         if ($null -eq $ExpectedGetResults)
         {
             It 'Get-TargetResource: Should Be Null' {
-                $getResult | Should BeNullOrEmpty
+                $getResult | Should -BeNullOrEmpty
             }
         }
         else
         {
-            <#
-                Check the members of the Get-TargetResource results and make sure the result types
-                match those of the function parameters
-            #>
-            $getTargetResourceCommand = Get-Command Get-TargetResource
+            Test-CommonGetTargetResourceFunctionality -GetResult $getResult
 
-            It "Only 1 Get-TargetResource function is loaded" {
-                $getTargetResourceCommand.Count -eq 1 | Should Be $true
-            }
-
-            if ($getTargetResourceCommand.Count -eq 1)
-            {
-                foreach ($getTargetResourceParam in $getTargetResourceCommand.Parameters.Keys | Where-Object {$getResult.ContainsKey($_)})
-                {
-                    $getResultMemberType = '$null'
-
-                    if ($null -ne ($getResult[$getTargetResourceParam]))
-                    {
-                        $getResultMemberType = $getResult[$getTargetResourceParam].GetType().ToString()
-                    }
-
-                    It "Get-TargetResource: Parameter '$getTargetResourceParam' expects return type: '$($getTargetResourceCommand.Parameters[$getTargetResourceParam].ParameterType.ToString())'. Actual return type: '$getResultMemberType'" {
-                        ($getTargetResourceCommand.Parameters[$getTargetResourceParam].ParameterType.ToString()) -eq $getResultMemberType | Should Be $true
-                    }
-                }
-            }
-
-            #Test each individual key in $ExpectedGetResult to see if they exist, and if the expected value matches
+            # Test each individual key in $ExpectedGetResult to see if they exist, and if the expected value matches
             foreach ($key in $ExpectedGetResults.Keys)
             {
                 $getContainsKey = $getResult.ContainsKey($key)
 
                 It "Get-TargetResource: Contains Key: $($key)" {
-                    $getContainsKey | Should Be $true
+                    $getContainsKey | Should -Be $true
                 }
 
                 if ($getContainsKey)
@@ -106,15 +101,82 @@ function Test-TargetResourceFunctionality
                     }
 
                     It "Get-TargetResource: Value Matches for Key: $($key)" {
-                        $getValueMatchesForKey | Should Be $true
+                        $getValueMatchesForKey | Should -Be $true
                     }
                 }
             }
         }
 
-        #Test the Test-TargetResource results
+        # Test the Test-TargetResource results
         It 'Test-TargetResource' {
-            $testResult | Should Be $ExpectedTestResult
+            $testResult | Should -Be $ExpectedTestResult
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Runs Get-TargetTesource, or takes the results of a previous
+        Get-TargetResource execution, and performs common tests against the
+        results. The function must be provided either the results from a
+        previous Get-TargetResource execution, or the parameters to send to
+        Get-TargetResource, but not both. If neither parameter is specified,
+        or both parameters are specified, the function will throw an exception.
+
+    .PARAMETER GetResult
+        The results of a previous Get-TargetResource execution.
+
+    .PARAMETER GetTargetResourceParams
+        The parameters that should be passed to Get-TargetResource.
+#>
+function Test-CommonGetTargetResourceFunctionality
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [System.Collections.Hashtable]
+        $GetResult,
+
+        [Parameter()]
+        [System.Collections.Hashtable]
+        $GetTargetResourceParams
+    )
+
+    if (($GetResult.Count -eq 0 -and $GetTargetResourceParams.Count -eq 0) -or ($GetResult.Count -gt 0 -and $GetTargetResourceParams.Count -gt 0))
+    {
+        throw 'Either the GetResult or GetTargetResourceParams parameters must be specified with non-empty hashtables, but not both.'
+    }
+
+    if ($GetResult.Count -eq 0)
+    {
+        $GetResult = Get-TargetResource @GetTargetResourceParams
+    }
+
+    It 'Should return a hashtable of properties' {
+        $GetResult | Should -Be -Not $null
+    }
+
+    $getTargetResourceCommand = Get-Command Get-TargetResource
+
+    It 'Only 1 Get-TargetResource function should be loaded' {
+        $getTargetResourceCommand.Count -eq 1 | Should -Be $true
+    }
+
+    if ($getTargetResourceCommand.Count -eq 1)
+    {
+        foreach ($getTargetResourceParam in $getTargetResourceCommand.Parameters.Keys | Where-Object -FilterScript {$GetResult.ContainsKey($_)})
+        {
+            $getResultMemberType = '$null'
+
+            if ($null -ne ($GetResult[$getTargetResourceParam]))
+            {
+                $getResultMemberType = $GetResult[$getTargetResourceParam].GetType().ToString()
+            }
+
+            It "Should return a value of type '$($getTargetResourceCommand.Parameters[$getTargetResourceParam].ParameterType.ToString())' for hashtable member '$getTargetResourceParam'. Actual return type: '$getResultMemberType'" {
+                ($getTargetResourceCommand.Parameters[$getTargetResourceParam].ParameterType.ToString()) -eq $getResultMemberType | Should -Be $true
+            }
         }
     }
 }

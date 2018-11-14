@@ -3027,6 +3027,61 @@ try
                 }
             }
         }
+
+        Describe 'xExchangeHelper\Get-StringFromHashtable' -Tag 'Helper' {
+
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Get-StringFromHashtable is called with a hashtable containing keys and values' {
+                It 'Should return a semicolon separated string of key/value pairs' {
+                    $hashtable = @{
+                        a = 1
+                        b = 2
+                        c = 3
+                    }
+
+                    Get-StringFromHashtable -Hashtable $hashtable | Should -Be 'a=1;b=2;c=3'
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Get-DomainDNFromFQDN' -Tag 'Helper' {
+
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            $testCases = @(
+                @{
+                    FQDN = 'domain1.local'
+                    DN   = 'dc=domain1,dc=local'
+                }
+                @{
+                    FQDN = 'sub.domain1.local'
+                    DN   = 'dc=sub,dc=domain1,dc=local'
+                }
+                @{
+                    FQDN = 'domain1'
+                    DN   = 'dc=domain1'
+                }
+            )
+            Context 'When Get-DomainDNFromFQDN is called' {
+                It 'Should return the input domain in DN format' -TestCases $testCases {
+                    param
+                    (
+                        [System.String]
+                        $FQDN,
+
+                        [System.String]
+                        $DN
+                    )
+
+                    Get-DomainDNFromFQDN -Fqdn $FQDN | Should -Be $DN
+                }
+            }
+        }
     }
 }
 finally

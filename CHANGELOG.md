@@ -13,6 +13,8 @@
 - Opt-in for the common test that validates the markdown links.
 - Fix typo of the word 'Certificate' in several example files.
 - Add spaces between array members.
+- Add initial set of Unit Tests (mostly Get-TargetResource tests) for all
+  remaining resource files.
 
 ## 1.24.0.0
 

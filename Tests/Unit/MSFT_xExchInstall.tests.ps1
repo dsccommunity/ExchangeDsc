@@ -11,6 +11,7 @@ if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCR
 }
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Global -Force
 
 $TestEnvironment = Initialize-TestEnvironment `
     -DSCModuleName $script:DSCModuleName `
@@ -40,11 +41,13 @@ try
         $targetResourceParams = @{
             Path       = 'E:\Setup.exe'
             Arguments  = '/mode:Install /role:Mailbox /Iacceptexchangeserverlicenseterms'
-            Credential = New-Object -TypeName System.Management.Automation.PSCredential -argumentlist "fakeuser",(New-Object -TypeName System.Security.SecureString)
+            Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
         }
 
         Describe 'MSFT_xExchInstall\Get-TargetResource' -Tag 'Get' {
             Context 'When Get-TargetResource is called' {
+            Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $targetResourceParams
+
                 It 'Should return the input Path and Arguments' {
 
                     $getResults = Get-TargetResource @targetResourceParams
@@ -60,7 +63,7 @@ try
                 Assert-VerifiableMock
             }
 
-            Context 'When Set-TargetResource is called, ShouldStartInstall is true, and Set-WSManConfigStatus requires a reboot' {
+            Context 'When ShouldStartInstall is true, and Set-WSManConfigStatus requires a reboot' {
                 It 'Should force a reboot' {
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
                         return @{
@@ -74,7 +77,7 @@ try
                 }
             }
 
-            Context 'When Set-TargetResource is called, ShouldStartInstall is true, and Set-WSManConfigStatus does not require a reboot' {
+            Context 'When ShouldStartInstall is true, and Set-WSManConfigStatus does not require a reboot' {
                 It 'Should start the install, wait for it to complete, then detect setup is successful' {
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
                         return @{
@@ -91,7 +94,7 @@ try
                 }
             }
 
-            Context 'When Set-TargetResource is called and tries to start install, but does not detect the setup process' {
+            Context 'When it tries to start install, but does not detect the setup process' {
                 It 'Should throw an exception' {
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
                         return @{
@@ -106,7 +109,7 @@ try
                 }
             }
 
-            Context 'When Set-TargetResource is called and setup is already running' {
+            Context 'When setup is already running' {
                 It 'Should wait for the install, then detect setup is successful' {
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
                         return @{
@@ -121,7 +124,7 @@ try
                 }
             }
 
-            Context 'When Set-TargetResource is called and setup is complete' {
+            Context 'When setup is complete' {
                 It 'Should do nothing' {
                     Mock -CommandName Get-ExchangeInstallStatus -Verifiable -MockWith {
                         return @{

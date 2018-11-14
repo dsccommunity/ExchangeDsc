@@ -249,47 +249,43 @@ function Get-TargetResource
             SubjectLogForManagedFoldersEnabled       = [System.Boolean] $server.SubjectLogForManagedFoldersEnabled
         }
 
-        $serverVersion = Get-ExchangeVersionYear
+        $serverVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
 
         if ($serverVersion -in '2016', '2019')
         {
-            $returnValue.Add('WacDiscoveryEndpoint', [System.String]$server.WacDiscoveryEndpoint)
+            $returnValue.Add('WacDiscoveryEndpoint', [System.String] $server.WacDiscoveryEndpoint)
         }
         elseif ($serverVersion -eq '2013')
         {
             if ($null -ne $server.ManagedFolderAssistantSchedule)
             {
-                $mfaSchedule = [System.String[]]$server.ManagedFolderAssistantSchedule
+                $mfaSchedule = [System.String[]] $server.ManagedFolderAssistantSchedule
             }
             else
             {
-                $mfaSchedule = [System.String[]]@()
+                $mfaSchedule = [System.String[]] @()
             }
 
-            $returnValue.Add('CalendarRepairWorkCycle', [System.String]$server.CalendarRepairWorkCycle)
-            $returnValue.Add('CalendarRepairWorkCycleCheckpoint', [System.String]$server.CalendarRepairWorkCycleCheckpoint)
-            $returnValue.Add('MailboxProcessorWorkCycle', [System.String]$server.MailboxProcessorWorkCycle)
+            $returnValue.Add('CalendarRepairWorkCycle', [System.String] $server.CalendarRepairWorkCycle)
+            $returnValue.Add('CalendarRepairWorkCycleCheckpoint', [System.String] $server.CalendarRepairWorkCycleCheckpoint)
+            $returnValue.Add('MailboxProcessorWorkCycle', [System.String] $server.MailboxProcessorWorkCycle)
             $returnValue.Add('ManagedFolderAssistantSchedule', $mfaSchedule)
-            $returnValue.Add('ManagedFolderWorkCycle', [System.String]$server.ManagedFolderWorkCycle)
-            $returnValue.Add('ManagedFolderWorkCycleCheckpoint', [System.String]$server.ManagedFolderWorkCycleCheckpoint)
-            $returnValue.Add('OABGeneratorWorkCycle', [System.String]$server.OABGeneratorWorkCycle)
-            $returnValue.Add('OABGeneratorWorkCycleCheckpoint', [System.String]$server.OABGeneratorWorkCycleCheckpoint)
-            $returnValue.Add('PublicFolderWorkCycle', [System.String]$server.PublicFolderWorkCycle)
-            $returnValue.Add('PublicFolderWorkCycleCheckpoint', [System.String]$server.PublicFolderWorkCycleCheckpoint)
-            $returnValue.Add('SharingPolicyWorkCycle', [System.String]$server.SharingPolicyWorkCycle)
-            $returnValue.Add('SharingPolicyWorkCycleCheckpoint', [System.String]$server.SharingPolicyWorkCycleCheckpoint)
-            $returnValue.Add('SharingSyncWorkCycle', [System.String]$server.SharingSyncWorkCycle)
-            $returnValue.Add('SharingSyncWorkCycleCheckpoint', [System.String]$server.SharingSyncWorkCycleCheckpoint)
-            $returnValue.Add('SiteMailboxWorkCycle', [System.String]$server.SiteMailboxWorkCycle)
-            $returnValue.Add('SiteMailboxWorkCycleCheckpoint', [System.String]$server.SiteMailboxWorkCycleCheckpoint)
-            $returnValue.Add('TopNWorkCycle', [System.String]$server.TopNWorkCycle)
-            $returnValue.Add('TopNWorkCycleCheckpoint', [System.String]$server.TopNWorkCycleCheckpoint)
-            $returnValue.Add('UMReportingWorkCycle', [System.String]$server.UMReportingWorkCycle)
-            $returnValue.Add('UMReportingWorkCycleCheckpoint', [System.String]$server.UMReportingWorkCycleCheckpoint)
-        }
-        else
-        {
-            Write-Verbose -Message 'Could not detect Exchange version'
+            $returnValue.Add('ManagedFolderWorkCycle', [System.String] $server.ManagedFolderWorkCycle)
+            $returnValue.Add('ManagedFolderWorkCycleCheckpoint', [System.String] $server.ManagedFolderWorkCycleCheckpoint)
+            $returnValue.Add('OABGeneratorWorkCycle', [System.String] $server.OABGeneratorWorkCycle)
+            $returnValue.Add('OABGeneratorWorkCycleCheckpoint', [System.String] $server.OABGeneratorWorkCycleCheckpoint)
+            $returnValue.Add('PublicFolderWorkCycle', [System.String] $server.PublicFolderWorkCycle)
+            $returnValue.Add('PublicFolderWorkCycleCheckpoint', [System.String] $server.PublicFolderWorkCycleCheckpoint)
+            $returnValue.Add('SharingPolicyWorkCycle', [System.String] $server.SharingPolicyWorkCycle)
+            $returnValue.Add('SharingPolicyWorkCycleCheckpoint', [System.String] $server.SharingPolicyWorkCycleCheckpoint)
+            $returnValue.Add('SharingSyncWorkCycle', [System.String] $server.SharingSyncWorkCycle)
+            $returnValue.Add('SharingSyncWorkCycleCheckpoint', [System.String] $server.SharingSyncWorkCycleCheckpoint)
+            $returnValue.Add('SiteMailboxWorkCycle', [System.String] $server.SiteMailboxWorkCycle)
+            $returnValue.Add('SiteMailboxWorkCycleCheckpoint', [System.String] $server.SiteMailboxWorkCycleCheckpoint)
+            $returnValue.Add('TopNWorkCycle', [System.String] $server.TopNWorkCycle)
+            $returnValue.Add('TopNWorkCycleCheckpoint', [System.String] $server.TopNWorkCycleCheckpoint)
+            $returnValue.Add('UMReportingWorkCycle', [System.String] $server.UMReportingWorkCycle)
+            $returnValue.Add('UMReportingWorkCycleCheckpoint', [System.String] $server.UMReportingWorkCycleCheckpoint)
         }
     }
 
@@ -521,23 +517,20 @@ function Set-TargetResource
     'SharingPolicyWorkCycleCheckpoint', 'SharingSyncWorkCycle', 'SharingSyncWorkCycleCheckpoint', 'SiteMailboxWorkCycle', 'SiteMailboxWorkCycleCheckpoint', 'TopNWorkCycle', 'TopNWorkCycleCheckpoint',
     'UMReportingWorkCycle', 'UMReportingWorkCycleCheckpoint'
 
-    $serverVersion = Get-ExchangeVersionYear
+    $serverVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
+
     if ($serverVersion -eq '2013')
     {
-      #Check for non-existent parameters in Exchange 2013
-      Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016', '2019'
+        # Check for non-existent parameters in Exchange 2013
+        Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016','2019'
     }
     elseif ($serverVersion -in '2016', '2019')
     {
-      foreach ($Exchange2013Parameter in $Exchange2013Only)
-      {
-        #Check for non-existent parameters in Exchange 2016
-        Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2013Parameter" -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2013'
-      }
-    }
-    else
-    {
-        Write-Verbose -Message 'Could not detect Exchange version'
+        foreach ($Exchange2013Parameter in $Exchange2013Only)
+        {
+            # Check for non-existent parameters in Exchange 2016
+            Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2013Parameter" -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2013'
+        }
     }
 
     #Ensure an empty string is $null and not a string
@@ -770,23 +763,20 @@ function Test-TargetResource
     'SharingPolicyWorkCycleCheckpoint', 'SharingSyncWorkCycle', 'SharingSyncWorkCycleCheckpoint', 'SiteMailboxWorkCycle', 'SiteMailboxWorkCycleCheckpoint', 'TopNWorkCycle', 'TopNWorkCycleCheckpoint',
     'UMReportingWorkCycle', 'UMReportingWorkCycleCheckpoint'
 
-    $serverVersion = Get-ExchangeVersionYear
+    $serverVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
+
     if ($serverVersion -eq '2013')
     {
-      #Check for non-existent parameters in Exchange 2013
-      Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016', '2019'
+        # Check for non-existent parameters in Exchange 2013
+        Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016','2019'
     }
     elseif ($serverVersion -in '2016', '2019')
     {
-      foreach ($Exchange2013Parameter in $Exchange2013Only)
-      {
-        #Check for non-existent parameters in Exchange 2016
-        Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2013Parameter" -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2013'
-      }
-    }
-    else
-    {
-        Write-Verbose -Message 'Could not detect Exchange version'
+        foreach ($Exchange2013Parameter in $Exchange2013Only)
+        {
+            # Check for non-existent parameters in Exchange 2016
+            Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2013Parameter" -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2013'
+        }
     }
 
     $server = GetMailboxServer @PSBoundParameters
