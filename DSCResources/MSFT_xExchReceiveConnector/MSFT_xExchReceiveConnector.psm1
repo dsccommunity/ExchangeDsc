@@ -1224,6 +1224,10 @@ function GetReceiveConnector
         $DefaultDomain,
 
         [Parameter()]
+        [System.String]
+        $DomainController,
+
+        [Parameter()]
         [System.Boolean]
         $DeliveryStatusNotificationEnabled,
 
@@ -1378,9 +1382,17 @@ function GetReceiveConnector
         $Usage
     )
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
+    $getParams = @{
+        Server      = $env:COMPUTERNAME
+        ErrorAction = 'SilentlyContinue'
+    }
 
-    return (Get-ReceiveConnector @PSBoundParameters -ErrorAction SilentlyContinue)
+    if ($PSBoundParameters.ContainsKey('DomainController') -and ![String]::IsNullOrEmpty($PSBoundParameters['DomainController']))
+    {
+        $getParams.Add('DomainController', $PSBoundParameters['DomainController'])
+    }
+
+    return (Get-ReceiveConnector @getParams | Where-Object -FilterScript {$_.Identity -like $PSBoundParameters['Identity']})
 }
 
 # Ensure that a connector Identity is in the proper form
