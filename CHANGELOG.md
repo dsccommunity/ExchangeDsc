@@ -22,6 +22,8 @@
   because the module did not load the Get-Recipient cmdlet (#335).
 - Fixes broken Integration tests in
   MSFT_xExchMaintenanceMode.Integration.Tests.ps1 (#336).
+- Fix issue where Get-ReceiveConnector against an Absent connector causes an
+  error to be logged in the MSExchange Management log.
 
 ## 1.24.0.0
 
