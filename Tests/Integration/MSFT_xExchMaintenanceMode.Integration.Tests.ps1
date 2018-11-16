@@ -23,14 +23,22 @@ Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -P
 <#
     .SYNOPSIS
         Runs tests to ensure that the server is fully out of maintenance mode
+
+    .PARAMETER GetTargetResourceParameters
+        The paramaters to pass to Get-TargetResource.
 #>
 function Test-ServerIsOutOfMaintenanceMode
 {
     [CmdletBinding()]
-    param()
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $GetTargetResourceParameters
+    )
 
     Context 'Do additional Get-TargetResource verification after taking server out of maintenance mode' {
-        [System.Collections.Hashtable] $getResult = Get-TargetResource @testParams -Verbose
+        [System.Collections.Hashtable] $getResult = Get-TargetResource @GetTargetResourceParameters -Verbose
 
         It 'ActiveComponentCount is greater than 0' {
             $getResult.ActiveComponentCount -gt 0 | Should Be $true
@@ -409,7 +417,7 @@ if ($exchangeInstalled)
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Take server out of maintenance mode' `
                                          -ExpectedGetResults $expectedGetResults
-        Test-ServerIsOutOfMaintenanceMode
+        Test-ServerIsOutOfMaintenanceMode -GetTargetResourceParameters $testParams
         Wait-Verbose -Verbose
 
         # Test passing in UpgradedServerVersion that is lower than the current server version
@@ -471,7 +479,7 @@ if ($exchangeInstalled)
         Test-TargetResourceFunctionality -Params $testParams `
                                          -ContextLabel 'Take server out of maintenance mode using Domain Controller switch' `
                                          -ExpectedGetResults $expectedGetResults
-        Test-ServerIsOutOfMaintenanceMode
+        Test-ServerIsOutOfMaintenanceMode -GetTargetResourceParameters $testParams
         Wait-Verbose -Verbose
 
         # Test SetInactiveComponentsFromAnyRequesterToActive Parameter

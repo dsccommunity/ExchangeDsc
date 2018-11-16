@@ -46,6 +46,9 @@ if ($exchangeInstalled)
             }
         }
 
+        # Remove our remote Exchange session so as not to interfere with actual Integration testing
+        Remove-RemoteExchangeSession
+
         Describe 'Test Setting Properties with xExchUMService' {
             $testParams = @{
                 Identity =  $env:COMPUTERNAME
