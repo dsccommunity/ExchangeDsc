@@ -558,7 +558,7 @@ function Test-TargetResource
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential `
-                             -CommandsToLoad 'Get-MailboxDatabase', 'Get-Mailbox', 'Set-AdServerSettings'`
+                             -CommandsToLoad 'Get-MailboxDatabase', 'Get-Recipient', 'Set-AdServerSettings'`
                              -Verbose:$VerbosePreference
 
     # Check for non-existent parameters in Exchange 2013

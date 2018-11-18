@@ -41,9 +41,12 @@ function Test-TargetResourceFunctionality
     )
 
     Context $ContextLabel {
+        $addedVerbose = $false
+
         if ($null -eq ($Params.Keys | Where-Object -FilterScript {$_ -like 'Verbose'}))
         {
             $Params.Add('Verbose', $true)
+            $addedVerbose = $true
         }
 
         [System.Boolean] $testResult = Test-TargetResource @Params
@@ -110,6 +113,11 @@ function Test-TargetResourceFunctionality
         # Test the Test-TargetResource results
         It 'Test-TargetResource' {
             $testResult | Should -Be $ExpectedTestResult
+        }
+
+        if ($addedVerbose)
+        {
+            $Params.Remove('Verbose')
         }
     }
 }

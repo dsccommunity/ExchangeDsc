@@ -18,6 +18,10 @@
 - Add WaitForComputerObject parameter to xExchWaitForDAG
 - Add spaces between comment hashtags and comments.
 - Add space between variable types and variables.
+- Fixes issue where xExchMailboxDatabase fails to test for a Journal Recipient
+  because the module did not load the Get-Recipient cmdlet (#335).
+- Fixes broken Integration tests in
+  MSFT_xExchMaintenanceMode.Integration.Tests.ps1 (#336).
 
 ## 1.24.0.0
 

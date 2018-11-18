@@ -72,6 +72,9 @@ if ($exchangeInstalled)
     $testMailboxADObjectIDString = ([Microsoft.Exchange.Data.Directory.ADObjectId]::ParseDnOrGuid($testMailbox.DistinguishedName)).ToString()
     $testMailboxSecondaryAddress = ($testMailbox.EmailAddresses | Where-Object {$_.IsPrimaryAddress -eq $false -and $_.Prefix -like 'SMTP'} | Select-Object -First 1).AddressString
 
+    # Remove our remote Exchange session so as not to interfere with actual Integration testing
+    Remove-RemoteExchangeSession
+
     Describe 'Test Creating a DB and Setting Properties with xExchMailboxDatabase' {
         # First create and set properties on a test database
         $testParams = @{

@@ -91,6 +91,9 @@ if ($null -ne $adModule)
             {
                 throw 'Failed to determine distinguishedName of Exchange Server object'
             }
+
+            # Remove our remote Exchange session so as not to interfere with actual Integration testing
+            Remove-RemoteExchangeSession
         }
 
         # Get the product key to use for testing
