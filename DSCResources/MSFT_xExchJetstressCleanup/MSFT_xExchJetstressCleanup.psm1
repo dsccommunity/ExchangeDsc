@@ -128,17 +128,17 @@ function Set-TargetResource
     # Delete associated mount points if requested
     if ($DeleteAssociatedMountPoints -eq $true -and $ParentFoldersToRemove.Count -gt 0)
     {
-        $diskInfo = GetDiskInfo
+        $diskInfo = Get-DiskInfo
 
         foreach ($parent in $ParentFoldersToRemove.Keys)
         {
             if ($null -eq (Get-ChildItem -LiteralPath "$($parent)" -ErrorAction SilentlyContinue))
             {
-                $volNum = MountPointExists -Path "$($parent)" -DiskInfo $diskInfo
+                $volNum = Get-MountPointVolumeNumber -Path "$($parent)" -DiskInfo $diskInfo
 
                 if ($volNum -ge 0)
                 {
-                    StartDiskpart -Commands "select volume $($volNum)", "remove mount=`"$($parent)`"" -Verbose:$VerbosePreference | Out-Null
+                    Start-DiskPart -Commands "select volume $($volNum)", "remove mount=`"$($parent)`"" -Verbose:$VerbosePreference | Out-Null
 
                     RemoveFolder -Path "$($parent)"
                 }
@@ -264,7 +264,7 @@ function Test-TargetResource
         }
 
         # First make sure DB and log folders were cleaned up
-        $diskInfo = GetDiskInfo
+        $diskInfo = Get-DiskInfo
 
         foreach ($folder in $FoldersToRemove)
         {
@@ -273,7 +273,7 @@ function Test-TargetResource
             {
                 $parent = GetParentFolderFromString -Folder "$($folder)"
 
-                if ((MountPointExists -Path "$($parent)" -DiskInfo $diskInfo) -ge 0)
+                if ((Get-MountPointVolumeNumber -Path "$($parent)" -DiskInfo $diskInfo) -ge 0)
                 {
                     Write-Verbose -Message "Folder '$($parent)' still has a mount point associated with it."
                     $testResults = $false

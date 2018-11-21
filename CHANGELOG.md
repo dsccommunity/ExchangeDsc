@@ -24,6 +24,8 @@
   MSFT_xExchMaintenanceMode.Integration.Tests.ps1 (#336).
 - Fix issue where Get-ReceiveConnector against an Absent connector causes an
   error to be logged in the MSExchange Management log.
+- Rename poorly named functions in xExchangeDiskPart.psm1 and
+  MSFT_xExchAutoMountPoint.psm1, and add comment based help.
 
 ## 1.24.0.0
 

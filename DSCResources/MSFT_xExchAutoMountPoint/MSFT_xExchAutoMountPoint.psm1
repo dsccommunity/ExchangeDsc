@@ -1,5 +1,52 @@
 Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Modules\xExchangeDiskPart.psm1" -Force
 
+<#
+    .SYNOPSIS
+        Gets DSC resource configuration.
+
+    .PARAMETER Identity
+        The name of the server. Not actually used for anything.
+
+    .PARAMETER AutoDagDatabasesRootFolderPath
+        The parent folder for Exchange database mount point folders.
+
+    .PARAMETER AutoDagVolumesRootFolderPath
+        The parent folder for Exchange volume mount point folders.
+
+    .PARAMETER DiskToDBMap
+        An array of strings containing the databases for each disk. Databases
+        on the same disk should be in the same string, and comma separated.
+        Example: 'DB1,DB2','DB3,DB4'. This puts DB1 and DB2 on one disk, and
+        DB3 and DB4 on another.
+
+    .PARAMETER SpareVolumeCount
+        How many spare volumes will be available.
+
+    .PARAMETER EnsureExchangeVolumeMountPointIsLast
+        Whether the EXVOL mount point should be moved to be the last mount
+        point listed on each disk. Defaults to $false.
+
+    .PARAMETER CreateSubfolders
+        If $true, specifies that DBNAME.db and DBNAME.log subfolders should be
+        automatically created underneath the ExchangeDatabase mount points.
+        Defaults to $false.
+
+    .PARAMETER FileSystem
+        The file system to use when formatting the volume. Defaults to NTFS.
+
+    .PARAMETER MinDiskSize
+        The minimum size of a disk to consider using. Defaults to none. Should
+        be in a format like '1024MB' or '1TB'.
+
+    .PARAMETER PartitioningScheme
+        The partitioning scheme for the volume. Defaults to GPT.
+
+    .PARAMETER UnitSize
+        The unit size to use when formatting the disk. Defaults to 64k.
+
+    .PARAMETER VolumePrefix
+        The prefix to give to Exchange Volume folders. Defaults to EXVOL.
+#>
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -60,9 +107,9 @@ function Get-TargetResource
 
     Write-FunctionEntry -Verbose:$VerbosePreference
 
-    $diskInfo = GetDiskInfo
+    $diskInfo = Get-DiskInfo
 
-    $dbMap = GetDiskToDBMap -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -DiskInfo $diskInfo
+    $dbMap = Get-DiskToDBMap -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -DiskInfo $diskInfo
 
     $returnValue = @{
         Identity                       = [System.String] $Identity
@@ -80,6 +127,53 @@ function Get-TargetResource
     $returnValue
 }
 
+<#
+    .SYNOPSIS
+        Configures settings defined DSC resource configuration.
+
+    .PARAMETER Identity
+        The name of the server. Not actually used for anything.
+
+    .PARAMETER AutoDagDatabasesRootFolderPath
+        The parent folder for Exchange database mount point folders.
+
+    .PARAMETER AutoDagVolumesRootFolderPath
+        The parent folder for Exchange volume mount point folders.
+
+    .PARAMETER DiskToDBMap
+        An array of strings containing the databases for each disk. Databases
+        on the same disk should be in the same string, and comma separated.
+        Example: 'DB1,DB2','DB3,DB4'. This puts DB1 and DB2 on one disk, and
+        DB3 and DB4 on another.
+
+    .PARAMETER SpareVolumeCount
+        How many spare volumes will be available.
+
+    .PARAMETER EnsureExchangeVolumeMountPointIsLast
+        Whether the EXVOL mount point should be moved to be the last mount
+        point listed on each disk. Defaults to $false.
+
+    .PARAMETER CreateSubfolders
+        If $true, specifies that DBNAME.db and DBNAME.log subfolders should be
+        automatically created underneath the ExchangeDatabase mount points.
+        Defaults to $false.
+
+    .PARAMETER FileSystem
+        The file system to use when formatting the volume. Defaults to NTFS.
+
+    .PARAMETER MinDiskSize
+        The minimum size of a disk to consider using. Defaults to none. Should
+        be in a format like '1024MB' or '1TB'.
+
+    .PARAMETER PartitioningScheme
+        The partitioning scheme for the volume. Defaults to GPT.
+
+    .PARAMETER UnitSize
+        The unit size to use when formatting the disk. Defaults to 64k.
+
+    .PARAMETER VolumePrefix
+        The prefix to give to Exchange Volume folders. Defaults to EXVOL.
+#>
 function Set-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -140,42 +234,42 @@ function Set-TargetResource
     Write-FunctionEntry -Verbose:$VerbosePreference
 
     # First see if we need to assign any disks to ExVol's
-    $diskInfo = GetDiskInfo
+    $diskInfo = Get-DiskInfo
 
-    $exVolCount = GetInUseMountPointCount -RootFolder $AutoDagVolumesRootFolderPath -DiskInfo $diskInfo
+    $exVolCount = Get-InUseMountPointCount -RootFolder $AutoDagVolumesRootFolderPath -DiskInfo $diskInfo
     $requiredVolCount = $DiskToDBMap.Count + $SpareVolumeCount
 
     if ($exVolCount -lt $requiredVolCount)
     {
-        CreateMissingExVolumes @PSBoundParameters -CurrentVolCount $exVolCount -RequiredVolCount $requiredVolCount
+        New-ExVolumesWhereMissing @PSBoundParameters -CurrentVolCount $exVolCount -RequiredVolCount $requiredVolCount
     }
 
     # Now see if we need any DB mount points
-    $diskInfo = GetDiskInfo
+    $diskInfo = Get-DiskInfo
 
-    $exDbCount = GetInUseMountPointCount -RootFolder $AutoDagDatabasesRootFolderPath -DiskInfo $diskInfo
-    $requiredDbCount = GetDesiredDatabaseCount -DiskToDBMap $DiskToDBMap
+    $exDbCount = Get-InUseMountPointCount -RootFolder $AutoDagDatabasesRootFolderPath -DiskInfo $diskInfo
+    $requiredDbCount = Get-DesiredDatabaseCount -DiskToDBMap $DiskToDBMap
 
     if ($exDbCount -lt $requiredDbCount)
     {
-        CreateMissingExDatabases @PSBoundParameters
+        New-ExDatabaseMountPointsWhereMissing @PSBoundParameters
     }
 
     # Now see if any Mount Points are ordered incorrectly. Jetstress wants ExchangeDatabase mount points to be listed before ExchangeVolume mount points
-    $diskInfo = GetDiskInfo
+    $diskInfo = Get-DiskInfo
 
     if ($EnsureExchangeVolumeMountPointIsLast -eq $true)
     {
         while($true)
         {
-            $volNum = VolumeMountPointNotLastInList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -DiskInfo $diskInfo
+            $volNum = Get-VolumeNumberWhereMountPointNotLastInList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -DiskInfo $diskInfo
 
             if ($volNum -ne -1)
             {
-                SendVolumeMountPointToEndOfList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -VolumeNumber $volNum -DiskInfo $diskInfo
+                Move-VolumeMountPointToEndOfList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -VolumeNumber $volNum -DiskInfo $diskInfo
 
                 # Update DiskInfo for next iteration
-                $diskInfo = GetDiskInfo
+                $diskInfo = Get-DiskInfo
             }
             else
             {
@@ -185,6 +279,54 @@ function Set-TargetResource
     }
 }
 
+<#
+    .SYNOPSIS
+        Tests whether settings defined DSC resource configuration are in the
+        expected state.
+
+    .PARAMETER Identity
+        The name of the server. Not actually used for anything.
+
+    .PARAMETER AutoDagDatabasesRootFolderPath
+        The parent folder for Exchange database mount point folders.
+
+    .PARAMETER AutoDagVolumesRootFolderPath
+        The parent folder for Exchange volume mount point folders.
+
+    .PARAMETER DiskToDBMap
+        An array of strings containing the databases for each disk. Databases
+        on the same disk should be in the same string, and comma separated.
+        Example: 'DB1,DB2','DB3,DB4'. This puts DB1 and DB2 on one disk, and
+        DB3 and DB4 on another.
+
+    .PARAMETER SpareVolumeCount
+        How many spare volumes will be available.
+
+    .PARAMETER EnsureExchangeVolumeMountPointIsLast
+        Whether the EXVOL mount point should be moved to be the last mount
+        point listed on each disk. Defaults to $false.
+
+    .PARAMETER CreateSubfolders
+        If $true, specifies that DBNAME.db and DBNAME.log subfolders should be
+        automatically created underneath the ExchangeDatabase mount points.
+        Defaults to $false.
+
+    .PARAMETER FileSystem
+        The file system to use when formatting the volume. Defaults to NTFS.
+
+    .PARAMETER MinDiskSize
+        The minimum size of a disk to consider using. Defaults to none. Should
+        be in a format like '1024MB' or '1TB'.
+
+    .PARAMETER PartitioningScheme
+        The partitioning scheme for the volume. Defaults to GPT.
+
+    .PARAMETER UnitSize
+        The unit size to use when formatting the disk. Defaults to 64k.
+
+    .PARAMETER VolumePrefix
+        The prefix to give to Exchange Volume folders. Defaults to EXVOL.
+#>
 function Test-TargetResource
 {
     [CmdletBinding()]
@@ -244,10 +386,10 @@ function Test-TargetResource
 
     Write-FunctionEntry -Verbose:$VerbosePreference
 
-    $diskInfo = GetDiskInfo
+    $diskInfo = Get-DiskInfo
 
     # Check if the number of assigned EXVOL's is less than the requested number of DB disks plus spares
-    $mountPointCount = GetInUseMountPointCount -RootFolder $AutoDagVolumesRootFolderPath -DiskInfo $diskInfo
+    $mountPointCount = Get-InUseMountPointCount -RootFolder $AutoDagVolumesRootFolderPath -DiskInfo $diskInfo
 
     $testResults = $true
 
@@ -262,7 +404,7 @@ function Test-TargetResource
         {
             foreach ($db in $value.Split(','))
             {
-                if ((DBHasMountPoint -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -Database $db -DiskInfo $diskInfo) -eq $false)
+                if ((Test-DBHasMountPoint -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -Database $db -DiskInfo $diskInfo) -eq $false)
                 {
                     Write-InvalidSettingVerbose -SettingName "DB '$db' Has Mount Point" -ExpectedValue $true -ActualValue $false -Verbose:$VerbosePreference
                     $testResults = $false
@@ -272,7 +414,7 @@ function Test-TargetResource
     }
 
     # Now check if any ExchangeVolume mount points are higher ordered than ExchangeDatabase mount points. ExchangeDatabase MP's must be listed first for logical disk counters to function properly
-    if ($EnsureExchangeVolumeMountPointIsLast -eq $true -and (VolumeMountPointNotLastInList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -DiskInfo $diskInfo) -ne -1)
+    if ($EnsureExchangeVolumeMountPointIsLast -eq $true -and (Get-VolumeNumberWhereMountPointNotLastInList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -DiskInfo $diskInfo) -ne -1)
     {
         Write-Verbose -Message "One or more volumes have an $($AutoDagVolumesRootFolderPath) mount point ordered before a $($AutoDagDatabasesRootFolderPath) mount point"
         $testResults = $false
@@ -281,8 +423,61 @@ function Test-TargetResource
     return $testResults
 }
 
-# Creates mount points for any Exchange Volumes we are missing
-function CreateMissingExVolumes
+<#
+    .SYNOPSIS
+        Creates Exchange Volume mount points for any disks which should have
+        them, but do not.
+
+    .PARAMETER Identity
+        The name of the server. Not actually used for anything.
+
+    .PARAMETER AutoDagDatabasesRootFolderPath
+        The parent folder for Exchange database mount point folders.
+
+    .PARAMETER AutoDagVolumesRootFolderPath
+        The parent folder for Exchange volume mount point folders.
+
+    .PARAMETER DiskToDBMap
+        An array of strings containing the databases for each disk. Databases
+        on the same disk should be in the same string, and comma separated.
+        Example: 'DB1,DB2','DB3,DB4'. This puts DB1 and DB2 on one disk, and
+        DB3 and DB4 on another.
+
+    .PARAMETER SpareVolumeCount
+        How many spare volumes will be available.
+
+    .PARAMETER EnsureExchangeVolumeMountPointIsLast
+        Whether the EXVOL mount point should be moved to be the last mount
+        point listed on each disk. Defaults to $false.
+
+    .PARAMETER CreateSubfolders
+        If $true, specifies that DBNAME.db and DBNAME.log subfolders should be
+        automatically created underneath the ExchangeDatabase mount points.
+        Defaults to $false.
+
+    .PARAMETER FileSystem
+        The file system to use when formatting the volume. Defaults to NTFS.
+
+    .PARAMETER MinDiskSize
+        The minimum size of a disk to consider using. Defaults to none. Should
+        be in a format like '1024MB' or '1TB'.
+
+    .PARAMETER PartitioningScheme
+        The partitioning scheme for the volume. Defaults to GPT.
+
+    .PARAMETER UnitSize
+        The unit size to use when formatting the disk. Defaults to 64k.
+
+    .PARAMETER VolumePrefix
+        The prefix to give to Exchange Volume folders. Defaults to EXVOL.
+
+    .PARAMETER CurrentVolCount
+        The current number of Exchange Volumes that have been created.
+
+    .PARAMETER RequiredVolCount
+        The expected final number of Exchange Volumes.
+#>
+function New-ExVolumesWhereMissing
 {
     [CmdletBinding()]
     param
@@ -337,11 +532,11 @@ function CreateMissingExVolumes
         [System.String]
         $VolumePrefix = 'EXVOL',
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.Int32]
         $CurrentVolCount,
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.Int32]
         $RequiredVolCount
     )
@@ -350,20 +545,20 @@ function CreateMissingExVolumes
     {
         if ($i -ne $CurrentVolCount) # Need to update disk info if we've gone through the loop already
         {
-            $diskInfo = GetDiskInfo
+            $diskInfo = Get-DiskInfo
         }
 
-        $firstDisk = FindFirstAvailableDisk -MinDiskSize $MinDiskSize -DiskInfo $diskInfo
+        $firstDisk = Get-FirstAvailableDiskNumber -MinDiskSize $MinDiskSize -DiskInfo $diskInfo
 
         if ($firstDisk -ne -1)
         {
-            $firstVolume = FindFirstAvailableVolumeNumber -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -VolumePrefix $VolumePrefix
+            $firstVolume = Get-FirstAvailableVolumeNumber -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -VolumePrefix $VolumePrefix
 
             if ($firstVolume -ne -1)
             {
                 $volPath = Join-Path -Path "$($AutoDagVolumesRootFolderPath)" -ChildPath "$($VolumePrefix)$($firstVolume)"
 
-                PrepareVolume -DiskNumber $firstDisk -Folder $volPath -FileSystem $FileSystem -UnitSize $UnitSize -PartitioningScheme $PartitioningScheme -Label "$($VolumePrefix)$($firstVolume)"
+                Initialize-ExchangeVolume -DiskNumber $firstDisk -Folder $volPath -FileSystem $FileSystem -UnitSize $UnitSize -PartitioningScheme $PartitioningScheme -Label "$($VolumePrefix)$($firstVolume)"
             }
             else
             {
@@ -377,8 +572,55 @@ function CreateMissingExVolumes
     }
 }
 
-# Looks for databases that have never had a mount point created, and gives them a mount point
-function CreateMissingExDatabases
+<#
+    .SYNOPSIS
+        Looks for databases that have never had a mount point created, and adds
+        a mount point for them on an appropriate Exchange Volume.
+
+    .PARAMETER Identity
+        The name of the server. Not actually used for anything.
+
+    .PARAMETER AutoDagDatabasesRootFolderPath
+        The parent folder for Exchange database mount point folders.
+
+    .PARAMETER AutoDagVolumesRootFolderPath
+        The parent folder for Exchange volume mount point folders.
+
+    .PARAMETER DiskToDBMap
+        An array of strings containing the databases for each disk. Databases
+        on the same disk should be in the same string, and comma separated.
+        Example: 'DB1,DB2','DB3,DB4'. This puts DB1 and DB2 on one disk, and
+        DB3 and DB4 on another.
+
+    .PARAMETER SpareVolumeCount
+        How many spare volumes will be available.
+
+    .PARAMETER EnsureExchangeVolumeMountPointIsLast
+        Whether the EXVOL mount point should be moved to be the last mount
+        point listed on each disk. Defaults to $false.
+
+    .PARAMETER CreateSubfolders
+        If $true, specifies that DBNAME.db and DBNAME.log subfolders should be
+        automatically created underneath the ExchangeDatabase mount points.
+        Defaults to $false.
+
+    .PARAMETER FileSystem
+        The file system to use when formatting the volume. Defaults to NTFS.
+
+    .PARAMETER MinDiskSize
+        The minimum size of a disk to consider using. Defaults to none. Should
+        be in a format like '1024MB' or '1TB'.
+
+    .PARAMETER PartitioningScheme
+        The partitioning scheme for the volume. Defaults to GPT.
+
+    .PARAMETER UnitSize
+        The unit size to use when formatting the disk. Defaults to 64k.
+
+    .PARAMETER VolumePrefix
+        The prefix to give to Exchange Volume folders. Defaults to EXVOL.
+#>
+function New-ExDatabaseMountPointsWhereMissing
 {
     [CmdletBinding()]
     param
@@ -438,7 +680,7 @@ function CreateMissingExDatabases
     {
         if ($i -gt 0) # Need to refresh current disk info
         {
-            $diskInfo = GetDiskInfo
+            $diskInfo = Get-DiskInfo
         }
 
         $dbsNeedingMountPoints = @()
@@ -458,7 +700,7 @@ function CreateMissingExDatabases
             }
             else # Since the folder already exists, need to check and error if the mount point doesn't
             {
-                if ((MountPointExists -Path $path) -eq -1)
+                if ((Get-MountPointVolumeNumber -Path $path) -eq -1)
                 {
                     throw "Database '$($current)' already has a folder on disk at '$($path)', but does not have a mount point. This must be manually corrected for xAutoMountPoint to proceed."
                 }
@@ -467,7 +709,7 @@ function CreateMissingExDatabases
 
         if ($dbsNeedingMountPoints.Count -eq $allDBsRequestedForDisk.Count) # No DB mount points for this disk have been created yet
         {
-            $targetVolume = GetExchangeVolume -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -DBsPerDisk $allDBsRequestedForDisk.Count -VolumePrefix $VolumePrefix -DiskInfo $diskInfo
+            $targetVolume = Get-ExchangeVolumeNumberForMountPoint -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -DBsPerDisk $allDBsRequestedForDisk.Count -VolumePrefix $VolumePrefix -DiskInfo $diskInfo
         }
         elseif ($dbsNeedingMountPoints.Count -gt 0) # We just need to create some mount points
         {
@@ -485,7 +727,7 @@ function CreateMissingExDatabases
 
             if ($existingDB -ne '')
             {
-                $targetVolume = GetExchangeVolume -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -ExistingDB $existingDB -DBsPerDisk $allDBsRequestedForDisk.Count -DBsToCreate $dbsNeedingMountPoints.Count -VolumePrefix $VolumePrefix -DiskInfo $diskInfo
+                $targetVolume = Get-ExchangeVolumeNumberForMountPoint -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -ExistingDB $existingDB -DBsPerDisk $allDBsRequestedForDisk.Count -DBsToCreate $dbsNeedingMountPoints.Count -VolumePrefix $VolumePrefix -DiskInfo $diskInfo
             }
         }
         else # All DB's requested for this disk are good. Just continue on in the loop
@@ -501,7 +743,7 @@ function CreateMissingExDatabases
                 {
                     $path = Join-Path -Path "$($AutoDagDatabasesRootFolderPath)" -ChildPath "$($db)"
 
-                    AddMountPoint -VolumeNumber $targetVolume -Folder $path
+                    Add-ExchangeMountPoint -VolumeNumber $targetVolume -Folder $path
 
                     if ($CreateSubfolders -eq $true)
                     {
@@ -528,9 +770,20 @@ function CreateMissingExDatabases
     }
 }
 
-# Builds a map of the DBs that already exist on disk
-function GetDiskToDBMap
+<#
+    .SYNOPSIS
+        Builds a map of the DBs that already exist on disk.
+
+    .PARAMETER AutoDagDatabasesRootFolderPath
+        The parent folder for Exchange database mount point folders.
+
+    .PARAMETER DiskInfo
+        Information on the disks and volumes that already exist on the system.
+#>
+function Get-DiskToDBMap
 {
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
     param
     (
         [Parameter()]
@@ -581,12 +834,39 @@ function GetDiskToDBMap
     return $dbMap
 }
 
-# Looks for a volume where an Exchange Volume or Database mount point can be added.
-# If ExistingDB is not specified, looks for a spare volume that has no mount points yet.
-# If ExistingDB is specified, finds the volume number where that DB exists, only if there is room to
-# Create the requested database mount points.
-function GetExchangeVolume
+<#
+    .SYNOPSIS
+        Looks for a volume where an Exchange Volume or Database mount point can
+        be added.
+
+    .PARAMETER AutoDagDatabasesRootFolderPath
+        The parent folder for Exchange database mount point folders.
+
+    .PARAMETER AutoDagVolumesRootFolderPath
+        The parent folder for Exchange volume mount point folders.
+
+    .PARAMETER ExistingDB
+        If ExistingDB is not specified, looks for a spare volume that
+        has no mount points yet. If ExistingDB is specified, finds the volume
+        number where that DB exists, only if there is room to Create the
+        requested database mount points.
+
+    .PARAMETER DBsPerDisk
+        The number of databases that are allowed per disk.
+
+    .PARAMETER DBsToCreate
+        The number of databases to create on the discovered disk.
+
+    .PARAMETER VolumePrefix
+        The prefix to give to Exchange Volume folders. Defaults to EXVOL.
+
+    .PARAMETER DiskInfo
+        Information on the disks and volumes that already exist on the system.
+#>
+function Get-ExchangeVolumeNumberForMountPoint
 {
+    [CmdletBinding()]
+    [OutputType([System.UInt32])]
     param
     (
         [Parameter()]
@@ -620,7 +900,7 @@ function GetExchangeVolume
 
     $targetVol = -1 # Our return variable
 
-    [object[]] $keysSorted = GetSortedExchangeVolumeKeys -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -VolumePrefix $VolumePrefix -DiskInfo $DiskInfo
+    [object[]] $keysSorted = Get-ExchangeVolumeKeysSorted -AutoDagDatabasesRootFolderPath $AutoDagDatabasesRootFolderPath -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -VolumePrefix $VolumePrefix -DiskInfo $DiskInfo
 
     # Loop through every volume
     foreach ($key in $keysSorted)
@@ -679,8 +959,27 @@ function GetExchangeVolume
     return $targetVol
 }
 
-function GetSortedExchangeVolumeKeys
+<#
+    .SYNOPSIS
+        Finds the names of all existing EXVOL mount points, and returns a
+        sorted array of all the EXVOL volume numbers.
+
+    .PARAMETER AutoDagDatabasesRootFolderPath
+        The parent folder for Exchange database mount point folders.
+
+    .PARAMETER AutoDagVolumesRootFolderPath
+        The parent folder for Exchange volume mount point folders.
+
+    .PARAMETER VolumePrefix
+        The prefix to give to Exchange Volume folders. Defaults to EXVOL.
+
+    .PARAMETER DiskInfo
+        Information on the disks and volumes that already exist on the system.
+#>
+function Get-ExchangeVolumeKeysSorted
 {
+    [CmdletBinding()]
+    [OutputType([System.String[]])]
     param
     (
         [Parameter()]
@@ -762,9 +1061,21 @@ function GetSortedExchangeVolumeKeys
     return $sortedKeys
 }
 
-# Finds the lowest disk number that doesn't have any volumes associated, and is larger than the requested size
-function FindFirstAvailableDisk
+<#
+    .SYNOPSIS
+        Finds the lowest disk number that doesn't have any volumes associated,
+        and is larger than the requested size.
+
+    .PARAMETER MinDiskSize
+        The minimum disk size to consider when looking for available disks.
+
+    .PARAMETER DiskInfo
+        Information on the disks and volumes that already exist on the system.
+#>
+function Get-FirstAvailableDiskNumber
 {
+    [CmdletBinding()]
+    [OutputType([System.UInt32])]
     param
     (
         [Parameter()]
@@ -802,10 +1113,21 @@ function FindFirstAvailableDisk
     return $diskNum
 }
 
-# Looks in the volumes root folder and finds the first number we can give to a volume folder
-# based off of what folders have already been created
-function FindFirstAvailableVolumeNumber
+<#
+    .SYNOPSIS
+        Looks in the volumes root folder and finds the first number we can give
+        to a volume folder based off of what folders have already been created.
+
+    .PARAMETER AutoDagVolumesRootFolderPath
+        The parent folder for Exchange volume mount point folders.
+
+    .PARAMETER VolumePrefix
+        The prefix to give to Exchange Volume folders. Defaults to EXVOL.
+#>
+function Get-FirstAvailableVolumeNumber
 {
+    [CmdletBinding()]
+    [OutputType([System.UInt32])]
     param
     (
         [Parameter()]
@@ -838,9 +1160,20 @@ function FindFirstAvailableVolumeNumber
     return -1
 }
 
-# Counts and returns the number of DB's in the disk to db map
-function GetDesiredDatabaseCount
+<#
+    .SYNOPSIS
+        Counts and returns the number of DB's in the input DiskToDBMap.
+
+    .PARAMETER DiskToDBMap
+        An array of strings containing the databases for each disk. Databases
+        on the same disk should be in the same string, and comma separated.
+        Example: 'DB1,DB2','DB3,DB4'. This puts DB1 and DB2 on one disk, and
+        DB3 and DB4 on another.
+#>
+function Get-DesiredDatabaseCount
 {
+    [CmdletBinding()]
+    [OutputType([System.Int32])]
     param
     (
         [Parameter()]
@@ -858,9 +1191,23 @@ function GetDesiredDatabaseCount
     return $count
 }
 
-# Checks if a database already has a mountpoint created
-function DBHasMountPoint
+<#
+    .SYNOPSIS
+        Checks if a database already has a mountpoint created.
+
+    .PARAMETER AutoDagDatabasesRootFolderPath
+        The parent folder for Exchange database mount point folders.
+
+    .PARAMETER Database
+        The name of the Database to check for.
+
+    .PARAMETER DiskInfo
+        Information on the disks and volumes that already exist on the system.
+#>
+function Test-DBHasMountPoint
 {
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param
     (
         [Parameter()]
@@ -892,9 +1239,20 @@ function DBHasMountPoint
     return $false
 }
 
-# Gets the count of in use mount points matching the given critera
-function GetInUseMountPointCount
+<#
+    .SYNOPSIS
+        Gets the count of in use mount points matching the given critera.
+
+    .PARAMETER RootFolder
+        The folder to count Mount Points within.
+
+    .PARAMETER DiskInfo
+        Information on the disks and volumes that already exist on the system.
+#>
+function Get-InUseMountPointCount
 {
+    [CmdletBinding()]
+    [OutputType([System.Int32])]
     param
     (
         [Parameter()]
@@ -922,10 +1280,22 @@ function GetInUseMountPointCount
     return $count
 }
 
-# Checks all volumes, and sees if any of them have ExchangeVolume mount points that show up before other (like ExchangeDatabase) mount points.
-# If so, it returns the volume number. If not, it returns -1
-function VolumeMountPointNotLastInList
+<#
+    .SYNOPSIS
+        Checks all volumes, and sees if any of them have ExchangeVolume mount
+        points that show up before other (like ExchangeDatabase) mount points.
+        If so, it returns the volume number. If not, it returns -1.
+
+    .PARAMETER AutoDagVolumesRootFolderPath
+        The parent folder for Exchange volume mount point folders.
+
+    .PARAMETER DiskInfo
+        Information on the disks and volumes that already exist on the system.
+#>
+function Get-VolumeNumberWhereMountPointNotLastInList
 {
+    [CmdletBinding()]
+    [OutputType([System.UInt32])]
     param
     (
         [Parameter()]
@@ -956,9 +1326,22 @@ function VolumeMountPointNotLastInList
     return -1
 }
 
-# For volumes that have multiple mount points including an ExchangeVolume mount point, sends removes and re-adds the ExchangeVolume
-# mount point so that it is at the end of the list of mount points
-function SendVolumeMountPointToEndOfList
+<#
+    .SYNOPSIS
+        For volumes that have multiple mount points including an ExchangeVolum
+         mount point, sends removes and re-adds the ExchangeVolume mount point
+         so that it is at the end of the list of mount points.
+
+    .PARAMETER AutoDagVolumesRootFolderPath
+        The parent folder for Exchange volume mount point folders.
+
+    .PARAMETER VolumeNumber
+        The number of the volume to modify.
+
+    .PARAMETER DiskInfo
+        Information on the disks and volumes that already exist on the system.
+#>
+function Move-VolumeMountPointToEndOfList
 {
     [CmdletBinding()]
     param
@@ -987,14 +1370,33 @@ function SendVolumeMountPointToEndOfList
                 $folderName = $folderName.Substring(0, $folderName.Length - 1)
             }
 
-            StartDiskpart -Commands "select volume $($VolumeNumber)", "remove mount=`"$($folderName)`"", "assign mount=`"$($folderName)`"" -Verbose:$VerbosePreference | Out-Null
+            Start-DiskPart -Commands "select volume $($VolumeNumber)", "remove mount=`"$($folderName)`"", "assign mount=`"$($folderName)`"" -Verbose:$VerbosePreference | Out-Null
             break
         }
     }
 }
 
-# Takes an empty disk, initalizes and formats it, and gives it an ExchangeVolume mount point
-function PrepareVolume
+<#
+    .SYNOPSIS
+        Takes an empty disk, initalizes and formats it, and gives it an
+        ExchangeVolume mount point.
+
+    .PARAMETER Folder
+        The folder to assign the Exchange Volume mount point to.
+
+    .PARAMETER FileSystem
+        The file system to use when formatting the volume. Defaults to NTFS.
+
+    .PARAMETER Label
+        The label to assign to the formatted volume.
+
+    .PARAMETER PartitioningScheme
+        The partitioning scheme for the volume. Defaults to GPT.
+
+    .PARAMETER UnitSize
+        The unit size to use when formatting the disk. Defaults to 64k.
+#>
+function Initialize-ExchangeVolume
 {
     [CmdletBinding()]
     param
@@ -1014,7 +1416,7 @@ function PrepareVolume
 
         [Parameter()]
         [System.String]
-        $UnitSize,
+        $Label,
 
         [Parameter()]
         [System.String]
@@ -1022,22 +1424,22 @@ function PrepareVolume
 
         [Parameter()]
         [System.String]
-        $Label
+        $UnitSize
     )
 
     # Initialize the disk and put in MBR format
-    StartDiskpart -Commands "select disk $($DiskNumber)", 'clean' -Verbose:$VerbosePreference | Out-Null
-    StartDiskpart -Commands "select disk $($DiskNumber)", 'online disk' -Verbose:$VerbosePreference | Out-Null
-    StartDiskpart -Commands "select disk $($DiskNumber)", 'attributes disk clear readonly', 'convert MBR' -Verbose:$VerbosePreference | Out-Null
-    StartDiskpart -Commands "select disk $($DiskNumber)", 'offline disk' -Verbose:$VerbosePreference | Out-Null
+    Start-DiskPart -Commands "select disk $($DiskNumber)", 'clean' -Verbose:$VerbosePreference | Out-Null
+    Start-DiskPart -Commands "select disk $($DiskNumber)", 'online disk' -Verbose:$VerbosePreference | Out-Null
+    Start-DiskPart -Commands "select disk $($DiskNumber)", 'attributes disk clear readonly', 'convert MBR' -Verbose:$VerbosePreference | Out-Null
+    Start-DiskPart -Commands "select disk $($DiskNumber)", 'offline disk' -Verbose:$VerbosePreference | Out-Null
 
     # Online the disk
-    StartDiskpart -Commands "select disk $($DiskNumber)", 'attributes disk clear readonly', 'online disk' -Verbose:$VerbosePreference | Out-Null
+    Start-DiskPart -Commands "select disk $($DiskNumber)", 'attributes disk clear readonly', 'online disk' -Verbose:$VerbosePreference | Out-Null
 
     # Convert to GPT if requested
     if ($PartitioningScheme -eq 'GPT')
     {
-        StartDiskpart -Commands "select disk $($DiskNumber)", 'convert GPT noerr' -Verbose:$VerbosePreference | Out-Null
+        Start-DiskPart -Commands "select disk $($DiskNumber)", 'convert GPT noerr' -Verbose:$VerbosePreference | Out-Null
     }
 
     # Create the directory if it doesn't exist
@@ -1051,11 +1453,11 @@ function PrepareVolume
     {
         $formatString = "Format FS=$($FileSystem) UNIT=$($UnitSize) Label=$($Label) QUICK"
 
-        StartDiskpart -Commands "select disk $($DiskNumber)", "create partition primary", "$($formatString)", "assign mount=`"$($Folder)`"" -Verbose:$VerbosePreference | Out-Null
+        Start-DiskPart -Commands "select disk $($DiskNumber)", "create partition primary", "$($formatString)", "assign mount=`"$($Folder)`"" -Verbose:$VerbosePreference | Out-Null
     }
     else # If ($FileSystem -eq "REFS")
     {
-        StartDiskpart -Commands "select disk $($DiskNumber)", "create partition primary" -Verbose:$VerbosePreference | Out-Null
+        Start-DiskPart -Commands "select disk $($DiskNumber)", "create partition primary" -Verbose:$VerbosePreference | Out-Null
 
         if ($UnitSize.ToLower().EndsWith('k'))
         {
@@ -1075,8 +1477,17 @@ function PrepareVolume
     }
 }
 
-# Adds a mount point to an existing volume
-function AddMountPoint
+<#
+    .SYNOPSIS
+        Adds a mount point to an existing volume.
+
+    .PARAMETER VolumeNumber
+        The number of the volume to assign a mount point to.
+
+    .PARAMETER Folder
+        The folder to assign the Exchange Volume mount point to.
+#>
+function Add-ExchangeMountPoint
 {
     [CmdletBinding()]
     param
@@ -1096,7 +1507,7 @@ function AddMountPoint
         New-Item -ItemType Directory -Path "$($Folder)" | Out-Null
     }
 
-    StartDiskpart -Commands "select volume $($VolumeNumber)", "assign mount=`"$($Folder)`"" -Verbose:$VerbosePreference | Out-Null
+    Start-DiskPart -Commands "select volume $($VolumeNumber)", "assign mount=`"$($Folder)`"" -Verbose:$VerbosePreference | Out-Null
 }
 
 Export-ModuleMember -Function *-TargetResource

@@ -231,6 +231,9 @@ parameters.
   Example: "DB1,DB2","DB3,DB4".
   This puts DB1 and DB2 on one disk, and DB3 and DB4 on another.
 * **SpareVolumeCount**: How many spare volumes will be available.
+* **EnsureExchangeVolumeMountPointIsLast**: Whether the EXVOL mount point
+  should be moved to be the last mount point listed on each disk. Defaults
+  to $false.
 * **CreateSubfolders**: Defaults to $false.
   If $true, specifies that DBNAME.db and DBNAME.log subfolders should be
   automatically created underneath the ExchangeDatabase mount points.

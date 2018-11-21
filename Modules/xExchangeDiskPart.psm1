@@ -1,5 +1,15 @@
-# Adds the array of commands to a single temp file, and has disk part execute the temp file
-function StartDiskpart
+<#
+    .SYNOPSIS
+        Adds the array of commands to a single temp file, and has DiskPart
+        execute the temp file.
+
+    .PARAMETER Commands
+        An array of commands to have DiskPart execute, in order.
+
+    .PARAMETER ShowOutput
+        Whether the output from DiskPart should be shown. Defaults to False.
+#>
+function Start-DiskPart
 {
     [CmdletBinding()]
     [OutputType([System.String])]
@@ -26,7 +36,7 @@ function StartDiskpart
 
     if ($ShowOutput)
     {
-        Write-Verbose -Message "Executed Diskpart commands: $(StringArrayToCommaSeparatedString -Array $Commands). Result:"
+        Write-Verbose -Message "Executed Diskpart commands: $(Convert-StringArrayToCommaSeparatedString -Array $Commands). Result:"
         Write-Verbose -Message "$Output"
     }
 
@@ -35,8 +45,12 @@ function StartDiskpart
     return $Output
 }
 
-# Uses diskpart to obtain information on the disks and volumes that already exist on the system
-function GetDiskInfo
+<#
+    .SYNOPSIS
+        Uses DiskPart to obtain information on the disks and volumes that
+        already exist on the system.
+#>
+function Get-DiskInfo
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
@@ -50,7 +64,7 @@ function GetDiskInfo
 
     [int[]] $diskNums = @()
 
-    $diskList = StartDiskpart -Commands "List Disk" -ShowOutput $false
+    $diskList = Start-DiskPart -Commands "List Disk" -ShowOutput $false
 
     $foundDisks = $false
 
@@ -92,7 +106,7 @@ function GetDiskInfo
     # Now get info on the disks
     foreach ($diskNum in $diskNums)
     {
-        $diskDetails = StartDiskpart -Commands "Select Disk $($diskNum)", "Detail Disk" -ShowOutput $false
+        $diskDetails = Start-DiskPart -Commands "Select Disk $($diskNum)", "Detail Disk" -ShowOutput $false
 
         $foundVolumes = $false
 
@@ -113,7 +127,7 @@ function GetDiskInfo
                     {
                         $volNum = [int]::Parse($volStr)
 
-                        AddObjectToMapOfObjectArrays -Map $diskInfo.DiskToVolumeMap -Key $diskNum -Value $volNum
+                        Add-ObjectToMapOfObjectArrays -Map $diskInfo.DiskToVolumeMap -Key $diskNum -Value $volNum
 
                         # Now parse out the drive letter if it's set
                         $letterStart = "  ----------  ".Length
@@ -122,7 +136,7 @@ function GetDiskInfo
 
                         if ($letter.Length -eq 1)
                         {
-                            AddObjectToMapOfObjectArrays -Map $diskInfo.VolumeToMountPointMap -Key $volNum -Value $letter
+                            Add-ObjectToMapOfObjectArrays -Map $diskInfo.VolumeToMountPointMap -Key $volNum -Value $letter
                         }
 
                         # Now find all the mount points
@@ -139,7 +153,7 @@ function GetDiskInfo
                             {
                                 $mountPoint = $line.Trim()
 
-                                AddObjectToMapOfObjectArrays -Map $diskInfo.VolumeToMountPointMap -Key $volNum -Value $mountPoint
+                                Add-ObjectToMapOfObjectArrays -Map $diskInfo.VolumeToMountPointMap -Key $volNum -Value $mountPoint
                             }
 
                         } while ($i -lt $diskDetails.Count)
@@ -164,7 +178,15 @@ function GetDiskInfo
     return $diskInfo
 }
 
-function StringArrayToCommaSeparatedString
+<#
+    .SYNOPSIS
+        Takes an array of String objects and converts it into a single, comma
+        separated string.
+
+    .PARAMETER Array
+        The String array to convert.
+#>
+function Convert-StringArrayToCommaSeparatedString
 {
     [CmdletBinding()]
     [OutputType([System.String])]
@@ -190,8 +212,21 @@ function StringArrayToCommaSeparatedString
     return $string
 }
 
-# Takes a hashtable, and adds the given key and value.
-function AddObjectToMapOfObjectArrays
+<#
+    .SYNOPSIS
+        Takes a Hashtable, where all members are Object arrays, and adds the
+        input Value to the Hashtable member with the given Key.
+
+    .PARAMETER Map
+        The Hashtable obejct to add to.
+
+    .PARAMETER Key
+        The Key within the Hashtable to add the given Value to.
+
+    .PARAMETER Value
+        The Value to add to the Hashtable at the given Key.
+#>
+function Add-ObjectToMapOfObjectArrays
 {
     [CmdletBinding()]
     param
@@ -215,14 +250,24 @@ function AddObjectToMapOfObjectArrays
     }
     else
     {
-        [object[]] $Array = $Value
+        [Object[]] $Array = $Value
         $Map[$Key] = $Array
     }
 }
 
-# Checks whether the mount point specified in the given path already exists as a mount point
-# Returns the volume number if it does exist, else -1
-function MountPointExists
+<#
+    .SYNOPSIS
+        Checks whether the mount point specified in the given path already
+        exists as a mount point. Returns the volume number if it does exist,
+        else -1.
+
+    .PARAMETER Path
+        The mount point path to look for.
+
+    .PARAMETER DiskInfo
+        A Hashtable containing discovered disk information.
+#>
+function Get-MountPointVolumeNumber
 {
     [CmdletBinding()]
     [OutputType([System.Int32])]
@@ -262,6 +307,5 @@ function MountPointExists
 
     return -1
 }
-
 
 Export-ModuleMember -Function *
