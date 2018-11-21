@@ -234,9 +234,9 @@ parameters.
 * **EnsureExchangeVolumeMountPointIsLast**: Whether the EXVOL mount point
   should be moved to be the last mount point listed on each disk. Defaults
   to $false.
-* **CreateSubfolders**: Defaults to $false.
-  If $true, specifies that DBNAME.db and DBNAME.log subfolders should be
-  automatically created underneath the ExchangeDatabase mount points.
+* **CreateSubfolders**: If $true, specifies that DBNAME.db and DBNAME.log
+  subfolders should be automatically created underneath the ExchangeDatabase
+  mount points. Defaults to $false.
 * **FileSystem**: The file system to use when formatting the volume.
   Defaults to NTFS.
 * **MinDiskSize**: The minimum size of a disk to consider using. Defaults to none.
