@@ -8,12 +8,12 @@ class MSFT_xExchAutoMountPoint : OMI_BaseResource
     [Required, Description("An array of strings containing the databases for each disk. Databases on the same disk should be in the same string, and comma separated. Example: 'DB1,DB2','DB3,DB4'. This puts DB1 and DB2 on one disk, and DB3 and DB4 on another.")] String DiskToDBMap[];
     [Required, Description("How many spare volumes will be available.")] Uint32 SpareVolumeCount;
     [Write, Description("Whether the EXVOL mount point should be moved to be the last mount point listed on each disk. Defaults to $false.")] Boolean EnsureExchangeVolumeMountPointIsLast;
-    [Write, Description("")] Boolean CreateSubfolders; //Defaults to $false. If $true, specifies that DBNAME.db and DBNAME.log subfolders should be automatically created underneath the ExchangeDatabase mount points
-    [Write, ValueMap{"NTFS","REFS"}, Values{"NTFS","REFS"}, Description("")] String FileSystem; //The file system to use when formatting the volume. Defaults to NTFS.
-    [Write, Description("")] String MinDiskSize; //The minimum size of a disk to consider using. Defaults to none. Should be in a format like "1024MB" or "1TB".
-    [Write, ValueMap{"MBR","GPT"}, Values{"MBR","GPT"}, Description("")] String PartitioningScheme; //The partitioning scheme for the volume. Defaults to GPT.
-    [Write, Description("")] String UnitSize; //The unit size to use when formatting the disk. Defaults to 64k.
-    [Write, Description("")] String VolumePrefix; //The prefix to give to Exchange Volume folders. Defaults to EXVOL
+    [Write, Description("If $true, specifies that DBNAME.db and DBNAME.log subfolders should be automatically created underneath the ExchangeDatabase mount points. Defaults to $false.")] Boolean CreateSubfolders;
+    [Write, ValueMap{"NTFS","REFS"}, Values{"NTFS","REFS"}, Description("The file system to use when formatting the volume. Defaults to NTFS.")] String FileSystem;
+    [Write, Description("The minimum size of a disk to consider using. Defaults to none. Should be in a format like '1024MB' or '1TB'.")] String MinDiskSize;
+    [Write, ValueMap{"MBR","GPT"}, Values{"MBR","GPT"}, Description("The partitioning scheme for the volume. Defaults to GPT.")] String PartitioningScheme;
+    [Write, Description("The unit size to use when formatting the disk. Defaults to 64k.")] String UnitSize;
+    [Write, Description("The prefix to give to Exchange Volume folders. Defaults to EXVOL.")] String VolumePrefix;
 };
 
 
