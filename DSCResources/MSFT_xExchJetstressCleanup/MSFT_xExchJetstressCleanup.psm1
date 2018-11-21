@@ -110,7 +110,7 @@ function Set-TargetResource
 
     # Now delete the specified directories
     # Variable Only used if $DeleteAssociatedMountPoints is $true
-    [Hashtable] $ParentFoldersToRemove = @{} 
+    [Hashtable] $ParentFoldersToRemove = @{}
 
     foreach ($path in $FoldersToRemove)
     {

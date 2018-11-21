@@ -127,7 +127,7 @@ function Get-DiskInfo
                     {
                         $volNum = [int]::Parse($volStr)
 
-                        Add-ObjectToMapOfObjectArrays -Map $diskInfo.DiskToVolumeMap -Key $diskNum -Value $volNum
+                        Add-ObjectToObjectArrayMap -Map $diskInfo.DiskToVolumeMap -Key $diskNum -Value $volNum
 
                         # Now parse out the drive letter if it's set
                         $letterStart = "  ----------  ".Length
@@ -136,7 +136,7 @@ function Get-DiskInfo
 
                         if ($letter.Length -eq 1)
                         {
-                            Add-ObjectToMapOfObjectArrays -Map $diskInfo.VolumeToMountPointMap -Key $volNum -Value $letter
+                            Add-ObjectToObjectArrayMap -Map $diskInfo.VolumeToMountPointMap -Key $volNum -Value $letter
                         }
 
                         # Now find all the mount points
@@ -153,7 +153,7 @@ function Get-DiskInfo
                             {
                                 $mountPoint = $line.Trim()
 
-                                Add-ObjectToMapOfObjectArrays -Map $diskInfo.VolumeToMountPointMap -Key $volNum -Value $mountPoint
+                                Add-ObjectToObjectArrayMap -Map $diskInfo.VolumeToMountPointMap -Key $volNum -Value $mountPoint
                             }
 
                         } while ($i -lt $diskDetails.Count)
@@ -226,7 +226,7 @@ function Convert-StringArrayToCommaSeparatedString
     .PARAMETER Value
         The Value to add to the Hashtable at the given Key.
 #>
-function Add-ObjectToMapOfObjectArrays
+function Add-ObjectToObjectArrayMap
 {
     [CmdletBinding()]
     param

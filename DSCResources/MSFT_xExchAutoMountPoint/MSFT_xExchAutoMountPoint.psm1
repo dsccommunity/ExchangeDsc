@@ -866,7 +866,7 @@ function Get-DiskToDBMap
 function Get-ExchangeVolumeNumberForMountPoint
 {
     [CmdletBinding()]
-    [OutputType([System.UInt32])]
+    [OutputType([System.Int32])]
     param
     (
         [Parameter()]
@@ -1127,7 +1127,7 @@ function Get-FirstAvailableDiskNumber
 function Get-FirstAvailableVolumeNumber
 {
     [CmdletBinding()]
-    [OutputType([System.UInt32])]
+    [OutputType([System.Int32])]
     param
     (
         [Parameter()]
@@ -1295,7 +1295,7 @@ function Get-InUseMountPointCount
 function Get-VolumeNumberWhereMountPointNotLastInList
 {
     [CmdletBinding()]
-    [OutputType([System.UInt32])]
+    [OutputType([System.Int32])]
     param
     (
         [Parameter()]
