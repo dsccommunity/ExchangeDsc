@@ -52,8 +52,8 @@ try
 
             Context 'When Get-TargetResource is called' {
                 Mock -CommandName Write-FunctionEntry -Verifiable
-                Mock -CommandName GetDiskInfo -Verifiable -MockWith { return @{} }
-                Mock -CommandName GetDiskToDBMap -Verifiable -MockWith { return $getTargetResourceParams.DiskToDBMap }
+                Mock -CommandName Get-DiskInfo -Verifiable -MockWith { return @{} }
+                Mock -CommandName Get-DiskToDBMap -Verifiable -MockWith { return $getTargetResourceParams.DiskToDBMap }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }
