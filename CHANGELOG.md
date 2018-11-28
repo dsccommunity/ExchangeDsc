@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.25.0.0
+
 - Opt-in for the common test flagged Script Analyzer rules
   ([issue #234](https://github.com/PowerShell/xExchange/issues/234)).
 - Opt-in for the common test testing for relative path length.

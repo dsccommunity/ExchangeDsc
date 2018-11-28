@@ -1,6 +1,6 @@
 @{
     # Version number of this module.
-    moduleVersion = '1.24.0.0'
+    moduleVersion = '1.25.0.0'
 
     # ID used to uniquely identify this module
     GUID = '9a908ca3-8a67-485c-a014-66ba37fcc2a4'
@@ -48,34 +48,30 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-        ReleaseNotes = '- xExchangeHelper.psm1: Renamed common functions to use proper Verb-Noun
-  format. Also addresses many common style issues in functions in the file, as
-  well as in calls to these functions from other files.
-- MSFT_xExchTransportService: Removed functions that were duplicates of helper
-  functions in xExchangeHelper.psm1.
-- Fixes an issue where only objects of type Mailbox can be specified as a
-  Journal Recipient. Now MailUser and MailContact types can be used as well.
-- Update appveyor.yml to use the default template.
-- Added default template files .codecov.yml, .gitattributes, and .gitignore, and
-  .vscode folder.
-- Add Unit Tests for xExchAntiMalwareScanning
-- Add remaining Unit Tests for xExchInstall, and for most common setup
-  functions
-- Added ActionForUnknownFileAndMIMETypes,WSSAccessOnPublicComputersEnabled,
-  WSSAccessOnPrivateComputersEnabled,UNCAccessOnPublicComputersEnabled
-  UNCAccessOnPrivateComputersEnabled and GzipLevel to xExchOwaVirtualDirectory.
-- Added GzipLevel and AdminEnabled to xExchEcpVirtualDirectory.
-- Added OAuthAuthentication to xExchOabVirtualDirectory.
-- Updated readme with the new parameters and removed a bad parameter from
-  xExchOwaVirtualDirectory that did not actually exist.
-- Updated .gitattributes to allow test .pfx files to be saved as binary
-- Added Cumulative Update / Exchange update support to xExchInstall resource.
-- Add remaining Unit Tests for all xExchangeHelper functions that don"t
-  require the loading of Exchange DLL"s.
-- Renamed and moved file Examples/HelperScripts/ExchangeConfigHelper.psm1 to
-  Modules/xExchangeCalculatorHelper.psm1. Renamed functions within the module
-  to conform to proper function naming standards. Added remaining Unit tests
-  for module.
+        ReleaseNotes = '- Opt-in for the common test flagged Script Analyzer rules
+  ([issue 234](https://github.com/PowerShell/xExchange/issues/234)).
+- Opt-in for the common test testing for relative path length.
+- Removed the property `PSDscAllowPlainTextPassword` from all examples
+  so the examples are secure by default. The property
+  `PSDscAllowPlainTextPassword` was previously needed to (test) compile
+  the examples in the CI pipeline, but now the CI pipeline is using a
+  certificate to compile the examples.
+- Opt-in for the common test that validates the markdown links.
+- Fix typo of the word "Certificate" in several example files.
+- Add spaces between array members.
+- Add initial set of Unit Tests (mostly Get-TargetResource tests) for all
+  remaining resource files.
+- Add WaitForComputerObject parameter to xExchWaitForDAG
+- Add spaces between comment hashtags and comments.
+- Add space between variable types and variables.
+- Fixes issue where xExchMailboxDatabase fails to test for a Journal Recipient
+  because the module did not load the Get-Recipient cmdlet (335).
+- Fixes broken Integration tests in
+  MSFT_xExchMaintenanceMode.Integration.Tests.ps1 (336).
+- Fix issue where Get-ReceiveConnector against an Absent connector causes an
+  error to be logged in the MSExchange Management log.
+- Rename poorly named functions in xExchangeDiskPart.psm1 and
+  MSFT_xExchAutoMountPoint.psm1, and add comment based help.
 
 '
 
@@ -83,6 +79,7 @@
 
     } # End of PrivateData hashtable
 }
+
 
 
 
