@@ -6,16 +6,16 @@
 #>
 
 #region HEADER
-[System.String]$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-[System.String]$script:DSCModuleName = 'xExchange'
-[System.String]$script:DSCResourceFriendlyName = 'xExchMailboxDatabase'
-[System.String]$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[System.String] $script:DSCModuleName = 'xExchange'
+[System.String] $script:DSCResourceFriendlyName = 'xExchMailboxDatabase'
+[System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
-#Check if Exchange is installed on this machine. If not, we can't run tests
+# Check if Exchange is installed on this machine. If not, we can't run tests
 [System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
@@ -55,16 +55,16 @@ function Initialize-ExchDscDatabase
 
 if ($exchangeInstalled)
 {
-    #Get required credentials to use for the test
+    # Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
-    Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-MailboxDatabase','*-Mailbox','*-Recipient','Get-AcceptedDomain'
+    Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-MailboxDatabase', '*-Mailbox', '*-Recipient', 'Get-AcceptedDomain'
 
     $TestDBName = 'Mailbox Database Test 123'
 
     Initialize-ExchDscDatabase -Database $TestDBName
 
-    #Get the test OAB
+    # Get the test OAB
     $testOabName = Get-TestOfflineAddressBook -ShellCredentials $shellCredentials
 
     # Get Test Mailbox Information
@@ -72,8 +72,11 @@ if ($exchangeInstalled)
     $testMailboxADObjectIDString = ([Microsoft.Exchange.Data.Directory.ADObjectId]::ParseDnOrGuid($testMailbox.DistinguishedName)).ToString()
     $testMailboxSecondaryAddress = ($testMailbox.EmailAddresses | Where-Object {$_.IsPrimaryAddress -eq $false -and $_.Prefix -like 'SMTP'} | Select-Object -First 1).AddressString
 
+    # Remove our remote Exchange session so as not to interfere with actual Integration testing
+    Remove-RemoteExchangeSession
+
     Describe 'Test Creating a DB and Setting Properties with xExchMailboxDatabase' {
-        #First create and set properties on a test database
+        # First create and set properties on a test database
         $testParams = @{
             Name = $TestDBName
             Credential = $shellCredentials
@@ -141,7 +144,7 @@ if ($exchangeInstalled)
                                          -ContextLabel 'Use secondary journaling address test' `
                                          -ExpectedGetResults $expectedGetResults
 
-        #Now change properties on the test database
+        # Now change properties on the test database
         $testParams.CalendarLoggingQuota = '30mb'
         $testParams.CircularLoggingEnabled = $false
         $testParams.DeletedItemRetention = '15.00:00:00'
@@ -178,7 +181,7 @@ if ($exchangeInstalled)
 
         $serverVersion = Get-ExchangeVersionYear
 
-        if ($serverVersion -in '2016','2019')
+        if ($serverVersion -in '2016', '2019')
         {
             $testParams.Add('IsExcludedFromProvisioningReason', 'Testing Excluding the Database')
             $expectedGetResults.Add('IsExcludedFromProvisioningReason', 'Testing Excluding the Database')
@@ -196,11 +199,11 @@ if ($exchangeInstalled)
         Context 'Test Looking For Unlimited Value When Currently Set to Non-Unlimited Value' {
             $caughtException = $false
 
-            #First set a quota to a non-Unlimited value
+            # First set a quota to a non-Unlimited value
             $testParams.ProhibitSendReceiveQuota = '10GB'
             Set-TargetResource @testParams
 
-            #Now test for the value and look to see if it's Unlimited
+            # Now test for the value and look to see if it's Unlimited
             $testParams.ProhibitSendReceiveQuota = 'Unlimited'
 
             try
@@ -221,13 +224,13 @@ if ($exchangeInstalled)
             }
         }
 
-        #Test setting database quotas to non-unlimited value, when they are currently set to a different non-unlimited value
+        # Test setting database quotas to non-unlimited value, when they are currently set to a different non-unlimited value
         Context 'Test Looking For Non-Unlimited Value When Currently Set to Different Non-Unlimited Value' {
-            #First set a quota to a non-Unlimited value
+            # First set a quota to a non-Unlimited value
             $testParams.ProhibitSendReceiveQuota = '10GB'
             Set-TargetResource @testParams
 
-            #Now test for the value and look to see if it's a different non-unlimited value
+            # Now test for the value and look to see if it's a different non-unlimited value
             $testParams.ProhibitSendReceiveQuota = '11GB'
 
             $testResults = Test-TargetResource @testParams
@@ -238,11 +241,11 @@ if ($exchangeInstalled)
         }
 
         Context 'Test Looking For Non-Unlimited Value When Currently Set to Unlimited Value' {
-            #First set a quota to an Unlimited value
+            # First set a quota to an Unlimited value
             $testParams.ProhibitSendReceiveQuota = 'Unlimited'
             Set-TargetResource @testParams
 
-            #Now test for the value and look to see if it's non-Unlimited
+            # Now test for the value and look to see if it's non-Unlimited
             $testParams.ProhibitSendReceiveQuota = '11GB'
 
             $testResults = Test-TargetResource @testParams
@@ -253,11 +256,11 @@ if ($exchangeInstalled)
         }
 
         Context 'Test Looking For Same Value In A Different Size Format' {
-            #First set a quota to a non-Unlimited value in megabytes
+            # First set a quota to a non-Unlimited value in megabytes
             $testParams.ProhibitSendReceiveQuota = '10240MB'
             Set-TargetResource @testParams
 
-            #Now test for the value and look to see if it's the same value, but in gigabytes
+            # Now test for the value and look to see if it's the same value, but in gigabytes
             $testParams.ProhibitSendReceiveQuota = '10GB'
 
             $testResults = Test-TargetResource @testParams
@@ -267,7 +270,7 @@ if ($exchangeInstalled)
             }
         }
 
-        #Set all quotas to unlimited
+        # Set all quotas to unlimited
         $testParams.IssueWarningQuota = 'unlimited'
         $testParams.ProhibitSendQuota = 'Unlimited'
         $testParams.ProhibitSendReceiveQuota = 'unlimited'

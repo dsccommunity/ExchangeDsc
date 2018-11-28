@@ -23,7 +23,7 @@ function Get-TargetResource
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('PlainTextLogin','PlainTextAuthentication','SecureLogin')]
+        [ValidateSet('PlainTextLogin', 'PlainTextAuthentication', 'SecureLogin')]
         [System.String]
         $LoginType,
 
@@ -38,7 +38,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PopSettings' -Verbose:$VerbosePreference
 
     $pop = GetPopSettings @PSBoundParameters
@@ -79,7 +79,7 @@ function Set-TargetResource
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('PlainTextLogin','PlainTextAuthentication','SecureLogin')]
+        [ValidateSet('PlainTextLogin', 'PlainTextAuthentication', 'SecureLogin')]
         [System.String]
         $LoginType,
 
@@ -94,10 +94,10 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-PopSettings' -Verbose:$VerbosePreference
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
 
     Set-PopSettings @PSBoundParameters
 
@@ -138,7 +138,7 @@ function Test-TargetResource
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('PlainTextLogin','PlainTextAuthentication','SecureLogin')]
+        [ValidateSet('PlainTextLogin', 'PlainTextAuthentication', 'SecureLogin')]
         [System.String]
         $LoginType,
 
@@ -153,7 +153,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PopSettings' -Verbose:$VerbosePreference
 
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
@@ -213,7 +213,7 @@ function GetPopSettings
         $DomainController,
 
         [Parameter()]
-        [ValidateSet('PlainTextLogin','PlainTextAuthentication','SecureLogin')]
+        [ValidateSet('PlainTextLogin', 'PlainTextAuthentication', 'SecureLogin')]
         [System.String]
         $LoginType,
 
@@ -226,7 +226,7 @@ function GetPopSettings
         $X509CertificateName
     )
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Server','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Server', 'DomainController'
 
     return (Get-PopSettings @PSBoundParameters)
 }

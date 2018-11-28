@@ -8,21 +8,21 @@
 #>
 
 #region HEADER
-[System.String]$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-[System.String]$script:DSCModuleName = 'xExchange'
-[System.String]$script:DSCResourceFriendlyName = 'xExchExchangeServer'
-[System.String]$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[System.String] $script:DSCModuleName = 'xExchange'
+[System.String] $script:DSCResourceFriendlyName = 'xExchExchangeServer'
+[System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
-#Check if Exchange is installed on this machine. If not, we can't run tests
+# Check if Exchange is installed on this machine. If not, we can't run tests
 [System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
-#Sets properties retrieved by Get-ExchangeServer back to their default values
+# Sets properties retrieved by Get-ExchangeServer back to their default values
 function Clear-PropsForExchDscServer
 {
     [CmdletBinding()]
@@ -34,7 +34,7 @@ function Clear-PropsForExchDscServer
     Clear-ExchDscServerADProperty -Property 'msExchInternetWebProxy'
 }
 
-#Used to null out the specified Active Directory property of an Exchange Server
+# Used to null out the specified Active Directory property of an Exchange Server
 function Clear-ExchDscServerADProperty
 {
     [CmdletBinding()]
@@ -56,7 +56,7 @@ function Test-ExchDscServerPrepped
     param()
 
     Context 'Server has had relevant properties nulled out for xExchExchangeServer tests' {
-        [System.Collections.Hashtable]$getResult = Get-TargetResource @testParams -Verbose
+        [System.Collections.Hashtable] $getResult = Get-TargetResource @testParams -Verbose
 
         It 'InternetWebProxy should be empty' {
             [System.String]::IsNullOrEmpty($getResult.InternetWebProxy) | Should Be $true
@@ -74,7 +74,7 @@ if ($null -ne $adModule)
 {
     if ($exchangeInstalled)
     {
-        #Get required credentials to use for the test
+        # Get required credentials to use for the test
         $shellCredentials = Get-TestCredential
 
         if ($null -eq $exchangeServerDN)
@@ -91,26 +91,29 @@ if ($null -ne $adModule)
             {
                 throw 'Failed to determine distinguishedName of Exchange Server object'
             }
+
+            # Remove our remote Exchange session so as not to interfere with actual Integration testing
+            Remove-RemoteExchangeSession
         }
 
-        #Get the product key to use for testing
+        # Get the product key to use for testing
         if ($null -eq $productKey)
         {
             $productKey = Read-Host -Prompt 'Enter the product key to license Exchange with, or press ENTER to skip testing the licensing of the server.'
         }
 
         Describe 'Test Setting Properties with xExchExchangeServer' {
-            #Create out initial test params
+            # Create out initial test params
             $testParams = @{
                 Identity = $env:COMPUTERNAME
                 Credential = $shellCredentials
             }
 
-            #First prepare the server for tests
+            # First prepare the server for tests
             Clear-PropsForExchDscServer
             Test-ExchDscServerPrepped
 
-            #Now do tests
+            # Now do tests
             $testParams = @{
                 Identity = $env:COMPUTERNAME
                 Credential = $shellCredentials

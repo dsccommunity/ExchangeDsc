@@ -3,7 +3,7 @@
 class MSFT_xExchOwaVirtualDirectory : OMI_BaseResource
 {
     [Key] String Identity; //The Identity of the OWA Virtual Directory
-    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange
 
     //Remaining props correspond directly to Set-OwaVirtualDirectory parameters
     //http://technet.microsoft.com/en-us/library/bb123515(v=exchg.150).aspx

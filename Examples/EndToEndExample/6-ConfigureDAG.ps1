@@ -10,25 +10,12 @@ $ConfigurationData = @{
             NodeName        = '*'
 
             <#
-                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
-                This is added so that AppVeyor automatic tests can pass, otherwise
-                the tests will fail on passwords being in plain text and not being
-                encrypted. Because it is not possible to have a certificate in
-                AppVeyor to encrypt the passwords we need to add the parameter
-                'PSDscAllowPlainTextPassword'.
-                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
-                See:
-                http://blogs.msdn.com/b/powershell/archive/2014/01/31/want-to-secure-credentials-in-windows-powershell-desired-state-configuration.aspx
-            #>
-            PSDscAllowPlainTextPassword = $true
-
-            <#
-                The location of the exported public certifcate which will be used to encrypt
+                The location of the exported public certificate which will be used to encrypt
                 credentials during compilation.
                 CertificateFile = 'C:\public-certificate.cer'
             #>
 
-            #Thumbprint of the certificate being used for decrypting credentials
+            # Thumbprint of the certificate being used for decrypting credentials
             Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673'
 
             #endregion
@@ -80,7 +67,7 @@ $ConfigurationData = @{
             DAGName                              = 'DAG01'
             AutoDagTotalNumberOfServers          = 12
             AutoDagDatabaseCopiesPerVolume       = 4
-            DatabaseAvailabilityGroupIPAddresses = '192.168.1.31','192.168.2.31'
+            DatabaseAvailabilityGroupIPAddresses = '192.168.1.31', '192.168.2.31'
             WitnessServer                        = 'e14-1.contoso.local'
             DbNameReplacements                   = @{"nn" = "01"}
             Thumbprint                           = "0079D0F68F44C7DA5252B4779F872F46DFAF0CBC"
@@ -89,14 +76,14 @@ $ConfigurationData = @{
     #endregion
 
     #region CAS Settings
-    #Settings that will apply to all CAS
+    # Settings that will apply to all CAS
     AllCAS = @(
         @{
             ExternalNamespace = 'mail.contoso.local'
         }
     )
 
-    #Settings that will apply only to Quincy CAS
+    # Settings that will apply only to Quincy CAS
     Site1CAS = @(
         @{
             InternalNamespace          = 'mail-site1.contoso.local'
@@ -106,7 +93,7 @@ $ConfigurationData = @{
         }
     );
 
-    #Settings that will apply only to Phoenix CAS
+    # Settings that will apply only to Phoenix CAS
     Site2CAS = @(
         @{
             InternalNamespace          = 'mail-site2.contoso.local'
@@ -128,16 +115,16 @@ Configuration Example
         $ExchangeAdminCredential
     )
 
-    #Import required DSC Modules
+    # Import required DSC Modules
     Import-DscResource -Module xExchange
 
-    #This first section only configures a single DAG node, the first member of the DAG.
-    #The first member of the DAG will be responsible for DAG creation and maintaining its configuration
+    # This first section only configures a single DAG node, the first member of the DAG.
+    # The first member of the DAG will be responsible for DAG creation and maintaining its configuration
     Node $AllNodes.Where{$_.Role -eq 'FirstDAGMember'}.NodeName
     {
-        $dagSettings = $ConfigurationData[$Node.DAGId] #Look up and retrieve the DAG settings for this node
+        $dagSettings = $ConfigurationData[$Node.DAGId] # Look up and retrieve the DAG settings for this node
 
-        #Create the DAG
+        # Create the DAG
         xExchDatabaseAvailabilityGroup DAG
         {
             Name                                 = $dagSettings.DAGName
@@ -155,7 +142,7 @@ Configuration Example
             WitnessServer                        = $dagSettings.WitnessServer
         }
 
-        #Add this server as member
+        # Add this server as member
         xExchDatabaseAvailabilityGroupMember DAGMember
         {
             MailboxServer     = $Node.NodeName
@@ -166,12 +153,12 @@ Configuration Example
         }
     }
 
-    #Next we'll add the remaining nodes to the DAG
+    # Next we'll add the remaining nodes to the DAG
     Node $AllNodes.Where{$_.Role -eq 'AdditionalDAGMember'}.NodeName
     {
-        $dagSettings = $ConfigurationData[$Node.DAGId] #Look up and retrieve the DAG settings for this node
+        $dagSettings = $ConfigurationData[$Node.DAGId] # Look up and retrieve the DAG settings for this node
 
-        #Can't join until the DAG exists...
+        # Can't join until the DAG exists...
         xExchWaitForDAG WaitForDAG
         {
             Identity         = $dagSettings.DAGName

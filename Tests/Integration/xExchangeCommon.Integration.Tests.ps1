@@ -106,7 +106,7 @@ if ($exchangeInstalled)
 
     Describe 'xExchangeHelper\Compare-ADObjectIdToSmtpAddressString' -Tag 'Helper' {
         # Get test PS Session and setup test variables
-        Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad 'Get-AcceptedDomain','*-Mailbox','*-MailUser','*-MailContact','Get-Recipient','Get-MailboxDatabase'
+        Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad 'Get-AcceptedDomain', '*-Mailbox', '*-MailUser', '*-MailContact', 'Get-Recipient', 'Get-MailboxDatabase'
 
         $testMailbox = Get-DSCTestMailbox -Verbose
         $testMailboxADObjectID = [Microsoft.Exchange.Data.Directory.ADObjectId]::ParseDnOrGuid($testMailbox.DistinguishedName)

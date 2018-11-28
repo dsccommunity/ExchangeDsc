@@ -2,6 +2,33 @@
 
 ## Unreleased
 
+## 1.25.0.0
+
+- Opt-in for the common test flagged Script Analyzer rules
+  ([issue #234](https://github.com/PowerShell/xExchange/issues/234)).
+- Opt-in for the common test testing for relative path length.
+- Removed the property `PSDscAllowPlainTextPassword` from all examples
+  so the examples are secure by default. The property
+  `PSDscAllowPlainTextPassword` was previously needed to (test) compile
+  the examples in the CI pipeline, but now the CI pipeline is using a
+  certificate to compile the examples.
+- Opt-in for the common test that validates the markdown links.
+- Fix typo of the word 'Certificate' in several example files.
+- Add spaces between array members.
+- Add initial set of Unit Tests (mostly Get-TargetResource tests) for all
+  remaining resource files.
+- Add WaitForComputerObject parameter to xExchWaitForDAG
+- Add spaces between comment hashtags and comments.
+- Add space between variable types and variables.
+- Fixes issue where xExchMailboxDatabase fails to test for a Journal Recipient
+  because the module did not load the Get-Recipient cmdlet (#335).
+- Fixes broken Integration tests in
+  MSFT_xExchMaintenanceMode.Integration.Tests.ps1 (#336).
+- Fix issue where Get-ReceiveConnector against an Absent connector causes an
+  error to be logged in the MSExchange Management log.
+- Rename poorly named functions in xExchangeDiskPart.psm1 and
+  MSFT_xExchAutoMountPoint.psm1, and add comment based help.
+
 ## 1.24.0.0
 
 - xExchangeHelper.psm1: Renamed common functions to use proper Verb-Noun

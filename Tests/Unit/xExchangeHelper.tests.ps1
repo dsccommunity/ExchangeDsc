@@ -246,12 +246,12 @@ try
         Describe 'xExchangeHelper\Assert-IsSupportedWithExchangeVersion' -Tag 'Helper' {
             $supportedVersionTestCases = @(
                 @{Name='2013 Operation Supported on 2013';      ExchangeVersion='2013'; SupportedVersions='2013'}
-                @{Name='2013 Operation Supported on 2013,2019'; ExchangeVersion='2013'; SupportedVersions='2013','2019'}
+                @{Name='2013 Operation Supported on 2013,2019'; ExchangeVersion='2013'; SupportedVersions='2013', '2019'}
             )
 
             $notSupportedVersionTestCases = @(
                 @{Name='2013 Operation Not Supported on 2016';      ExchangeVersion='2013'; SupportedVersions='2016'}
-                @{Name='2013 Operation Not Supported on 2016,2019'; ExchangeVersion='2013'; SupportedVersions='2016','2019'}
+                @{Name='2013 Operation Not Supported on 2016,2019'; ExchangeVersion='2013'; SupportedVersions='2016', '2019'}
             )
 
             Context 'When a supported version is passed' {
@@ -1346,7 +1346,7 @@ try
                     Mock -CommandName Get-ExistingRemoteExchangeSession -Verifiable -MockWith { return $null }
                     Mock -CommandName New-RemoteExchangeSession -Verifiable -MockWith { return $null }
 
-                    { Get-RemoteExchangeSession } | Should -Throw -ExpectedMessage 'Failed to establish remote Powershell session to local server.'
+                    { Get-RemoteExchangeSession } | Should -Throw -ExpectedMessage 'Failed to establish remote PowerShell session to local server.'
                 }
             }
         }
@@ -2716,7 +2716,7 @@ try
         }
 
         Describe 'xExchangeHelper\Restart-ExistingAppPool' -Tag 'Helper' {
-            #Allow override of IIS commands
+            # Allow override of IIS commands
             function Get-WebAppPoolState {}
             function Restart-WebAppPool {}
 
@@ -3024,6 +3024,61 @@ try
                     Mock -CommandName Convert-StringArrayToLowerCase -MockWith { return $FlagsLower }
 
                     Test-ExtendedProtectionSPNList -SPNList $SPNList -Flags $Flags | Should -Be $true
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Get-StringFromHashtable' -Tag 'Helper' {
+
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Get-StringFromHashtable is called with a hashtable containing keys and values' {
+                It 'Should return a semicolon separated string of key/value pairs' {
+                    $hashtable = @{
+                        a = 1
+                        b = 2
+                        c = 3
+                    }
+
+                    Get-StringFromHashtable -Hashtable $hashtable | Should -Be 'a=1;b=2;c=3'
+                }
+            }
+        }
+
+        Describe 'xExchangeHelper\Get-DomainDNFromFQDN' -Tag 'Helper' {
+
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            $testCases = @(
+                @{
+                    FQDN = 'domain1.local'
+                    DN   = 'dc=domain1,dc=local'
+                }
+                @{
+                    FQDN = 'sub.domain1.local'
+                    DN   = 'dc=sub,dc=domain1,dc=local'
+                }
+                @{
+                    FQDN = 'domain1'
+                    DN   = 'dc=domain1'
+                }
+            )
+            Context 'When Get-DomainDNFromFQDN is called' {
+                It 'Should return the input domain in DN format' -TestCases $testCases {
+                    param
+                    (
+                        [System.String]
+                        $FQDN,
+
+                        [System.String]
+                        $DN
+                    )
+
+                    Get-DomainDNFromFQDN -Fqdn $FQDN | Should -Be $DN
                 }
             }
         }

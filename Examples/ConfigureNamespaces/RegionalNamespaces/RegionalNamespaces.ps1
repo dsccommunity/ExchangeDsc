@@ -7,22 +7,9 @@ $ConfigurationData = @{
     AllNodes = @(
         @{
             NodeName                    = '*'
-
-            <#
-                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
-                This is added so that AppVeyor automatic tests can pass, otherwise
-                the tests will fail on passwords being in plain text and not being
-                encrypted. Because it is not possible to have a certificate in
-                AppVeyor to encrypt the passwords we need to add the parameter
-                'PSDscAllowPlainTextPassword'.
-                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
-                See:
-                http://blogs.msdn.com/b/powershell/archive/2014/01/31/want-to-secure-credentials-in-windows-powershell-desired-state-configuration.aspx
-            #>
-            PSDscAllowPlainTextPassword = $true
         },
 
-        #Individual target nodes are defined next
+        # Individual target nodes are defined next
         @{
             NodeName = 'e15-1'
             CASID    = 'Site1CAS'
@@ -34,7 +21,7 @@ $ConfigurationData = @{
         }
     )
 
-    #CAS settings that are unique per site will go in separate hash table entries.
+    # CAS settings that are unique per site will go in separate hash table entries.
     Site1CAS = @(
         @{
             ExternalNLBFqdn       = 'mail.contoso.local'
@@ -65,7 +52,7 @@ Configuration Example
 
     Node $AllNodes.NodeName
     {
-        $casSettings = $ConfigurationData[$Node.CASId] #Look up and retrieve the CAS settings for this node
+        $casSettings = $ConfigurationData[$Node.CASId] # Look up and retrieve the CAS settings for this node
 
         xExchClientAccessServer CAS
         {
@@ -97,8 +84,8 @@ Configuration Example
             Credential               = $ExchangeAdminCredential
             ExternalUrl              = "https://$($casSettings.ExternalNLBFqdn)/mapi"
             InternalUrl              = "https://$($casSettings.InternalNLBFqdn)/mapi"
-            IISAuthenticationMethods = 'NTLM','Negotiate'  #IISAuthenticationMethods is a required parameter for Set-MapiVirtualDirectory
-            AllowServiceRestart      = $true               #Since we are changing the default auth method, we allow the app pool to be restarted right away so the change goes into effect immediately
+            IISAuthenticationMethods = 'NTLM', 'Negotiate'  # IISAuthenticationMethods is a required parameter for Set-MapiVirtualDirectory
+            AllowServiceRestart      = $true               # Since we are changing the default auth method, we allow the app pool to be restarted right away so the change goes into effect immediately
         }
 
         xExchOabVirtualDirectory OABVdir
@@ -114,12 +101,12 @@ Configuration Example
             Identity                           = "$($Node.NodeName)\Rpc (Default Web Site)"
             Credential                         = $ExchangeAdminCredential
             ExternalHostName                   = $casSettings.ExternalNLBFqdn
-            ExternalClientAuthenticationMethod = 'Ntlm' #ExternalClientAuthenticationMethod is a required parameter for Set-OutlookAnywhere if ExternalHostName is specified
-            ExternalClientsRequireSsl          = $true  #ExternalClientsRequireSsl is a required parameter for Set-OutlookAnywhere if ExternalHostName is specified
+            ExternalClientAuthenticationMethod = 'Ntlm' # ExternalClientAuthenticationMethod is a required parameter for Set-OutlookAnywhere if ExternalHostName is specified
+            ExternalClientsRequireSsl          = $true  # ExternalClientsRequireSsl is a required parameter for Set-OutlookAnywhere if ExternalHostName is specified
             InternalHostName                   = $casSettings.InternalNLBFqdn
-            InternalClientAuthenticationMethod = 'Ntlm' #ExternalClientAuthenticationMethod is a required parameter for Set-OutlookAnywhere if InternalHostName is specified
-            InternalClientsRequireSSL          = $true  #ExternalClientsRequireSsl is a required parameter for Set-OutlookAnywhere if InternalHostName is specified
-            AllowServiceRestart                = $true  #Since we are changing the default auth method, we allow the app pool to be restarted right away so the change goes into effect immediately
+            InternalClientAuthenticationMethod = 'Ntlm' # ExternalClientAuthenticationMethod is a required parameter for Set-OutlookAnywhere if InternalHostName is specified
+            InternalClientsRequireSSL          = $true  # ExternalClientsRequireSsl is a required parameter for Set-OutlookAnywhere if InternalHostName is specified
+            AllowServiceRestart                = $true  # Since we are changing the default auth method, we allow the app pool to be restarted right away so the change goes into effect immediately
         }
 
         xExchOwaVirtualDirectory OWAVdir

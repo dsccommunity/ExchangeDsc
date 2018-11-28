@@ -6,26 +6,26 @@
 #>
 
 #region HEADER
-[System.String]$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-[System.String]$script:DSCModuleName = 'xExchange'
-[System.String]$script:DSCResourceFriendlyName = 'xExchClientAccessServer'
-[System.String]$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[System.String] $script:DSCModuleName = 'xExchange'
+[System.String] $script:DSCResourceFriendlyName = 'xExchClientAccessServer'
+[System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
-#Check if Exchange is installed on this machine. If not, we can't run tests
+# Check if Exchange is installed on this machine. If not, we can't run tests
 [System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
-    #Get required credentials to use for the test
+    # Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
-    #Get the Server FQDN for using in URL's
+    # Get the Server FQDN for using in URL's
     if ($null -eq $serverFqdn)
     {
         $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
@@ -41,7 +41,7 @@ if ($exchangeInstalled)
             ($null -ne $getResults -and $null -eq $getResults.AlternateServiceAccountCredential) | Should -Be $true
         }
 
-        #Do standard URL and scope tests
+        # Do standard URL and scope tests
         $testParams = @{
             Identity =  $env:COMPUTERNAME
             Credential = $shellCredentials
@@ -59,7 +59,7 @@ if ($exchangeInstalled)
                                          -ContextLabel 'Set autod url and site scope' `
                                          -ExpectedGetResults $expectedGetResults
 
-        #Now set the URL to empty
+        # Now set the URL to empty
         $testParams.AutoDiscoverServiceInternalUri = ''
         $expectedGetResults.AutoDiscoverServiceInternalUri = ''
 
@@ -67,8 +67,8 @@ if ($exchangeInstalled)
                                          -ContextLabel 'Set url to empty' `
                                          -ExpectedGetResults $expectedGetResults
 
-        #Now try multiple sites in the site scope
-        $testParams.AutoDiscoverSiteScope = 'Site1','Site2'
+        # Now try multiple sites in the site scope
+        $testParams.AutoDiscoverSiteScope = 'Site1', 'Site2'
         $expectedGetResults = @{}
 
         Test-TargetResourceFunctionality -Params $testParams `
@@ -81,10 +81,10 @@ if ($exchangeInstalled)
                                 -ContextLabel 'Verify AutoDiscoverSiteScope' `
                                 -ItLabel 'AutoDiscoverSiteScope should contain two values'
 
-        #Now set the site scope to $null
+        # Now set the site scope to $null
         $testParams.AutoDiscoverSiteScope = $null
         $expectedGetResults = @{
-            AutoDiscoverSiteScope = [String[]]@()
+            AutoDiscoverSiteScope = [String[]] @()
         }
 
         Test-TargetResourceFunctionality -Params $testParams `
@@ -97,7 +97,7 @@ if ($exchangeInstalled)
                                 -ContextLabel 'Verify AutoDiscoverSiteScope' `
                                 -ItLabel 'AutoDiscoverSiteScope should be empty'
 
-        #create AlternateServiceAccount credentials
+        # Create AlternateServiceAccount credentials
         if ($null -eq $asaCredentials)
         {
             $UserASA = 'Fabrikam\ASA'
@@ -106,11 +106,11 @@ if ($exchangeInstalled)
                                                 -ArgumentList $UserASA, $PWordASA
         }
 
-        #Now set AlternateServiceAccount account
+        # Now set AlternateServiceAccount account
         $testParams.Add('AlternateServiceAccountCredential',$asaCredentials)
         $expectedGetResults.Add('AlternateServiceAccountCredential',$asaCredentials)
 
-        #Alter Autodiscover settings and make sure they're picked up along with AlternateServiceAccount change
+        # Alter Autodiscover settings and make sure they're picked up along with AlternateServiceAccount change
         $testParams.AutoDiscoverSiteScope = 'Site3'
         $expectedGetResults.AutoDiscoverSiteScope = 'Site3'
 
@@ -118,14 +118,14 @@ if ($exchangeInstalled)
                                          -ContextLabel 'Set AlternateServiceAccountCredential' `
                                          -ExpectedGetResults $expectedGetResults
 
-        #Test for invalid AlternateServiceAccount account format
+        # Test for invalid AlternateServiceAccount account format
         Context 'Test looking for invalid format of AlternateServiceAccount account' {
             $UserASA = 'Fabrikam/ASA'
             $PWordASA = New-Object -TypeName System.Security.SecureString
             $asaCredentials = New-Object -TypeName System.Management.Automation.PSCredential `
                                                 -ArgumentList $UserASA, $PWordASA
 
-            #Set the invalid credentials
+            # Set the invalid credentials
             $testParams['AlternateServiceAccountCredential'] = $asaCredentials
 
             It 'Should hit exception for invalid AlternateServiceAccount account format' {
@@ -138,12 +138,12 @@ if ($exchangeInstalled)
             }
         }
 
-        #Now clear AlternateServiceAccount account credentials
+        # Now clear AlternateServiceAccount account credentials
         $testParams.Remove('AlternateServiceAccountCredential')
         $testParams.Add('RemoveAlternateServiceAccountCredentials',$true)
         $expectedGetResults.Remove('AlternateServiceAccountCredential')
 
-        #Alter Autodiscover settings and make sure they're picked up along with AlternateServiceAccount change
+        # Alter Autodiscover settings and make sure they're picked up along with AlternateServiceAccount change
         $testParams.AutoDiscoverSiteScope = 'Site4'
         $expectedGetResults.AutoDiscoverSiteScope = 'Site4'
 

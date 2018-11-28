@@ -7,22 +7,9 @@ $ConfigurationData = @{
     AllNodes = @(
         @{
             NodeName                    = '*'
-
-            <#
-                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
-                This is added so that AppVeyor automatic tests can pass, otherwise
-                the tests will fail on passwords being in plain text and not being
-                encrypted. Because it is not possible to have a certificate in
-                AppVeyor to encrypt the passwords we need to add the parameter
-                'PSDscAllowPlainTextPassword'.
-                NOTE! THIS IS NOT RECOMMENDED IN PRODUCTION.
-                See:
-                http://blogs.msdn.com/b/powershell/archive/2014/01/31/want-to-secure-credentials-in-windows-powershell-desired-state-configuration.aspx
-            #>
-            PSDscAllowPlainTextPassword = $true
         },
 
-        #Individual target nodes are defined next
+        # Individual target nodes are defined next
         @{
             NodeName = 'e15-1'
             CASID    = 'Site1CAS'
@@ -34,16 +21,16 @@ $ConfigurationData = @{
         }
     );
 
-    #CAS settings that are unique per site will go in separate hash table entries.
+    # CAS settings that are unique per site will go in separate hash table entries.
     Site1CAS = @(
         @{
             InternalNLBFqdn            = 'mail-site1.contoso.local'
             ExternalNLBFqdn            = 'mail.contoso.local'
 
-            #ClientAccessServer Settings
-            AutoDiscoverSiteScope      = 'Site1','Site3','Site5'
+            # ClientAccessServer Settings
+            AutoDiscoverSiteScope      = 'Site1', 'Site3', 'Site5'
 
-            #OAB Settings
+            # OAB Settings
             OABsToDistribute           = 'Default Offline Address Book - Site1'
         }
     );
@@ -53,10 +40,10 @@ $ConfigurationData = @{
             InternalNLBFqdn            = 'mail-site2.contoso.local'
             ExternalNLBFqdn            = 'mail.contoso.local'
 
-            #ClientAccessServer Settings
-            AutoDiscoverSiteScope      = 'Site2','Site4','Site6'
+            # ClientAccessServer Settings
+            AutoDiscoverSiteScope      = 'Site2', 'Site4', 'Site6'
 
-            #OAB Settings
+            # OAB Settings
             OABsToDistribute           = 'Default Offline Address Book - Site2'
         }
     );
@@ -75,7 +62,7 @@ Configuration Example
 
     Node $AllNodes.NodeName
     {
-        $casSettings = $ConfigurationData[$Node.CASId] #Look up and retrieve the CAS settings for this node
+        $casSettings = $ConfigurationData[$Node.CASId] # Look up and retrieve the CAS settings for this node
 
         ###CAS specific settings###
         xExchClientAccessServer CAS
@@ -86,7 +73,7 @@ Configuration Example
             AutoDiscoverSiteScope          = $casSettings.AutoDiscoverSiteScope
         }
 
-        #Install features that are required for xExchActiveSyncVirtualDirectory to do Auto Certification Based Authentication
+        # Install features that are required for xExchActiveSyncVirtualDirectory to do Auto Certification Based Authentication
         WindowsFeature WebClientAuth
         {
             Name   = 'Web-Client-Auth'
@@ -99,7 +86,7 @@ Configuration Example
             Ensure = 'Present'
         }
 
-        #This example shows how to enable Certificate Based Authentication for ActiveSync
+        # This example shows how to enable Certificate Based Authentication for ActiveSync
         xExchActiveSyncVirtualDirectory ASVdir
         {
             Identity                    = "$($Node.NodeName)\Microsoft-Server-ActiveSync (Default Web Site)"
@@ -113,11 +100,11 @@ Configuration Example
             WindowsAuthEnabled          = $false
             AllowServiceRestart         = $true
 
-            DependsOn                   = '[WindowsFeature]WebClientAuth','[WindowsFeature]WebCertAuth'
-            #NOTE: If CBA is being configured, this should also be dependent on the cert whose thumbprint is being used. See EndToEndExample.
+            DependsOn                   = '[WindowsFeature]WebClientAuth', '[WindowsFeature]WebCertAuth'
+            # NOTE: If CBA is being configured, this should also be dependent on the cert whose thumbprint is being used. See EndToEndExample.
         }
 
-        #Ensures forms based auth and configures URLs
+        # Ensures forms based auth and configures URLs
         xExchEcpVirtualDirectory ECPVDir
         {
             Identity                      = "$($Node.NodeName)\ecp (Default Web Site)"
@@ -131,18 +118,18 @@ Configuration Example
             AllowServiceRestart           = $true
         }
 
-        #Configure URL's and for NTLM and negotiate auth
+        # Configure URL's and for NTLM and negotiate auth
         xExchMapiVirtualDirectory MAPIVdir
         {
             Identity                 = "$($Node.NodeName)\mapi (Default Web Site)"
             Credential               = $ExchangeAdminCredential
             ExternalUrl              = "https://$($casSettings.ExternalNLBFqdn)/mapi"
-            IISAuthenticationMethods = 'NTLM','Negotiate'
+            IISAuthenticationMethods = 'NTLM', 'Negotiate'
             InternalUrl              = "https://$($casSettings.InternalNLBFqdn)/mapi"
             AllowServiceRestart      = $true
         }
 
-        #Configure URL's and add any OABs this vdir should distribute
+        # Configure URL's and add any OABs this vdir should distribute
         xExchOabVirtualDirectory OABVdir
         {
             Identity            = "$($Node.NodeName)\OAB (Default Web Site)"
@@ -153,7 +140,7 @@ Configuration Example
             AllowServiceRestart = $true
         }
 
-        #Configure URL's and auth settings
+        # Configure URL's and auth settings
         xExchOutlookAnywhere OAVdir
         {
             Identity                           = "$($Node.NodeName)\Rpc (Default Web Site)"
@@ -168,7 +155,7 @@ Configuration Example
             AllowServiceRestart                = $true
         }
 
-        #Ensures forms based auth and configures URLs and IM integration
+        # Ensures forms based auth and configures URLs and IM integration
         xExchOwaVirtualDirectory OWAVdir
         {
             Identity                              = "$($Node.NodeName)\owa (Default Web Site)"
@@ -182,7 +169,7 @@ Configuration Example
             AllowServiceRestart                   = $true
         }
 
-        #Turn on Windows Integrated auth for remote powershell connections
+        # Turn on Windows Integrated auth for remote powershell connections
         xExchPowerShellVirtualDirectory PSVdir
         {
             Identity              = "$($Node.NodeName)\PowerShell (Default Web Site)"
@@ -191,7 +178,7 @@ Configuration Example
             AllowServiceRestart   = $true
         }
 
-        #Configure URL's
+        # Configure URL's
         xExchWebServicesVirtualDirectory EWSVdir
         {
             Identity            = "$($Node.NodeName)\EWS (Default Web Site)"

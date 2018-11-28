@@ -6,26 +6,26 @@
 #>
 
 #region HEADER
-[System.String]$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-[System.String]$script:DSCModuleName = 'xExchange'
-[System.String]$script:DSCResourceFriendlyName = 'xExchOutlookAnywhere'
-[System.String]$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[System.String] $script:DSCModuleName = 'xExchange'
+[System.String] $script:DSCResourceFriendlyName = 'xExchOutlookAnywhere'
+[System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
-#Check if Exchange is installed on this machine. If not, we can't run tests
+# Check if Exchange is installed on this machine. If not, we can't run tests
 [System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
-    #Get required credentials to use for the test
+    # Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
-    #Get the Server FQDN for using in URL's
+    # Get the Server FQDN for using in URL's
     if ($null -eq $serverFqdn)
     {
         $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
@@ -35,13 +35,13 @@ if ($exchangeInstalled)
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\Rpc (Default Web Site)"
             Credential = $shellCredentials
-            ExtendedProtectionFlags = 'Proxy','ProxyCoHosting'
+            ExtendedProtectionFlags = 'Proxy', 'ProxyCoHosting'
             ExtendedProtectionSPNList = @()
             ExtendedProtectionTokenChecking = 'Allow'
             ExternalClientAuthenticationMethod = 'Ntlm'
             ExternalClientsRequireSsl = $true
             ExternalHostname = $serverFqdn
-            IISAuthenticationMethods = 'Basic','Ntlm','Negotiate'
+            IISAuthenticationMethods = 'Basic', 'Ntlm', 'Negotiate'
             InternalClientAuthenticationMethod = 'Negotiate'
             InternalHostname = $serverFqdn
             InternalClientsRequireSsl = $true

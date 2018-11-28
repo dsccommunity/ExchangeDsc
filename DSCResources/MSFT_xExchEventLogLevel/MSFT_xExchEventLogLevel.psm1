@@ -15,14 +15,14 @@ function Get-TargetResource
         $Credential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Lowest','Low','Medium','High','Expert')]
+        [ValidateSet('Lowest', 'Low', 'Medium', 'High', 'Expert')]
         [System.String]
         $Level
     )
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-EventLogLevel' -Verbose:$VerbosePreference
 
     $eventLogLevel = Get-EventLogLevel -Identity "$($env:COMPUTERNAME)\$($Identity)"
@@ -54,14 +54,14 @@ function Set-TargetResource
         $Credential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Lowest','Low','Medium','High','Expert')]
+        [ValidateSet('Lowest', 'Low', 'Medium', 'High', 'Expert')]
         [System.String]
         $Level
     )
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-EventLogLevel' -Verbose:$VerbosePreference
 
     Set-EventLogLevel -Identity "$($env:COMPUTERNAME)\$($Identity)" -Level $Level
@@ -84,14 +84,14 @@ function Test-TargetResource
         $Credential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Lowest','Low','Medium','High','Expert')]
+        [ValidateSet('Lowest', 'Low', 'Medium', 'High', 'Expert')]
         [System.String]
         $Level
     )
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-EventLogLevel' -Verbose:$VerbosePreference
 
     $eventLogLevel = Get-EventLogLevel -Identity "$($env:COMPUTERNAME)\$($Identity)"

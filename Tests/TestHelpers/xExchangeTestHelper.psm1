@@ -1,7 +1,22 @@
 <#
-    Function to be used within pester for end to end testing of Get/Set/Test-TargetResource
-    Function first calls Set-TargetResource with provided parameters, then runs Get and Test-TargetResource,
-    and ensures they match $ExpectedGetResults and $ExpectedTestResult
+    .SYNOPSIS
+        Function to be used within pester for end to end testing of
+        Get/Set/Test-TargetResource. Function first calls Set-TargetResource
+        with provided parameters, then runs Get and Test-TargetResource, and
+        ensures they match $ExpectedGetResults and $ExpectedTestResult.
+
+    .PARAMETER Params
+        The Parameters to pass when calling Get/Set/Test-TargetResource.
+
+    .PARAMETER ContextLabel
+        The label to use within the Context block of tests.
+
+    .PARAMETER ExpectedGetResults
+        A hashtable containing the expected return values from
+        Get-TargetResource.
+
+    .PARAMETER ExpectedTestResult
+        The expected return value from Test-TargetResource.
 #>
 function Test-TargetResourceFunctionality
 {
@@ -26,58 +41,41 @@ function Test-TargetResourceFunctionality
     )
 
     Context $ContextLabel {
-        [System.Boolean]$testResult = Test-TargetResource @Params -Verbose
+        $addedVerbose = $false
+
+        if ($null -eq ($Params.Keys | Where-Object -FilterScript {$_ -like 'Verbose'}))
+        {
+            $Params.Add('Verbose', $true)
+            $addedVerbose = $true
+        }
+
+        [System.Boolean] $testResult = Test-TargetResource @Params
 
         Write-Verbose -Message "Test-TargetResource results before running Set-TargetResource: $testResult"
 
-        Set-TargetResource @Params -Verbose
+        Set-TargetResource @Params
 
-        [System.Collections.Hashtable]$getResult = Get-TargetResource @Params -Verbose
-        [System.Boolean]$testResult = Test-TargetResource @Params -Verbose
+        [System.Collections.Hashtable] $getResult = Get-TargetResource @Params
+        [System.Boolean] $testResult = Test-TargetResource @Params
 
-        #The ExpectedGetResults are $null, so let's check that what we got back is $null
+        # The ExpectedGetResults are $null, so let's check that what we got back is $null
         if ($null -eq $ExpectedGetResults)
         {
             It 'Get-TargetResource: Should Be Null' {
-                $getResult | Should BeNullOrEmpty
+                $getResult | Should -BeNullOrEmpty
             }
         }
         else
         {
-            <#
-                Check the members of the Get-TargetResource results and make sure the result types
-                match those of the function parameters
-            #>
-            $getTargetResourceCommand = Get-Command Get-TargetResource
+            Test-CommonGetTargetResourceFunctionality -GetResult $getResult
 
-            It "Only 1 Get-TargetResource function is loaded" {
-                $getTargetResourceCommand.Count -eq 1 | Should Be $true
-            }
-
-            if ($getTargetResourceCommand.Count -eq 1)
-            {
-                foreach ($getTargetResourceParam in $getTargetResourceCommand.Parameters.Keys | Where-Object {$getResult.ContainsKey($_)})
-                {
-                    $getResultMemberType = '$null'
-
-                    if ($null -ne ($getResult[$getTargetResourceParam]))
-                    {
-                        $getResultMemberType = $getResult[$getTargetResourceParam].GetType().ToString()
-                    }
-
-                    It "Get-TargetResource: Parameter '$getTargetResourceParam' expects return type: '$($getTargetResourceCommand.Parameters[$getTargetResourceParam].ParameterType.ToString())'. Actual return type: '$getResultMemberType'" {
-                        ($getTargetResourceCommand.Parameters[$getTargetResourceParam].ParameterType.ToString()) -eq $getResultMemberType | Should Be $true
-                    }
-                }
-            }
-
-            #Test each individual key in $ExpectedGetResult to see if they exist, and if the expected value matches
+            # Test each individual key in $ExpectedGetResult to see if they exist, and if the expected value matches
             foreach ($key in $ExpectedGetResults.Keys)
             {
                 $getContainsKey = $getResult.ContainsKey($key)
 
                 It "Get-TargetResource: Contains Key: $($key)" {
-                    $getContainsKey | Should Be $true
+                    $getContainsKey | Should -Be $true
                 }
 
                 if ($getContainsKey)
@@ -106,15 +104,87 @@ function Test-TargetResourceFunctionality
                     }
 
                     It "Get-TargetResource: Value Matches for Key: $($key)" {
-                        $getValueMatchesForKey | Should Be $true
+                        $getValueMatchesForKey | Should -Be $true
                     }
                 }
             }
         }
 
-        #Test the Test-TargetResource results
+        # Test the Test-TargetResource results
         It 'Test-TargetResource' {
-            $testResult | Should Be $ExpectedTestResult
+            $testResult | Should -Be $ExpectedTestResult
+        }
+
+        if ($addedVerbose)
+        {
+            $Params.Remove('Verbose')
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Runs Get-TargetTesource, or takes the results of a previous
+        Get-TargetResource execution, and performs common tests against the
+        results. The function must be provided either the results from a
+        previous Get-TargetResource execution, or the parameters to send to
+        Get-TargetResource, but not both. If neither parameter is specified,
+        or both parameters are specified, the function will throw an exception.
+
+    .PARAMETER GetResult
+        The results of a previous Get-TargetResource execution.
+
+    .PARAMETER GetTargetResourceParams
+        The parameters that should be passed to Get-TargetResource.
+#>
+function Test-CommonGetTargetResourceFunctionality
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [System.Collections.Hashtable]
+        $GetResult,
+
+        [Parameter()]
+        [System.Collections.Hashtable]
+        $GetTargetResourceParams
+    )
+
+    if (($GetResult.Count -eq 0 -and $GetTargetResourceParams.Count -eq 0) -or ($GetResult.Count -gt 0 -and $GetTargetResourceParams.Count -gt 0))
+    {
+        throw 'Either the GetResult or GetTargetResourceParams parameters must be specified with non-empty hashtables, but not both.'
+    }
+
+    if ($GetResult.Count -eq 0)
+    {
+        $GetResult = Get-TargetResource @GetTargetResourceParams
+    }
+
+    It 'Should return a hashtable of properties' {
+        $GetResult | Should -Be -Not $null
+    }
+
+    $getTargetResourceCommand = Get-Command Get-TargetResource
+
+    It 'Only 1 Get-TargetResource function should be loaded' {
+        $getTargetResourceCommand.Count -eq 1 | Should -Be $true
+    }
+
+    if ($getTargetResourceCommand.Count -eq 1)
+    {
+        foreach ($getTargetResourceParam in $getTargetResourceCommand.Parameters.Keys | Where-Object -FilterScript {$GetResult.ContainsKey($_)})
+        {
+            $getResultMemberType = '$null'
+
+            if ($null -ne ($GetResult[$getTargetResourceParam]))
+            {
+                $getResultMemberType = $GetResult[$getTargetResourceParam].GetType().ToString()
+            }
+
+            It "Should return a value of type '$($getTargetResourceCommand.Parameters[$getTargetResourceParam].ParameterType.ToString())' for hashtable member '$getTargetResourceParam'. Actual return type: '$getResultMemberType'" {
+                ($getTargetResourceCommand.Parameters[$getTargetResourceParam].ParameterType.ToString()) -eq $getResultMemberType | Should -Be $true
+            }
         }
     }
 }
@@ -146,7 +216,7 @@ function Test-ArrayContentsEqual
     )
 
     Context $ContextLabel {
-        [System.Collections.Hashtable]$getResult = Get-TargetResource @TestParams
+        [System.Collections.Hashtable] $getResult = Get-TargetResource @TestParams
 
         It $ItLabel {
             Compare-ArrayContent -Array1 $DesiredArrayContents -Array2 $getResult."$($GetResultParameterName)" -IgnoreCase | Should Be $true
@@ -181,7 +251,7 @@ function Test-Array2ContainsArray1
     )
 
     Context $ContextLabel {
-        [System.Collections.Hashtable]$getResult = Get-TargetResource @TestParams
+        [System.Collections.Hashtable] $getResult = Get-TargetResource @TestParams
 
         It $ItLabel {
             Test-ArrayElementsInSecondArray -Array1 $DesiredArrayContents -Array2 $getResult."$GetResultParameterName" -IgnoreCase | Should Be $true
@@ -189,7 +259,7 @@ function Test-Array2ContainsArray1
     }
 }
 
-#Creates a test OAB for DSC, or sees if it exists. If it is created or exists, return the name of the OAB.
+# Creates a test OAB for DSC, or sees if it exists. If it is created or exists, return the name of the OAB.
 function Get-TestOfflineAddressBook
 {
     [CmdletBinding()]
@@ -202,7 +272,7 @@ function Get-TestOfflineAddressBook
         $ShellCredentials
     )
 
-    [System.String]$testOabName = 'Offline Address Book (DSC Test)'
+    [System.String] $testOabName = 'Offline Address Book (DSC Test)'
 
     Get-RemoteExchangeSession -Credential $ShellCredentials -CommandsToLoad '*-OfflineAddressBook'
 
@@ -221,7 +291,7 @@ function Get-TestOfflineAddressBook
     return $testOabName
 }
 
-#Removes the test DAG if it exists, and any associated databases
+# Removes the test DAG if it exists, and any associated databases
 function Initialize-TestForDAG
 {
     [CmdletBinding()]
@@ -254,7 +324,7 @@ function Initialize-TestForDAG
 
     $existingDB = Get-MailboxDatabase -Identity "$($DatabaseName)" -Status -ErrorAction SilentlyContinue
 
-    #First remove the test database copies
+    # First remove the test database copies
     if ($null -ne $existingDB)
     {
         Get-MailboxDatabaseCopyStatus -Identity "$($DatabaseName)" | Where-Object -FilterScript {
@@ -262,19 +332,19 @@ function Initialize-TestForDAG
         } | Remove-MailboxDatabaseCopy -Confirm:$false
     }
 
-    #Now remove the actual DB's
+    # Now remove the actual DB's
     Get-MailboxDatabase | Where-Object -FilterScript {
         $_.Name -like "$($DatabaseName)"
     } | Remove-MailboxDatabase -Confirm:$false
 
-    #Remove the files
+    # Remove the files
     foreach ($server in $ServerName)
     {
         Get-ChildItem -LiteralPath "\\$($server)\c`$\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($DatabaseName)" `
                       -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
     }
 
-    #Last remove the test DAG
+    # Last remove the test DAG
     $dag = Get-DatabaseAvailabilityGroup -Identity "$($DAGName)" -ErrorAction SilentlyContinue
 
     if ($null -ne $dag)
@@ -294,7 +364,7 @@ function Initialize-TestForDAG
         throw 'Failed to remove test DAG'
     }
 
-    #Disable the DAG computer account
+    # Disable the DAG computer account
     $compAccount = Get-ADComputer -Identity $DAGName -ErrorAction SilentlyContinue
 
     if ($null -ne $compAccount -and $compAccount.Enabled -eq $true)
@@ -321,7 +391,7 @@ function Get-TestCredential
 
     if ($null -eq $Global:TestCredential)
     {
-        [PSCredential]$Global:TestCredential = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
+        [PSCredential] $Global:TestCredential = Get-Credential -Message 'Enter credentials for connecting a Remote PowerShell session to Exchange'
     }
 
     return $Global:TestCredential

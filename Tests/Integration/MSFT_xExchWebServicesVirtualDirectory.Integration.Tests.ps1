@@ -6,26 +6,26 @@
 #>
 
 #region HEADER
-[System.String]$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-[System.String]$script:DSCModuleName = 'xExchange'
-[System.String]$script:DSCResourceFriendlyName = 'xExchWebServicesVirtualDirectory'
-[System.String]$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[System.String] $script:DSCModuleName = 'xExchange'
+[System.String] $script:DSCResourceFriendlyName = 'xExchWebServicesVirtualDirectory'
+[System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
-#Check if Exchange is installed on this machine. If not, we can't run tests
+# Check if Exchange is installed on this machine. If not, we can't run tests
 [System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
-    #Get required credentials to use for the test
+    # Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
-    #Get the Server FQDN for using in URL's
+    # Get the Server FQDN for using in URL's
     if ($null -eq $serverFqdn)
     {
         $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
@@ -38,8 +38,8 @@ if ($exchangeInstalled)
             BasicAuthentication = $false
             CertificateAuthentication = $false
             DigestAuthentication = $false
-            ExtendedProtectionFlags = @('AllowDotlessSPN','NoServicenameCheck')
-            ExtendedProtectionSPNList = @('http/mail.fabrikam.com','http/mail.fabrikam.local','http/wxweqc')
+            ExtendedProtectionFlags = @('AllowDotlessSPN', 'NoServicenameCheck')
+            ExtendedProtectionSPNList = @('http/mail.fabrikam.com', 'http/mail.fabrikam.local', 'http/wxweqc')
             ExtendedProtectionTokenChecking = 'Allow'
             ExternalUrl = "http://$($serverFqdn)/ews/exchange.asmx"
             GzipLevel = 'High'
@@ -91,7 +91,7 @@ if ($exchangeInstalled)
         }
 
         Context 'Test invalid combination in ExtendedProtectionFlags' {
-            $testParams.ExtendedProtectionFlags = @('NoServicenameCheck','None')
+            $testParams.ExtendedProtectionFlags = @('NoServicenameCheck', 'None')
 
             It 'Should hit exception for invalid combination ExtendedProtectionFlags' {
                 { Set-TargetResource @testParams } | Should -Throw
@@ -105,7 +105,7 @@ if ($exchangeInstalled)
             }
         }
 
-        #Set Authentication values back to default
+        # Set Authentication values back to default
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\EWS (Default Web Site)"
             Credential = $shellCredentials
@@ -123,8 +123,8 @@ if ($exchangeInstalled)
         $expectedGetResults = @{
             BasicAuthentication = $false
             DigestAuthentication = $false
-            ExtendedProtectionFlags = [System.String[]]@()
-            ExtendedProtectionSPNList = [System.String[]]@()
+            ExtendedProtectionFlags = [System.String[]] @()
+            ExtendedProtectionSPNList = [System.String[]] @()
             ExtendedProtectionTokenChecking = 'None'
             GzipLevel = 'Low'
             OAuthAuthentication = $true

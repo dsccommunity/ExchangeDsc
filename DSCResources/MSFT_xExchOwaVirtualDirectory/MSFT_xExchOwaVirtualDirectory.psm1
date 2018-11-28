@@ -121,7 +121,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OwaVirtualDirectory' -Verbose:$VerbosePreference
 
     $OwaVdir = GetOwaVirtualDirectory @PSBoundParameters
@@ -268,7 +268,7 @@ function Set-TargetResource
         $WSSAccessOnPrivateComputersEnabled,
 
         [Parameter()]
-        [ValidateSet('FullDomain','UserName','PrincipalName')]
+        [ValidateSet('FullDomain', 'UserName', 'PrincipalName')]
         [System.String]
         $LogonFormat,
 
@@ -279,14 +279,14 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-OwaVirtualDirectory' -Verbose:$VerbosePreference
 
-    #Ensure an empty string is $null and not a string
+    # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    #Remove Credential and AllowServiceRestart because those parameters do not exist on Set-OwaVirtualDirectory
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
+    # Remove Credential and AllowServiceRestart because those parameters do not exist on Set-OwaVirtualDirectory
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
 
     Set-OwaVirtualDirectory @PSBoundParameters
 
@@ -424,10 +424,10 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OwaVirtualDirectory' -Verbose:$VerbosePreference
 
-    #Ensure an empty string is $null and not a string
+    # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     $OwaVdir = GetOwaVirtualDirectory @PSBoundParameters
@@ -680,7 +680,7 @@ function GetOwaVirtualDirectory
         $DefaultDomain
     )
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     return (Get-OwaVirtualDirectory @PSBoundParameters)
 }

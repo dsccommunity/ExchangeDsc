@@ -6,26 +6,26 @@
 #>
 
 #region HEADER
-[System.String]$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-[System.String]$script:DSCModuleName = 'xExchange'
-[System.String]$script:DSCResourceFriendlyName = 'xExchActiveSyncVirtualDirectory'
-[System.String]$script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
+[System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+[System.String] $script:DSCModuleName = 'xExchange'
+[System.String] $script:DSCResourceFriendlyName = 'xExchActiveSyncVirtualDirectory'
+[System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
-#Check if Exchange is installed on this machine. If not, we can't run tests
+# Check if Exchange is installed on this machine. If not, we can't run tests
 [System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
 
 #endregion HEADER
 
 if ($exchangeInstalled)
 {
-    #Get required credentials to use for the test
+    # Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
-    #Get the Server FQDN for using in URL's
+    # Get the Server FQDN for using in URL's
     if ($null -eq $serverFqdn)
     {
         $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
@@ -48,7 +48,7 @@ if ($exchangeInstalled)
 
     if ($webCertAuthInstalled -eq $true)
     {
-        #Get the thumbprint to use for ActiveSync Cert Based Auth
+        # Get the thumbprint to use for ActiveSync Cert Based Auth
         if ($null -eq $cbaCertThumbprint)
         {
             $cbaCertThumbprint = Read-Host -Prompt 'Enter the thumbprint of an Exchange certificate to use when enabling Certificate Based Authentication'
@@ -65,22 +65,22 @@ if ($exchangeInstalled)
             BasicAuthEnabled = $true
             ClientCertAuth = 'Ignore'
             CompressionEnabled = $true
-            ExtendedProtectionFlags = @('AllowDotlessspn','NoServicenameCheck')
-            ExtendedProtectionSPNList = @('http/mail.fabrikam.com','http/mail.fabrikam.local','http/wxweqc')
+            ExtendedProtectionFlags = @('AllowDotlessspn', 'NoServicenameCheck')
+            ExtendedProtectionSPNList = @('http/mail.fabrikam.com', 'http/mail.fabrikam.local', 'http/wxweqc')
             ExtendedProtectionTokenChecking = 'Allow'
-            ExternalAuthenticationMethods = @('Basic','Kerberos')
+            ExternalAuthenticationMethods = @('Basic', 'Kerberos')
             ExternalUrl = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
             InstallIsapiFilter = $true
-            InternalAuthenticationMethods = @('Basic','Kerberos')
+            InternalAuthenticationMethods = @('Basic', 'Kerberos')
             InternalUrl = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
             MobileClientCertificateAuthorityURL = 'http://whatever.com/CA'
             MobileClientCertificateProvisioningEnabled = $true
             MobileClientCertTemplateName = 'MyTemplateforEAS'
-            #Name = "$($Node.NodeName) EAS Site"
+            # Name = "$($Node.NodeName) EAS Site"
             RemoteDocumentsActionForUnknownServers = 'Block'
-            RemoteDocumentsAllowedServers = @('AllowedA','AllowedB')
-            RemoteDocumentsBlockedServers = @('BlockedA','BlockedB')
-            RemoteDocumentsInternalDomainSuffixList = @('InternalA','InternalB')
+            RemoteDocumentsAllowedServers = @('AllowedA', 'AllowedB')
+            RemoteDocumentsBlockedServers = @('BlockedA', 'BlockedB')
+            RemoteDocumentsInternalDomainSuffixList = @('InternalA', 'InternalB')
             SendWatsonReport = $false
             WindowsAuthEnabled = $false
         }
@@ -93,12 +93,12 @@ if ($exchangeInstalled)
             CompressionEnabled = $true
             ExtendedProtectionTokenChecking = 'Allow'
             ExternalUrl = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
-            InternalAuthenticationMethods = @('Basic','Kerberos')
+            InternalAuthenticationMethods = @('Basic', 'Kerberos')
             InternalUrl = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
             MobileClientCertificateAuthorityURL = 'http://whatever.com/CA'
             MobileClientCertificateProvisioningEnabled = $true
             MobileClientCertTemplateName = 'MyTemplateforEAS'
-            #Name = "$($Node.NodeName) EAS Site"
+            # Name = "$($Node.NodeName) EAS Site"
             RemoteDocumentsActionForUnknownServers = 'Block'
             SendWatsonReport = $false
             WindowsAuthEnabled = $false
@@ -187,7 +187,7 @@ if ($exchangeInstalled)
         }
 
         Context 'Test invalid combination in ExtendedProtectionFlags' {
-            $testParams.ExtendedProtectionFlags = @('NoServicenameCheck','None')
+            $testParams.ExtendedProtectionFlags = @('NoServicenameCheck', 'None')
 
             It 'Should hit exception for invalid combination ExtendedProtectionFlags' {
                 { Set-TargetResource @testParams } | Should -Throw
@@ -210,7 +210,7 @@ if ($exchangeInstalled)
                                          -ContextLabel 'Try by setting External URL via ActiveSyncServer' `
                                          -ExpectedGetResults $expectedGetResults
 
-        #Set values back to default
+        # Set values back to default
         $testParams = @{
             Identity =  "$($env:COMPUTERNAME)\Microsoft-Server-ActiveSync (Default Web Site)"
             Credential = $shellCredentials
@@ -241,10 +241,10 @@ if ($exchangeInstalled)
             ClientCertAuth = 'Ignore'
             CompressionEnabled = $false
             ExtendedProtectionTokenChecking = 'None'
-            ExtendedProtectionFlags = [System.String[]]@()
-            ExtendedProtectionSPNList = [System.String[]]@()
-            ExternalAuthenticationMethods = [System.String[]]@()
-            InternalAuthenticationMethods = [System.String[]]@()
+            ExtendedProtectionFlags = [System.String[]] @()
+            ExtendedProtectionSPNList = [System.String[]] @()
+            ExternalAuthenticationMethods = [System.String[]] @()
+            InternalAuthenticationMethods = [System.String[]] @()
             MobileClientCertificateAuthorityURL = ''
             MobileClientCertificateProvisioningEnabled = $false
             MobileClientCertTemplateName = ''

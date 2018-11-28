@@ -3,7 +3,7 @@
 class MSFT_xExchDatabaseAvailabilityGroup : OMI_BaseResource
 {
     [Key] String Name; //The name of the DAG
-    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote Powershell session to Exchange
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange
 
     //Remaining properties correspond directly to Set-DatabaseAvailabilityGroup parameters
     //http://technet.microsoft.com/en-us/library/dd297934(v=exchg.150).aspx
@@ -30,7 +30,7 @@ class MSFT_xExchDatabaseAvailabilityGroup : OMI_BaseResource
     [Write] Uint16 ReplicationPort;
     [Write] Boolean SkipDagValidation;
     [Write] String WitnessDirectory;
-    [Write] String WitnessServer;    
+    [Write] String WitnessServer;
 };
 
 

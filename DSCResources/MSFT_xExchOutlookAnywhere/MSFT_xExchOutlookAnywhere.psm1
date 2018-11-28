@@ -31,12 +31,12 @@ function Get-TargetResource
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('Allow','None','Require')]
+        [ValidateSet('Allow', 'None', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
         [Parameter()]
-        [ValidateSet('Ntlm','Basic','Negotiate')]
+        [ValidateSet('Ntlm', 'Basic', 'Negotiate')]
         [System.String]
         $ExternalClientAuthenticationMethod,
 
@@ -53,7 +53,7 @@ function Get-TargetResource
         $IISAuthenticationMethods,
 
         [Parameter()]
-        [ValidateSet('Ntlm','Basic','Negotiate')]
+        [ValidateSet('Ntlm', 'Basic', 'Negotiate')]
         [System.String]
         $InternalClientAuthenticationMethod,
 
@@ -72,7 +72,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OutlookAnywhere' -Verbose:$VerbosePreference
 
     $RpcVdir = GetOutlookAnywhere @PSBoundParameters
@@ -129,12 +129,12 @@ function Set-TargetResource
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('Allow','None','Require')]
+        [ValidateSet('Allow', 'None', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
         [Parameter()]
-        [ValidateSet('Ntlm','Basic','Negotiate')]
+        [ValidateSet('Ntlm', 'Basic', 'Negotiate')]
         [System.String]
         $ExternalClientAuthenticationMethod,
 
@@ -151,7 +151,7 @@ function Set-TargetResource
         $IISAuthenticationMethods,
 
         [Parameter()]
-        [ValidateSet('Ntlm','Basic','Negotiate')]
+        [ValidateSet('Ntlm', 'Basic', 'Negotiate')]
         [System.String]
         $InternalClientAuthenticationMethod,
 
@@ -170,13 +170,13 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-OutlookAnywhere' -Verbose:$VerbosePreference
 
-    #Ensure an empty string is $null and not a string
+    # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
 
     Set-OutlookAnywhere @PSBoundParameters
 
@@ -226,12 +226,12 @@ function Test-TargetResource
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('Allow','None','Require')]
+        [ValidateSet('Allow', 'None', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
         [Parameter()]
-        [ValidateSet('Ntlm','Basic','Negotiate')]
+        [ValidateSet('Ntlm', 'Basic', 'Negotiate')]
         [System.String]
         $ExternalClientAuthenticationMethod,
 
@@ -248,7 +248,7 @@ function Test-TargetResource
         $IISAuthenticationMethods,
 
         [Parameter()]
-        [ValidateSet('Ntlm','Basic','Negotiate')]
+        [ValidateSet('Ntlm', 'Basic', 'Negotiate')]
         [System.String]
         $InternalClientAuthenticationMethod,
 
@@ -267,10 +267,10 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OutlookAnywhere' -Verbose:$VerbosePreference
 
-    #Ensure an empty string is $null and not a string
+    # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     $RpcVdir = GetOutlookAnywhere @PSBoundParameters
@@ -310,7 +310,7 @@ function Test-TargetResource
             $testResults = $false
         }
 
-        #ExternalClientsRequireSsl will only actually return as $true if ExternalHostname was also set
+        # ExternalClientsRequireSsl will only actually return as $true if ExternalHostname was also set
         if (![System.String]::IsNullOrEmpty($ExternalHostname) -and !(Test-ExchangeSetting -Name 'ExternalClientsRequireSsl' -Type 'Boolean' -ExpectedValue $ExternalClientsRequireSsl -ActualValue $RpcVdir.ExternalClientsRequireSsl -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
@@ -342,7 +342,7 @@ function Test-TargetResource
         }
     }
 
-    #If the code made it this far all properties are in a desired state
+    # If the code made it this far all properties are in a desired state
     return $testResults
 }
 
@@ -377,12 +377,12 @@ function GetOutlookAnywhere
         $ExtendedProtectionSPNList,
 
         [Parameter()]
-        [ValidateSet('Allow','None','Require')]
+        [ValidateSet('Allow', 'None', 'Require')]
         [System.String]
         $ExtendedProtectionTokenChecking,
 
         [Parameter()]
-        [ValidateSet('Ntlm','Basic','Negotiate')]
+        [ValidateSet('Ntlm', 'Basic', 'Negotiate')]
         [System.String]
         $ExternalClientAuthenticationMethod,
 
@@ -399,7 +399,7 @@ function GetOutlookAnywhere
         $IISAuthenticationMethods,
 
         [Parameter()]
-        [ValidateSet('Ntlm','Basic','Negotiate')]
+        [ValidateSet('Ntlm', 'Basic', 'Negotiate')]
         [System.String]
         $InternalClientAuthenticationMethod,
 
@@ -416,7 +416,7 @@ function GetOutlookAnywhere
         $SSLOffloading
     )
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     return (Get-OutlookAnywhere @PSBoundParameters)
 }

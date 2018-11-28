@@ -15,7 +15,7 @@ function Get-TargetResource
         $Credential,
 
         [Parameter()]
-        [ValidateSet('BestAvailability','GoodAvailability','Lossless')]
+        [ValidateSet('BestAvailability', 'GoodAvailability', 'Lossless')]
         [System.String]
         $AutoDatabaseMountDial,
 
@@ -48,7 +48,7 @@ function Get-TargetResource
         $CalendarRepairMissingItemFixDisabled,
 
         [Parameter()]
-        [ValidateSet('ValidateOnly','RepairAndValidate')]
+        [ValidateSet('ValidateOnly', 'RepairAndValidate')]
         [System.String]
         $CalendarRepairMode,
 
@@ -65,7 +65,7 @@ function Get-TargetResource
         $DatabaseCopyActivationDisabledAndMoveNow,
 
         [Parameter()]
-        [ValidateSet('Blocked','IntrasiteOnly','Unrestricted')]
+        [ValidateSet('Blocked', 'IntrasiteOnly', 'Unrestricted')]
         [System.String]
         $DatabaseCopyAutoActivationPolicy,
 
@@ -212,7 +212,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxServer' -Verbose:$VerbosePreference
 
     $server = GetMailboxServer @PSBoundParameters
@@ -249,47 +249,43 @@ function Get-TargetResource
             SubjectLogForManagedFoldersEnabled       = [System.Boolean] $server.SubjectLogForManagedFoldersEnabled
         }
 
-        $serverVersion = Get-ExchangeVersionYear
+        $serverVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
 
-        if ($serverVersion -in '2016','2019')
+        if ($serverVersion -in '2016', '2019')
         {
-            $returnValue.Add('WacDiscoveryEndpoint', [System.String]$server.WacDiscoveryEndpoint)
+            $returnValue.Add('WacDiscoveryEndpoint', [System.String] $server.WacDiscoveryEndpoint)
         }
         elseif ($serverVersion -eq '2013')
         {
             if ($null -ne $server.ManagedFolderAssistantSchedule)
             {
-                $mfaSchedule = [System.String[]]$server.ManagedFolderAssistantSchedule
+                $mfaSchedule = [System.String[]] $server.ManagedFolderAssistantSchedule
             }
             else
             {
-                $mfaSchedule = [System.String[]]@()
+                $mfaSchedule = [System.String[]] @()
             }
 
-            $returnValue.Add('CalendarRepairWorkCycle', [System.String]$server.CalendarRepairWorkCycle)
-            $returnValue.Add('CalendarRepairWorkCycleCheckpoint', [System.String]$server.CalendarRepairWorkCycleCheckpoint)
-            $returnValue.Add('MailboxProcessorWorkCycle', [System.String]$server.MailboxProcessorWorkCycle)
+            $returnValue.Add('CalendarRepairWorkCycle', [System.String] $server.CalendarRepairWorkCycle)
+            $returnValue.Add('CalendarRepairWorkCycleCheckpoint', [System.String] $server.CalendarRepairWorkCycleCheckpoint)
+            $returnValue.Add('MailboxProcessorWorkCycle', [System.String] $server.MailboxProcessorWorkCycle)
             $returnValue.Add('ManagedFolderAssistantSchedule', $mfaSchedule)
-            $returnValue.Add('ManagedFolderWorkCycle', [System.String]$server.ManagedFolderWorkCycle)
-            $returnValue.Add('ManagedFolderWorkCycleCheckpoint', [System.String]$server.ManagedFolderWorkCycleCheckpoint)
-            $returnValue.Add('OABGeneratorWorkCycle', [System.String]$server.OABGeneratorWorkCycle)
-            $returnValue.Add('OABGeneratorWorkCycleCheckpoint', [System.String]$server.OABGeneratorWorkCycleCheckpoint)
-            $returnValue.Add('PublicFolderWorkCycle', [System.String]$server.PublicFolderWorkCycle)
-            $returnValue.Add('PublicFolderWorkCycleCheckpoint', [System.String]$server.PublicFolderWorkCycleCheckpoint)
-            $returnValue.Add('SharingPolicyWorkCycle', [System.String]$server.SharingPolicyWorkCycle)
-            $returnValue.Add('SharingPolicyWorkCycleCheckpoint', [System.String]$server.SharingPolicyWorkCycleCheckpoint)
-            $returnValue.Add('SharingSyncWorkCycle', [System.String]$server.SharingSyncWorkCycle)
-            $returnValue.Add('SharingSyncWorkCycleCheckpoint', [System.String]$server.SharingSyncWorkCycleCheckpoint)
-            $returnValue.Add('SiteMailboxWorkCycle', [System.String]$server.SiteMailboxWorkCycle)
-            $returnValue.Add('SiteMailboxWorkCycleCheckpoint', [System.String]$server.SiteMailboxWorkCycleCheckpoint)
-            $returnValue.Add('TopNWorkCycle', [System.String]$server.TopNWorkCycle)
-            $returnValue.Add('TopNWorkCycleCheckpoint', [System.String]$server.TopNWorkCycleCheckpoint)
-            $returnValue.Add('UMReportingWorkCycle', [System.String]$server.UMReportingWorkCycle)
-            $returnValue.Add('UMReportingWorkCycleCheckpoint', [System.String]$server.UMReportingWorkCycleCheckpoint)
-        }
-        else
-        {
-            Write-Verbose -Message 'Could not detect Exchange version'
+            $returnValue.Add('ManagedFolderWorkCycle', [System.String] $server.ManagedFolderWorkCycle)
+            $returnValue.Add('ManagedFolderWorkCycleCheckpoint', [System.String] $server.ManagedFolderWorkCycleCheckpoint)
+            $returnValue.Add('OABGeneratorWorkCycle', [System.String] $server.OABGeneratorWorkCycle)
+            $returnValue.Add('OABGeneratorWorkCycleCheckpoint', [System.String] $server.OABGeneratorWorkCycleCheckpoint)
+            $returnValue.Add('PublicFolderWorkCycle', [System.String] $server.PublicFolderWorkCycle)
+            $returnValue.Add('PublicFolderWorkCycleCheckpoint', [System.String] $server.PublicFolderWorkCycleCheckpoint)
+            $returnValue.Add('SharingPolicyWorkCycle', [System.String] $server.SharingPolicyWorkCycle)
+            $returnValue.Add('SharingPolicyWorkCycleCheckpoint', [System.String] $server.SharingPolicyWorkCycleCheckpoint)
+            $returnValue.Add('SharingSyncWorkCycle', [System.String] $server.SharingSyncWorkCycle)
+            $returnValue.Add('SharingSyncWorkCycleCheckpoint', [System.String] $server.SharingSyncWorkCycleCheckpoint)
+            $returnValue.Add('SiteMailboxWorkCycle', [System.String] $server.SiteMailboxWorkCycle)
+            $returnValue.Add('SiteMailboxWorkCycleCheckpoint', [System.String] $server.SiteMailboxWorkCycleCheckpoint)
+            $returnValue.Add('TopNWorkCycle', [System.String] $server.TopNWorkCycle)
+            $returnValue.Add('TopNWorkCycleCheckpoint', [System.String] $server.TopNWorkCycleCheckpoint)
+            $returnValue.Add('UMReportingWorkCycle', [System.String] $server.UMReportingWorkCycle)
+            $returnValue.Add('UMReportingWorkCycleCheckpoint', [System.String] $server.UMReportingWorkCycleCheckpoint)
         }
     }
 
@@ -312,7 +308,7 @@ function Set-TargetResource
         $Credential,
 
         [Parameter()]
-        [ValidateSet('BestAvailability','GoodAvailability','Lossless')]
+        [ValidateSet('BestAvailability', 'GoodAvailability', 'Lossless')]
         [System.String]
         $AutoDatabaseMountDial,
 
@@ -345,7 +341,7 @@ function Set-TargetResource
         $CalendarRepairMissingItemFixDisabled,
 
         [Parameter()]
-        [ValidateSet('ValidateOnly','RepairAndValidate')]
+        [ValidateSet('ValidateOnly', 'RepairAndValidate')]
         [System.String]
         $CalendarRepairMode,
 
@@ -362,7 +358,7 @@ function Set-TargetResource
         $DatabaseCopyActivationDisabledAndMoveNow,
 
         [Parameter()]
-        [ValidateSet('Blocked','IntrasiteOnly','Unrestricted')]
+        [ValidateSet('Blocked', 'IntrasiteOnly', 'Unrestricted')]
         [System.String]
         $DatabaseCopyAutoActivationPolicy,
 
@@ -509,38 +505,35 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-MailboxServer' -Verbose:$VerbosePreference
 
-    #Setup params for next command
+    # Setup params for next command
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential'
 
-    #create array of Exchange 2013 only parameters
-    [array]$Exchange2013Only = 'CalendarRepairWorkCycle','CalendarRepairWorkCycleCheckpoint','MailboxProcessorWorkCycle','ManagedFolderAssistantSchedule','ManagedFolderWorkCycle',
-    'ManagedFolderWorkCycleCheckpoint','OABGeneratorWorkCycle','OABGeneratorWorkCycleCheckpoint','PublicFolderWorkCycle','PublicFolderWorkCycleCheckpoint','SharingPolicyWorkCycle',
-    'SharingPolicyWorkCycleCheckpoint','SharingSyncWorkCycle','SharingSyncWorkCycleCheckpoint','SiteMailboxWorkCycle','SiteMailboxWorkCycleCheckpoint','TopNWorkCycle','TopNWorkCycleCheckpoint',
-    'UMReportingWorkCycle','UMReportingWorkCycleCheckpoint'
+    # Create array of Exchange 2013 only parameters
+    [System.Array] $Exchange2013Only = 'CalendarRepairWorkCycle', 'CalendarRepairWorkCycleCheckpoint', 'MailboxProcessorWorkCycle', 'ManagedFolderAssistantSchedule', 'ManagedFolderWorkCycle',
+    'ManagedFolderWorkCycleCheckpoint', 'OABGeneratorWorkCycle', 'OABGeneratorWorkCycleCheckpoint', 'PublicFolderWorkCycle', 'PublicFolderWorkCycleCheckpoint', 'SharingPolicyWorkCycle',
+    'SharingPolicyWorkCycleCheckpoint', 'SharingSyncWorkCycle', 'SharingSyncWorkCycleCheckpoint', 'SiteMailboxWorkCycle', 'SiteMailboxWorkCycleCheckpoint', 'TopNWorkCycle', 'TopNWorkCycleCheckpoint',
+    'UMReportingWorkCycle', 'UMReportingWorkCycleCheckpoint'
 
-    $serverVersion = Get-ExchangeVersionYear
+    $serverVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
+
     if ($serverVersion -eq '2013')
     {
-      #Check for non-existent parameters in Exchange 2013
-      Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016','2019'
+        # Check for non-existent parameters in Exchange 2013
+        Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016','2019'
     }
-    elseif ($serverVersion -in '2016','2019')
+    elseif ($serverVersion -in '2016', '2019')
     {
-      foreach ($Exchange2013Parameter in $Exchange2013Only)
-      {
-        #Check for non-existent parameters in Exchange 2016
-        Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2013Parameter" -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2013'
-      }
-    }
-    else
-    {
-        Write-Verbose -Message 'Could not detect Exchange version'
+        foreach ($Exchange2013Parameter in $Exchange2013Only)
+        {
+            # Check for non-existent parameters in Exchange 2016
+            Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2013Parameter" -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2013'
+        }
     }
 
-    #Ensure an empty string is $null and not a string
+    # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     Set-MailboxServer @PSBoundParameters
@@ -564,7 +557,7 @@ function Test-TargetResource
         $Credential,
 
         [Parameter()]
-        [ValidateSet('BestAvailability','GoodAvailability','Lossless')]
+        [ValidateSet('BestAvailability', 'GoodAvailability', 'Lossless')]
         [System.String]
         $AutoDatabaseMountDial,
 
@@ -597,7 +590,7 @@ function Test-TargetResource
         $CalendarRepairMissingItemFixDisabled,
 
         [Parameter()]
-        [ValidateSet('ValidateOnly','RepairAndValidate')]
+        [ValidateSet('ValidateOnly', 'RepairAndValidate')]
         [System.String]
         $CalendarRepairMode,
 
@@ -614,7 +607,7 @@ function Test-TargetResource
         $DatabaseCopyActivationDisabledAndMoveNow,
 
         [Parameter()]
-        [ValidateSet('Blocked','IntrasiteOnly','Unrestricted')]
+        [ValidateSet('Blocked', 'IntrasiteOnly', 'Unrestricted')]
         [System.String]
         $DatabaseCopyAutoActivationPolicy,
 
@@ -761,45 +754,43 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
-    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxServer','Set-MailboxServer' -Verbose:$VerbosePreference
+    # Establish remote PowerShell session
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxServer', 'Set-MailboxServer' -Verbose:$VerbosePreference
 
     #create array of Exchange 2013 only parameters
-    [array]$Exchange2013Only = 'CalendarRepairWorkCycle','CalendarRepairWorkCycleCheckpoint','MailboxProcessorWorkCycle','ManagedFolderAssistantSchedule','ManagedFolderWorkCycle',
-    'ManagedFolderWorkCycleCheckpoint','OABGeneratorWorkCycle','OABGeneratorWorkCycleCheckpoint','PublicFolderWorkCycle','PublicFolderWorkCycleCheckpoint','SharingPolicyWorkCycle',
-    'SharingPolicyWorkCycleCheckpoint','SharingSyncWorkCycle','SharingSyncWorkCycleCheckpoint','SiteMailboxWorkCycle','SiteMailboxWorkCycleCheckpoint','TopNWorkCycle','TopNWorkCycleCheckpoint',
-    'UMReportingWorkCycle','UMReportingWorkCycleCheckpoint'
+    [System.Array] $Exchange2013Only = 'CalendarRepairWorkCycle', 'CalendarRepairWorkCycleCheckpoint', 'MailboxProcessorWorkCycle', 'ManagedFolderAssistantSchedule', 'ManagedFolderWorkCycle',
+    'ManagedFolderWorkCycleCheckpoint', 'OABGeneratorWorkCycle', 'OABGeneratorWorkCycleCheckpoint', 'PublicFolderWorkCycle', 'PublicFolderWorkCycleCheckpoint', 'SharingPolicyWorkCycle',
+    'SharingPolicyWorkCycleCheckpoint', 'SharingSyncWorkCycle', 'SharingSyncWorkCycleCheckpoint', 'SiteMailboxWorkCycle', 'SiteMailboxWorkCycleCheckpoint', 'TopNWorkCycle', 'TopNWorkCycleCheckpoint',
+    'UMReportingWorkCycle', 'UMReportingWorkCycleCheckpoint'
 
-    $serverVersion = Get-ExchangeVersionYear
+    $serverVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
+
     if ($serverVersion -eq '2013')
     {
-      #Check for non-existent parameters in Exchange 2013
-      Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016','2019'
+        # Check for non-existent parameters in Exchange 2013
+        Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016','2019'
     }
-    elseif ($serverVersion -in '2016','2019')
+    elseif ($serverVersion -in '2016', '2019')
     {
-      foreach ($Exchange2013Parameter in $Exchange2013Only)
-      {
-        #Check for non-existent parameters in Exchange 2016
-        Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2013Parameter" -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2013'
-      }
-    }
-    else
-    {
-        Write-Verbose -Message 'Could not detect Exchange version'
+        foreach ($Exchange2013Parameter in $Exchange2013Only)
+        {
+            # Check for non-existent parameters in Exchange 2016
+            Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName "$Exchange2013Parameter" -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2013'
+        }
     }
 
     $server = GetMailboxServer @PSBoundParameters
 
     $testResults = $true
 
-    if ($null -eq $server) #Couldn't find the server, which is bad
+    if ($null -eq $server)
     {
+        # Couldn't find the server, which is bad
         Write-Error -Message 'Unable to retrieve Mailbox Server settings for server'
 
         $testResults = $false
     }
-    else #Validate server params
+    else # Validate server params
     {
         if (!(Test-ExchangeSetting -Name 'AutoDatabaseMountDial' -Type 'String' -ExpectedValue $AutoDatabaseMountDial -ActualValue $server.AutoDatabaseMountDial -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
@@ -1040,7 +1031,7 @@ function Test-TargetResource
     return $testResults
 }
 
-#Runs Get-MailboxServer, only specifying Identity, and optionally DomainController
+# Runs Get-MailboxServer, only specifying Identity, and optionally DomainController
 function GetMailboxServer
 {
     [CmdletBinding()]
@@ -1056,7 +1047,7 @@ function GetMailboxServer
         $Credential,
 
         [Parameter()]
-        [ValidateSet('BestAvailability','GoodAvailability','Lossless')]
+        [ValidateSet('BestAvailability', 'GoodAvailability', 'Lossless')]
         [System.String]
         $AutoDatabaseMountDial,
 
@@ -1089,7 +1080,7 @@ function GetMailboxServer
         $CalendarRepairMissingItemFixDisabled,
 
         [Parameter()]
-        [ValidateSet('ValidateOnly','RepairAndValidate')]
+        [ValidateSet('ValidateOnly', 'RepairAndValidate')]
         [System.String]
         $CalendarRepairMode,
 
@@ -1106,7 +1097,7 @@ function GetMailboxServer
         $DatabaseCopyActivationDisabledAndMoveNow,
 
         [Parameter()]
-        [ValidateSet('Blocked','IntrasiteOnly','Unrestricted')]
+        [ValidateSet('Blocked', 'IntrasiteOnly', 'Unrestricted')]
         [System.String]
         $DatabaseCopyAutoActivationPolicy,
 
@@ -1251,7 +1242,7 @@ function GetMailboxServer
         $WacDiscoveryEndpoint
     )
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     return (Get-MailboxServer @PSBoundParameters)
 }

@@ -15,7 +15,7 @@ function Get-TargetResource
         $Credential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('TCP','TLS','Dual')]
+        [ValidateSet('TCP', 'TLS', 'Dual')]
         [System.String]
         $UMStartupMode,
 
@@ -26,12 +26,12 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
-    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMCallRouterSettings' -SupportedVersions '2013','2016'
+    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMCallRouterSettings' -SupportedVersions '2013', '2016'
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMCallRouterSettings' -Verbose:$VerbosePreference
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Server','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Server', 'DomainController'
 
     $umService = Get-UMCallRouterSettings @PSBoundParameters
 
@@ -62,7 +62,7 @@ function Set-TargetResource
         $Credential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('TCP','TLS','Dual')]
+        [ValidateSet('TCP', 'TLS', 'Dual')]
         [System.String]
         $UMStartupMode,
 
@@ -73,9 +73,9 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
-    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMCallRouterSettings' -SupportedVersions '2013','2016'
+    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMCallRouterSettings' -SupportedVersions '2013', '2016'
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*UMCallRouterSettings' -Verbose:$VerbosePreference
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential'
@@ -100,7 +100,7 @@ function Test-TargetResource
         $Credential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('TCP','TLS','Dual')]
+        [ValidateSet('TCP', 'TLS', 'Dual')]
         [System.String]
         $UMStartupMode,
 
@@ -111,7 +111,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
 
-    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMCallRouterSettings' -SupportedVersions '2013','2016'
+    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMCallRouterSettings' -SupportedVersions '2013', '2016'
 
     $umService = Get-TargetResource @PSBoundParameters
 

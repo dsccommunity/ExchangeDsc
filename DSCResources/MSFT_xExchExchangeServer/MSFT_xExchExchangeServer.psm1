@@ -45,8 +45,8 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
-    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer','Set-ExchangeServer' -Verbose:$VerbosePreference
+    # Establish remote PowerShell session
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer', 'Set-ExchangeServer' -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('WorkloadManagementPolicy') -and (Test-CmdletHasParameter -CmdletName 'Set-ExchangeServer' -ParameterName 'WorkloadManagementPolicy') -eq $false)
     {
@@ -58,7 +58,7 @@ function Get-TargetResource
 
     if ($null -ne $server)
     {
-        #There's no way to read the product key that was sent in, so just mark it is "Licensed" if it is
+        # There's no way to read the product key that was sent in, so just mark it is "Licensed" if it is
         if ($server.IsExchangeTrialEdition -eq $false)
         {
             $ProductKey = 'Licensed'
@@ -126,8 +126,8 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
-    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer','Set-ExchangeServer' -Verbose:$VerbosePreference
+    # Establish remote PowerShell session
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer', 'Set-ExchangeServer' -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('WorkloadManagementPolicy') -and (Test-CmdletHasParameter -CmdletName 'Set-ExchangeServer' -ParameterName 'WorkloadManagementPolicy') -eq $false)
     {
@@ -135,7 +135,7 @@ function Set-TargetResource
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'WorkloadManagementPolicy'
     }
 
-    #Check existing config first to see if we are currently licensing a server
+    # Check existing config first to see if we are currently licensing a server
     $server = GetExchangeServer @PSBoundParameters
 
     $needRestart = $false
@@ -145,14 +145,14 @@ function Set-TargetResource
         $needRestart = $true
     }
 
-    #Setup params for next command
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential','AllowServiceRestart'
+    # Setup params for next command
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
 
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
     Set-ExchangeServer @PSBoundParameters
 
-    #Restart service if needed
+    # Restart service if needed
     if ($needRestart)
     {
         if ($AllowServiceRestart -eq $true)
@@ -215,8 +215,8 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
-    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer','Set-ExchangeServer' -Verbose:$VerbosePreference
+    # Establish remote PowerShell session
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer', 'Set-ExchangeServer' -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('WorkloadManagementPolicy') -and (Test-CmdletHasParameter -CmdletName 'Set-ExchangeServer' -ParameterName 'WorkloadManagementPolicy') -eq $false)
     {
@@ -228,13 +228,14 @@ function Test-TargetResource
 
     $testResults = $true
 
-    if ($null -eq $server) #Couldn't find the server, which is bad
+    if ($null -eq $server)
     {
+        # Couldn't find the server, which is bad
         Write-Error -Message 'Unable to retrieve Exchange Server settings for server'
 
         $testResults = $false
     }
-    else #Validate server params
+    else # Validate server params
     {
         if (!(Test-ExchangeSetting -Name 'CustomerFeedbackEnabled' -Type 'Boolean' -ExpectedValue $CustomerFeedbackEnabled -ActualValue $server.CustomerFeedbackEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
@@ -243,7 +244,7 @@ function Test-TargetResource
 
         if ($PSBoundParameters.ContainsKey('InternetWebProxy') -and !(Compare-StringToString -String1 $InternetWebProxy -String2 $server.InternetWebProxy.AbsoluteUri -IgnoreCase))
         {
-            #The AbsolueUri that comes back from the server can have a trailing slash. Check if the AbsoluteUri at least contains the requested Uri
+            # The AbsolueUri that comes back from the server can have a trailing slash. Check if the AbsoluteUri at least contains the requested Uri
             if (($null -ne $server.InternetWebProxy -and $null -ne $server.InternetWebProxy.AbsoluteUri -and $server.InternetWebProxy.AbsoluteUri.Contains($InternetWebProxy)) -eq $false)
             {
                 Write-InvalidSettingVerbose -SettingName 'InternetWebProxy' -ExpectedValue $InternetWebProxy -ActualValue $server.InternetWebProxy -Verbose:$VerbosePreference
@@ -271,7 +272,7 @@ function Test-TargetResource
     return $testResults
 }
 
-#Runs Get-ExchangeServer, only specifying Identity, and optionally DomainController
+# Runs Get-ExchangeServer, only specifying Identity, and optionally DomainController
 function GetExchangeServer
 {
     [CmdletBinding()]
@@ -315,7 +316,7 @@ function GetExchangeServer
         $AllowServiceRestart = $false
     )
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     return (Get-ExchangeServer @PSBoundParameters)
 }

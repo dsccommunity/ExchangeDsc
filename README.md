@@ -231,9 +231,12 @@ parameters.
   Example: "DB1,DB2","DB3,DB4".
   This puts DB1 and DB2 on one disk, and DB3 and DB4 on another.
 * **SpareVolumeCount**: How many spare volumes will be available.
-* **CreateSubfolders**: Defaults to $false.
-  If $true, specifies that DBNAME.db and DBNAME.log subfolders should be
-  automatically created underneath the ExchangeDatabase mount points.
+* **EnsureExchangeVolumeMountPointIsLast**: Whether the EXVOL mount point
+  should be moved to be the last mount point listed on each disk. Defaults
+  to $false.
+* **CreateSubfolders**: If $true, specifies that DBNAME.db and DBNAME.log
+  subfolders should be automatically created underneath the ExchangeDatabase
+  mount points. Defaults to $false.
 * **FileSystem**: The file system to use when formatting the volume.
   Defaults to NTFS.
 * **MinDiskSize**: The minimum size of a disk to consider using. Defaults to none.
@@ -1354,15 +1357,17 @@ configuration. Intended to be used as a DependsOn property by
 does not exist after the specified retry count and interval. If this happens,
 DSC configurations run in push mode will need to be re-executed.
 
-* **Identity**: The name of the DAG.
-* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
-* **DomainController**: Domain controller to talk to when running Get-DatabaseAvailabilityGroup.
+* **Identity**: The name of the DAG to wait for.
+* **Credential**: Credentials used to establish a remote PowerShell session to
+  Exchange.
+* **DomainController**: Optional Domain controller to use when running
+  Get-DatabaseAvailabilityGroup.
+* **WaitForComputerObject**: Whether DSC should also wait for the DAG Computer
+  account object to be discovered. Defaults to False.
 * **RetryIntervalSec**: How many seconds to wait between retries when checking
-  whether the DAG exists.
-  Defaults to 60.
-* **RetryCount**: Mount many retry attempts should be made to find the DAG
-  before an exception is thrown.
-  Defaults to 5.
+  whether the DAG exists. Defaults to 60.
+* **RetryCount**: How many retry attempts should be made to find the DAG
+  before an exception is thrown. Defaults to 5.
 
 ### xExchWaitForMailboxDatabase
 

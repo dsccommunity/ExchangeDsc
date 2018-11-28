@@ -43,7 +43,7 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ClientAccessServ*' -Verbose:$VerbosePreference
 
     $cas = GetClientAccessServer @PSBoundParameters
@@ -120,14 +120,14 @@ function Set-TargetResource
         $RemoveAlternateServiceAccountCredentials
     )
 
-    #check for ambiguous parameter
+    # check for ambiguous parameter
     if (($AlternateServiceAccountCredential -and $RemoveAlternateServiceAccountCredentials) -or ($CleanUpInvalidAlternateServiceAccountCredentials -and $RemoveAlternateServiceAccountCredentials))
     {
         throw "Ambiguous parameter detected! Don't combine AlternateServiceAccountCredential with RemoveAlternateServiceAccountCredentials or CleanUpInvalidAlternateServiceAccountCredentials with RemoveAlternateServiceAccountCredentials!"
     }
     if ($AlternateServiceAccountCredential)
     {
-        #check if credentials are in correct format DOMAIN\USERNAME
+        # check if credentials are in correct format DOMAIN\USERNAME
         $parts = @($AlternateServiceAccountCredential.Username.Split('\'))
         if ($parts.Count -ne 2 -or $parts[0] -eq '')
         {
@@ -137,7 +137,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-ClientAccessServ*' -Verbose:$VerbosePreference
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Credential"
@@ -146,7 +146,7 @@ function Set-TargetResource
 
     $serverVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
 
-    if ($serverVersion -in '2016','2019')
+    if ($serverVersion -in '2016', '2019')
     {
         $setCasCmd = 'Set-ClientAccessService'
     }
@@ -240,7 +240,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
-    #Establish remote Powershell session
+    # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ClientAccessServ*' -Verbose:$VerbosePreference
 
     $cas = GetClientAccessServer @PSBoundParameters
@@ -284,7 +284,7 @@ function Test-TargetResource
     return $testResults
 }
 
-#Runs Get-ClientAcccessServer, only specifying Identity, and optionally DomainController
+# Runs Get-ClientAcccessServer, only specifying Identity, and optionally DomainController
 function GetClientAccessServer
 {
     [CmdletBinding()]
@@ -326,8 +326,8 @@ function GetClientAccessServer
         $RemoveAlternateServiceAccountCredentials
     )
 
-    #Remove params we don't want to pass into the next command
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity','DomainController'
+    # Remove params we don't want to pass into the next command
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     $serverVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
     if (($null -ne $AlternateServiceAccountCredential) -or ($RemoveAlternateServiceAccountCredentials))
@@ -335,7 +335,7 @@ function GetClientAccessServer
         $PSBoundParameters.Add('IncludeAlternateServiceAccountCredentialPassword',$true)
     }
 
-    if ($serverVersion -in '2016','2019')
+    if ($serverVersion -in '2016', '2019')
     {
         return (Get-ClientAccessService @PSBoundParameters)
     }

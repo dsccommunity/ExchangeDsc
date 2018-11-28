@@ -16,7 +16,7 @@ function Get-ExistingRemoteExchangeSession
     {
         if ($session.State -eq 'Opened')
         {
-            Write-Verbose -Message 'Reusing existing Remote Powershell Session to Exchange'
+            Write-Verbose -Message 'Reusing existing Remote PowerShell Session to Exchange'
         }
         else # Session is in an unexpected state. Remove it so we can rebuild it
         {
@@ -82,7 +82,7 @@ function Get-RemoteExchangeSession
     # If the session is still null here, things went wrong. Throw exception
     if ($null -eq $session)
     {
-        throw 'Failed to establish remote Powershell session to local server.'
+        throw 'Failed to establish remote PowerShell session to local server.'
     }
     else # Import the session globally
     {
@@ -116,7 +116,7 @@ function New-RemoteExchangeSession
         throw 'A supported version of Exchange is either not present, or not fully installed on this machine.'
     }
 
-    Write-Verbose -Message 'Creating new Remote Powershell session to Exchange'
+    Write-Verbose -Message 'Creating new Remote PowerShell session to Exchange'
 
     # Get local server FQDN
     $machineDomain = (Get-CimInstance -ClassName Win32_ComputerSystem).Domain.ToLower()
@@ -221,7 +221,7 @@ function Test-ExchangePresent
 
     $version = Get-ExchangeVersionYear
 
-    if ($version -in '2013','2016','2019')
+    if ($version -in '2013', '2016', '2019')
     {
         return $true
     }
@@ -334,7 +334,7 @@ function Get-DetailedInstalledVersion
 
     if ($null -ne $uninstallKey)
     {
-        $uninstallKeyPath = $uninstallKey.Name.ToLower().Replace('hkey_local_machine','hklm:')
+        $uninstallKeyPath = $uninstallKey.Name.ToLower().Replace('hkey_local_machine', 'hklm:')
 
         $displayVersion = Get-ItemProperty -Path $uninstallKeyPath -Name 'DisplayVersion' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty DisplayVersion
 
@@ -1350,7 +1350,7 @@ function Remove-NotApplicableParamsForVersion
         $ResourceName,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('2013','2016','2019')]
+        [ValidateSet('2013', '2016', '2019')]
         [System.String[]]
         $ParamExistsInVersion
     )
@@ -2468,6 +2468,72 @@ function Assert-ExchangeSetupArgumentsComplete
     {
         throw 'Exchange setup did not complete successfully. See "<system drive>\ExchangeSetupLogs\ExchangeSetup.log" for details.'
     }
+}
+
+<#
+    .SYNOPSIS
+        Takes a Hashtable as input, and generates a string containing the keys
+        and values of each Hashtable member.
+
+    .PARAMETER Hashtable
+       The Hashtable to convert to string form.
+
+    .PARAMETER Separator
+        The Separator character to use between key/value pairs. Defaults to ; .
+#>
+function Get-StringFromHashtable
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [System.Collections.Hashtable]
+        $Hashtable,
+
+        [Parameter()]
+        [System.Char]
+        $Separator = ';'
+    )
+
+    $stringBuilder = New-Object -TypeName System.Text.StringBuilder
+
+    foreach ($key in ($Hashtable.Keys | Sort-Object))
+    {
+        if ($stringBuilder.Length -gt 0)
+        {
+            $stringBuilder.Append($Separator) | Out-Null
+        }
+
+        $stringBuilder.Append($key) | Out-Null
+        $stringBuilder.Append('=') | Out-Null
+        $stringBuilder.Append(([String] $Hashtable[$key])) | Out-Null
+    }
+
+    return $stringBuilder.ToString()
+}
+
+<#
+    .SYNOPSIS
+        Takes a domain name in FQDN format and returns it in distinguishedName
+        format.
+
+    .PARAMETER Fqdn
+        The FQDN of the domain name to convert.
+#>
+function Get-DomainDNFromFQDN
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [ValidateNotNullorEmpty()]
+        [System.String]
+        $Fqdn
+    )
+
+    return 'dc=' + $Fqdn.Replace('.', ',dc=')
 }
 
 Export-ModuleMember -Function *

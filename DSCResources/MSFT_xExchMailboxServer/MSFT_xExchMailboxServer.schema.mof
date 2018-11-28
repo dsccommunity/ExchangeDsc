@@ -3,7 +3,7 @@
 class MSFT_xExchMailboxServer : OMI_BaseResource
 {
     [Key, Description("The Identity parameter specifies the Mailbox server that you want to modify.")] String Identity;
-    [Required, Description("Credentials used to establish a remote Powershell session to Exchange"), EmbeddedInstance("MSFT_Credential")] String Credential;
+    [Required, Description("Credentials used to establish a remote PowerShell session to Exchange"), EmbeddedInstance("MSFT_Credential")] String Credential;
     [Write, Description("The AutoDatabaseMountDial parameter specifies the automatic database mount behavior for a continuous replication environment after a database failover."), ValueMap{"BestAvailability","GoodAvailability","Lossless"}, Values{"BestAvailability","GoodAvailability","Lossless"}] String AutoDatabaseMountDial;
     [Write, Description("The CalendarRepairIntervalEndWindow parameter specifies the number of days into the future to repair calendars. For example, if this parameter is set to 90, the Calendar Repair Assistant repairs calendars on this Mailbox server 90 days from now.")] SInt32 CalendarRepairIntervalEndWindow;
     [Write, Description("The CalendarRepairLogDirectorySizeLimit parameter specifies the size limit for all log files for the Calendar Repair Assistant. After the limit is reached, the oldest files are deleted.")] String CalendarRepairLogDirectorySizeLimit;

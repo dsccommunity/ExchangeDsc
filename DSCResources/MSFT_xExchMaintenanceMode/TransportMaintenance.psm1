@@ -247,7 +247,7 @@ function Invoke-FullyDrainTransport
         $MessageRedirectExclusions
     )
 
-    #drain active messages
+    # drain active messages
     Clear-ActiveMessage -Server $Target -TransportService $script:TransportService
 
     # redirect the remaining messages
@@ -544,7 +544,7 @@ function Get-ServersInDag
 
     if ($null -ne $dagServers)
     {
-        #Filter out servers who are in the local site, if $ExcludeLocalSite
+        # Filter out servers who are in the local site, if $ExcludeLocalSite
         if ($ExcludeLocalSite)
         {
             for ($i = $dagServers.Count - 1; $i -ge 0; $i--)
@@ -559,7 +559,7 @@ function Get-ServersInDag
             }
         }
 
-        #Filter out additional exclusions
+        # Filter out additional exclusions
         if ($null -ne $AdditionalExclusions)
         {
             foreach ($exclusion in $AdditionalExclusions)
@@ -599,7 +599,7 @@ function Get-ActiveServer
     $activeServers = $Servers | `
         Where-Object{(Get-ServerComponentState -Identity $_ -Component HubTransport).State -eq 'Active' } | `
         ForEach-Object { `
-            $xml = [xml](Get-ExchangeDiagnosticInfo -Process 'EdgeTransport' -server $_ -erroraction SilentlyContinue)
+            $xml = [xml] (Get-ExchangeDiagnosticInfo -Process 'EdgeTransport' -server $_ -erroraction SilentlyContinue)
             if ($xml -and $xml.Diagnostics.ProcessInfo)
             {
                 Write-Output $_
@@ -663,7 +663,7 @@ function Get-TransportMaintenanceLogFileList()
     param
     (
         [Parameter(Mandatory = $true)]
-        [Object]
+        [System.Object]
         $TransportService,
 
         [Parameter(Mandatory = $true)]
@@ -690,7 +690,7 @@ function Register-TransportMaintenanceLog
     param
     (
         [Parameter(Mandatory = $true)]
-        [Object]
+        [System.Object]
         $TransportService,
 
         [Parameter(Mandatory = $true)]
@@ -760,7 +760,7 @@ function Remove-TransportMaintenanceLogsOverMaxAge
     param
     (
         [Parameter(Mandatory = $true)]
-        [Object]
+        [System.Object]
         $TransportService,
 
         [Parameter(Mandatory = $true)]
@@ -768,8 +768,8 @@ function Remove-TransportMaintenanceLogsOverMaxAge
         $LogPath
     )
 
-    $maxLogAge = [TimeSpan]$TransportService.TransportMaintenanceLogMaxAge
-    [DateTime]$rolloutTime = (Get-Date) - $maxLogAge
+    $maxLogAge = [TimeSpan] $TransportService.TransportMaintenanceLogMaxAge
+    [DateTime] $rolloutTime = (Get-Date) - $maxLogAge
 
     Get-TransportMaintenanceLogFileList -TransportService $TransportService -LogPath $LogPath | `
         Where-Object {$_.LastWriteTime -lt $rolloutTime} | `
@@ -792,7 +792,7 @@ function Remove-TransportMaintenanceLogsOverMaxDirectorySize
     param
     (
         [Parameter(Mandatory = $true)]
-        [Object]
+        [System.Object]
         $TransportService,
 
         [Parameter(Mandatory = $true)]
@@ -843,7 +843,7 @@ function Get-MaintenanceLogPath
     param
     (
         [Parameter(Mandatory = $true)]
-        [Object]
+        [System.Object]
         $TransportService,
 
         [Parameter()]
@@ -897,7 +897,7 @@ function Initialize-TransportMaintenanceLog()
         $Server = $env:ComputerName
     )
 
-    #read MM log limits
+    # read MM log limits
     $transportService = Get-TransportService -Identity $Server
 
     # only configure the logging if we have the setting from Transport Service
@@ -1181,11 +1181,11 @@ function Write-EventOfEntry
         $Event,
 
         [Parameter(Mandatory = $true)]
-        [Object]
+        [System.Object]
         $Entry,
 
         [Parameter()]
-        [hashtable]
+        [System.Collections.Hashtable]
         $Reason
     )
 
@@ -1289,7 +1289,7 @@ function Write-SkippedEvent
         $Count,
 
         [Parameter()]
-        [hashtable]
+        [System.Collections.Hashtable]
         $Reason
     )
 
@@ -1336,7 +1336,7 @@ function Write-InfoEvent
         $Count,
 
         [Parameter()]
-        [hashtable]
+        [System.Collections.Hashtable]
         $Reason
     )
 
@@ -1366,7 +1366,7 @@ function Remove-CompletedEntriesFromHashtable
     param
     (
         [Parameter(Mandatory = $true)]
-        [HashTable]
+        [System.Collections.Hashtable]
         $Tracker,
 
         [Parameter()]
@@ -1427,7 +1427,7 @@ function Update-EntriesTracker
     param
     (
         [Parameter(Mandatory = $true)]
-        [HashTable]
+        [System.Collections.Hashtable]
         $Tracker,
 
         [Parameter(Mandatory = $true)]
@@ -1830,7 +1830,7 @@ function Get-DiscardInfo
         $argument = 'basic'
     }
 
-    $shadowInfo = [xml](Get-ExchangeDiagnosticInfo -Server $Server -Process edgetransport -Component ShadowRedundancy -argument $argument)
+    $shadowInfo = [xml] (Get-ExchangeDiagnosticInfo -Server $Server -Process edgetransport -Component ShadowRedundancy -argument $argument)
 
     $discardInfo = $shadowInfo.Diagnostics.Components.ShadowRedundancy.ShadowServerCollection.ShadowServer | `
         Where-Object {$_.ShadowServerInfo.discardEventsCount -gt 0 } |
@@ -2036,10 +2036,10 @@ function Wait-BootLoaderCountCheck
     }
 
     $server = $ServerFqdn.split('.')[0]
-    $xml = [xml](Get-ExchangeDiagnosticInfo -Process 'EdgeTransport' -server $server -erroraction SilentlyContinue)
+    $xml = [xml] (Get-ExchangeDiagnosticInfo -Process 'EdgeTransport' -server $server -erroraction SilentlyContinue)
     if ($xml)
     {
-        $processStartTime = [DateTime]($xml.Diagnostics.ProcessInfo.StartTime)
+        $processStartTime = [DateTime] ($xml.Diagnostics.ProcessInfo.StartTime)
         Wait-EmptyEntriesCompletion `
                         -GetEntries $waitBootScanningEvent `
                         -GetEntriesArgs $ServerFqdn,$processStartTime `
@@ -2211,9 +2211,9 @@ function Wait-BootLoaderReady
     {
         try
         {
-            $xml = [xml](Get-ExchangeDiagnosticInfo -Process 'EdgeTransport' -server $Server -erroraction SilentlyContinue)
-            $processLifeTime = [TimeSpan]($xml.Diagnostics.ProcessInfo.LifeTime)
-            $processStartTime = [DateTime]($xml.Diagnostics.ProcessInfo.StartTime)
+            $xml = [xml] (Get-ExchangeDiagnosticInfo -Process 'EdgeTransport' -server $Server -erroraction SilentlyContinue)
+            $processLifeTime = [TimeSpan] ($xml.Diagnostics.ProcessInfo.LifeTime)
+            $processStartTime = [DateTime] ($xml.Diagnostics.ProcessInfo.StartTime)
             break
         }
         catch
@@ -2305,7 +2305,7 @@ function Clear-ActiveMessage
         $Server,
 
         [Parameter()]
-        [object]
+        [System.Object]
         $TransportService
     )
 
@@ -2544,16 +2544,20 @@ function Set-ComponentState
     (
         [Parameter(Mandatory = $true)]
         [ValidateSet('Active', 'Inactive')]
-        [System.String]$State,
+        [System.String]
+        $State,
 
         [Parameter()]
-        [System.String]$Component = 'HubTransport',
+        [System.String]
+        $Component = 'HubTransport',
 
         [Parameter()]
-        [System.String]$Requester = 'Maintenance',
+        [System.String]
+        $Requester = 'Maintenance',
 
         [Parameter()]
-        [System.String]$Server = $env:COMPUTERNAME
+        [System.String]
+        $Server = $env:COMPUTERNAME
     )
 
     Write-Verbose -Message "Setting $Component state to $State"
@@ -2696,8 +2700,8 @@ function Stop-ServiceForcefully
     # Wait in case it needs time to take effect
     Wait-Event -Timeout 5
 
-    $processFullPath = (Get-CimInstance -query "SELECT PathName FROM Win32_Service WHERE Name = '$ServiceName'").PathName.Replace('"','')
-    $processName = (Split-Path $processFullPath -Leaf).Replace('.exe','')
+    $processFullPath = (Get-CimInstance -query "SELECT PathName FROM Win32_Service WHERE Name = '$ServiceName'").PathName.Replace('"', '')
+    $processName = (Split-Path $processFullPath -Leaf).Replace('.exe', '')
 
     $process = Get-Process -Name $processName -ErrorAction SilentlyContinue
     if ($null -ne $process)
