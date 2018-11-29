@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add support for Exchange Server 2019
+
 ## 1.25.0.0
 
 - Opt-in for the common test flagged Script Analyzer rules
