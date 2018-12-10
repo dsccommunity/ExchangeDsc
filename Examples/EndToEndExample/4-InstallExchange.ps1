@@ -91,7 +91,7 @@ Configuration Example
         xExchInstall InstallExchange
         {
             Path       = "C:\Binaries\E2K13CU8\Setup.exe"
-            Arguments  = "/mode:Install /role:Mailbox,ClientAccess /IAcceptExchangeServerLicenseTerms"
+            Arguments  = "/mode:Install /role:Mailbox /IAcceptExchangeServerLicenseTerms"
             Credential = $ExchangeInstallCredential
             DependsOn  = '[xPendingReboot]BeforeExchangeInstall'
         }

@@ -1,7 +1,7 @@
 # xExchange
 
 The **xExchange** module contains many DSC resources for configuring and
-managing Exchange 2013, 2016, and 2019 (Preview) servers including individual
+managing Exchange 2013, 2016, and 2019 servers including individual
 server properties, databases, mount points, and Database Availability Groups.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
@@ -97,7 +97,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   an ExchangeCertificate using *-ExchangeCertificate cmdlets.
 * **xExchExchangeServer**
 * **xExchImapSettings** configures IMAP settings using Set-ImapSettings.
-* **xExchInstall** installs or updates Exchange 2013, 2016, or 2019 (Preview).
+* **xExchInstall** installs or updates Exchange 2013, 2016, or 2019.
 * **xExchJetstress** automatically runs Jetstress using
   the **JetstressCmd.exe** command line executable.
 * **xExchJetstressCleanup** cleans up the database and log
@@ -118,7 +118,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **xExchUMCallRouterSettings** configures the UM Call Router service using Set-UMCallRouterSettings.
 * **xExchUMService** configures a UM server using Set-UMService.
 * **xExchWaitForADPrep** ensures that Active Directory has been prepared for
-  Exchange 2013, 2016, or 2019 (Preview).
+  Exchange 2013, 2016, or 2019.
 * **xExchWaitForDAG**
 * **xExchWaitForMailboxDatabase**
 * **xExchWebServicesVirtualDirectory**
@@ -461,10 +461,10 @@ parameters.
 
 ### xExchInstall
 
-**xExchInstall** installs or updates Exchange 2013, 2016, or 2019 (Preview).
+**xExchInstall** installs or updates Exchange 2013, 2016, or 2019.
 
 * **Path**: Full path to setup.exe in the Exchange 2013, 2016, or 2019
-  (Preview) setup directory.
+  setup directory.
 * **Arguments**: Command line arguments to pass to setup.exe
   For help on command line arguments, see
   [Install Exchange 2016 using unattended mode](https://docs.microsoft.com/en-us/Exchange/plan-and-deploy/deploy-new-installations/unattended-installs)
@@ -1321,7 +1321,7 @@ parameters.
 ### xExchWaitForADPrep
 
 **xExchWaitForADPrep** ensures that Active Directory has been prepared for
-Exchange 2013, 2016, or 2019 (Preview) using setup /PrepareSchema, /PrepareAD,
+Exchange 2013, 2016, or 2019 using setup /PrepareSchema, /PrepareAD,
 and /PrepareDomain. To find appropriate version values for the SchemaVersion,
 OrganizationVersion, and DomainVersion parameters, consult the 'Exchange 2016
 Active Directory versions' section of the article
@@ -1331,13 +1331,13 @@ Active Directory versions' section of the article
 * **Credential**: Credentials used to perform Active Directory lookups against
   the Schema, Configuration, and Domain naming contexts.
 * **SchemaVersion**: Specifies that the Active Directory schema should have been
-  prepared using Exchange 2013, 2016, or 2019 (Preview) 'setup /PrepareSchema',
+  prepared using Exchange 2013, 2016, or 2019 'setup /PrepareSchema',
   and should be at the specified version.
 * **OrganizationVersion**: Specifies that the Exchange Organization should have
-  been prepared using Exchange 2013, 2016, or 2019 (Preview) 'setup
+  been prepared using Exchange 2013, 2016, or 2019 'setup
   /PrepareAD', and should be at the specified version.
 * **DomainVersion**: Specifies that the domain containing the target
-  Exchange 2013, 2016, or 2019 (Preview) server was prepared using setup
+  Exchange 2013, 2016, or 2019 server was prepared using setup
   /PrepareAD, /PrepareDomain, or /PrepareAllDomains, and should be at the
   specified version.
 * **ExchangeDomains**: The FQDN's of domains that should be checked for
