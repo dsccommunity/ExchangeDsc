@@ -6,8 +6,16 @@ class MSFT_xExchUMService : OMI_BaseResource
     [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange
     [Required, ValueMap{"TCP","TLS","Dual"}, Values{"TCP","TLS","Dual"}] String UMStartupMode; //UMStartupMode for the UM server
     [Write] String DialPlans[]; //Specifies all dial plans that the Unified Messaging service handles incoming calls for
+    [Write] String GrammarGenerationSchedule[]; //Specifies the Grammar Generation Schedule
+    [Write, ValueMap{"IPv4Only","IPv6Only","Any"}, Values{"IPv4Only","IPv6Only","Any"}] String IPAddressFamily; //
+    [Write] Boolean IPAddressFamilyConfigurable; //
+    [Write] Boolean IrmLogEnabled; //
+    [Write] String IrmLogMaxAge; //
+    [Write] String IrmLogMaxDirectorySize; //
+    [Write] String IrmLogMaxFileSize; //
+    [Write] String IrmLogPath; //
+    [Write] Int32 MaxCallsAllowed; //
+    [Write] String SIPAccessService; //
+    [Write, ValueMap{"Enabled","Disabled","NoNewCalls"}, Values{"Enabled","Disabled","NoNewCalls"}] String Status; //
     [Write] String DomainController; //Optional Domain Controller to connect to
 };
-
-
-
