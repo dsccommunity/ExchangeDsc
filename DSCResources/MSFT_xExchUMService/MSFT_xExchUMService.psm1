@@ -299,7 +299,7 @@ function Test-TargetResource
         {
             $testResults = $false
         }
-        if (!(Test-ExchangeSetting -Name 'IPAddressFamily' -Type 'IPAddressFamily' -ExpectedValue $IPAddressFamily -ActualValue $umService.IPAddressFamily -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'IPAddressFamily' -Type 'String' -ExpectedValue $IPAddressFamily -ActualValue $umService.IPAddressFamily -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
@@ -323,7 +323,7 @@ function Test-TargetResource
         {
             $testResults = $false
         }
-        if (!(Test-ExchangeSetting -Name 'IrmLogPath' -Type 'LocalLongFullPath' -ExpectedValue $IrmLogPath -ActualValue $umService.IrmLogPath -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'IrmLogPath' -Type 'String' -ExpectedValue $IrmLogPath -ActualValue $umService.IrmLogPath -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
@@ -331,11 +331,11 @@ function Test-TargetResource
         {
             $testResults = $false
         }
-        if (!(Test-ExchangeSetting -Name 'SIPAccessService' -Type 'ProtocolConnectionSettings' -ExpectedValue $SIPAccessService -ActualValue $umService.SIPAccessService -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'SIPAccessService' -Type 'String' -ExpectedValue $SIPAccessService -ActualValue $umService.SIPAccessService -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
-        if (!(Test-ExchangeSetting -Name 'Status' -Type 'ServerStatus' -ExpectedValue $Status -ActualValue $umService.Status -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'Status' -Type 'String' -ExpectedValue $Status -ActualValue $umService.Status -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
