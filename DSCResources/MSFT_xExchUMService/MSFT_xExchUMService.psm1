@@ -65,11 +65,6 @@ function Get-TargetResource
         $SIPAccessService,
 
         [Parameter()]
-        [ValidateSet('Enabled', 'Disabled', 'NoNewCalls')]
-        [System.String]
-        $Status,
-
-        [Parameter()]
         [System.String]
         $DomainController
     )
@@ -101,10 +96,8 @@ function Get-TargetResource
             IrmLogPath = [System.String] $umService.IrmLogPath
             MaxCallsAllowed  = [System.String] $umService.MaxCallsAllowed
             SIPAccessService = [System.String] $umService.SIPAccessService
-            Status = [System.String] $umService.Status
         }
     }
-
     $returnValue
 }
 
@@ -172,11 +165,6 @@ function Set-TargetResource
         [Parameter()]
         [System.String]
         $SIPAccessService,
-
-        [Parameter()]
-        [ValidateSet('Enabled', 'Disabled', 'NoNewCalls')]
-        [System.String]
-        $Status,
 
         [Parameter()]
         [System.String]
@@ -262,11 +250,6 @@ function Test-TargetResource
         $SIPAccessService,
 
         [Parameter()]
-        [ValidateSet('Enabled', 'Disabled', 'NoNewCalls')]
-        [System.String]
-        $Status,
-
-        [Parameter()]
         [System.String]
         $DomainController
     )
@@ -332,10 +315,6 @@ function Test-TargetResource
             $testResults = $false
         }
         if (!(Test-ExchangeSetting -Name 'SIPAccessService' -Type 'String' -ExpectedValue $SIPAccessService -ActualValue $umService.SIPAccessService -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
-        {
-            $testResults = $false
-        }
-        if (!(Test-ExchangeSetting -Name 'Status' -Type 'String' -ExpectedValue $Status -ActualValue $umService.Status -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
