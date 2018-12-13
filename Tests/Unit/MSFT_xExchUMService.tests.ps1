@@ -42,7 +42,7 @@ try
             function Get-UMService {}
 
             AfterEach {
-                #Assert-VerifiableMock
+                Assert-VerifiableMock
             }
 
             $getTargetResourceParams = @{
