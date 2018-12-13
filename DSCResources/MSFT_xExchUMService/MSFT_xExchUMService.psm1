@@ -88,13 +88,13 @@ function Get-TargetResource
             DialPlans     = [System.String[]] $umService.DialPlans
             GrammarGenerationSchedule = [System.String[]] $umService.GrammarGenerationSchedule
             IPAddressFamily = [System.String] $umService.IPAddressFamily
-            IPAddressFamilyConfigurable = [System.String] $umService.IPAddressFamilyConfigurable
-            IrmLogEnabled = [System.String] $umService.IrmLogEnabled
+            IPAddressFamilyConfigurable = [System.Boolean] $umService.IPAddressFamilyConfigurable
+            IrmLogEnabled = [System.Boolean] $umService.IrmLogEnabled
             IrmLogMaxAge = [System.String] $umService.IrmLogMaxAge
             IrmLogMaxDirectorySize  = [System.String] $umService.IrmLogMaxDirectorySize
             IrmLogMaxFileSize = [System.String] $umService.IrmLogMaxFileSize
             IrmLogPath = [System.String] $umService.IrmLogPath
-            MaxCallsAllowed  = [System.String] $umService.MaxCallsAllowed
+            MaxCallsAllowed  = [System.Int32] $umService.MaxCallsAllowed
             SIPAccessService = [System.String] $umService.SIPAccessService
         }
     }
