@@ -42,7 +42,7 @@ try
             function Get-UMService {}
 
             AfterEach {
-                Assert-VerifiableMock
+                #Assert-VerifiableMock
             }
 
             $getTargetResourceParams = @{
@@ -54,6 +54,7 @@ try
             $getUMServiceStandardOutput = @{
                 UMStartupMode = [System.String] $getTargetResourceParams.UMStartupMode
                 DialPlans     = [System.String[]] @()
+                GrammarGenerationSchedule = [System.String[]] @("Sun.2:00 AM-Sun.2:30 AM","Mon.2:00 AM-Mon.2:30 AM","Tue.2:00 AM-Tue.2:30 AM")
             }
 
             Context 'When Get-TargetResource is called' {
