@@ -16,7 +16,7 @@
     .PARAMETER AdminEnabled
         The AdminEnabled parameter specifies that the EAC isn't able to be
         accessed through the Internet. For more information, see Turn off
-        access to the Exchange admin center 
+        access to the Exchange admin center.
 
     .PARAMETER AdfsAuthentication
         The AdfsAuthentication parameter specifies that the ECP virtual
@@ -26,7 +26,7 @@
 
     .PARAMETER BasicAuthentication
         The BasicAuthentication parameter specifies whether Basic
-        authentication is enabled on the virtual directory. 
+        authentication is enabled on the virtual directory.
 
     .PARAMETER DigestAuthentication
         The DigestAuthentication parameter specifies whether Digest
@@ -174,7 +174,7 @@ function Get-TargetResource
     .PARAMETER AdminEnabled
         The AdminEnabled parameter specifies that the EAC isn't able to be
         accessed through the Internet. For more information, see Turn off
-        access to the Exchange admin center 
+        access to the Exchange admin center.
 
     .PARAMETER AdfsAuthentication
         The AdfsAuthentication parameter specifies that the ECP virtual
@@ -184,7 +184,7 @@ function Get-TargetResource
 
     .PARAMETER BasicAuthentication
         The BasicAuthentication parameter specifies whether Basic
-        authentication is enabled on the virtual directory. 
+        authentication is enabled on the virtual directory.
 
     .PARAMETER DigestAuthentication
         The DigestAuthentication parameter specifies whether Digest
@@ -329,7 +329,7 @@ function Set-TargetResource
     .PARAMETER AdminEnabled
         The AdminEnabled parameter specifies that the EAC isn't able to be
         accessed through the Internet. For more information, see Turn off
-        access to the Exchange admin center 
+        access to the Exchange admin center.
 
     .PARAMETER AdfsAuthentication
         The AdfsAuthentication parameter specifies that the ECP virtual
@@ -339,7 +339,7 @@ function Set-TargetResource
 
     .PARAMETER BasicAuthentication
         The BasicAuthentication parameter specifies whether Basic
-        authentication is enabled on the virtual directory. 
+        authentication is enabled on the virtual directory.
 
     .PARAMETER DigestAuthentication
         The DigestAuthentication parameter specifies whether Digest
@@ -536,7 +536,7 @@ function Test-TargetResource
     .PARAMETER AdminEnabled
         The AdminEnabled parameter specifies that the EAC isn't able to be
         accessed through the Internet. For more information, see Turn off
-        access to the Exchange admin center 
+        access to the Exchange admin center.
 
     .PARAMETER AdfsAuthentication
         The AdfsAuthentication parameter specifies that the ECP virtual
@@ -546,7 +546,7 @@ function Test-TargetResource
 
     .PARAMETER BasicAuthentication
         The BasicAuthentication parameter specifies whether Basic
-        authentication is enabled on the virtual directory. 
+        authentication is enabled on the virtual directory.
 
     .PARAMETER DigestAuthentication
         The DigestAuthentication parameter specifies whether Digest
