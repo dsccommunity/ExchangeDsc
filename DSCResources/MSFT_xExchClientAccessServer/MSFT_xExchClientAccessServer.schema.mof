@@ -2,18 +2,12 @@
 [ClassVersion("1.0.0.0"), FriendlyName("xExchClientAccessServer")]
 class MSFT_xExchClientAccessServer : OMI_BaseResource
 {
-    [Key] String Identity; //The hostname of the Client Access Server
-    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange
-
-    //Remaining properties correspond directly to Set-ClientAccessServer parameters
-    //http://technet.microsoft.com/en-us/library/bb125157(v=exchg.150).aspx
-    [Write] String AutoDiscoverServiceInternalUri;
-    [Write] String AutoDiscoverSiteScope[];
-    [Write] String DomainController;
-    [Write, EmbeddedInstance("MSFT_Credential")] String AlternateServiceAccountCredential;
-    [Write] Boolean CleanUpInvalidAlternateServiceAccountCredentials;
-    [Write] Boolean RemoveAlternateServiceAccountCredentials;
+    [Key, Description("The hostname of the Client Access Server.")] String Identity;
+    [Required, Description("Credentials used to establish a remote PowerShell session to Exchange."), EmbeddedInstance("MSFT_Credential")] String Credential;
+    [Write, Description("The AutoDiscoverServiceInternalUri parameter specifies the internal URL of the Autodiscover service.")] String AutoDiscoverServiceInternalUri;
+    [Write, Description("The AutoDiscoverSiteScope parameter specifies the Active Directory site that the Autodiscover service is authoritative for. Clients that connect to the Autodiscover service by using the internal URL need to exist in the specified site.")] String AutoDiscoverSiteScope[];
+    [Write, Description("The DomainController parameter specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory. You identify the domain controller by its fully qualified domain name (FQDN). For example, dc01.contoso.com.")] String DomainController;
+    [Write, Description("The AlternateServiceAccountCredential parameter specifies an alternative service account that'stypically used for Kerberos authentication."), EmbeddedInstance("MSFT_Credential")] String AlternateServiceAccountCredential;
+    [Write, Description("The CleanUpInvalidAlternateServiceAccountCredentialsswitch specifies whether to remove a previously configured alternate service account that's no longer valid.")] Boolean CleanUpInvalidAlternateServiceAccountCredentials;
+    [Write, Description("The RemoveAlternateServiceAccountCredentialsswitch specifies whether to remove a previously distributed alternate service account.")] Boolean RemoveAlternateServiceAccountCredentials;
 };
-
-
-

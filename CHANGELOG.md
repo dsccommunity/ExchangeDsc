@@ -4,6 +4,9 @@
 
 - Add support for Exchange Server 2019
 - Added additional parameters to the MSFT_xExchUMService resource
+- Rename improperly named functions, and add comment based help in
+  MSFT_xExchClientAccessServer, MSFT_xExchDatabaseAvailabilityGroupNetwork,
+  MSFT_xExchEcpVirtualDirectory, and MSFT_xExchExchangeCertificate.
 
 ## 1.25.0.0
 
