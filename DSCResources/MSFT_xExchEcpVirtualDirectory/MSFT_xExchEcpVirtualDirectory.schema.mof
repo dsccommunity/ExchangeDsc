@@ -2,24 +2,18 @@
 [ClassVersion("1.0.0.0"), FriendlyName("xExchEcpVirtualDirectory")]
 class MSFT_xExchEcpVirtualDirectory : OMI_BaseResource
 {
-    [Key] String Identity; //The Identity of the ECP Virtual Directory
-    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange
-    [Write] Boolean AllowServiceRestart; //Whether it is OK to recycle the app pool after making changes. Defaults to $true.
-
-    //Remaining properties correspond directly to Set-EcpVirtualDirectory parameters
-    //http://technet.microsoft.com/en-us/library/dd297991(v=exchg.150).aspx
-    [Write] Boolean AdfsAuthentication;
-    [Write] Boolean AdminEnabled;
-    [Write] Boolean BasicAuthentication;
-    [Write] Boolean DigestAuthentication;
-    [Write] String DomainController;
-    [Write] String ExternalAuthenticationMethods[];
-    [Write] Boolean FormsAuthentication;
-    [Write, ValueMap{"Off", "Low", "High", "Error"}, Values{"Off", "Low", "High", "Error"}] String GzipLevel;
-    [Write] String ExternalUrl;
-    [Write] String InternalUrl;
-    [Write] Boolean WindowsAuthentication;
+    [Key, Description("The Identity of the ECP Virtual Directory.")] String Identity;
+    [Required, Description("Credentials used to establish a remote PowerShell session to Exchange."), EmbeddedInstance("MSFT_Credential")] String Credential;
+    [Write, Description("Whether it is OK to recycle the app pool after making changes. Defaults to $true.")] Boolean AllowServiceRestart;
+    [Write, Description("The AdfsAuthentication parameter specifies that the ECP virtual directory allows users to authenticate through Active Directory Federation Services (AD FS) authentication. This parameter accepts $true or $false. The default value is $false.")] Boolean AdfsAuthentication;
+    [Write, Description("The AdminEnabled parameter specifies that the EAC isn't able to be accessed through the Internet.")] Boolean AdminEnabled;
+    [Write, Description("The BasicAuthentication parameter specifies whether Basic authentication is enabled on the virtual directory. ")] Boolean BasicAuthentication;
+    [Write, Description("The DigestAuthentication parameter specifies whether Digest authentication is enabled on the virtual directory.")] Boolean DigestAuthentication;
+    [Write, Description("The DomainController parameter specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory. You identify the domain controller by its fully qualified domain name (FQDN). For example, dc01.contoso.com.")] String DomainController;
+    [Write, Description("The ExternalAuthenticationMethods parameter specifies the authentication methods supported on the Exchange server from outside the firewall.")] String ExternalAuthenticationMethods[];
+    [Write, Description("The FormsAuthentication parameter specifies whether forms-based authentication is enabled on the ECP virtual directory.")] Boolean FormsAuthentication;
+    [Write, Description("The GzipLevel parameter sets Gzip configuration information for the ECP virtual directory."), ValueMap{"Off", "Low", "High", "Error"}, Values{"Off", "Low", "High", "Error"}] String GzipLevel;
+    [Write, Description("The ExternalURL parameter specifies the URL that's used to connect to the virtual directory from outside the firewall.")] String ExternalUrl;
+    [Write, Description("The InternalURL parameter specifies the URL that's used to connect to the virtual directory from inside the firewall.")] String InternalUrl;
+    [Write, Description("The WindowsAuthentication parameter specifies whether Integrated Windows authentication is enabled on the virtual directory.")] Boolean WindowsAuthentication;
 };
-
-
-

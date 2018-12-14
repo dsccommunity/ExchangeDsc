@@ -67,7 +67,7 @@ try
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
 
             Context 'When Get-TargetResource is called' {
-                Mock -CommandName GetClientAccessServer -Verifiable -MockWith { return $getClientAccessServerStandardOutput }
+                Mock -CommandName Get-ClientAccessServerInternal -Verifiable -MockWith { return $getClientAccessServerStandardOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }
@@ -76,7 +76,7 @@ try
                 It 'Should try to convert AutoDiscoverSiteScope to an array' {
                     $siteScopeOut = @('Site1','Site2')
 
-                    Mock -CommandName GetClientAccessServer -Verifiable -MockWith {
+                    Mock -CommandName Get-ClientAccessServerInternal -Verifiable -MockWith {
                         $siteScopeVar = New-Object -TypeName PSObject
 
                         Add-Member -MemberType ScriptMethod -InputObject $siteScopeVar -Name 'ToArray' -Value { return @('Site1','Site2') }

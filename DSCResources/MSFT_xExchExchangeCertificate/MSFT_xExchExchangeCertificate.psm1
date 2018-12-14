@@ -1,3 +1,37 @@
+<#
+    .SYNOPSIS
+        Retrieves the current DSC configuration for this resource.
+
+    .PARAMETER Thumbprint
+        Thumbprint of the certificate to work on.
+
+    .PARAMETER Credential
+        The Credentials to use when creating a remote PowerShell session to
+        Exchange.
+
+    .PARAMETER Ensure
+        Whether the certificate should be present or not.
+
+    .PARAMETER AllowExtraServices
+        Get-ExchangeCertificate sometimes displays more services than are
+        actually enabled. Setting this to true allows tests to pass in that
+        situation as long as the requested services are present.
+
+    .PARAMETER CertCreds
+        Credentials containing the password to the .pfx file in CertFilePath.
+
+    .PARAMETER CertFilePath
+        The file path to the certificate .pfx file that should be imported.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER Services
+        Services to enable on the certificate.
+#>
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -19,7 +53,6 @@ function Get-TargetResource
         [System.String]
         $Ensure,
 
-        # Only used by Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $AllowExtraServices = $false,
@@ -47,7 +80,7 @@ function Get-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -Verbose:$VerbosePreference
 
-    $cert = GetExchangeCertificate @PSBoundParameters
+    $cert = Get-ExchangeCertificateInternal @PSBoundParameters
 
     if ($null -ne $cert)
     {
@@ -60,6 +93,40 @@ function Get-TargetResource
     $returnValue
 }
 
+<#
+    .SYNOPSIS
+        Sets the DSC configuration for this resource.
+
+    .PARAMETER Thumbprint
+        Thumbprint of the certificate to work on.
+
+    .PARAMETER Credential
+        The Credentials to use when creating a remote PowerShell session to
+        Exchange.
+
+    .PARAMETER Ensure
+        Whether the certificate should be present or not.
+
+    .PARAMETER AllowExtraServices
+        Get-ExchangeCertificate sometimes displays more services than are
+        actually enabled. Setting this to true allows tests to pass in that
+        situation as long as the requested services are present.
+
+    .PARAMETER CertCreds
+        Credentials containing the password to the .pfx file in CertFilePath.
+
+    .PARAMETER CertFilePath
+        The file path to the certificate .pfx file that should be imported.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER Services
+        Services to enable on the certificate.
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
@@ -79,7 +146,6 @@ function Set-TargetResource
         [System.String]
         $Ensure,
 
-        # Only used by Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $AllowExtraServices = $false,
@@ -107,7 +173,7 @@ function Set-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*ExchangeCertificate' -Verbose:$VerbosePreference
 
-    $cert = GetExchangeCertificate @PSBoundParameters
+    $cert = Get-ExchangeCertificateInternal @PSBoundParameters
 
     # Check whether any UM services are being enabled, and if they weren't enable before. If so, we should stop those services, enable the cert, then start them up
     $needUMServiceReset = $false
@@ -196,6 +262,41 @@ function Set-TargetResource
     }
 }
 
+<#
+    .SYNOPSIS
+        Tests whether the desired configuration for this resource has been
+        applied.
+
+    .PARAMETER Thumbprint
+        Thumbprint of the certificate to work on.
+
+    .PARAMETER Credential
+        The Credentials to use when creating a remote PowerShell session to
+        Exchange.
+
+    .PARAMETER Ensure
+        Whether the certificate should be present or not.
+
+    .PARAMETER AllowExtraServices
+        Get-ExchangeCertificate sometimes displays more services than are
+        actually enabled. Setting this to true allows tests to pass in that
+        situation as long as the requested services are present.
+
+    .PARAMETER CertCreds
+        Credentials containing the password to the .pfx file in CertFilePath.
+
+    .PARAMETER CertFilePath
+        The file path to the certificate .pfx file that should be imported.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER Services
+        Services to enable on the certificate.
+#>
 function Test-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -217,7 +318,6 @@ function Test-TargetResource
         [System.String]
         $Ensure,
 
-        # Only used by Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $AllowExtraServices = $false,
@@ -245,7 +345,7 @@ function Test-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -Verbose:$VerbosePreference
 
-    $cert = GetExchangeCertificate @PSBoundParameters
+    $cert = Get-ExchangeCertificateInternal @PSBoundParameters
 
     $testResults = $true
 
@@ -253,7 +353,7 @@ function Test-TargetResource
     {
         if ($Ensure -eq 'Present')
         {
-            if (!(CompareCertServices -ServicesActual $cert.Services -ServicesDesired $Services -AllowExtraServices $AllowExtraServices))
+            if (!(Test-CertServicesInRequiredState -ServicesActual $cert.Services -ServicesDesired $Services -AllowExtraServices $AllowExtraServices))
             {
                 Write-InvalidSettingVerbose -SettingName 'Services' -ExpectedValue $Services -ActualValue $cert.Services -Verbose:$VerbosePreference
                 $testResults = $false
@@ -277,10 +377,46 @@ function Test-TargetResource
     return $testResults
 }
 
-# Runs Get-ExchangeCertificate, only specifying Thumbprint, ErrorAction, and optionally DomainController
-function GetExchangeCertificate
+<#
+    .SYNOPSIS
+        Used as a wrapper for Get-ExchangeCertificate. Runs
+        Get-ExchangeCertificate, only specifying Thumbprint, ErrorAction, and
+        optionally DomainController, and returns the results.
+
+    .PARAMETER Thumbprint
+        Thumbprint of the certificate to work on.
+
+    .PARAMETER Credential
+        The Credentials to use when creating a remote PowerShell session to
+        Exchange.
+
+    .PARAMETER Ensure
+        Whether the certificate should be present or not.
+
+    .PARAMETER AllowExtraServices
+        Get-ExchangeCertificate sometimes displays more services than are
+        actually enabled. Setting this to true allows tests to pass in that
+        situation as long as the requested services are present.
+
+    .PARAMETER CertCreds
+        Credentials containing the password to the .pfx file in CertFilePath.
+
+    .PARAMETER CertFilePath
+        The file path to the certificate .pfx file that should be imported.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER Services
+        Services to enable on the certificate.
+#>
+function Get-ExchangeCertificateInternal
 {
     [CmdletBinding()]
+    [OutputType([System.Object])]
     param
     (
         [Parameter(Mandatory = $true)]
@@ -297,7 +433,6 @@ function GetExchangeCertificate
         [System.String]
         $Ensure,
 
-        # Only used by Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $AllowExtraServices = $false,
@@ -327,14 +462,27 @@ function GetExchangeCertificate
 }
 
 <#
-.Synopsis
-Compares whether services from a certificate object match the services that were requested.
-If AllowsExtraServices is true, it is OK for more services to be on the cert than were requested,
-as long as the requested services are present.
-#>
+    .SYNOPSIS
+        Compares whether services from a certificate object match the services
+        that were requested. If AllowsExtraServices is true, it is OK for more
+        services to be on the cert than were requested, as long as the
+        requested services are present.
 
-function CompareCertServices
+    .PARAMETER ServicesActual
+        The actual Services discovered by Get-ExchangeCertificate.
+
+    .PARAMETER ServicesDesired
+        The desired Services to enable on the certificate.
+
+    .PARAMETER AllowExtraServices
+        Get-ExchangeCertificate sometimes displays more services than are
+        actually enabled. Setting this to true allows tests to pass in that
+        situation as long as the requested services are present.
+#>
+function Test-CertServicesInRequiredState
 {
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
     param
     (
         [Parameter()]
@@ -372,4 +520,3 @@ function CompareCertServices
 }
 
 Export-ModuleMember -Function *-TargetResource
-Export-ModuleMember -Function CompareCertServices

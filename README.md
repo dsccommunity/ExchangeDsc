@@ -264,7 +264,7 @@ Where no description is listed, properties correspond directly to
 [Set-ClientAccessService](https://docs.microsoft.com/en-us/powershell/module/exchange/client-access-servers/set-clientaccessservice)
 parameters.
 
-* **Identity**: The Identity of the Autodiscover Virtual Directory.
+* **Identity**: The hostname of the Client Access Server.
 * **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
 * **AutoDiscoverServiceInternalUri**
 * **AutoDiscoverSiteScope**
