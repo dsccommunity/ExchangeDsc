@@ -1340,7 +1340,6 @@ parameters.
  Skype for Business users located outside of the network.
 * **DomainController**: Optional Domain Controller to connect to.
 
-
 ### xExchWaitForADPrep
 
 **xExchWaitForADPrep** ensures that Active Directory has been prepared for
