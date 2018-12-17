@@ -1313,10 +1313,11 @@ parameters.
 
 * **Identity**: Hostname of the UM server to configure.
 * **Credential**: Credentials used to establish a remote PowerShell session to
-Exchange.
-* **UMStartupMode**: UMStartupMode for the UM server.
+ Exchange.
+* **UMStartupMode**: Specifies whether the Microsoft Exchange Unified Messaging
+ Call Router service starts up in TCP, TLS, or Dual mode
 * **DialPlans**: Specifies all dial plans that the Unified Messaging service
-  handles incoming calls for.
+ handles incoming calls for.
 * **GrammarGenerationSchedule**: Specifies the Grammar Generation Schedule.
 * **IPAddressFamily**: Specifies whether the UM IP gateway will use IPv4, IPv6,
  or both to communicate. {IPv4Only | IPv6Only | Any}
@@ -1328,7 +1329,7 @@ Exchange.
  that are older than the specified value are deleted.
 * **IrmLogMaxDirectorySize**: Specifies the maximum size of all IRM logs in
  the connectivity log directory. When a directory reaches its maximum file
-  size, the server deletes the oldest log files first.
+ size, the server deletes the oldest log files first.
 * **IrmLogMaxFileSize**: Specifies the maximum size of each IRM log file.
  When a log file reaches its maximum file size, a new log file is created.
 * **IrmLogPath**: Specifies the default IRM log directory location.
@@ -1336,7 +1337,7 @@ Exchange.
  that the Unified Messaging service allows.
 * **SIPAccessService**: Specifies the FQDN and TCP port of the nearest Skype
  for Business Server pool location for inbound and outbound calls from remote
-  Skype for Business users located outside of the network.
+ Skype for Business users located outside of the network.
 * **DomainController**: Optional Domain Controller to connect to.
 
 
