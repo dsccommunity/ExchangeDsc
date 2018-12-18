@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Add support for Exchange Server 2019
+- Added additional parameters to the MSFT_xExchUMService resource
 
 ## 1.25.0.0
 
