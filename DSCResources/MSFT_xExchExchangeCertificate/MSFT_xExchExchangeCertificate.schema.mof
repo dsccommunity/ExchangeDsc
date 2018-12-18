@@ -2,15 +2,12 @@
 [ClassVersion("1.0.0.0"), FriendlyName("xExchExchangeCertificate")]
 class MSFT_xExchExchangeCertificate : OMI_BaseResource
 {
-    [Key] String Thumbprint; //Thumbprint of the certificate to work on
-    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange
-    [Required, ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure; //Whether the certificate should be present or not
-    [Write] Boolean AllowExtraServices; //Get-ExchangeCertificate sometimes displays more services than are actually enabled. Setting this to true allows tests to pass in that situation as long as the requested services are present.
-    [Write, EmbeddedInstance("MSFT_Credential")] String CertCreds; //Credentials containing the password to the .pfx file in CertFilePath
-    [Write] String CertFilePath; //The file path to the certificate .pfx file that should be imported
-    [Write] String DomainController; //Domain Controller to talk to
-    [Write] String Services[]; //Services to enable on the certificate. See: http://technet.microsoft.com/en-us/library/aa997231(v=exchg.150).aspx
+    [Key, Description("Thumbprint of the certificate to work on.")] String Thumbprint;
+    [Required, Description("Credentials used to establish a remote PowerShell session to Exchange."), EmbeddedInstance("MSFT_Credential")] String Credential;
+    [Required, Description("Whether the certificate should be present or not."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write, Description("Get-ExchangeCertificate sometimes displays more services than are actually enabled. Setting this to true allows tests to pass in that situation as long as the requested services are present.")] Boolean AllowExtraServices;
+    [Write, Description("Credentials containing the password to the .pfx file in CertFilePath."), EmbeddedInstance("MSFT_Credential")] String CertCreds;
+    [Write, Description("The file path to the certificate .pfx file that should be imported.")] String CertFilePath;
+    [Write, Description("The DomainController parameter specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory. You identify the domain controller by its fully qualified domain name (FQDN). For example, dc01.contoso.com.")] String DomainController;
+    [Write, Description("The Services parameter specifies the Exchange services that the certificate is enabled for.")] String Services[];
 };
-
-
-

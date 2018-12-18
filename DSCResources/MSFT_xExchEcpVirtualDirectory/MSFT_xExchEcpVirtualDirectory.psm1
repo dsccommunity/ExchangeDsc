@@ -1,3 +1,68 @@
+<#
+    .SYNOPSIS
+        Retrieves the current DSC configuration for this resource.
+
+    .PARAMETER Identity
+        The Identity of the ECP Virtual Directory.
+
+    .PARAMETER Credential
+        The Credentials to use when creating a remote PowerShell session to
+        Exchange.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is OK to recycle the app pool after making changes. Defaults
+        to $true.
+
+    .PARAMETER AdminEnabled
+        The AdminEnabled parameter specifies that the EAC isn't able to be
+        accessed through the Internet. For more information, see Turn off
+        access to the Exchange admin center.
+
+    .PARAMETER AdfsAuthentication
+        The AdfsAuthentication parameter specifies that the ECP virtual
+        directory allows users to authenticate through Active Directory
+        Federation Services (AD FS) authentication. This parameter accepts
+        $true or $false. The default value is $false.
+
+    .PARAMETER BasicAuthentication
+        The BasicAuthentication parameter specifies whether Basic
+        authentication is enabled on the virtual directory.
+
+    .PARAMETER DigestAuthentication
+        The DigestAuthentication parameter specifies whether Digest
+        authentication is enabled on the virtual directory.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER ExternalAuthenticationMethods
+        The ExternalAuthenticationMethods parameter specifies the
+        authentication methods supported on the Exchange server from outside
+        the firewall.
+
+    .PARAMETER ExternalUrl
+        The ExternalURL parameter specifies the URL that's used to connect to
+        the virtual directory from outside the firewall.
+
+    .PARAMETER FormsAuthentication
+        The FormsAuthentication parameter specifies whether forms-based
+        authentication is enabled on the ECP virtual directory
+
+    .PARAMETER GzipLevel
+        The GzipLevel parameter sets Gzip configuration information for the
+        ECP virtual directory.
+
+    .PARAMETER InternalUrl
+        The InternalURL parameter specifies the URL that's used to connect to
+        the virtual directory from inside the firewall.
+
+    .PARAMETER WindowsAuthentication
+        The WindowsAuthentication parameter specifies whether Integrated
+        Windows authentication is enabled on the virtual directory.
+#>
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -69,7 +134,7 @@ function Get-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-EcpVirtualDirectory' -Verbose:$VerbosePreference
 
-    $EcpVdir = GetEcpVirtualDirectory @PSBoundParameters
+    $EcpVdir = Get-EcpVirtualDirectoryInternal @PSBoundParameters
 
     if ($null -ne $EcpVdir)
     {
@@ -91,6 +156,71 @@ function Get-TargetResource
     $returnValue
 }
 
+<#
+    .SYNOPSIS
+        Sets the DSC configuration for this resource.
+
+    .PARAMETER Identity
+        The Identity of the ECP Virtual Directory.
+
+    .PARAMETER Credential
+        The Credentials to use when creating a remote PowerShell session to
+        Exchange.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is OK to recycle the app pool after making changes. Defaults
+        to $true.
+
+    .PARAMETER AdminEnabled
+        The AdminEnabled parameter specifies that the EAC isn't able to be
+        accessed through the Internet. For more information, see Turn off
+        access to the Exchange admin center.
+
+    .PARAMETER AdfsAuthentication
+        The AdfsAuthentication parameter specifies that the ECP virtual
+        directory allows users to authenticate through Active Directory
+        Federation Services (AD FS) authentication. This parameter accepts
+        $true or $false. The default value is $false.
+
+    .PARAMETER BasicAuthentication
+        The BasicAuthentication parameter specifies whether Basic
+        authentication is enabled on the virtual directory.
+
+    .PARAMETER DigestAuthentication
+        The DigestAuthentication parameter specifies whether Digest
+        authentication is enabled on the virtual directory.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER ExternalAuthenticationMethods
+        The ExternalAuthenticationMethods parameter specifies the
+        authentication methods supported on the Exchange server from outside
+        the firewall.
+
+    .PARAMETER ExternalUrl
+        The ExternalURL parameter specifies the URL that's used to connect to
+        the virtual directory from outside the firewall.
+
+    .PARAMETER FormsAuthentication
+        The FormsAuthentication parameter specifies whether forms-based
+        authentication is enabled on the ECP virtual directory
+
+    .PARAMETER GzipLevel
+        The GzipLevel parameter sets Gzip configuration information for the
+        ECP virtual directory.
+
+    .PARAMETER InternalUrl
+        The InternalURL parameter specifies the URL that's used to connect to
+        the virtual directory from inside the firewall.
+
+    .PARAMETER WindowsAuthentication
+        The WindowsAuthentication parameter specifies whether Integrated
+        Windows authentication is enabled on the virtual directory.
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
@@ -180,6 +310,72 @@ function Set-TargetResource
     }
 }
 
+<#
+    .SYNOPSIS
+        Tests whether the desired configuration for this resource has been
+        applied.
+
+    .PARAMETER Identity
+        The Identity of the ECP Virtual Directory.
+
+    .PARAMETER Credential
+        The Credentials to use when creating a remote PowerShell session to
+        Exchange.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is OK to recycle the app pool after making changes. Defaults
+        to $true.
+
+    .PARAMETER AdminEnabled
+        The AdminEnabled parameter specifies that the EAC isn't able to be
+        accessed through the Internet. For more information, see Turn off
+        access to the Exchange admin center.
+
+    .PARAMETER AdfsAuthentication
+        The AdfsAuthentication parameter specifies that the ECP virtual
+        directory allows users to authenticate through Active Directory
+        Federation Services (AD FS) authentication. This parameter accepts
+        $true or $false. The default value is $false.
+
+    .PARAMETER BasicAuthentication
+        The BasicAuthentication parameter specifies whether Basic
+        authentication is enabled on the virtual directory.
+
+    .PARAMETER DigestAuthentication
+        The DigestAuthentication parameter specifies whether Digest
+        authentication is enabled on the virtual directory.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER ExternalAuthenticationMethods
+        The ExternalAuthenticationMethods parameter specifies the
+        authentication methods supported on the Exchange server from outside
+        the firewall.
+
+    .PARAMETER ExternalUrl
+        The ExternalURL parameter specifies the URL that's used to connect to
+        the virtual directory from outside the firewall.
+
+    .PARAMETER FormsAuthentication
+        The FormsAuthentication parameter specifies whether forms-based
+        authentication is enabled on the ECP virtual directory
+
+    .PARAMETER GzipLevel
+        The GzipLevel parameter sets Gzip configuration information for the
+        ECP virtual directory.
+
+    .PARAMETER InternalUrl
+        The InternalURL parameter specifies the URL that's used to connect to
+        the virtual directory from inside the firewall.
+
+    .PARAMETER WindowsAuthentication
+        The WindowsAuthentication parameter specifies whether Integrated
+        Windows authentication is enabled on the virtual directory.
+#>
 function Test-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -254,7 +450,7 @@ function Test-TargetResource
     # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    $EcpVdir = GetEcpVirtualDirectory @PSBoundParameters
+    $EcpVdir = Get-EcpVirtualDirectoryInternal @PSBoundParameters
 
     $testResults = $true
 
@@ -320,9 +516,77 @@ function Test-TargetResource
     return $testResults
 }
 
-function GetEcpVirtualDirectory
+<#
+    .SYNOPSIS
+        Used as a wrapper for Get-EcpVirtualDirectory. Runs
+        Get-EcpVirtualDirectory, only specifying Identity, and optionally
+        DomainController, and returns the results.
+
+    .PARAMETER Identity
+        The Identity of the ECP Virtual Directory.
+
+    .PARAMETER Credential
+        The Credentials to use when creating a remote PowerShell session to
+        Exchange.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is OK to recycle the app pool after making changes. Defaults
+        to $true.
+
+    .PARAMETER AdminEnabled
+        The AdminEnabled parameter specifies that the EAC isn't able to be
+        accessed through the Internet. For more information, see Turn off
+        access to the Exchange admin center.
+
+    .PARAMETER AdfsAuthentication
+        The AdfsAuthentication parameter specifies that the ECP virtual
+        directory allows users to authenticate through Active Directory
+        Federation Services (AD FS) authentication. This parameter accepts
+        $true or $false. The default value is $false.
+
+    .PARAMETER BasicAuthentication
+        The BasicAuthentication parameter specifies whether Basic
+        authentication is enabled on the virtual directory.
+
+    .PARAMETER DigestAuthentication
+        The DigestAuthentication parameter specifies whether Digest
+        authentication is enabled on the virtual directory.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER ExternalAuthenticationMethods
+        The ExternalAuthenticationMethods parameter specifies the
+        authentication methods supported on the Exchange server from outside
+        the firewall.
+
+    .PARAMETER ExternalUrl
+        The ExternalURL parameter specifies the URL that's used to connect to
+        the virtual directory from outside the firewall.
+
+    .PARAMETER FormsAuthentication
+        The FormsAuthentication parameter specifies whether forms-based
+        authentication is enabled on the ECP virtual directory
+
+    .PARAMETER GzipLevel
+        The GzipLevel parameter sets Gzip configuration information for the
+        ECP virtual directory.
+
+    .PARAMETER InternalUrl
+        The InternalURL parameter specifies the URL that's used to connect to
+        the virtual directory from inside the firewall.
+
+    .PARAMETER WindowsAuthentication
+        The WindowsAuthentication parameter specifies whether Integrated
+        Windows authentication is enabled on the virtual directory.
+#>
+function Get-EcpVirtualDirectoryInternal
 {
     [CmdletBinding()]
+    [OutputType([System.Object])]
     param
     (
         [Parameter(Mandatory = $true)]

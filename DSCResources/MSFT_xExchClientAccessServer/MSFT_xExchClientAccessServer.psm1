@@ -1,3 +1,46 @@
+<#
+    .SYNOPSIS
+        Retrieves the current DSC configuration for this resource.
+
+    .PARAMETER Identity
+        The hostname of the Client Access Server.
+
+    .PARAMETER Credential
+        The Credentials to use when creating a remote PowerShell session to
+        Exchange.
+
+    .PARAMETER AlternateServiceAccountCredential
+        The AlternateServiceAccountCredential parameter specifies an
+        alternative service account that'stypically used for Kerberos
+        authentication.
+
+    .PARAMETER AutoDiscoverServiceInternalUri
+        The AutoDiscoverServiceInternalUri parameter specifies the internal URL
+        of the Autodiscover service.
+
+    .PARAMETER AutoDiscoverSiteScope
+        The AutoDiscoverSiteScope parameter specifies the Active Directory site
+        that the Autodiscover service is authoritative for. Clients that
+        connect to the Autodiscover service by using the internal URL need to
+        exist in the specified site.
+
+    .PARAMETER CleanUpInvalidAlternateServiceAccountCredentials
+        The CleanUpInvalidAlternateServiceAccountCredentialsswitch specifies
+        whether to remove a previously configured alternate service account
+        that's no longer valid. You don't need to specify a value with this
+        switch.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER RemoveAlternateServiceAccountCredentials
+        The RemoveAlternateServiceAccountCredentialsswitch specifies whether to
+        remove a previously distributed alternate service account. You don't
+        need to specify a value with this switch.
+#>
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -46,7 +89,7 @@ function Get-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ClientAccessServ*' -Verbose:$VerbosePreference
 
-    $cas = GetClientAccessServer @PSBoundParameters
+    $cas = Get-ClientAccessServerInternal @PSBoundParameters
 
     if ($null -ne $cas)
     {
@@ -77,7 +120,49 @@ function Get-TargetResource
     $returnValue
 }
 
+<#
+    .SYNOPSIS
+        Sets the DSC configuration for this resource.
 
+    .PARAMETER Identity
+        The hostname of the Client Access Server.
+
+    .PARAMETER Credential
+        The Credentials to use when creating a remote PowerShell session to
+        Exchange.
+
+    .PARAMETER AlternateServiceAccountCredential
+        The AlternateServiceAccountCredential parameter specifies an
+        alternative service account that'stypically used for Kerberos
+        authentication.
+
+    .PARAMETER AutoDiscoverServiceInternalUri
+        The AutoDiscoverServiceInternalUri parameter specifies the internal URL
+        of the Autodiscover service.
+
+    .PARAMETER AutoDiscoverSiteScope
+        The AutoDiscoverSiteScope parameter specifies the Active Directory site
+        that the Autodiscover service is authoritative for. Clients that
+        connect to the Autodiscover service by using the internal URL need to
+        exist in the specified site.
+
+    .PARAMETER CleanUpInvalidAlternateServiceAccountCredentials
+        The CleanUpInvalidAlternateServiceAccountCredentialsswitch specifies
+        whether to remove a previously configured alternate service account
+        that's no longer valid. You don't need to specify a value with this
+        switch.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER RemoveAlternateServiceAccountCredentials
+        The RemoveAlternateServiceAccountCredentialsswitch specifies whether to
+        remove a previously distributed alternate service account. You don't
+        need to specify a value with this switch.
+#>
 function Set-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -194,7 +279,50 @@ function Set-TargetResource
     & $setCasCmd @PSBoundParameters
 }
 
+<#
+    .SYNOPSIS
+        Tests whether the desired configuration for this resource has been
+        applied.
 
+    .PARAMETER Identity
+        The hostname of the Client Access Server.
+
+    .PARAMETER Credential
+        The Credentials to use when creating a remote PowerShell session to
+        Exchange.
+
+    .PARAMETER AlternateServiceAccountCredential
+        The AlternateServiceAccountCredential parameter specifies an
+        alternative service account that'stypically used for Kerberos
+        authentication.
+
+    .PARAMETER AutoDiscoverServiceInternalUri
+        The AutoDiscoverServiceInternalUri parameter specifies the internal URL
+        of the Autodiscover service.
+
+    .PARAMETER AutoDiscoverSiteScope
+        The AutoDiscoverSiteScope parameter specifies the Active Directory site
+        that the Autodiscover service is authoritative for. Clients that
+        connect to the Autodiscover service by using the internal URL need to
+        exist in the specified site.
+
+    .PARAMETER CleanUpInvalidAlternateServiceAccountCredentials
+        The CleanUpInvalidAlternateServiceAccountCredentialsswitch specifies
+        whether to remove a previously configured alternate service account
+        that's no longer valid. You don't need to specify a value with this
+        switch.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER RemoveAlternateServiceAccountCredentials
+        The RemoveAlternateServiceAccountCredentialsswitch specifies whether to
+        remove a previously distributed alternate service account. You don't
+        need to specify a value with this switch.
+#>
 function Test-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -243,7 +371,7 @@ function Test-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ClientAccessServ*' -Verbose:$VerbosePreference
 
-    $cas = GetClientAccessServer @PSBoundParameters
+    $cas = Get-ClientAccessServerInternal @PSBoundParameters
 
     $testResults = $true
 
@@ -269,11 +397,13 @@ function Test-TargetResource
         {
             $testResults = $false
         }
+
         if ($CleanUpInvalidAlternateServiceAccountCredentials)
         {
             Write-Verbose -Message 'CleanUpInvalidAlternateServiceAccountCredentials is set to $true. Forcing Test-TargetResource to return $false.'
             $testResults = $false
         }
+
         if ($RemoveAlternateServiceAccountCredentials -and ($cas.AlternateServiceAccountConfiguration.EffectiveCredentials.Count -gt 0))
         {
             Write-Verbose -Message 'RemoveAlternateServiceAccountCredentials is set to $true, and AlternateServiceAccountConfiguration currently has credentials configured. Returning $false.'
@@ -284,10 +414,55 @@ function Test-TargetResource
     return $testResults
 }
 
-# Runs Get-ClientAcccessServer, only specifying Identity, and optionally DomainController
-function GetClientAccessServer
+<#
+    .SYNOPSIS
+        Used as a wrapper for Get-ClientAccessServer. Runs
+        Get-ClientAcccessServer, only specifying Identity, and optionally
+        DomainController, and returns the results.
+
+    .PARAMETER Identity
+        The hostname of the Client Access Server.
+
+    .PARAMETER Credential
+        The Credentials to use when creating a remote PowerShell session to
+        Exchange.
+
+    .PARAMETER AlternateServiceAccountCredential
+        The AlternateServiceAccountCredential parameter specifies an
+        alternative service account that'stypically used for Kerberos
+        authentication.
+
+    .PARAMETER AutoDiscoverServiceInternalUri
+        The AutoDiscoverServiceInternalUri parameter specifies the internal URL
+        of the Autodiscover service.
+
+    .PARAMETER AutoDiscoverSiteScope
+        The AutoDiscoverSiteScope parameter specifies the Active Directory site
+        that the Autodiscover service is authoritative for. Clients that
+        connect to the Autodiscover service by using the internal URL need to
+        exist in the specified site.
+
+    .PARAMETER CleanUpInvalidAlternateServiceAccountCredentials
+        The CleanUpInvalidAlternateServiceAccountCredentialsswitch specifies
+        whether to remove a previously configured alternate service account
+        that's no longer valid. You don't need to specify a value with this
+        switch.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER RemoveAlternateServiceAccountCredentials
+        The RemoveAlternateServiceAccountCredentialsswitch specifies whether to
+        remove a previously distributed alternate service account. You don't
+        need to specify a value with this switch.
+#>
+function Get-ClientAccessServerInternal
 {
     [CmdletBinding()]
+    [OutputType([System.Object])]
     param
     (
         [Parameter(Mandatory = $true)]
