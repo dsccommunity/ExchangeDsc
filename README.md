@@ -425,39 +425,63 @@ an ExchangeCertificate using *-ExchangeCertificate cmdlets.
 **xExchExchangeServer** is used to configure properties on an Exchange Server
 via Set-ExchangeServer.
 
-Where no description is listed, properties correspond directly to
+Most properties correspond directly to properties in
 [Set-ExchangeServer](https://docs.microsoft.com/en-us/powershell/module/exchange/organization/set-exchangeserver)
 parameters.
 
-* **Identity**: The hostname of the Exchange Server to configure.
-* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
+* **Identity**: The Identity parameter specifies the GUID, distinguished name
+  (DN), or name of the server.
+* **Credential**: Credentials used to establish a remote PowerShell session to
+  Exchange.
 * **AllowServiceRestart**: Whether it is OK to restart the Information Store
   service after licensing the server. Defaults to $false.
-* **CustomerFeedbackEnabled**
-* **DomainController**
-* **InternetWebProxy**
-* **MonitoringGroup**
-* **ProductKey**
-* **WorkloadManagementPolicy**
+* **CustomerFeedbackEnabled**: The CustomerFeedbackEnabled parameter specifies
+  whether the Exchange server is enrolled in the Microsoft Customer Experience
+  Improvement Program (CEIP). The CEIP collects anonymous information about
+  how you use Exchange and problems that you might encounter. If you decide not
+  to participate in the CEIP, the servers are opted-out automatically.
+* **DomainController**: The DomainController parameter specifies the domain
+  controller that's used by this cmdlet to read data from or write data to
+  Active Directory. You identify the domain controller by its fully qualified
+  domain name (FQDN). For example, dc01.contoso.com.
+* **InternetWebProxy**: The InternetWebProxy parameter specifies the web proxy
+  server that the Exchange server uses to reach the internet. A valid value for
+  this parameter is the URL of the web proxy server.
+* **MonitoringGroup**: The MonitoringGroup parameter specifies how to add your
+  Exchange servers to monitoring groups. You can add your servers to an
+  existing group or create a monitoring group based on location or deployment,
+  or to partition monitoring responsibility among your servers.
+* **ProductKey**: The ProductKey parameter specifies the server product key.
+* **WorkloadManagementPolicy**: The *-ResourcePolicy,
+  *-WorkloadManagementPolicy and *-WorkloadPolicy system workload management
+  cmdlets have been deprecated. System workload management settings should be
+  customized only under the direction of Microsoft Customer Service and
+  Support.
 
 ### xExchImapSettings
 
 **xExchImapSettings** configures IMAP settings using Set-ImapSettings.
 
-Most properties correspond directly to
+Most properties correspond directly to properties in
 [Set-ImapSettings](https://docs.microsoft.com/en-us/powershell/module/exchange/client-access/set-imapsettings)
 parameters.
 
 * **Server**: Hostname of the IMAP server to configure.
-* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
+* **Credential**: Credentials used to establish a remote PowerShell session to
+  Exchange.
 * **AllowServiceRestart**: Whether it is OK to restart the IMAP services after
   making changes. Defaults to $false.
-* **DomainController**: Optional Domain Controller to connect to.
-* **ExternalConnectionSettings**: Specifies the host name, port, and encryption
-  type that Exchange uses when IMAP clients connect to their email from the outside.
-* **LoginType**: The LoginType to be used for IMAP.
-* **X509CertificateName**: Specifies the host name in the SSL certificate
-  from the Associated Subject field.
+* **DomainController**: The DomainController parameter specifies the domain
+  controller that's used by this cmdlet to read data from or write data to
+  Active Directory. You identify the domain controller by its fully qualified
+  domain name (FQDN). For example, dc01.contoso.com.
+* **ExternalConnectionSettings**: The ExternalConnectionSettings parameter
+  specifies the host name, port, and encryption method that's used by external
+  IMAP4 clients (IMAP4 connections from outside your corporate network).
+* **LoginType**: The LoginType parameter specifies the authentication method
+  for IMAP4 connections.
+* **X509CertificateName**: The X509CertificateName parameter specifies the
+  certificate that's used for encrypting IMAP4 client connections.
 
 ### xExchInstall
 

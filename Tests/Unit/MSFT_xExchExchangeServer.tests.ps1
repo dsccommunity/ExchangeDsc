@@ -59,7 +59,7 @@ try
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
 
             Context 'When Get-TargetResource is called' {
-                Mock -CommandName GetExchangeServer -Verifiable -MockWith { return $getGetExchangeServerStandardOutput }
+                Mock -CommandName Get-ExchangeServerInternal -Verifiable -MockWith { return $getGetExchangeServerStandardOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }
@@ -69,7 +69,7 @@ try
                     $defaultValue = $getGetExchangeServerStandardOutput.IsExchangeTrialEdition
                     $getGetExchangeServerStandardOutput.IsExchangeTrialEdition = $true
 
-                    Mock -CommandName GetExchangeServer -Verifiable -MockWith { return $getGetExchangeServerStandardOutput }
+                    Mock -CommandName Get-ExchangeServerInternal -Verifiable -MockWith { return $getGetExchangeServerStandardOutput }
 
                     (Get-TargetResource @getTargetResourceParams).ProductKey | Should -Be ''
 
@@ -79,7 +79,7 @@ try
 
             Context 'When Get-TargetResource is called with WorkloadManagementPolicy and it is not an available parameter' {
                 It 'Should be removed from PSBoundParameters' {
-                    Mock -CommandName GetExchangeServer -Verifiable -MockWith { return $getGetExchangeServerStandardOutput }
+                    Mock -CommandName Get-ExchangeServerInternal -Verifiable -MockWith { return $getGetExchangeServerStandardOutput }
                     Mock -CommandName Write-Warning -Verifiable
                     Mock -CommandName Remove-FromPSBoundParametersUsingHashtable -Verifiable
 

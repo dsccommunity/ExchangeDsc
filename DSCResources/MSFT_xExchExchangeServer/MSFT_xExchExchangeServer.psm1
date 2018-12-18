@@ -1,3 +1,51 @@
+<#
+    .SYNOPSIS
+        Retrieves the current DSC configuration for this resource.
+
+    .PARAMETER Identity
+        The Identity parameter specifies the GUID, distinguished name (DN), or
+        name of the server.
+
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is OK to restart the Information Store service after
+        licensing the server. Defaults to $false.
+
+    .PARAMETER CustomerFeedbackEnabled
+        The CustomerFeedbackEnabled parameter specifies whether the Exchange
+        server is enrolled in the Microsoft Customer Experience Improvement
+        Program (CEIP). The CEIP collects anonymous information about how you
+        use Exchange and problems that you might encounter. If you decide not
+        to participate in the CEIP, the servers are opted-out automatically.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER InternetWebProxy
+        The InternetWebProxy parameter specifies the web proxy server that the
+        Exchange server uses to reach the internet. A valid value for this
+        parameter is the URL of the web proxy server.
+
+    .PARAMETER MonitoringGroup
+        The MonitoringGroup parameter specifies how to add your Exchange
+        servers to monitoring groups. You can add your servers to an existing
+        group or create a monitoring group based on location or deployment, or
+        to partition monitoring responsibility among your servers.
+
+    .PARAMETER ProductKey
+        The ProductKey parameter specifies the server product key.
+
+    .PARAMETER WorkloadManagementPolicy
+        The *-ResourcePolicy, *-WorkloadManagementPolicy and *-WorkloadPolicy
+        system workload management cmdlets have been deprecated. System
+        workload management settings should be customized only under the
+        direction of Microsoft Customer Service and Support.
+#>
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -54,7 +102,7 @@ function Get-TargetResource
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'WorkloadManagementPolicy'
     }
 
-    $server = GetExchangeServer @PSBoundParameters
+    $server = Get-ExchangeServerInternal @PSBoundParameters
 
     if ($null -ne $server)
     {
@@ -81,6 +129,54 @@ function Get-TargetResource
     $returnValue
 }
 
+<#
+    .SYNOPSIS
+        Sets the DSC configuration for this resource.
+
+    .PARAMETER Identity
+        The Identity parameter specifies the GUID, distinguished name (DN), or
+        name of the server.
+
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is OK to restart the Information Store service after
+        licensing the server. Defaults to $false.
+
+    .PARAMETER CustomerFeedbackEnabled
+        The CustomerFeedbackEnabled parameter specifies whether the Exchange
+        server is enrolled in the Microsoft Customer Experience Improvement
+        Program (CEIP). The CEIP collects anonymous information about how you
+        use Exchange and problems that you might encounter. If you decide not
+        to participate in the CEIP, the servers are opted-out automatically.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER InternetWebProxy
+        The InternetWebProxy parameter specifies the web proxy server that the
+        Exchange server uses to reach the internet. A valid value for this
+        parameter is the URL of the web proxy server.
+
+    .PARAMETER MonitoringGroup
+        The MonitoringGroup parameter specifies how to add your Exchange
+        servers to monitoring groups. You can add your servers to an existing
+        group or create a monitoring group based on location or deployment, or
+        to partition monitoring responsibility among your servers.
+
+    .PARAMETER ProductKey
+        The ProductKey parameter specifies the server product key.
+
+    .PARAMETER WorkloadManagementPolicy
+        The *-ResourcePolicy, *-WorkloadManagementPolicy and *-WorkloadPolicy
+        system workload management cmdlets have been deprecated. System
+        workload management settings should be customized only under the
+        direction of Microsoft Customer Service and Support.
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
@@ -136,7 +232,7 @@ function Set-TargetResource
     }
 
     # Check existing config first to see if we are currently licensing a server
-    $server = GetExchangeServer @PSBoundParameters
+    $server = Get-ExchangeServerInternal @PSBoundParameters
 
     $needRestart = $false
 
@@ -168,6 +264,55 @@ function Set-TargetResource
     }
 }
 
+<#
+    .SYNOPSIS
+        Tests whether the desired configuration for this resource has been
+        applied.
+
+    .PARAMETER Identity
+        The Identity parameter specifies the GUID, distinguished name (DN), or
+        name of the server.
+
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is OK to restart the Information Store service after
+        licensing the server. Defaults to $false.
+
+    .PARAMETER CustomerFeedbackEnabled
+        The CustomerFeedbackEnabled parameter specifies whether the Exchange
+        server is enrolled in the Microsoft Customer Experience Improvement
+        Program (CEIP). The CEIP collects anonymous information about how you
+        use Exchange and problems that you might encounter. If you decide not
+        to participate in the CEIP, the servers are opted-out automatically.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER InternetWebProxy
+        The InternetWebProxy parameter specifies the web proxy server that the
+        Exchange server uses to reach the internet. A valid value for this
+        parameter is the URL of the web proxy server.
+
+    .PARAMETER MonitoringGroup
+        The MonitoringGroup parameter specifies how to add your Exchange
+        servers to monitoring groups. You can add your servers to an existing
+        group or create a monitoring group based on location or deployment, or
+        to partition monitoring responsibility among your servers.
+
+    .PARAMETER ProductKey
+        The ProductKey parameter specifies the server product key.
+
+    .PARAMETER WorkloadManagementPolicy
+        The *-ResourcePolicy, *-WorkloadManagementPolicy and *-WorkloadPolicy
+        system workload management cmdlets have been deprecated. System
+        workload management settings should be customized only under the
+        direction of Microsoft Customer Service and Support.
+#>
 function Test-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -224,7 +369,7 @@ function Test-TargetResource
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'WorkloadManagementPolicy'
     }
 
-    $server = GetExchangeServer @PSBoundParameters
+    $server = Get-ExchangeServerInternal @PSBoundParameters
 
     $testResults = $true
 
@@ -234,9 +379,10 @@ function Test-TargetResource
         Write-Error -Message 'Unable to retrieve Exchange Server settings for server'
 
         $testResults = $false
-    }
-    else # Validate server params
+    }    
+    else
     {
+        # Validate server params
         if (!(Test-ExchangeSetting -Name 'CustomerFeedbackEnabled' -Type 'Boolean' -ExpectedValue $CustomerFeedbackEnabled -ActualValue $server.CustomerFeedbackEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
@@ -272,15 +418,74 @@ function Test-TargetResource
     return $testResults
 }
 
-# Runs Get-ExchangeServer, only specifying Identity, and optionally DomainController
-function GetExchangeServer
+<#
+    .SYNOPSIS
+        Used as a wrapper for Get-ExchangeServer. Runs
+        Get-ExchangeServer, only specifying Identity, and
+        optionally DomainController, and returns the results.
+
+    .PARAMETER Identity
+        The Identity parameter specifies the GUID, distinguished name (DN), or
+        name of the server.
+
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is OK to restart the Information Store service after
+        licensing the server. Defaults to $false.
+
+    .PARAMETER CustomerFeedbackEnabled
+        The CustomerFeedbackEnabled parameter specifies whether the Exchange
+        server is enrolled in the Microsoft Customer Experience Improvement
+        Program (CEIP). The CEIP collects anonymous information about how you
+        use Exchange and problems that you might encounter. If you decide not
+        to participate in the CEIP, the servers are opted-out automatically.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER InternetWebProxy
+        The InternetWebProxy parameter specifies the web proxy server that the
+        Exchange server uses to reach the internet. A valid value for this
+        parameter is the URL of the web proxy server.
+
+    .PARAMETER MonitoringGroup
+        The MonitoringGroup parameter specifies how to add your Exchange
+        servers to monitoring groups. You can add your servers to an existing
+        group or create a monitoring group based on location or deployment, or
+        to partition monitoring responsibility among your servers.
+
+    .PARAMETER ProductKey
+        The ProductKey parameter specifies the server product key.
+
+    .PARAMETER WorkloadManagementPolicy
+        The *-ResourcePolicy, *-WorkloadManagementPolicy and *-WorkloadPolicy
+        system workload management cmdlets have been deprecated. System
+        workload management settings should be customized only under the
+        direction of Microsoft Customer Service and Support.
+#>
+function Get-ExchangeServerInternal
 {
     [CmdletBinding()]
+    [OutputType([System.Object])]
     param
     (
         [Parameter(Mandatory = $true)]
         [System.String]
         $Identity,
+
+        [Parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowServiceRestart = $false,
 
         [Parameter()]
         [System.Boolean]
@@ -304,16 +509,7 @@ function GetExchangeServer
 
         [Parameter()]
         [System.String]
-        $WorkloadManagementPolicy,
-
-        [Parameter(Mandatory = $true)]
-        [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $Credential,
-
-        [Parameter()]
-        [System.Boolean]
-        $AllowServiceRestart = $false
+        $WorkloadManagementPolicy
     )
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'

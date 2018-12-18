@@ -56,7 +56,7 @@ try
             Context 'When Get-TargetResource is called' {
                 Mock -CommandName Write-FunctionEntry -Verifiable
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                Mock -CommandName GetImapSettings -Verifiable -MockWith { return $getImapSettingsStandardOutput }
+                Mock -CommandName Get-ImapSettingsInternal -Verifiable -MockWith { return $getImapSettingsStandardOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }

@@ -6,7 +6,8 @@
 - Added additional parameters to the MSFT_xExchUMService resource
 - Rename improperly named functions, and add comment based help in
   MSFT_xExchClientAccessServer, MSFT_xExchDatabaseAvailabilityGroupNetwork,
-  MSFT_xExchEcpVirtualDirectory, and MSFT_xExchExchangeCertificate.
+  MSFT_xExchEcpVirtualDirectory, MSFT_xExchExchangeCertificate,
+  MSFT_xExchExchangeServer, MSFT_xExchImapSettings.
 - Added additional parameters to the MSFT_xExchUMCallRouterSettings resource
 
 ## 1.25.0.0
