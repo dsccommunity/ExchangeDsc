@@ -136,7 +136,7 @@ try
                 SipTlsListeningPort         = [System.Int32] '5061'
             }
 
-            Context 'When Set-TargetResource is called' {
+            Context 'When Test-TargetResource is called' {
                 It 'Should return False when Get-UMCallRouterSettings returns null' {
                     Mock -CommandName Write-FunctionEntry -Verifiable
                     Mock -CommandName Assert-IsSupportedWithExchangeVersion -Verifiable
