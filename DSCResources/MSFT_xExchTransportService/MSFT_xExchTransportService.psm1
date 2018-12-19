@@ -56,6 +56,10 @@ function Get-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $AntispamAgentsEnabled,
+
+        [Parameter()]
+        [System.Boolean]
         $ConnectivityLogEnabled,
 
         [Parameter()]
@@ -374,6 +378,8 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
+    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'MSFT_xExchTransportService' -SupportedVersions '2013', '2016','2019'
+
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-TransportService' -Verbose:$VerbosePreference
 
@@ -394,6 +400,7 @@ function Get-TargetResource
             AgentLogMaxDirectorySize                        = [System.String] $TransportService.AgentLogMaxDirectorySize
             AgentLogMaxFileSize                             = [System.String] $TransportService.AgentLogMaxFileSize
             AgentLogPath                                    = [System.String] $TransportService.AgentLogPath
+            AntispamAgentsEnabled                           = [System.Boolean] $TransportService.AntispamAgentsEnabled
             ConnectivityLogEnabled                          = [System.Boolean] $TransportService.ConnectivityLogEnabled
             ConnectivityLogMaxAge                           = [System.String] $TransportService.ConnectivityLogMaxAge
             ConnectivityLogMaxDirectorySize                 = [System.String] $TransportService.ConnectivityLogMaxDirectorySize
@@ -532,447 +539,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $ConnectivityLogEnabled,
-
-        [Parameter()]
-        [System.String]
-        $ConnectivityLogMaxAge,
-
-        [Parameter()]
-        [System.String]
-        $ConnectivityLogMaxDirectorySize,
-
-        [Parameter()]
-        [System.String]
-        $ConnectivityLogMaxFileSize,
-
-        [Parameter()]
-        [System.String]
-        $ConnectivityLogPath,
-
-        [Parameter()]
-        [System.Boolean]
-        $ContentConversionTracingEnabled,
-
-        [Parameter()]
-        [System.String]
-        $DelayNotificationTimeout,
-
-        [Parameter()]
-        [System.Boolean]
-        $DnsLogEnabled,
-
-        [Parameter()]
-        [System.String]
-        $DnsLogMaxAge,
-
-        [Parameter()]
-        [System.String]
-        $DnsLogMaxDirectorySize,
-
-        [Parameter()]
-        [System.String]
-        $DnsLogMaxFileSize,
-
-        [Parameter()]
-        [System.String]
-        $DnsLogPath,
-
-        [Parameter()]
-        [System.Boolean]
-        $ExternalDNSAdapterEnabled,
-
-        [Parameter()]
-        [System.String]
-        $ExternalDNSAdapterGuid,
-
-        [Parameter()]
-        [ValidateSet('Any', 'UseTcpOnly', 'UseUdpOnly')]
-        [System.String]
-        $ExternalDNSProtocolOption,
-
-        [Parameter()]
-        [System.String[]]
-        $ExternalDNSServers,
-
-        [Parameter()]
-        [System.String]
-        $ExternalIPAddress,
-
-        [Parameter()]
-        [System.Boolean]
-        $InternalDNSAdapterEnabled,
-
-        [Parameter()]
-        [System.String]
-        $InternalDNSAdapterGuid,
-
-        [Parameter()]
-        [ValidateSet('Any', 'UseTcpOnly', 'UseUdpOnly')]
-        [System.String]
-        $InternalDNSProtocolOption,
-
-        [Parameter()]
-        [System.String[]]
-        $InternalDNSServers,
-
-        [Parameter()]
-        [ValidateSet('None', 'Verbose')]
-        [System.String]
-        $IntraOrgConnectorProtocolLoggingLevel,
-
-        [Parameter()]
-        [System.Int32]
-        $IntraOrgConnectorSmtpMaxMessagesPerConnection,
-
-        [Parameter()]
-        [System.Boolean]
-        $IrmLogEnabled,
-
-        [Parameter()]
-        [System.String]
-        $IrmLogMaxAge,
-
-        [Parameter()]
-        [System.String]
-        $IrmLogMaxDirectorySize,
-
-        [Parameter()]
-        [System.String]
-        $IrmLogMaxFileSize,
-
-        [Parameter()]
-        [System.String]
-        $IrmLogPath,
-
-        [Parameter()]
-        [System.Int32]
-        $MaxConcurrentMailboxDeliveries,
-
-        [Parameter()]
-        [System.Int32]
-        $MaxConcurrentMailboxSubmissions,
-
-        [Parameter()]
-        [System.Int32]
-        $MaxConnectionRatePerMinute,
-
-        [Parameter()]
-        [ValidateRange(1,2147483647)]
-        [System.String]
-        $MaxOutboundConnections,
-
-        [Parameter()]
-        [ValidateRange(1,2147483647)]
-        [System.String]
-        $MaxPerDomainOutboundConnections,
-
-        [Parameter()]
-        [System.String]
-        $MessageExpirationTimeout,
-
-        [Parameter()]
-        [System.String]
-        $MessageRetryInterval,
-
-        [Parameter()]
-        [System.Boolean]
-        $MessageTrackingLogEnabled,
-
-        [Parameter()]
-        [System.String]
-        $MessageTrackingLogMaxAge,
-
-        [Parameter()]
-        [System.String]
-        $MessageTrackingLogMaxDirectorySize,
-
-        [Parameter()]
-        [System.String]
-        $MessageTrackingLogMaxFileSize,
-
-        [Parameter()]
-        [System.String]
-        $MessageTrackingLogPath,
-
-        [Parameter()]
-        [System.Boolean]
-        $MessageTrackingLogSubjectLoggingEnabled,
-
-        [Parameter()]
-        [System.String]
-        $OutboundConnectionFailureRetryInterval,
-
-        [Parameter()]
-        [System.String]
-        $PickupDirectoryMaxHeaderSize,
-
-        [Parameter()]
-        [ValidateRange(1,20000)]
-        [System.Int32]
-        $PickupDirectoryMaxMessagesPerMinute,
-
-        [Parameter()]
-        [ValidateRange(1,10000)]
-        [System.Int32]
-        $PickupDirectoryMaxRecipientsPerMessage,
-
-        [Parameter()]
-        [System.String]
-        $PickupDirectoryPath,
-
-        [Parameter()]
-        [System.Boolean]
-        $PipelineTracingEnabled,
-
-        [Parameter()]
-        [System.String]
-        $PipelineTracingPath,
-
-        [Parameter()]
-        [System.String]
-        $PipelineTracingSenderAddress,
-
-        [Parameter()]
-        [System.Boolean]
-        $PoisonMessageDetectionEnabled,
-
-        [Parameter()]
-        [ValidateRange(1,10)]
-        [System.Int32]
-        $PoisonThreshold,
-
-        [Parameter()]
-        [System.String]
-        $QueueLogMaxAge,
-
-        [Parameter()]
-        [System.String]
-        $QueueLogMaxDirectorySize,
-
-        [Parameter()]
-        [System.String]
-        $QueueLogMaxFileSize,
-
-        [Parameter()]
-        [System.String]
-        $QueueLogPath,
-
-        [Parameter()]
-        [System.String]
-        $QueueMaxIdleTime,
-
-        [Parameter()]
-        [System.String]
-        $ReceiveProtocolLogMaxAge,
-
-        [Parameter()]
-        [System.String]
-        $ReceiveProtocolLogMaxDirectorySize,
-
-        [Parameter()]
-        [System.String]
-        $ReceiveProtocolLogMaxFileSize,
-
-        [Parameter()]
-        [System.String]
-        $ReceiveProtocolLogPath,
-
-        [Parameter()]
-        [System.Boolean]
-        $RecipientValidationCacheEnabled,
-
-        [Parameter()]
-        [System.String]
-        $ReplayDirectoryPath,
-
-        [Parameter()]
-        [System.String]
-        $RootDropDirectoryPath,
-
-        [Parameter()]
-        [System.String]
-        $RoutingTableLogMaxAge,
-
-        [Parameter()]
-        [System.String]
-        $RoutingTableLogMaxDirectorySize,
-
-        [Parameter()]
-        [System.String]
-        $RoutingTableLogPath,
-
-        [Parameter()]
-        [System.String]
-        $SendProtocolLogMaxAge,
-
-        [Parameter()]
-        [System.String]
-        $SendProtocolLogMaxDirectorySize,
-
-        [Parameter()]
-        [System.String]
-        $SendProtocolLogMaxFileSize,
-
-        [Parameter()]
-        [System.String]
-        $SendProtocolLogPath,
-
-        [Parameter()]
-        [System.String]
-        $ServerStatisticsLogMaxAge,
-
-        [Parameter()]
-        [System.String]
-        $ServerStatisticsLogMaxDirectorySize,
-
-        [Parameter()]
-        [System.String]
-        $ServerStatisticsLogMaxFileSize,
-
-        [Parameter()]
-        [System.String]
-        $ServerStatisticsLogPath,
-
-        [Parameter()]
-        [ValidateRange(1,15)]
-        [System.Int32]
-        $TransientFailureRetryCount,
-
-        [Parameter()]
-        [System.String]
-        $TransientFailureRetryInterval,
-
-        [Parameter()]
-        [System.Boolean]
-        $UseDowngradedExchangeServerAuth
-    )
-
-    # Establish remote PowerShell session
-    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-TransportService' -Verbose:$VerbosePreference
-
-    # Remove Credential and Ensure so we don't pass it into the next command
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
-
-    try
-    {
-        # If PipelineTracingSenderAddress exists and is $null remove it from $PSBoundParameters and add argument
-        if ($PSBoundParameters.ContainsKey('PipelineTracingSenderAddress'))
-        {
-            if ([System.String]::IsNullOrEmpty($PipelineTracingSenderAddress))
-            {
-                Write-Verbose -Message 'PipelineTracingSenderAddress is NULL'
-                Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'PipelineTracingSenderAddress'
-                $PSBoundParameters['PipelineTracingSenderAddress'] = $null
-            }
-        }
-
-        # If ExternalIPAddress exists and is $null remove it from $PSBoundParameters and add argument
-        if ($PSBoundParameters.ContainsKey('ExternalIPAddress'))
-        {
-            if ([System.String]::IsNullOrEmpty($ExternalIPAddress))
-            {
-                Write-Verbose -Message 'ExternalIPAddress is NULL'
-                Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'ExternalIPAddress'
-                $PSBoundParameters['ExternalIPAddress'] = $null
-            }
-        }
-
-        # If InternalDNSServers exists and is $null remove it from $PSBoundParameters and add argument
-        if ($PSBoundParameters.ContainsKey('InternalDNSServers'))
-        {
-            if ([System.String]::IsNullOrEmpty($InternalDNSServers))
-            {
-                Write-Verbose -Message 'InternalDNSServers is NULL'
-                Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'InternalDNSServers'
-                $PSBoundParameters['InternalDNSServers'] = $null
-            }
-        }
-
-        # If ExternalDNSServers exists and is $null remove it from $PSBoundParameters and add argument
-        if ($PSBoundParameters.ContainsKey('ExternalDNSServers'))
-        {
-            if ([System.String]::IsNullOrEmpty($ExternalDNSServers))
-            {
-                Write-Verbose -Message 'ExternalDNSServers is NULL'
-                Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'ExternalDNSServers'
-                $PSBoundParameters['ExternalDNSServers'] = $null
-            }
-        }
-
-        Set-TransportService @PSBoundParameters
-    }
-    catch
-    {
-        Write-Verbose -Message "The following exception was thrown:$($_.Exception.Message)"
-    }
-
-    if ($AllowServiceRestart -eq $true)
-    {
-        Write-Verbose -Message 'Restart service MSExchangeTransport'
-        Restart-Service -Name MSExchangeTransport -WarningAction SilentlyContinue
-    }
-    Else
-    {
-        Write-Warning -Message 'The configuration will not take effect until the MSExchangeTransport service is manually restarted.'
-    }
-}
-
-function Test-TargetResource
-{
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
-    [CmdletBinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Identity,
-
-        [Parameter(Mandatory = $true)]
-        [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $Credential,
-
-        [Parameter()]
-        [System.Boolean]
-        $AllowServiceRestart = $false,
-
-        [Parameter()]
-        [System.String]
-        $ActiveUserStatisticsLogMaxAge,
-
-        [Parameter()]
-        [System.String]
-        $ActiveUserStatisticsLogMaxDirectorySize,
-
-        [Parameter()]
-        [System.String]
-        $ActiveUserStatisticsLogMaxFileSize,
-
-        [Parameter()]
-        [System.String]
-        $ActiveUserStatisticsLogPath,
-
-        [Parameter()]
-        [System.Boolean]
-        $AgentLogEnabled,
-
-        [Parameter()]
-        [System.String]
-        $AgentLogMaxAge,
-
-        [Parameter()]
-        [System.String]
-        $AgentLogMaxDirectorySize,
-
-        [Parameter()]
-        [System.String]
-        $AgentLogMaxFileSize,
-
-        [Parameter()]
-        [System.String]
-        $AgentLogPath,
+        $AntispamAgentsEnabled,
 
         [Parameter()]
         [System.Boolean]
@@ -1294,6 +861,460 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
+    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'MSFT_xExchTransportService' -SupportedVersions '2013', '2016','2019'
+
+    # Establish remote PowerShell session
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-TransportService' -Verbose:$VerbosePreference
+
+    # Remove Credential and Ensure so we don't pass it into the next command
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
+
+    try
+    {
+        # If PipelineTracingSenderAddress exists and is $null remove it from $PSBoundParameters and add argument
+        if ($PSBoundParameters.ContainsKey('PipelineTracingSenderAddress'))
+        {
+            if ([System.String]::IsNullOrEmpty($PipelineTracingSenderAddress))
+            {
+                Write-Verbose -Message 'PipelineTracingSenderAddress is NULL'
+                Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'PipelineTracingSenderAddress'
+                $PSBoundParameters['PipelineTracingSenderAddress'] = $null
+            }
+        }
+
+        # If ExternalIPAddress exists and is $null remove it from $PSBoundParameters and add argument
+        if ($PSBoundParameters.ContainsKey('ExternalIPAddress'))
+        {
+            if ([System.String]::IsNullOrEmpty($ExternalIPAddress))
+            {
+                Write-Verbose -Message 'ExternalIPAddress is NULL'
+                Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'ExternalIPAddress'
+                $PSBoundParameters['ExternalIPAddress'] = $null
+            }
+        }
+
+        # If InternalDNSServers exists and is $null remove it from $PSBoundParameters and add argument
+        if ($PSBoundParameters.ContainsKey('InternalDNSServers'))
+        {
+            if ([System.String]::IsNullOrEmpty($InternalDNSServers))
+            {
+                Write-Verbose -Message 'InternalDNSServers is NULL'
+                Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'InternalDNSServers'
+                $PSBoundParameters['InternalDNSServers'] = $null
+            }
+        }
+
+        # If ExternalDNSServers exists and is $null remove it from $PSBoundParameters and add argument
+        if ($PSBoundParameters.ContainsKey('ExternalDNSServers'))
+        {
+            if ([System.String]::IsNullOrEmpty($ExternalDNSServers))
+            {
+                Write-Verbose -Message 'ExternalDNSServers is NULL'
+                Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'ExternalDNSServers'
+                $PSBoundParameters['ExternalDNSServers'] = $null
+            }
+        }
+
+        Set-TransportService @PSBoundParameters
+    }
+    catch
+    {
+        Write-Verbose -Message "The following exception was thrown:$($_.Exception.Message)"
+    }
+
+    if ($AllowServiceRestart -eq $true)
+    {
+        Write-Verbose -Message 'Restart service MSExchangeTransport'
+        Restart-Service -Name MSExchangeTransport -WarningAction SilentlyContinue
+    }
+    Else
+    {
+        Write-Warning -Message 'The configuration will not take effect until the MSExchangeTransport service is manually restarted.'
+    }
+}
+
+function Test-TargetResource
+{
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Identity,
+
+        [Parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
+        $Credential,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowServiceRestart = $false,
+
+        [Parameter()]
+        [System.String]
+        $ActiveUserStatisticsLogMaxAge,
+
+        [Parameter()]
+        [System.String]
+        $ActiveUserStatisticsLogMaxDirectorySize,
+
+        [Parameter()]
+        [System.String]
+        $ActiveUserStatisticsLogMaxFileSize,
+
+        [Parameter()]
+        [System.String]
+        $ActiveUserStatisticsLogPath,
+
+        [Parameter()]
+        [System.Boolean]
+        $AgentLogEnabled,
+
+        [Parameter()]
+        [System.String]
+        $AgentLogMaxAge,
+
+        [Parameter()]
+        [System.String]
+        $AgentLogMaxDirectorySize,
+
+        [Parameter()]
+        [System.String]
+        $AgentLogMaxFileSize,
+
+        [Parameter()]
+        [System.String]
+        $AgentLogPath,
+
+        [Parameter()]
+        [System.Boolean]
+        $AntispamAgentsEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $ConnectivityLogEnabled,
+
+        [Parameter()]
+        [System.String]
+        $ConnectivityLogMaxAge,
+
+        [Parameter()]
+        [System.String]
+        $ConnectivityLogMaxDirectorySize,
+
+        [Parameter()]
+        [System.String]
+        $ConnectivityLogMaxFileSize,
+
+        [Parameter()]
+        [System.String]
+        $ConnectivityLogPath,
+
+        [Parameter()]
+        [System.Boolean]
+        $ContentConversionTracingEnabled,
+
+        [Parameter()]
+        [System.String]
+        $DelayNotificationTimeout,
+
+        [Parameter()]
+        [System.Boolean]
+        $DnsLogEnabled,
+
+        [Parameter()]
+        [System.String]
+        $DnsLogMaxAge,
+
+        [Parameter()]
+        [System.String]
+        $DnsLogMaxDirectorySize,
+
+        [Parameter()]
+        [System.String]
+        $DnsLogMaxFileSize,
+
+        [Parameter()]
+        [System.String]
+        $DnsLogPath,
+
+        [Parameter()]
+        [System.Boolean]
+        $ExternalDNSAdapterEnabled,
+
+        [Parameter()]
+        [System.String]
+        $ExternalDNSAdapterGuid,
+
+        [Parameter()]
+        [ValidateSet('Any', 'UseTcpOnly', 'UseUdpOnly')]
+        [System.String]
+        $ExternalDNSProtocolOption,
+
+        [Parameter()]
+        [System.String[]]
+        $ExternalDNSServers,
+
+        [Parameter()]
+        [System.String]
+        $ExternalIPAddress,
+
+        [Parameter()]
+        [System.Boolean]
+        $InternalDNSAdapterEnabled,
+
+        [Parameter()]
+        [System.String]
+        $InternalDNSAdapterGuid,
+
+        [Parameter()]
+        [ValidateSet('Any', 'UseTcpOnly', 'UseUdpOnly')]
+        [System.String]
+        $InternalDNSProtocolOption,
+
+        [Parameter()]
+        [System.String[]]
+        $InternalDNSServers,
+
+        [Parameter()]
+        [ValidateSet('None', 'Verbose')]
+        [System.String]
+        $IntraOrgConnectorProtocolLoggingLevel,
+
+        [Parameter()]
+        [System.Int32]
+        $IntraOrgConnectorSmtpMaxMessagesPerConnection,
+
+        [Parameter()]
+        [System.Boolean]
+        $IrmLogEnabled,
+
+        [Parameter()]
+        [System.String]
+        $IrmLogMaxAge,
+
+        [Parameter()]
+        [System.String]
+        $IrmLogMaxDirectorySize,
+
+        [Parameter()]
+        [System.String]
+        $IrmLogMaxFileSize,
+
+        [Parameter()]
+        [System.String]
+        $IrmLogPath,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxConcurrentMailboxDeliveries,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxConcurrentMailboxSubmissions,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxConnectionRatePerMinute,
+
+        [Parameter()]
+        [ValidateRange(1,2147483647)]
+        [System.String]
+        $MaxOutboundConnections,
+
+        [Parameter()]
+        [ValidateRange(1,2147483647)]
+        [System.String]
+        $MaxPerDomainOutboundConnections,
+
+        [Parameter()]
+        [System.String]
+        $MessageExpirationTimeout,
+
+        [Parameter()]
+        [System.String]
+        $MessageRetryInterval,
+
+        [Parameter()]
+        [System.Boolean]
+        $MessageTrackingLogEnabled,
+
+        [Parameter()]
+        [System.String]
+        $MessageTrackingLogMaxAge,
+
+        [Parameter()]
+        [System.String]
+        $MessageTrackingLogMaxDirectorySize,
+
+        [Parameter()]
+        [System.String]
+        $MessageTrackingLogMaxFileSize,
+
+        [Parameter()]
+        [System.String]
+        $MessageTrackingLogPath,
+
+        [Parameter()]
+        [System.Boolean]
+        $MessageTrackingLogSubjectLoggingEnabled,
+
+        [Parameter()]
+        [System.String]
+        $OutboundConnectionFailureRetryInterval,
+
+        [Parameter()]
+        [System.String]
+        $PickupDirectoryMaxHeaderSize,
+
+        [Parameter()]
+        [ValidateRange(1,20000)]
+        [System.Int32]
+        $PickupDirectoryMaxMessagesPerMinute,
+
+        [Parameter()]
+        [ValidateRange(1,10000)]
+        [System.Int32]
+        $PickupDirectoryMaxRecipientsPerMessage,
+
+        [Parameter()]
+        [System.String]
+        $PickupDirectoryPath,
+
+        [Parameter()]
+        [System.Boolean]
+        $PipelineTracingEnabled,
+
+        [Parameter()]
+        [System.String]
+        $PipelineTracingPath,
+
+        [Parameter()]
+        [System.String]
+        $PipelineTracingSenderAddress,
+
+        [Parameter()]
+        [System.Boolean]
+        $PoisonMessageDetectionEnabled,
+
+        [Parameter()]
+        [ValidateRange(1,10)]
+        [System.Int32]
+        $PoisonThreshold,
+
+        [Parameter()]
+        [System.String]
+        $QueueLogMaxAge,
+
+        [Parameter()]
+        [System.String]
+        $QueueLogMaxDirectorySize,
+
+        [Parameter()]
+        [System.String]
+        $QueueLogMaxFileSize,
+
+        [Parameter()]
+        [System.String]
+        $QueueLogPath,
+
+        [Parameter()]
+        [System.String]
+        $QueueMaxIdleTime,
+
+        [Parameter()]
+        [System.String]
+        $ReceiveProtocolLogMaxAge,
+
+        [Parameter()]
+        [System.String]
+        $ReceiveProtocolLogMaxDirectorySize,
+
+        [Parameter()]
+        [System.String]
+        $ReceiveProtocolLogMaxFileSize,
+
+        [Parameter()]
+        [System.String]
+        $ReceiveProtocolLogPath,
+
+        [Parameter()]
+        [System.Boolean]
+        $RecipientValidationCacheEnabled,
+
+        [Parameter()]
+        [System.String]
+        $ReplayDirectoryPath,
+
+        [Parameter()]
+        [System.String]
+        $RootDropDirectoryPath,
+
+        [Parameter()]
+        [System.String]
+        $RoutingTableLogMaxAge,
+
+        [Parameter()]
+        [System.String]
+        $RoutingTableLogMaxDirectorySize,
+
+        [Parameter()]
+        [System.String]
+        $RoutingTableLogPath,
+
+        [Parameter()]
+        [System.String]
+        $SendProtocolLogMaxAge,
+
+        [Parameter()]
+        [System.String]
+        $SendProtocolLogMaxDirectorySize,
+
+        [Parameter()]
+        [System.String]
+        $SendProtocolLogMaxFileSize,
+
+        [Parameter()]
+        [System.String]
+        $SendProtocolLogPath,
+
+        [Parameter()]
+        [System.String]
+        $ServerStatisticsLogMaxAge,
+
+        [Parameter()]
+        [System.String]
+        $ServerStatisticsLogMaxDirectorySize,
+
+        [Parameter()]
+        [System.String]
+        $ServerStatisticsLogMaxFileSize,
+
+        [Parameter()]
+        [System.String]
+        $ServerStatisticsLogPath,
+
+        [Parameter()]
+        [ValidateRange(1,15)]
+        [System.Int32]
+        $TransientFailureRetryCount,
+
+        [Parameter()]
+        [System.String]
+        $TransientFailureRetryInterval,
+
+        [Parameter()]
+        [System.Boolean]
+        $UseDowngradedExchangeServerAuth
+    )
+
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+
+    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'MSFT_xExchTransportService' -SupportedVersions '2013', '2016','2019'
+
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-TransportService' -Verbose:$VerbosePreference
 
@@ -1350,6 +1371,11 @@ function Test-TargetResource
         }
 
         if (!(Test-ExchangeSetting -Name 'AgentLogPath' -Type 'String' -ExpectedValue $AgentLogPath -ActualValue $TransportService.AgentLogPath -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'AntispamAgentsEnabled' -Type 'Boolean' -ExpectedValue $AntispamAgentsEnabled -ActualValue $TransportService.AntispamAgentsEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
