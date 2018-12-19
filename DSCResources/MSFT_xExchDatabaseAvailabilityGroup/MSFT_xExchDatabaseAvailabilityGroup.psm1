@@ -120,7 +120,7 @@ function Get-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
-    $dag = GetDatabaseAvailabilityGroup @PSBoundParameters
+    $dag = Get-DatabaseAvailabilityGroupInternal @PSBoundParameters
 
     if ($null -ne $dag)
     {
@@ -305,7 +305,7 @@ function Set-TargetResource
 
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    $dag = GetDatabaseAvailabilityGroup @PSBoundParameters
+    $dag = Get-DatabaseAvailabilityGroupInternal @PSBoundParameters
 
     # We need to create the DAG
     if ($null -eq $dag)
@@ -495,7 +495,7 @@ function Test-TargetResource
         Write-Verbose -Message "Could not detect Exchange version"
     }
 
-    $dag = GetDatabaseAvailabilityGroup @PSBoundParameters
+    $dag = Get-DatabaseAvailabilityGroupInternal @PSBoundParameters
 
     $testResults = $true
 
@@ -630,7 +630,7 @@ function Test-TargetResource
 }
 
 # Runs Get-DatabaseAvailabilityGroup, only specifying Identity, ErrorAction, and optionally DomainController
-function GetDatabaseAvailabilityGroup
+function Get-DatabaseAvailabilityGroupInternal
 {
     [CmdletBinding()]
     param

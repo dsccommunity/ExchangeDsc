@@ -90,7 +90,7 @@ try
             Context 'When Get-TargetResource is called' {
                 Mock -CommandName Write-FunctionEntry -Verifiable
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                Mock -CommandName GetMailboxDatabase -Verifiable -MockWith { return $getMailboxDatabaseStandardOutput }
+                Mock -CommandName Get-MailboxDatabaseInternal -Verifiable -MockWith { return $getMailboxDatabaseStandardOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }

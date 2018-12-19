@@ -193,7 +193,7 @@ function Set-TargetResource
             # If we aren't currently distributing an OAB, add it
             if ((Test-ArrayElementsInSecondArray -Array1 $oab -Array2 $vdir.OABsToDistribute -IgnoreCase) -eq $false)
             {
-                AddOabDistributionPoint @PSBoundParameters -TargetOabName "$($oab)"
+                Add-OabDistributionPoint @PSBoundParameters -TargetOabName "$($oab)"
             }
         }
     }
@@ -365,7 +365,7 @@ function Test-TargetResource
 }
 
 # Adds a specified OAB vdir to the distribution points for an OAB
-function AddOabDistributionPoint
+function Add-OabDistributionPoint
 {
     [CmdletBinding()]
     param
@@ -453,7 +453,7 @@ function AddOabDistributionPoint
 
         foreach ($vdir in $oab.VirtualDirectories)
         {
-            $oabServer = ServerFromOABVdirDN -OabVdirDN $vdir.DistinguishedName
+            $oabServer = Get-ServerFromOABVdirDN -OabVdirDN $vdir.DistinguishedName
 
             [System.String] $entry = $oabServer + '\' + $vdir.Name
 
@@ -473,7 +473,7 @@ function AddOabDistributionPoint
 }
 
 # Gets just the server netbios name from an OAB virtual directory distinguishedName
-function ServerFromOABVdirDN
+function Get-ServerFromOABVdirDN
 {
     [CmdletBinding()]
     [OutputType([System.String])]

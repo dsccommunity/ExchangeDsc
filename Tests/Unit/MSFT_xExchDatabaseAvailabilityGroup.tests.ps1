@@ -76,7 +76,7 @@ try
             Context 'When Get-TargetResource is called' {
                 Mock -CommandName Write-FunctionEntry -Verifiable
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                Mock -CommandName GetDatabaseAvailabilityGroup -Verifiable -MockWith { return $getDatabaseAvailabilityGroupStandardOutput }
+                Mock -CommandName Get-DatabaseAvailabilityGroupInternal -Verifiable -MockWith { return $getDatabaseAvailabilityGroupStandardOutput }
                 Mock -CommandName Get-ExchangeVersionYear -Verifiable -MockWith { return '2016' }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
