@@ -408,7 +408,7 @@ try
                 PickupDirectoryPath                             = [System.String] ''
                 PipelineTracingEnabled                          = [System.Boolean] $false
                 PipelineTracingPath                             = [System.String] ''
-                PipelineTracingSenderAddress                    = [System.String] 'pipiline@contoso.com'
+                PipelineTracingSenderAddress                    = [System.String] 'pipeline@contoso.com'
                 PoisonMessageDetectionEnabled                   = [System.Boolean] $false
                 PoisonThreshold                                 = [System.Int32] 1
                 QueueLogMaxAge                                  = [System.String] ''
