@@ -213,8 +213,7 @@ try
                     $setTargetResourceParams.ExternalDNSServers = $ExternalDNSServers
                 }
 
-                It 'Should warn that a MSExchangeTransport service restart is required' {
-                    $AllowServiceRestart = $setTargetResourceParams.AllowServiceRestart
+                It 'Should return a warning when AllowServiceRestart is false' {
                     $setTargetResourceParams.AllowServiceRestart = $false
                     Mock -CommandName Set-TransportService -Verifiable
                     Mock -CommandName Write-Warning -Verifiable -ParameterFilter {$Message -eq 'The configuration will not take effect until the MSExchangeTransport service is manually restarted.'}
