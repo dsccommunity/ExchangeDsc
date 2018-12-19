@@ -119,7 +119,7 @@ try
                     Mock -CommandName Write-FunctionEntry -Verifiable
                     Mock -CommandName Assert-IsSupportedWithExchangeVersion -Verifiable
                     Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                    Mock -CommandName Get-UMCallRouterSettings -Verifiable -MockWith { $commonUMCallRouterSettingsStandardOutput }
+                    Mock -CommandName Get-UMCallRouterSettings -Verifiable -MockWith { return $commonUMCallRouterSettingsStandardOutput }
                     Mock -CommandName Test-ExchangeSetting -Verifiable -MockWith { return $false }
 
                     Test-TargetResource @commonTargetResourceParams | Should -Be $false
@@ -129,7 +129,7 @@ try
                     Mock -CommandName Write-FunctionEntry -Verifiable
                     Mock -CommandName Assert-IsSupportedWithExchangeVersion -Verifiable
                     Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                    Mock -CommandName Get-UMCallRouterSettings -Verifiable -MockWith { $commonUMCallRouterSettingsStandardOutput }
+                    Mock -CommandName Get-UMCallRouterSettings -Verifiable -MockWith { return $commonUMCallRouterSettingsStandardOutput }
                     Mock -CommandName Test-ExchangeSetting -Verifiable -MockWith { return $true }
 
                     Test-TargetResource @commonTargetResourceParams | Should -Be $true
