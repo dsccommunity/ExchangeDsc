@@ -1298,8 +1298,22 @@ Where no description is listed, properties correspond directly to
 parameters.
 
 * **Server**: Hostname of the UM server to configure.
-* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
-* **UMStartupMode**: UMStartupMode for the UM call router.
+* **Credential**: Credentials used to establish a remote PowerShell session to
+ Exchange.
+* **DialPlans**:
+* **IPAddressFamily**: Specifies whether the UM IP gateway will use IPv4, IPv6,
+ or both to communicate. {IPv4Only | IPv6Only | Any}
+* **IPAddressFamilyConfigurable**: Specifies whether you're able to set the
+ IPAddressFamily parameter to IPv6Only or Any.
+* **MaxCallsAllowed**: Specifies the maximum number of concurrent voice calls
+ that the Unified Messaging service allows.
+* **SipTcpListeningPort**: Specifies the TCP port that's used by the Microsoft
+ Exchange Unified Messaging Call Router service to receive incoming calls.
+* **SipTlsListeningPort**: Specifies the Transport Layer Security (TLS) port
+ that's used by the Microsoft Exchange Unified Messaging Call Router service to
+ receive incoming calls.
+* **UMStartupMode**: Specifies whether the Microsoft Exchange Unified Messaging
+ Call Router service starts up in TCP, TLS, or Dual mode
 * **DomainController**: Optional Domain Controller to connect to.
 
 ### xExchUMService

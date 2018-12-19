@@ -55,7 +55,13 @@ try
             }
 
             $getUMCallRouterSettingsStandardOutput = @{
-                UMStartupMode = [System.String] $getTargetResourceParams.UMStartupMode
+                UMStartupMode                = [System.String] $getTargetResourceParams.UMStartupMode
+                DialPlans                    = [System.String[]] @()
+                $IPAddressFamily             = [System.String] 'Any'
+                $IPAddressFamilyConfigurable = [System.Boolean] $false
+                $MaxCallsAllowed             = [System.Int32] '100'
+                $SipTcpListeningPort         = [System.Int32] '5060'
+                $SipTlsListeningPort         = [System.Int32] '5061'
             }
 
             Context 'When Get-TargetResource is called' {
