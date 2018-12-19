@@ -74,6 +74,108 @@ try
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }
         }
+        Describe 'MSFT_xExchUMCallRouterSettings\Set-TargetResource' -Tag 'Get' {
+            # Override Exchange cmdlets
+            function Set-UMCallRouterSettings {}
+
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            $setTargetResourceParams = @{
+                Server        = 'UMServer'
+                Credential    = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
+                UMStartupMode = 'TLS'
+            }
+
+            $getUMCallRouterSettingsStandardOutput = @{
+                Server                      = [System.String] $Server
+                UMStartupMode               = [System.String] $getTargetResourceParams.UMStartupMode
+                DialPlans                   = [System.String[]] @()
+                IPAddressFamily             = [System.String] 'Any'
+                IPAddressFamilyConfigurable = [System.Boolean] $false
+                MaxCallsAllowed             = [System.Int32] '100'
+                SipTcpListeningPort         = [System.Int32] '5060'
+                SipTlsListeningPort         = [System.Int32] '5061'
+            }
+
+            Context 'When Set-TargetResource is called' {
+                Mock -CommandName Write-FunctionEntry -Verifiable
+                Mock -CommandName Assert-IsSupportedWithExchangeVersion -Verifiable
+                Mock -CommandName Get-RemoteExchangeSession -Verifiable
+                Mock -CommandName Set-UMCallRouterSettings -Verifiable
+
+                Set-TargetResource @setTargetResourceParams
+            }
+        }
+        Describe 'MSFT_xExchUMCallRouterSettings\Test-TargetResource' -Tag 'Get' {
+            # Override Exchange cmdlets
+            function Get-UMCallRouterSettings {}
+            function Test-ExchangeSetting{}
+
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            $getTargetResourceParams = @{
+                Server        = 'UMServer'
+                Credential    = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
+                UMStartupMode = 'TLS'
+            }
+
+            $getUMCallRouterSettingsStandardOutput = @{
+                Server                      = [System.String] $Server
+                UMStartupMode               = [System.String] $getTargetResourceParams.UMStartupMode
+                DialPlans                   = [System.String[]] @()
+                IPAddressFamily             = [System.String] 'Any'
+                IPAddressFamilyConfigurable = [System.Boolean] $false
+                MaxCallsAllowed             = [System.Int32] '100'
+                SipTcpListeningPort         = [System.Int32] '5060'
+                SipTlsListeningPort         = [System.Int32] '5061'
+            }
+
+            Context 'When UM Service is null' {
+                It 'Should return False when Get-UMCallRouterSettings returns null' {
+                    Mock -CommandName Write-FunctionEntry -Verifiable
+                    Mock -CommandName Assert-IsSupportedWithExchangeVersion -Verifiable
+                    Mock -CommandName Get-RemoteExchangeSession -Verifiable
+                    Mock -CommandName Get-UMCallRouterSettings -Verifiable -MockWith {}
+
+                    $testResults = Test-TargetResource @getTargetResourceParams -ErrorAction SilentlyContinue
+
+                    $testResults | Should -Be $false
+                }
+            }
+
+            Context 'Test Test-ExchangeSetting' {
+                It 'Should return False when Test-ExchangeSetting returns false' {
+                    Mock -CommandName Write-FunctionEntry -Verifiable
+                    Mock -CommandName Assert-IsSupportedWithExchangeVersion -Verifiable
+                    Mock -CommandName Get-RemoteExchangeSession -Verifiable
+                    Mock -CommandName Get-UMCallRouterSettings -Verifiable -MockWith { $getUMCallRouterSettingsStandardOutput }
+                    Mock -CommandName Test-ExchangeSetting -Verifiable -MockWith { $false }
+
+                    $testResults = Test-TargetResource @getTargetResourceParams
+
+                    $testResults | Should -Be $false
+                }
+
+                It 'Should return False when Test-ExchangeSetting returns true' {
+                    Mock -CommandName Write-FunctionEntry -Verifiable
+                    Mock -CommandName Assert-IsSupportedWithExchangeVersion -Verifiable
+                    Mock -CommandName Get-RemoteExchangeSession -Verifiable
+                    Mock -CommandName Get-UMCallRouterSettings -Verifiable -MockWith { $getUMCallRouterSettingsStandardOutput }
+                    Mock -CommandName Test-ExchangeSetting -Verifiable -MockWith { $true }
+
+                    $testResults = Test-TargetResource @getTargetResourceParams
+
+                    $testResults | Should -Be $true
+                }
+
+            }
+
+
+        }
     }
 }
 finally
