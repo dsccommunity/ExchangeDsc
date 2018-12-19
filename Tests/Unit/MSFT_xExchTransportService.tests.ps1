@@ -311,7 +311,11 @@ try
                 PickupDirectoryPath                             = [System.String] ''
                 PipelineTracingEnabled                          = [System.Boolean] $false
                 PipelineTracingPath                             = [System.String] ''
+<<<<<<< HEAD
                 PipelineTracingSenderAddress                    = [System.String] 'pipeline@contoso.com'
+=======
+                PipelineTracingSenderAddress                    = [System.String] 'pipiline@contoso.com'
+>>>>>>> update tests and add AntispamAgentsEnabled parameter
                 PoisonMessageDetectionEnabled                   = [System.Boolean] $false
                 PoisonThreshold                                 = [System.Int32] 1
                 QueueLogMaxAge                                  = [System.String] ''
