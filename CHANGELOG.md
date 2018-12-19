@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added additional parameters to the MSFT_xExchTransportService resource
+
 ## 1.26.0.0
 
 - Add support for Exchange Server 2019
