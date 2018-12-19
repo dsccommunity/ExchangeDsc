@@ -214,16 +214,6 @@ try
                     Set-TargetResource @setTargetResourceParams
                 }
 
-                It 'Should return a null with a terminating error on Set-TransportService' {
-                    $setTargetResourceParams.PipelineTracingSenderAddress = $null
-                    Mock -CommandName Write-FunctionEntry -Verifiable
-                    Mock -CommandName Assert-IsSupportedWithExchangeVersion -Verifiable
-                    Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                    Mock -CommandName Set-TransportService -Verifiable -MockWith {throw 'Transport Service Error'}
-
-                    Set-TargetResource @setTargetResourceParams
-                }
-
                 It 'Should return a warning when AllowServiceRestart is false' {
                     $setTargetResourceParams.AllowServiceRestart = $false
                     Mock -CommandName Write-FunctionEntry -Verifiable
@@ -311,7 +301,7 @@ try
                 PickupDirectoryPath                             = [System.String] ''
                 PipelineTracingEnabled                          = [System.Boolean] $false
                 PipelineTracingPath                             = [System.String] ''
-                PipelineTracingSenderAddress                    = [System.String] 'pipeline@contoso.com'
+                PipelineTracingSenderAddress                    = [System.String] 'pipiline@contoso.com'
                 PoisonMessageDetectionEnabled                   = [System.Boolean] $false
                 PoisonThreshold                                 = [System.Int32] 1
                 QueueLogMaxAge                                  = [System.String] ''
