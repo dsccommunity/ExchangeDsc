@@ -8,6 +8,7 @@
   MSFT_xExchClientAccessServer, MSFT_xExchDatabaseAvailabilityGroupNetwork,
   MSFT_xExchEcpVirtualDirectory, and MSFT_xExchExchangeCertificate.
 - Added additional parameters to the MSFT_xExchUMCallRouterSettings resource
+- Added additional parameters to the MSFT_xExchTransportService resource
 
 ## 1.25.0.0
 

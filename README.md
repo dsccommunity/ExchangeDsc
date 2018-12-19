@@ -1200,6 +1200,7 @@ parameters.
 * **AgentLogMaxDirectorySize**
 * **AgentLogMaxFileSize**
 * **AgentLogPath**
+* **AntispamAgentsEnabled**
 * **ConnectivityLogEnabled**
 * **ConnectivityLogMaxAge**
 * **ConnectivityLogMaxDirectorySize**
