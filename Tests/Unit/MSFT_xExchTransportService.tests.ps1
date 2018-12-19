@@ -213,6 +213,16 @@ try
                     $setTargetResourceParams.ExternalDNSServers = $ExternalDNSServers
                 }
 
+                It 'Should return a null with a terminating error on Set-TransportService' {
+                    $setTargetResourceParams.PipelineTracingSenderAddress = $null
+                    Mock -CommandName Write-FunctionEntry -Verifiable
+                    Mock -CommandName Assert-IsSupportedWithExchangeVersion -Verifiable
+                    Mock -CommandName Get-RemoteExchangeSession -Verifiable
+                    Mock -CommandName Set-TransportService -Verifiable -MockWith {throw 'Transport Service Error'}
+
+                    Set-TargetResource @setTargetResourceParams
+                }
+
                 It 'Should return a warning when AllowServiceRestart is false' {
                     $setTargetResourceParams.AllowServiceRestart = $false
                     Mock -CommandName Set-TransportService -Verifiable
