@@ -13,6 +13,7 @@ class MSFT_xExchTransportService : OMI_BaseResource
     [Write] String AgentLogMaxDirectorySize;
     [Write] String AgentLogMaxFileSize;
     [Write] String AgentLogPath;
+    [Write] Boolean AntispamAgentsEnabled;
     [Write] Boolean ConnectivityLogEnabled;
     [Write] String ConnectivityLogMaxAge;
     [Write] String ConnectivityLogMaxDirectorySize;
