@@ -378,6 +378,8 @@ function Get-TargetResource
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
+    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'MSFT_xExchTransportService' -SupportedVersions '2013', '2016','2019'
+
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-TransportService' -Verbose:$VerbosePreference
 
@@ -1301,6 +1303,8 @@ function Test-TargetResource
     )
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+
+    Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'MSFT_xExchTransportService' -SupportedVersions '2013', '2016','2019'
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-TransportService' -Verbose:$VerbosePreference
