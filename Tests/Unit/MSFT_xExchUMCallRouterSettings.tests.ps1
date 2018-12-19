@@ -55,6 +55,7 @@ try
             }
 
             $getUMCallRouterSettingsStandardOutput = @{
+                Server                       = [System.String] $Server
                 UMStartupMode                = [System.String] $getTargetResourceParams.UMStartupMode
                 DialPlans                    = [System.String[]] @()
                 $IPAddressFamily             = [System.String] 'Any'
