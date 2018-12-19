@@ -74,7 +74,7 @@ try
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }
         }
-        Describe 'MSFT_xExchUMCallRouterSettings\Set-TargetResource' -Tag 'Get' {
+        Describe 'MSFT_xExchUMCallRouterSettings\Set-TargetResource' -Tag 'Set' {
             # Override Exchange cmdlets
             function Set-UMCallRouterSettings {}
 
@@ -100,15 +100,17 @@ try
             }
 
             Context 'When Set-TargetResource is called' {
-                Mock -CommandName Write-FunctionEntry -Verifiable
-                Mock -CommandName Assert-IsSupportedWithExchangeVersion -Verifiable
-                Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                Mock -CommandName Set-UMCallRouterSettings -Verifiable
+                It 'Should return null' {
+                    Mock -CommandName Write-FunctionEntry -Verifiable
+                    Mock -CommandName Assert-IsSupportedWithExchangeVersion -Verifiable
+                    Mock -CommandName Get-RemoteExchangeSession -Verifiable
+                    Mock -CommandName Set-UMCallRouterSettings -Verifiable
 
-                Set-TargetResource @setTargetResourceParams
+                    Set-TargetResource @setTargetResourceParams
+                }
             }
         }
-        Describe 'MSFT_xExchUMCallRouterSettings\Test-TargetResource' -Tag 'Get' {
+        Describe 'MSFT_xExchUMCallRouterSettings\Test-TargetResource' -Tag 'Test' {
             # Override Exchange cmdlets
             function Get-UMCallRouterSettings {}
             function Test-ExchangeSetting{}
@@ -134,7 +136,7 @@ try
                 SipTlsListeningPort         = [System.Int32] '5061'
             }
 
-            Context 'When UM Service is null' {
+            Context 'When Set-TargetResource is called' {
                 It 'Should return False when Get-UMCallRouterSettings returns null' {
                     Mock -CommandName Write-FunctionEntry -Verifiable
                     Mock -CommandName Assert-IsSupportedWithExchangeVersion -Verifiable
@@ -145,10 +147,7 @@ try
 
                     $testResults | Should -Be $false
                 }
-            }
-
-            Context 'Test Test-ExchangeSetting' {
-                It 'Should return False when Test-ExchangeSetting returns false' {
+                It 'Should return False when Test-ExchangeSetting returns False' {
                     Mock -CommandName Write-FunctionEntry -Verifiable
                     Mock -CommandName Assert-IsSupportedWithExchangeVersion -Verifiable
                     Mock -CommandName Get-RemoteExchangeSession -Verifiable
@@ -160,7 +159,7 @@ try
                     $testResults | Should -Be $false
                 }
 
-                It 'Should return False when Test-ExchangeSetting returns true' {
+                It 'Should return True when Test-ExchangeSetting returns True' {
                     Mock -CommandName Write-FunctionEntry -Verifiable
                     Mock -CommandName Assert-IsSupportedWithExchangeVersion -Verifiable
                     Mock -CommandName Get-RemoteExchangeSession -Verifiable
@@ -173,8 +172,6 @@ try
                 }
 
             }
-
-
         }
     }
 }
