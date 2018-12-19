@@ -122,7 +122,7 @@ try
                     Mock -CommandName Get-UMCallRouterSettings -Verifiable -MockWith { $commonUMCallRouterSettingsStandardOutput }
                     Mock -CommandName Test-ExchangeSetting -Verifiable -MockWith { return $false }
 
-                    Test-TargetResource @getTargetResourceParams | Should -Be $false
+                    Test-TargetResource @commonTargetResourceParams | Should -Be $false
                 }
 
                 It 'Should return True when Test-ExchangeSetting returns True' {
@@ -132,7 +132,7 @@ try
                     Mock -CommandName Get-UMCallRouterSettings -Verifiable -MockWith { $commonUMCallRouterSettingsStandardOutput }
                     Mock -CommandName Test-ExchangeSetting -Verifiable -MockWith { return $true }
 
-                    Test-TargetResource @getTargetResourceParams | Should -Be $true
+                    Test-TargetResource @commonTargetResourceParams | Should -Be $true
                 }
             }
         }
