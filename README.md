@@ -1300,7 +1300,8 @@ parameters.
 * **Server**: Hostname of the UM server to configure.
 * **Credential**: Credentials used to establish a remote PowerShell session to
  Exchange.
-* **DialPlans**:
+* **DialPlans**: Specifies all dial plans that the Unified Messaging service
+ handles incoming calls for.
 * **IPAddressFamily**: Specifies whether the UM IP gateway will use IPv4, IPv6,
  or both to communicate. {IPv4Only | IPv6Only | Any}
 * **IPAddressFamilyConfigurable**: Specifies whether you're able to set the
