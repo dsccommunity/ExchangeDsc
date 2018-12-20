@@ -53,10 +53,15 @@ function Clear-ExchDscServerADProperty
 function Test-ExchDscServerPrepped
 {
     [CmdletBinding()]
-    param()
+    param
+    (
+        [Parameter(Mandatory = $true)]
+        [System.Collections.Hashtable]
+        $GetTargetResourceParamaters
+    )
 
     Context 'Server has had relevant properties nulled out for xExchExchangeServer tests' {
-        [System.Collections.Hashtable] $getResult = Get-TargetResource @testParams -Verbose
+        [System.Collections.Hashtable] $getResult = Get-TargetResource @GetTargetResourceParamaters -Verbose
 
         It 'InternetWebProxy should be empty' {
             [System.String]::IsNullOrEmpty($getResult.InternetWebProxy) | Should Be $true
@@ -102,37 +107,87 @@ if ($null -ne $adModule)
             $productKey = Read-Host -Prompt 'Enter the product key to license Exchange with, or press ENTER to skip testing the licensing of the server.'
         }
 
+        $testDC = [System.Net.Dns]::GetHostByName($env:LOGONSERVER.Replace('\\','')).HostName
+
+        $serverVersion = Get-ExchangeVersionYear
+
         Describe 'Test Setting Properties with xExchExchangeServer' {
-            # Create out initial test params
+            # Create our initial test params
             $testParams = @{
-                Identity = $env:COMPUTERNAME
-                Credential = $shellCredentials
-            }
-
-            # First prepare the server for tests
-            Clear-PropsForExchDscServer
-            Test-ExchDscServerPrepped
-
-            # Now do tests
-            $testParams = @{
-                Identity = $env:COMPUTERNAME
-                Credential = $shellCredentials
-                InternetWebProxy = 'http://someproxy.local/'
+                Identity                        = $env:COMPUTERNAME
+                Credential                      = $shellCredentials
+                ErrorReportingEnabled           = $false
+                InternetWebProxy                = $null
+                MonitoringGroup                 = $null
+                StaticConfigDomainController    = $null
+                StaticDomainControllers         = $null
+                StaticExcludedDomainControllers = $testDC
+                StaticGlobalCatalogs            = $null
             }
 
             $expectedGetResults = @{
                 Identity = $env:COMPUTERNAME
-                InternetWebProxy = 'http://someproxy.local/'
+                ErrorReportingEnabled           = $false
+                InternetWebProxy                = ''
+                MonitoringGroup                 = ''
+                ProductKey                      = ''
+                StaticConfigDomainController    = ''
+                StaticDomainControllers         = [System.String[]] @()
+                StaticExcludedDomainControllers = [System.String[]] @($testDC)
+                StaticGlobalCatalogs            = [System.String[]] @()
             }
 
+            if ($serverVersion -in @('2016'))
+            {
+                $testParams.Add('InternetWebProxyBypassList', $null)
+                $expectedGetResults.Add('InternetWebProxyBypassList', [System.String[]] @())
+            }
+
+            # First prepare the server for tests
+            Clear-PropsForExchDscServer
+            Test-ExchDscServerPrepped -GetTargetResourceParamaters $testParams
+
+            # Now do tests
+            Test-TargetResourceFunctionality -Params $testParams `
+                                             -ContextLabel 'Standard xExchExchangeServer tests' `
+                                             -ExpectedGetResults $expectedGetResults
+
+            # Alter a number of parameters
+            $testParams.InternetWebProxy = $expectedGetResults.InternetWebProxy = 'http://someproxy.local/'
+            $testParams.MonitoringGroup = $expectedGetResults.MonitoringGroup = 'TestMonitoringGroup'
+            $testParams.StaticConfigDomainController = $expectedGetResults.StaticConfigDomainController = $testDC
+            $testParams.StaticDomainControllers = $expectedGetResults.StaticDomainControllers = $testDC
+            $testParams.StaticGlobalCatalogs = $expectedGetResults.StaticGlobalCatalogs = $testDC
+            $testParams.StaticExcludedDomainControllers = $null
+            $expectedGetResults.StaticExcludedDomainControllers = [System.String[]] @()
+
+            # Add the ProductKey parameter if we have one to work with
             if (![System.String]::IsNullOrEmpty($productKey))
             {
                 $testParams.Add('ProductKey', $productKey)
-                $expectedGetResults.Add('ProductKey', 'Licensed')
+                $expectedGetResults.ProductKey = 'Licensed'
             }
 
+            if ($serverVersion -in @('2016'))
+            {
+                $testParams.InternetWebProxyBypassList = 'contoso.com'
+                $expectedGetResults.InternetWebProxyBypassList = @('contoso.com')
+            }
+
+            # Re-run tests
             Test-TargetResourceFunctionality -Params $testParams `
-                                             -ContextLabel 'Standard xExchExchangeServer tests' `
+                                             -ContextLabel 'Altered xExchExchangeServer tests' `
+                                             -ExpectedGetResults $expectedGetResults
+
+            # Try licensing server with AllowServiceRestart set to True
+            Clear-PropsForExchDscServer
+            Test-ExchDscServerPrepped -GetTargetResourceParamaters $testParams
+
+            $testParams.AllowServiceRestart = $true
+
+            # Re-run tests
+            Test-TargetResourceFunctionality -Params $testParams `
+                                             -ContextLabel 'Service restart after licensing tests' `
                                              -ExpectedGetResults $expectedGetResults
         }
     }

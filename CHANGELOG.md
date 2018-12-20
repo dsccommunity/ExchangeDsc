@@ -16,6 +16,7 @@
   MSFT_xExchOwaVirtualDirectory, MSFT_xExchPopSettings,
   MSFT_xExchPowershellVirtualDirectory, MSFT_xExchReceiveConnector,
   MSFT_xExchWaitForMailboxDatabase, and MSFT_xExchWebServicesVirtualDirectory.
+- Add remaining unit and integration tests for MSFT_xExchExchangeServer.
 
 ## 1.25.0.0
 
