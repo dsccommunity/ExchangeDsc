@@ -473,7 +473,6 @@ try
 
                     $testResults | Should -Be $true
                 }
-
             }
         }
     }
