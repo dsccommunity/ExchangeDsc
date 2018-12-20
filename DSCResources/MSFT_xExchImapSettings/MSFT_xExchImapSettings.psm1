@@ -1,3 +1,36 @@
+<#
+    .SYNOPSIS
+        Retrieves the current DSC configuration for this resource.
+
+    .PARAMETER Server
+        The IMAP server to configure.
+
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is OK to restart the IMAP services after making changes.
+        Defaults to $false.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER ExternalConnectionSettings
+        The ExternalConnectionSettings parameter specifies the host name, port,
+        and encryption method that's used by external IMAP4 clients (IMAP4
+        connections from outside your corporate network).
+
+    .PARAMETER LoginType
+        The LoginType parameter specifies the authentication method for IMAP4
+        connections.
+
+    .PARAMETER X509CertificateName
+        The X509CertificateName parameter specifies the certificate that's used
+        for encrypting IMAP4 client connections.
+#>
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -23,13 +56,13 @@ function Get-TargetResource
         $DomainController,
 
         [Parameter()]
+        [System.String[]]
+        $ExternalConnectionSettings,
+
+        [Parameter()]
         [ValidateSet('PlainTextLogin', 'PlainTextAuthentication', 'SecureLogin')]
         [System.String]
         $LoginType,
-
-        [Parameter()]
-        [System.String[]]
-        $ExternalConnectionSettings,
 
         [Parameter()]
         [System.String]
@@ -41,7 +74,7 @@ function Get-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ImapSettings' -Verbose:$VerbosePreference
 
-    $imap = GetImapSettings @PSBoundParameters
+    $imap = Get-ImapSettingsInternal @PSBoundParameters
 
     if ($null -ne $imap)
     {
@@ -56,6 +89,39 @@ function Get-TargetResource
     $returnValue
 }
 
+<#
+    .SYNOPSIS
+        Sets the DSC configuration for this resource.
+
+    .PARAMETER Server
+        The IMAP server to configure.
+
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is OK to restart the IMAP services after making changes.
+        Defaults to $false.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER ExternalConnectionSettings
+        The ExternalConnectionSettings parameter specifies the host name, port,
+        and encryption method that's used by external IMAP4 clients (IMAP4
+        connections from outside your corporate network).
+
+    .PARAMETER LoginType
+        The LoginType parameter specifies the authentication method for IMAP4
+        connections.
+
+    .PARAMETER X509CertificateName
+        The X509CertificateName parameter specifies the certificate that's used
+        for encrypting IMAP4 client connections.
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
@@ -79,13 +145,13 @@ function Set-TargetResource
         $DomainController,
 
         [Parameter()]
+        [System.String[]]
+        $ExternalConnectionSettings,
+
+        [Parameter()]
         [ValidateSet('PlainTextLogin', 'PlainTextAuthentication', 'SecureLogin')]
         [System.String]
         $LoginType,
-
-        [Parameter()]
-        [System.String[]]
-        $ExternalConnectionSettings,
 
         [Parameter()]
         [System.String]
@@ -113,6 +179,40 @@ function Set-TargetResource
     }
 }
 
+<#
+    .SYNOPSIS
+        Tests whether the desired configuration for this resource has been
+        applied.
+
+    .PARAMETER Server
+        The IMAP server to configure.
+
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is OK to restart the IMAP services after making changes.
+        Defaults to $false.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER ExternalConnectionSettings
+        The ExternalConnectionSettings parameter specifies the host name, port,
+        and encryption method that's used by external IMAP4 clients (IMAP4
+        connections from outside your corporate network).
+
+    .PARAMETER LoginType
+        The LoginType parameter specifies the authentication method for IMAP4
+        connections.
+
+    .PARAMETER X509CertificateName
+        The X509CertificateName parameter specifies the certificate that's used
+        for encrypting IMAP4 client connections.
+#>
 function Test-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -138,13 +238,13 @@ function Test-TargetResource
         $DomainController,
 
         [Parameter()]
+        [System.String[]]
+        $ExternalConnectionSettings,
+
+        [Parameter()]
         [ValidateSet('PlainTextLogin', 'PlainTextAuthentication', 'SecureLogin')]
         [System.String]
         $LoginType,
-
-        [Parameter()]
-        [System.String[]]
-        $ExternalConnectionSettings,
 
         [Parameter()]
         [System.String]
@@ -158,7 +258,7 @@ function Test-TargetResource
 
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    $imap = GetImapSettings @PSBoundParameters
+    $imap = Get-ImapSettingsInternal @PSBoundParameters
 
     $testResults = $true
 
@@ -189,7 +289,42 @@ function Test-TargetResource
     return $testResults
 }
 
-function GetImapSettings
+<#
+    .SYNOPSIS
+        Used as a wrapper for Get-ImapSettings. Runs
+        Get-ImapSettings, only specifying Server, and
+        optionally DomainController, and returns the results.
+
+    .PARAMETER Server
+        The IMAP server to configure.
+
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is OK to restart the IMAP services after making changes.
+        Defaults to $false.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER ExternalConnectionSettings
+        The ExternalConnectionSettings parameter specifies the host name, port,
+        and encryption method that's used by external IMAP4 clients (IMAP4
+        connections from outside your corporate network).
+
+    .PARAMETER LoginType
+        The LoginType parameter specifies the authentication method for IMAP4
+        connections.
+
+    .PARAMETER X509CertificateName
+        The X509CertificateName parameter specifies the certificate that's used
+        for encrypting IMAP4 client connections.
+#>
+function Get-ImapSettingsInternal
 {
     [CmdletBinding()]
     param
@@ -212,13 +347,13 @@ function GetImapSettings
         $DomainController,
 
         [Parameter()]
+        [System.String[]]
+        $ExternalConnectionSettings,
+
+        [Parameter()]
         [ValidateSet('PlainTextLogin', 'PlainTextAuthentication', 'SecureLogin')]
         [System.String]
         $LoginType,
-
-        [Parameter()]
-        [System.String[]]
-        $ExternalConnectionSettings,
 
         [Parameter()]
         [System.String]

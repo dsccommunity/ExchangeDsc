@@ -480,20 +480,26 @@ parameters.
 
 **xExchImapSettings** configures IMAP settings using Set-ImapSettings.
 
-Most properties correspond directly to
+Most properties correspond directly to properties in
 [Set-ImapSettings](https://docs.microsoft.com/en-us/powershell/module/exchange/client-access/set-imapsettings)
 parameters.
 
 * **Server**: Hostname of the IMAP server to configure.
-* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
+* **Credential**: Credentials used to establish a remote PowerShell session to
+  Exchange.
 * **AllowServiceRestart**: Whether it is OK to restart the IMAP services after
   making changes. Defaults to $false.
-* **DomainController**: Optional Domain Controller to connect to.
-* **ExternalConnectionSettings**: Specifies the host name, port, and encryption
-  type that Exchange uses when IMAP clients connect to their email from the outside.
-* **LoginType**: The LoginType to be used for IMAP.
-* **X509CertificateName**: Specifies the host name in the SSL certificate
-  from the Associated Subject field.
+* **DomainController**: The DomainController parameter specifies the domain
+  controller that's used by this cmdlet to read data from or write data to
+  Active Directory. You identify the domain controller by its fully qualified
+  domain name (FQDN). For example, dc01.contoso.com.
+* **ExternalConnectionSettings**: The ExternalConnectionSettings parameter
+  specifies the host name, port, and encryption method that's used by external
+  IMAP4 clients (IMAP4 connections from outside your corporate network).
+* **LoginType**: The LoginType parameter specifies the authentication method
+  for IMAP4 connections.
+* **X509CertificateName**: The X509CertificateName parameter specifies the
+  certificate that's used for encrypting IMAP4 client connections.
 
 ### xExchInstall
 
