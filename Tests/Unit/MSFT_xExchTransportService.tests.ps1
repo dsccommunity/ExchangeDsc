@@ -275,7 +275,6 @@ try
 
                     Test-TargetResource @commonTargetResourceParams | Should -Be $true
                 }
-
             }
         }
     }
