@@ -320,7 +320,7 @@ function Test-TargetResource
     # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    $EwsVdir = GetWebServicesVirtualDirectory @PSBoundParameters
+    $EwsVdir = Get-WebServicesVirtualDirectoryInternal @PSBoundParameters
 
     $testResults = $true
 
@@ -406,7 +406,7 @@ function Test-TargetResource
     return $testResults
 }
 
-function GetWebServicesVirtualDirectory
+function Get-WebServicesVirtualDirectoryInternal
 {
     [CmdletBinding()]
     param

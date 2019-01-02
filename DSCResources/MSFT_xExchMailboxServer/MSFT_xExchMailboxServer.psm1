@@ -215,7 +215,7 @@ function Get-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxServer' -Verbose:$VerbosePreference
 
-    $server = GetMailboxServer @PSBoundParameters
+    $server = Get-MailboxServerInternal @PSBoundParameters
 
     if ($null -ne $server)
     {
@@ -779,7 +779,7 @@ function Test-TargetResource
         }
     }
 
-    $server = GetMailboxServer @PSBoundParameters
+    $server = Get-MailboxServerInternal @PSBoundParameters
 
     $testResults = $true
 
@@ -1032,7 +1032,7 @@ function Test-TargetResource
 }
 
 # Runs Get-MailboxServer, only specifying Identity, and optionally DomainController
-function GetMailboxServer
+function Get-MailboxServerInternal
 {
     [CmdletBinding()]
     param

@@ -58,7 +58,7 @@ try
                 Mock -CommandName Write-FunctionEntry -Verifiable
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
                 Mock -CommandName Set-ADServerSettings -Verifiable
-                Mock -CommandName GetMailboxDatabase -Verifiable -MockWith { return 'MailboxDatabase' }
+                Mock -CommandName Get-MailboxDatabaseInternal -Verifiable -MockWith { return 'MailboxDatabase' }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }

@@ -75,7 +75,7 @@ function Get-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OutlookAnywhere' -Verbose:$VerbosePreference
 
-    $RpcVdir = GetOutlookAnywhere @PSBoundParameters
+    $RpcVdir = Get-OutlookAnywhereInternal @PSBoundParameters
 
     if ($null -ne $RpcVdir)
     {
@@ -273,7 +273,7 @@ function Test-TargetResource
     # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    $RpcVdir = GetOutlookAnywhere @PSBoundParameters
+    $RpcVdir = Get-OutlookAnywhereInternal @PSBoundParameters
 
     $testResults = $true
 
@@ -346,7 +346,7 @@ function Test-TargetResource
     return $testResults
 }
 
-function GetOutlookAnywhere
+function Get-OutlookAnywhereInternal
 {
     [CmdletBinding()]
     param

@@ -75,8 +75,8 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'JetstressPath' = $JetstressPath; 'JetstressParams' = $JetstressParams} -Verbose:$VerbosePreference
 
-    $jetstressRunning = IsJetstressRunning
-    $jetstressSuccessful = JetstressTestSuccessful @PSBoundParameters
+    $jetstressRunning = Test-JetstressRunning
+    $jetstressSuccessful = Test-JetstressSuccessful @PSBoundParameters
 
     if ($jetstressSuccessful -eq $false -and (Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object {$null -ne $_.Name -like "$($Type)*.html"}))
     {
@@ -94,7 +94,7 @@ function Set-TargetResource
         }
 
         # Create and start the Jetstress scheduled task
-        StartJetstress @PSBoundParameters
+        Start-JetstressOperation @PSBoundParameters
 
         # Give an additional 60 seconds if ESE counters were just initialized.
         if ($initializingESE -eq $true)
@@ -105,7 +105,7 @@ function Set-TargetResource
 
             for ($i = 55; $i -gt 0; $i--)
             {
-                $jetstressRunning = IsJetstressRunning
+                $jetstressRunning = Test-JetstressRunning
 
                 if ($jetstressRunning -eq $false)
                 {
@@ -143,7 +143,7 @@ function Set-TargetResource
         }
         else
         {
-            $jetstressRunning = IsJetstressRunning
+            $jetstressRunning = Test-JetstressRunning
         }
 
         # Wait up to a minute for Jetstress to start. If it hasn't started by then, something went wrong
@@ -151,7 +151,7 @@ function Set-TargetResource
 
         while ($jetstressRunning -eq $false -and $checkMaxTime -gt [DateTime]::Now)
         {
-            $jetstressRunning = IsJetstressRunning
+            $jetstressRunning = Test-JetstressRunning
 
             if ($jetstressRunning -eq $false)
             {
@@ -172,7 +172,7 @@ function Set-TargetResource
         # Wait for 5 minutes before logging to the screen again, but actually check every 5 seconds whether Jetstress has completed.
         for ($i = 0; $i -lt 300 -and $jetstressRunning -eq $true; $i += 5)
         {
-            $jetstressRunning = IsJetstressRunning
+            $jetstressRunning = Test-JetstressRunning
 
             if ($jetstressRunning -eq $true)
             {
@@ -186,7 +186,7 @@ function Set-TargetResource
     {
         Write-Verbose -Message "Jetstress testing finished at '$([DateTime]::Now)'."
 
-        $overallTestSuccessful = JetstressTestSuccessful @PSBoundParameters
+        $overallTestSuccessful = Test-JetstressSuccessful @PSBoundParameters
 
         if ($overallTestSuccessful -eq $false)
         {
@@ -234,7 +234,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'JetstressPath' = $JetstressPath; 'JetstressParams' = $JetstressParams} -Verbose:$VerbosePreference
 
-    $jetstressRunning = IsJetstressRunning -MaximumWaitSeconds 1
+    $jetstressRunning = Test-JetstressRunning -MaximumWaitSeconds 1
 
     if ($jetstressRunning -eq $true)
     {
@@ -242,14 +242,14 @@ function Test-TargetResource
     }
     else
     {
-        $jetstressSuccessful = JetstressTestSuccessful @PSBoundParameters
+        $jetstressSuccessful = Test-JetstressSuccessful @PSBoundParameters
 
         return $jetstressSuccessful
     }
 }
 
 # Checks whether the JetstressCmd.exe process is currently running
-function IsJetstressRunning
+function Test-JetstressRunning
 {
     $process = Get-Process -Name JetstressCmd -ErrorAction SilentlyContinue
 
@@ -257,7 +257,7 @@ function IsJetstressRunning
 }
 
 # Used to create a scheduled task which will initiate the Jetstress run
-function StartJetstress
+function Start-JetstressOperation
 {
     [CmdletBinding()]
     param
@@ -290,7 +290,7 @@ function StartJetstress
 }
 
 # Looks in the latest Type*.html file to determine whether the last Jetstress run passed
-function JetstressTestSuccessful
+function Test-JetstressSuccessful
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]

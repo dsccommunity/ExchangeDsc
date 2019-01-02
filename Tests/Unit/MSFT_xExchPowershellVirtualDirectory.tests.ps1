@@ -59,7 +59,7 @@ try
             Context 'When Get-TargetResource is called' {
                 Mock -CommandName Write-FunctionEntry -Verifiable
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                Mock -CommandName GetPowerShellVirtualDirectory -Verifiable -MockWith { return $getPowerShellVirtualDirectoryStandardOutput }
+                Mock -CommandName Get-PowerShellVirtualDirectoryInternal -Verifiable -MockWith { return $getPowerShellVirtualDirectoryStandardOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }

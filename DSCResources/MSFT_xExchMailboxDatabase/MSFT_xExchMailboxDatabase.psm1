@@ -142,7 +142,7 @@ function Get-TargetResource
         Set-ADServerSettings -PreferredServer "$($AdServerSettingsPreferredServer)"
     }
 
-    $db = GetMailboxDatabase @PSBoundParameters
+    $db = Get-MailboxDatabaseInternal @PSBoundParameters
 
     if ($null -ne $db)
     {
@@ -338,7 +338,7 @@ function Set-TargetResource
         Set-ADServerSettings -PreferredServer "$($AdServerSettingsPreferredServer)"
     }
 
-    $db = GetMailboxDatabase @PSBoundParameters
+    $db = Get-MailboxDatabaseInternal @PSBoundParameters
 
     if ($null -eq $db) # Need to create a new DB
     {
@@ -375,7 +375,7 @@ function Set-TargetResource
             {
                 Write-Verbose -Message 'Attempting to mount database.'
 
-                MountDatabase @PSBoundParameters
+                Mount-DatabaseInternal @PSBoundParameters
             }
         }
         else
@@ -394,7 +394,7 @@ function Set-TargetResource
             {
                 Write-Verbose -Message 'Moving database and/or log path'
 
-                MoveDatabaseOrLogPath @PSBoundParameters
+                Move-DatabaseOrLogPath @PSBoundParameters
             }
             else
             {
@@ -572,7 +572,7 @@ function Test-TargetResource
         Set-ADServerSettings -PreferredServer "$($AdServerSettingsPreferredServer)"
     }
 
-    $db = GetMailboxDatabase @PSBoundParameters
+    $db = Get-MailboxDatabaseInternal @PSBoundParameters
 
     $testResults = $true
 
@@ -721,7 +721,7 @@ function Test-TargetResource
 }
 
 # Runs Get-MailboxDatabase, only specifying Identity and optionally DomainController
-function GetMailboxDatabase
+function Get-MailboxDatabaseInternal
 {
     [CmdletBinding()]
     param
@@ -860,7 +860,7 @@ function GetMailboxDatabase
 }
 
 # Moves the database or log path. Doesn't validate that the DB is in a good condition to move. Caller should do that.
-function MoveDatabaseOrLogPath
+function Move-DatabaseOrLogPath
 {
     [CmdletBinding()]
     param
@@ -999,7 +999,7 @@ function MoveDatabaseOrLogPath
 }
 
 # Mounts the specified database
-function MountDatabase
+function Mount-DatabaseInternal
 {
     [CmdletBinding()]
     param

@@ -88,7 +88,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{'JetstressPath' = $JetstressPath} -Verbose:$VerbosePreference
 
-    VerifyParameters @PSBoundParameters
+    Assert-ParametersValidForJetstress @PSBoundParameters
 
     $jetstressInstalled = Get-IsJetstressInstalled
 
@@ -100,7 +100,7 @@ function Set-TargetResource
     # If a config file was specified, pull the database and log paths out and put them into $DatabasePaths and $LogPaths
     if ($PSBoundParameters.ContainsKey('ConfigFilePath'))
     {
-        [xml] $configFile = LoadConfigXml -ConfigFilePath "$($ConfigFilePath)"
+        [xml] $configFile = Get-JetstressConfigXmlContent -ConfigFilePath "$($ConfigFilePath)"
 
         [System.String[]] $DatabasePaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path
         [System.String[]] $LogPaths = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
@@ -115,14 +115,14 @@ function Set-TargetResource
     foreach ($path in $FoldersToRemove)
     {
         # Get the parent folder for the specified path
-        $parent = GetParentFolderFromString -Folder "$($path)"
+        $parent = Get-ParentFolderFromPathString -Folder "$($path)"
 
         if (([System.String]::IsNullOrEmpty($parent) -eq $false -and $ParentFoldersToRemove.ContainsKey($parent) -eq $false))
         {
             $ParentFoldersToRemove.Add($parent, $null)
         }
 
-        RemoveFolder -Path "$($path)"
+        Remove-FolderAndContent -Path "$($path)"
     }
 
     # Delete associated mount points if requested
@@ -140,7 +140,7 @@ function Set-TargetResource
                 {
                     Start-DiskPart -Commands "select volume $($volNum)", "remove mount=`"$($parent)`"" -Verbose:$VerbosePreference | Out-Null
 
-                    RemoveFolder -Path "$($parent)"
+                    Remove-FolderAndContent -Path "$($parent)"
                 }
                 else
                 {
@@ -180,13 +180,13 @@ function Set-TargetResource
         # Now remove the Jetstress folder
 
         # If the config file is in the Jetstress directory, remove everything but the config file, or else running Test-TargetResource after removing the directory will fail
-        if ((GetFolderNoTrailingSlash -Folder "$($JetstressPath)") -like (GetParentFolderFromString -Folder "$($ConfigFilePath)"))
+        if ((Get-FolderPathWithNoTrailingSlash -Folder "$($JetstressPath)") -like (Get-ParentFolderFromPathString -Folder "$($ConfigFilePath)"))
         {
             Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object {$_.FullName -notlike "$($ConfigFilePath)"} | Remove-Item -Recurse -Confirm:$false -Force
         }
         else # No config file in this directory. Remove the whole thing
         {
-            RemoveFolder -Path "$($JetstressPath)"
+            Remove-FolderAndContent -Path "$($JetstressPath)"
         }
     }
 
@@ -238,7 +238,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{'JetstressPath' = $JetstressPath} -Verbose:$VerbosePreference
 
-    VerifyParameters @PSBoundParameters
+    Assert-ParametersValidForJetstress @PSBoundParameters
 
     $jetstressInstalled = Get-IsJetstressInstalled
 
@@ -254,7 +254,7 @@ function Test-TargetResource
         # If a config file was specified, pull the database and log paths out and put them into $DatabasePaths and $LogPaths
         if ($PSBoundParameters.ContainsKey('ConfigFilePath'))
         {
-            [xml] $configFile = LoadConfigXml -ConfigFilePath "$($ConfigFilePath)"
+            [xml] $configFile = Get-JetstressConfigXmlContent -ConfigFilePath "$($ConfigFilePath)"
 
             [System.String[]] $FoldersToRemove = $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.DatabasePaths.Path + $configFile.configuration.ExchangeProfile.EseInstances.EseInstance.LogPath
         }
@@ -271,7 +271,7 @@ function Test-TargetResource
             # If DeleteAssociatedMountPoints was requested, make sure the parent folder doesn't have a mount point
             if ($DeleteAssociatedMountPoints -eq $true)
             {
-                $parent = GetParentFolderFromString -Folder "$($folder)"
+                $parent = Get-ParentFolderFromPathString -Folder "$($folder)"
 
                 if ((Get-MountPointVolumeNumber -Path "$($parent)" -DiskInfo $diskInfo) -ge 0)
                 {
@@ -291,7 +291,7 @@ function Test-TargetResource
         # Now check for binaries
         if ($RemoveBinaries -eq $true -and (Test-Path -LiteralPath "$($JetstressPath)") -eq $true)
         {
-            if ((GetFolderNoTrailingSlash -Folder "$($JetstressPath)") -like (GetParentFolderFromString -Folder "$($ConfigFilePath)"))
+            if ((Get-FolderPathWithNoTrailingSlash -Folder "$($JetstressPath)") -like (Get-ParentFolderFromPathString -Folder "$($ConfigFilePath)"))
             {
                 $items = Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object {$_.FullName -notlike "$($ConfigFilePath)"}
 
@@ -318,7 +318,7 @@ function Test-TargetResource
 }
 
 # Verifies that parameters for Jetstress were passed in correctly. Throws an exception if not.
-function VerifyParameters
+function Assert-ParametersValidForJetstress
 {
     [CmdletBinding()]
     param
@@ -381,7 +381,7 @@ function VerifyParameters
 }
 
 # Get a string for a folder without the trailing slash
-function GetFolderNoTrailingSlash
+function Get-FolderPathWithNoTrailingSlash
 {
     param
     (
@@ -399,7 +399,7 @@ function GetFolderNoTrailingSlash
 }
 
 # Simple string parsing method to determine a folder's parent
-function GetParentFolderFromString
+function Get-ParentFolderFromPathString
 {
     param
     (
@@ -408,7 +408,7 @@ function GetParentFolderFromString
         $Folder
     )
 
-    $Folder = GetFolderNoTrailingSlash -Folder "$($Folder)"
+    $Folder = Get-FolderPathWithNoTrailingSlash -Folder "$($Folder)"
 
     $parent = $Folder.Substring(0, $Folder.LastIndexOf('\'))
 
@@ -416,7 +416,7 @@ function GetParentFolderFromString
 }
 
 # Removes the specified folder, if it exists, and all subdirectories
-function RemoveFolder
+function Remove-FolderAndContent
 {
     [CmdletBinding()]
     param
@@ -438,7 +438,7 @@ function RemoveFolder
 }
 
 # Loads the specified JetstressConfig.xml file and puts it into an [xml] variable
-function LoadConfigXml
+function Get-JetstressConfigXmlContent
 {
     [CmdletBinding()]
     [OutputType([Xml])]

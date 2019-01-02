@@ -56,7 +56,7 @@ try
             Context 'When Get-TargetResource is called' {
                 Mock -CommandName Write-FunctionEntry -Verifiable
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                Mock -CommandName GetPopSettings -Verifiable -MockWith { return $getPopSettingsStandardOutput }
+                Mock -CommandName Get-PopSettingsInternal -Verifiable -MockWith { return $getPopSettingsStandardOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }

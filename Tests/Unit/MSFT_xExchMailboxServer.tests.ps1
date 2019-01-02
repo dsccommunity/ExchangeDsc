@@ -104,7 +104,7 @@ try
 
             Mock -CommandName Write-FunctionEntry -Verifiable
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
-            Mock -CommandName GetMailboxServer -Verifiable -MockWith { return $getMailboxServerStandardOutput }
+            Mock -CommandName Get-MailboxServerInternal -Verifiable -MockWith { return $getMailboxServerStandardOutput }
 
             Context 'When Exchange version is 2016 or 2019' {
                 Mock -CommandName Get-ExchangeVersionYear -Verifiable -MockWith { return '2016' }
@@ -120,7 +120,7 @@ try
                 # Try changing ManagedFolderAssistantSchedule to $null
                 $getMailboxServerStandardOutput.ManagedFolderAssistantSchedule = $null
 
-                Mock -CommandName GetMailboxServer -Verifiable -MockWith { return $getMailboxServerStandardOutput }
+                Mock -CommandName Get-MailboxServerInternal -Verifiable -MockWith { return $getMailboxServerStandardOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }

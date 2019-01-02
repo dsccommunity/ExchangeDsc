@@ -101,10 +101,10 @@ try
             }
 
             Context 'When Get-TargetResource is called' {
-                Mock -CommandName ValidateIdentity -Verifiable
+                Mock -CommandName Assert-IdentityIsValid -Verifiable
                 Mock -CommandName Write-FunctionEntry -Verifiable
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                Mock -CommandName GetReceiveConnector -Verifiable -MockWith { return $getReceiveConnectorStandardOutput }
+                Mock -CommandName Get-ReceiveConnectorInternal -Verifiable -MockWith { return $getReceiveConnectorStandardOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }
