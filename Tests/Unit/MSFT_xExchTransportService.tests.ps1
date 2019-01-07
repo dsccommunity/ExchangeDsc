@@ -279,6 +279,8 @@ try
                     Mock -CommandName Restart-Service -Verifiable -MockWith {}
 
                     Set-TargetResource @setTargetResourceParams
+
+                    $setTargetResourceParams.ExternalIPAddress = $ExternalIPAddress
                 }
 
                 It 'Should return a warning when PipelineTracingSenderAddress is null' {
@@ -289,6 +291,8 @@ try
                     Mock -CommandName Set-TransportService -Verifiable -MockWith {}
 
                     Set-TargetResource @setTargetResourceParams
+
+                    $setTargetResourceParams.InternalDNSServers = $InternalDNSServers
                 }
 
                 It 'Should return a warning when ExternalIPAddress is null' {
@@ -318,25 +322,27 @@ try
                     Mock -CommandName Get-RemoteExchangeSession -Verifiable
                     Mock -CommandName Set-TransportService -Verifiable -MockWith {}
 
-                    Set-TargetResource @setTargetResourceParams
+                    $setTargetResourceParams.ExternalDNSServers = $ExternalDNSServers
                 }
 
-                It 'Should return a warning when AllowServiceRestart is false' {
+                It 'Should warn that a MSExchangeTransport service restart is required' {
+                    $AllowServiceRestart = $setTargetResourceParams.AllowServiceRestart
                     $setTargetResourceParams.AllowServiceRestart = $false
                     Mock -CommandName Write-FunctionEntry -Verifiable
                     Mock -CommandName Assert-IsSupportedWithExchangeVersion -Verifiable
                     Mock -CommandName Get-RemoteExchangeSession -Verifiable
                     Mock -CommandName Set-TransportService -Verifiable -MockWith {}
 
-                    Set-TargetResource @setTargetResourceParams -WarningVariable warn -WarningAction SilentlyContinue
-
-                    $warn.count | should -be 1
+                    Set-TargetResource @setTargetResourceParams
+                    $setTargetResourceParams.AllowServiceRestart = $AllowServiceRestart
                 }
             }
         }
 
         Describe 'MSFT_xExchTransportService\Test-TargetResource' -Tag 'Test' {
             # Override Exchange cmdlets
+            Mock -CommandName Get-RemoteExchangeSession -Verifiable
+
             function Get-TransportService {}
 
             AfterEach {
