@@ -66,6 +66,60 @@ try
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }
         }
+
+        Describe 'MSFT_xExchAutodiscoverVirtualDirectory\Set-TargetResource' -Tag 'Set' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            $setTargetResourceParams = @{
+                Identity   = 'AutodiscoverVirtualDirectory'
+                Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
+            }
+
+            $getAutodiscoverVirtualDirectoryInternalStandardOutput = @{
+                BasicAuthentication             = [System.Boolean] $false
+                DigestAuthentication            = [System.Boolean] $false
+                ExtendedProtectionFlags         = [System.String[]] @()
+                ExtendedProtectionSPNList       = [System.String[]] @()
+                ExtendedProtectionTokenChecking = [System.String] ''
+                OAuthAuthentication             = [System.Boolean] $false
+                WindowsAuthentication           = [System.Boolean] $false
+                WSSecurityAuthentication        = [System.Boolean] $false
+            }
+
+            Context 'When Set-TargetResource is called' {
+                It 'Should warn about restarting the MSExchangeAutodiscoverAppPool' {
+                    function Set-AutodiscoverVirtualDirectory{
+                    }
+                    Mock -CommandName Write-FunctionEntry -Verifiable
+                    Mock -CommandName Get-RemoteExchangeSession -Verifiable
+                    Mock -CommandName Set-AutodiscoverVirtualDirectory -Verifiable
+                    Mock -CommandName Write-Warning -ParameterFilter {$message -eq 'The configuration will not take effect until MSExchangeAutodiscoverAppPool is manually recycled.'}
+                    Set-TargetResource @setTargetResourceParams
+                }
+
+                It 'Should call expected functions' {
+                    function Set-AutodiscoverVirtualDirectory{
+                    }
+                    $setTargetResourceParams.AllowServiceRestart = $true
+                    Mock -CommandName Write-FunctionEntry -Verifiable
+                    Mock -CommandName Get-RemoteExchangeSession -Verifiable
+                    Mock -CommandName Set-AutodiscoverVirtualDirectory -Verifiable
+                    Mock -CommandName Restart-ExistingAppPool -Verifiable
+                    Set-TargetResource @setTargetResourceParams
+                    $setTargetResourceParams.Remove('AllowServiceReset')
+                }
+
+                It 'Should throw error about SPN' {
+                    Mock -CommandName Write-FunctionEntry -Verifiable
+                    Mock -CommandName Get-RemoteExchangeSession -Verifiable
+                    Mock -CommandName Test-ExtendedProtectionSPNList -Verifiable -MockWith { return $false }
+
+                    Set-TargetResource @setTargetResourceParams | Should -Throw -ExpectedMessage 'SPN list contains DotlesSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags or invalid combination was used!'
+                }
+            }
+        }
     }
 }
 finally
