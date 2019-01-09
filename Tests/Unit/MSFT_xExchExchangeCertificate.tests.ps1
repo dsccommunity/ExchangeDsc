@@ -55,7 +55,7 @@ try
             Context 'When Get-TargetResource is called' {
                 Mock -CommandName Write-FunctionEntry -Verifiable
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                Mock -CommandName GetExchangeCertificate -Verifiable -MockWith { return $getExchangeCertificateStandardOutput }
+                Mock -CommandName Get-ExchangeCertificateInternal -Verifiable -MockWith { return $getExchangeCertificateStandardOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }

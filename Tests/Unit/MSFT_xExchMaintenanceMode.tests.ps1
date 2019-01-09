@@ -66,11 +66,11 @@ try
             Context 'When Get-TargetResource is called' {
                 Mock -CommandName Write-FunctionEntry -Verifiable
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                Mock -CommandName GetMaintenanceModeStatus -Verifiable -MockWith { return $getMaintenanceModeStatusStandardOutput }
-                Mock -CommandName IsExchangeAtDesiredVersion -Verifiable -MockWith { return $true }
-                Mock -CommandName GetActiveDBCount -Verifiable -MockWith { return 0 }
-                Mock -CommandName GetUMCallCount -Verifiable -MockWith { return 0 }
-                Mock -CommandName GetQueueMessageCount -Verifiable -MockWith { return 0 }
+                Mock -CommandName Get-MaintenanceModeStatus -Verifiable -MockWith { return $getMaintenanceModeStatusStandardOutput }
+                Mock -CommandName Test-ExchangeAtDesiredVersion -Verifiable -MockWith { return $true }
+                Mock -CommandName Get-ActiveDBCount -Verifiable -MockWith { return 0 }
+                Mock -CommandName Get-UMCallCount -Verifiable -MockWith { return 0 }
+                Mock -CommandName Get-QueueMessageCount -Verifiable -MockWith { return 0 }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }

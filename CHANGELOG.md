@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+## 1.26.0.0
+
+- Add support for Exchange Server 2019
+- Added additional parameters to the MSFT_xExchUMService resource
+- Rename improperly named functions, and add comment based help in
+  MSFT_xExchClientAccessServer, MSFT_xExchDatabaseAvailabilityGroupNetwork,
+  MSFT_xExchEcpVirtualDirectory, MSFT_xExchExchangeCertificate,
+  MSFT_xExchImapSettings.
+- Added additional parameters to the MSFT_xExchUMCallRouterSettings resource
+- Rename improper function names in MSFT_xExchDatabaseAvailabilityGroup,
+  MSFT_xExchJetstress, MSFT_xExchJetstressCleanup, MSFT_xExchMailboxDatabase,
+  MSFT_xExchMailboxDatabaseCopy, MSFT_xExchMailboxServer,
+  MSFT_xExchMaintenanceMode, MSFT_xExchMapiVirtualDirectory,
+  MSFT_xExchOabVirtualDirectory, MSFT_xExchOutlookAnywhere,
+  MSFT_xExchOwaVirtualDirectory, MSFT_xExchPopSettings,
+  MSFT_xExchPowershellVirtualDirectory, MSFT_xExchReceiveConnector,
+  MSFT_xExchWaitForMailboxDatabase, and MSFT_xExchWebServicesVirtualDirectory.
+- Add remaining unit and integration tests for MSFT_xExchExchangeServer.
+
 ## 1.25.0.0
 
 - Opt-in for the common test flagged Script Analyzer rules

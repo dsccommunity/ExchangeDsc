@@ -41,7 +41,7 @@ function Get-TargetResource
         Set-ADServerSettings -PreferredServer "$($AdServerSettingsPreferredServer)"
     }
 
-    $db = GetMailboxDatabase @PSBoundParameters
+    $db = Get-MailboxDatabaseInternal @PSBoundParameters
 
     if ($null -ne $db)
     {
@@ -95,7 +95,7 @@ function Set-TargetResource
         Set-ADServerSettings -PreferredServer "$($AdServerSettingsPreferredServer)"
     }
 
-    $db = GetMailboxDatabase @PSBoundParameters
+    $db = Get-MailboxDatabaseInternal @PSBoundParameters
 
     for ($i = 0; $i -lt $RetryCount; $i++)
     {
@@ -104,7 +104,7 @@ function Set-TargetResource
             Write-Warning "Database '$($Identity)' does not yet exist. Sleeping for $($RetryIntervalSec) seconds."
             Start-Sleep -Seconds $RetryIntervalSec
 
-            $db = GetMailboxDatabase @PSBoundParameters
+            $db = Get-MailboxDatabaseInternal @PSBoundParameters
         }
         else
         {
@@ -161,7 +161,7 @@ function Test-TargetResource
         Set-ADServerSettings -PreferredServer "$($AdServerSettingsPreferredServer)"
     }
 
-    $db = GetMailboxDatabase @PSBoundParameters
+    $db = Get-MailboxDatabaseInternal @PSBoundParameters
 
     $testResults = $true
 
@@ -174,7 +174,7 @@ function Test-TargetResource
     return $testResults
 }
 
-function GetMailboxDatabase
+function Get-MailboxDatabaseInternal
 {
     [CmdletBinding()]
     param

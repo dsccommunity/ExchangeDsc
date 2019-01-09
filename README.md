@@ -1,7 +1,7 @@
 # xExchange
 
 The **xExchange** module contains many DSC resources for configuring and
-managing Exchange 2013, 2016, and 2019 (Preview) servers including individual
+managing Exchange 2013, 2016, and 2019 servers including individual
 server properties, databases, mount points, and Database Availability Groups.
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
@@ -97,7 +97,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
   an ExchangeCertificate using *-ExchangeCertificate cmdlets.
 * **xExchExchangeServer**
 * **xExchImapSettings** configures IMAP settings using Set-ImapSettings.
-* **xExchInstall** installs or updates Exchange 2013, 2016, or 2019 (Preview).
+* **xExchInstall** installs or updates Exchange 2013, 2016, or 2019.
 * **xExchJetstress** automatically runs Jetstress using
   the **JetstressCmd.exe** command line executable.
 * **xExchJetstressCleanup** cleans up the database and log
@@ -118,7 +118,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **xExchUMCallRouterSettings** configures the UM Call Router service using Set-UMCallRouterSettings.
 * **xExchUMService** configures a UM server using Set-UMService.
 * **xExchWaitForADPrep** ensures that Active Directory has been prepared for
-  Exchange 2013, 2016, or 2019 (Preview).
+  Exchange 2013, 2016, or 2019.
 * **xExchWaitForDAG**
 * **xExchWaitForMailboxDatabase**
 * **xExchWebServicesVirtualDirectory**
@@ -264,7 +264,7 @@ Where no description is listed, properties correspond directly to
 [Set-ClientAccessService](https://docs.microsoft.com/en-us/powershell/module/exchange/client-access-servers/set-clientaccessservice)
 parameters.
 
-* **Identity**: The Identity of the Autodiscover Virtual Directory.
+* **Identity**: The hostname of the Client Access Server.
 * **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
 * **AutoDiscoverServiceInternalUri**
 * **AutoDiscoverSiteScope**
@@ -425,46 +425,88 @@ an ExchangeCertificate using *-ExchangeCertificate cmdlets.
 **xExchExchangeServer** is used to configure properties on an Exchange Server
 via Set-ExchangeServer.
 
-Where no description is listed, properties correspond directly to
+Most properties correspond directly to properties in
 [Set-ExchangeServer](https://docs.microsoft.com/en-us/powershell/module/exchange/organization/set-exchangeserver)
 parameters.
 
-* **Identity**: The hostname of the Exchange Server to configure.
-* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
+* **Identity**: The Identity parameter specifies the GUID, distinguished name
+  (DN), or name of the server.
+* **Credential**: Credentials used to establish a remote PowerShell session to
+  Exchange.
 * **AllowServiceRestart**: Whether it is OK to restart the Information Store
   service after licensing the server. Defaults to $false.
-* **CustomerFeedbackEnabled**
-* **DomainController**
-* **InternetWebProxy**
-* **MonitoringGroup**
-* **ProductKey**
-* **WorkloadManagementPolicy**
+* **CustomerFeedbackEnabled**: The CustomerFeedbackEnabled parameter specifies
+  whether the Exchange server is enrolled in the Microsoft Customer Experience
+  Improvement Program (CEIP). The CEIP collects anonymous information about how
+  you use Exchange and problems that you might encounter. If you decide not to
+  participate in the CEIP, the servers are opted-out automatically.
+* **DomainController**: The DomainController parameter specifies the domain
+  controller that's used by this cmdlet to read data from or write data to
+  Active Directory. You identify the domain controller by its fully qualified
+  domain name (FQDN). For example, dc01.contoso.com.
+* **ErrorReportingEnabled**: The ErrorReportingEnabled parameter specifies
+  whether error reporting is enabled.
+* **InternetWebProxy**: The InternetWebProxy parameter specifies the web proxy
+  server that the Exchange server uses to reach the internet. A valid value for
+  this parameter is the URL of the web proxy server.
+* **InternetWebProxyBypassList**: The InternetWebProxyBypassList parameter
+  specifies a list of servers that bypass the web proxy server specified by the
+  InternetWebProxy parameter. You identify the servers by their FQDN (for
+  example, server01.contoso.com).
+* **MonitoringGroup**: The MonitoringGroup parameter specifies how to add your
+  Exchange servers to monitoring groups. You can add your servers to an
+  existing group or create a monitoring group based on location or deployment,
+  or to partition monitoring responsibility among your servers.
+* **ProductKey**: The ProductKey parameter specifies the server product key.
+* **StaticConfigDomainController**: The StaticConfigDomainController parameter
+  specifies whether to configure a domain controller to be used by the server
+  via Directory Service Access (DSAccess).
+* **StaticDomainControllers**: The StaticDomainControllers parameter specifies
+  whether to configure a list of domain controllers to be used by the server
+  via DSAccess.
+* **StaticExcludedDomainControllers**: The StaticExcludedDomainControllers
+  parameter specifies whether to exclude a list of domain controllers from
+  being used by the server.
+* **StaticGlobalCatalogs**: The StaticGlobalCatalogs parameter specifies
+  whether to configure a list of global catalogs to be used by the server via
+  DSAccess.
+* **WorkloadManagementPolicy**: The *-ResourcePolicy,
+  *-WorkloadManagementPolicy and *-WorkloadPolicy system workload management
+  cmdlets have been deprecated. System workload management settings should be
+  customized only under the direction of Microsoft Customer Service and
+  Support.
 
 ### xExchImapSettings
 
 **xExchImapSettings** configures IMAP settings using Set-ImapSettings.
 
-Most properties correspond directly to
+Most properties correspond directly to properties in
 [Set-ImapSettings](https://docs.microsoft.com/en-us/powershell/module/exchange/client-access/set-imapsettings)
 parameters.
 
 * **Server**: Hostname of the IMAP server to configure.
-* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
+* **Credential**: Credentials used to establish a remote PowerShell session to
+  Exchange.
 * **AllowServiceRestart**: Whether it is OK to restart the IMAP services after
   making changes. Defaults to $false.
-* **DomainController**: Optional Domain Controller to connect to.
-* **ExternalConnectionSettings**: Specifies the host name, port, and encryption
-  type that Exchange uses when IMAP clients connect to their email from the outside.
-* **LoginType**: The LoginType to be used for IMAP.
-* **X509CertificateName**: Specifies the host name in the SSL certificate
-  from the Associated Subject field.
+* **DomainController**: The DomainController parameter specifies the domain
+  controller that's used by this cmdlet to read data from or write data to
+  Active Directory. You identify the domain controller by its fully qualified
+  domain name (FQDN). For example, dc01.contoso.com.
+* **ExternalConnectionSettings**: The ExternalConnectionSettings parameter
+  specifies the host name, port, and encryption method that's used by external
+  IMAP4 clients (IMAP4 connections from outside your corporate network).
+* **LoginType**: The LoginType parameter specifies the authentication method
+  for IMAP4 connections.
+* **X509CertificateName**: The X509CertificateName parameter specifies the
+  certificate that's used for encrypting IMAP4 client connections.
 
 ### xExchInstall
 
-**xExchInstall** installs or updates Exchange 2013, 2016, or 2019 (Preview).
+**xExchInstall** installs or updates Exchange 2013, 2016, or 2019.
 
 * **Path**: Full path to setup.exe in the Exchange 2013, 2016, or 2019
-  (Preview) setup directory.
+  setup directory.
 * **Arguments**: Command line arguments to pass to setup.exe
   For help on command line arguments, see
   [Install Exchange 2016 using unattended mode](https://docs.microsoft.com/en-us/Exchange/plan-and-deploy/deploy-new-installations/unattended-installs)
@@ -1298,8 +1340,23 @@ Where no description is listed, properties correspond directly to
 parameters.
 
 * **Server**: Hostname of the UM server to configure.
-* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
-* **UMStartupMode**: UMStartupMode for the UM call router.
+* **Credential**: Credentials used to establish a remote PowerShell session to
+ Exchange.
+* **DialPlans**: Specifies all dial plans that the Unified Messaging service
+ handles incoming calls for.
+* **IPAddressFamily**: Specifies whether the UM IP gateway will use IPv4, IPv6,
+ or both to communicate. {IPv4Only | IPv6Only | Any}
+* **IPAddressFamilyConfigurable**: Specifies whether you're able to set the
+ IPAddressFamily parameter to IPv6Only or Any.
+* **MaxCallsAllowed**: Specifies the maximum number of concurrent voice calls
+ that the Unified Messaging service allows.
+* **SipTcpListeningPort**: Specifies the TCP port that's used by the Microsoft
+ Exchange Unified Messaging Call Router service to receive incoming calls.
+* **SipTlsListeningPort**: Specifies the Transport Layer Security (TLS) port
+ that's used by the Microsoft Exchange Unified Messaging Call Router service to
+ receive incoming calls.
+* **UMStartupMode**: Specifies whether the Microsoft Exchange Unified Messaging
+ Call Router service starts up in TCP, TLS, or Dual mode
 * **DomainController**: Optional Domain Controller to connect to.
 
 ### xExchUMService
@@ -1312,16 +1369,38 @@ Where no description is listed, properties correspond directly to
 parameters.
 
 * **Identity**: Hostname of the UM server to configure.
-* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
-* **UMStartupMode**: UMStartupMode for the UM server.
-* **DomainController**: Optional Domain Controller to connect to.
+* **Credential**: Credentials used to establish a remote PowerShell session to
+ Exchange.
+* **UMStartupMode**: Specifies whether the Microsoft Exchange Unified Messaging
+ Call Router service starts up in TCP, TLS, or Dual mode
 * **DialPlans**: Specifies all dial plans that the Unified Messaging service
-  handles incoming calls for.
+ handles incoming calls for.
+* **GrammarGenerationSchedule**: Specifies the Grammar Generation Schedule.
+* **IPAddressFamily**: Specifies whether the UM IP gateway will use IPv4, IPv6,
+ or both to communicate. {IPv4Only | IPv6Only | Any}
+* **IPAddressFamilyConfigurable**: Specifies whether you're able to set the
+ IPAddressFamily parameter to IPv6Only or Any.
+* **IrmLogEnabled**: Specifies whether to enable logging of Information Rights
+ Management (IRM) transactions. IRM logging is enabled by default.
+* **IrmLogMaxAge**: Specifies the maximum age for the IRM log file. Log files
+ that are older than the specified value are deleted.
+* **IrmLogMaxDirectorySize**: Specifies the maximum size of all IRM logs in
+ the connectivity log directory. When a directory reaches its maximum file
+ size, the server deletes the oldest log files first.
+* **IrmLogMaxFileSize**: Specifies the maximum size of each IRM log file.
+ When a log file reaches its maximum file size, a new log file is created.
+* **IrmLogPath**: Specifies the default IRM log directory location.
+* **MaxCallsAllowed**: Specifies the maximum number of concurrent voice calls
+ that the Unified Messaging service allows.
+* **SIPAccessService**: Specifies the FQDN and TCP port of the nearest Skype
+ for Business Server pool location for inbound and outbound calls from remote
+ Skype for Business users located outside of the network.
+* **DomainController**: Optional Domain Controller to connect to.
 
 ### xExchWaitForADPrep
 
 **xExchWaitForADPrep** ensures that Active Directory has been prepared for
-Exchange 2013, 2016, or 2019 (Preview) using setup /PrepareSchema, /PrepareAD,
+Exchange 2013, 2016, or 2019 using setup /PrepareSchema, /PrepareAD,
 and /PrepareDomain. To find appropriate version values for the SchemaVersion,
 OrganizationVersion, and DomainVersion parameters, consult the 'Exchange 2016
 Active Directory versions' section of the article
@@ -1331,13 +1410,13 @@ Active Directory versions' section of the article
 * **Credential**: Credentials used to perform Active Directory lookups against
   the Schema, Configuration, and Domain naming contexts.
 * **SchemaVersion**: Specifies that the Active Directory schema should have been
-  prepared using Exchange 2013, 2016, or 2019 (Preview) 'setup /PrepareSchema',
+  prepared using Exchange 2013, 2016, or 2019 'setup /PrepareSchema',
   and should be at the specified version.
 * **OrganizationVersion**: Specifies that the Exchange Organization should have
-  been prepared using Exchange 2013, 2016, or 2019 (Preview) 'setup
+  been prepared using Exchange 2013, 2016, or 2019 'setup
   /PrepareAD', and should be at the specified version.
 * **DomainVersion**: Specifies that the domain containing the target
-  Exchange 2013, 2016, or 2019 (Preview) server was prepared using setup
+  Exchange 2013, 2016, or 2019 server was prepared using setup
   /PrepareAD, /PrepareDomain, or /PrepareAllDomains, and should be at the
   specified version.
 * **ExchangeDomains**: The FQDN's of domains that should be checked for

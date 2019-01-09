@@ -57,7 +57,7 @@ try
             Context 'When Get-TargetResource is called' {
                 Mock -CommandName Write-FunctionEntry -Verifiable
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                Mock -CommandName GetMapiVirtualDirectory -Verifiable -MockWith { return $getMapiVirtualDirectoryStandardOutput }
+                Mock -CommandName Get-MapiVirtualDirectoryInternal -Verifiable -MockWith { return $getMapiVirtualDirectoryStandardOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }

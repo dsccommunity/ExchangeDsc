@@ -3,11 +3,18 @@
 class MSFT_xExchUMService : OMI_BaseResource
 {
     [Key] String Identity; //Hostname of the UM server to configure
-    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange
-    [Required, ValueMap{"TCP","TLS","Dual"}, Values{"TCP","TLS","Dual"}] String UMStartupMode; //UMStartupMode for the UM server
-    [Write] String DialPlans[]; //Specifies all dial plans that the Unified Messaging service handles incoming calls for
-    [Write] String DomainController; //Optional Domain Controller to connect to
+    [Required, Description("Credentials used to establish a remote PowerShell session to Exchange"), EmbeddedInstance("MSFT_Credential")] String Credential;
+    [Required, Description("UMStartupMode for the UM server"), ValueMap{"TCP","TLS","Dual"}, Values{"TCP","TLS","Dual"}] String UMStartupMode;
+    [Write, Description("Specifies all dial plans that the Unified Messaging service handles incoming calls for")] String DialPlans[];
+    [Write, Description("Specifies the Grammar Generation Schedule")] String GrammarGenerationSchedule[];
+    [Write, Description("Specifies whether the UM IP gateway will use IPv4, IPv6, or both to communicate"), ValueMap{"IPv4Only","IPv6Only","Any"}, Values{"IPv4Only","IPv6Only","Any"}] String IPAddressFamily;
+    [Write, Description("Specifies whether you're able to set the IPAddressFamily parameter to IPv6Only or Any")] Boolean IPAddressFamilyConfigurable;
+    [Write, Description("Specifies whether to enable logging of Information Rights Management (IRM) transactions. IRM logging is enabled by default")] Boolean IrmLogEnabled;
+    [Write, Description("Specifies the maximum age for the IRM log file. Log files that are older than the specified value are deleted")] String IrmLogMaxAge;
+    [Write, Description("Specifies the maximum size of all IRM logs in the connectivity log directory. When a directory reaches its maximum file size, the server deletes the oldest log files first")] String IrmLogMaxDirectorySize;
+    [Write, Description("Specifies the maximum size of each IRM log file. When a log file reaches its maximum file size, a new log file is created")] String IrmLogMaxFileSize;
+    [Write, Description("Specifies the default IRM log directory location")] String IrmLogPath;
+    [Write, Description("Specifies the maximum number of concurrent voice calls that the Unified Messaging service allows")] SInt32 MaxCallsAllowed;
+    [Write, Description("Specifies the FQDN and TCP port of the nearest  Skype for Business Server pool location for inbound and outbound calls from remote Skype for Business users located outside of the network")] String SIPAccessService;
+    [Write, Description("Optional Domain Controller to connect to")] String DomainController;
 };
-
-
-

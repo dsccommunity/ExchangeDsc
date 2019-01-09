@@ -52,7 +52,7 @@ function Get-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PowerShellVirtualDirectory' -Verbose:$VerbosePreference
 
-    $vdir = GetPowerShellVirtualDirectory @PSBoundParameters
+    $vdir = Get-PowerShellVirtualDirectoryInternal @PSBoundParameters
 
     if ($null -ne $vdir)
     {
@@ -198,7 +198,7 @@ function Test-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PowerShellVirtualDirectory' -Verbose:$VerbosePreference
 
-    $vdir = GetPowerShellVirtualDirectory @PSBoundParameters
+    $vdir = Get-PowerShellVirtualDirectoryInternal @PSBoundParameters
 
     $testResults = $true
 
@@ -244,7 +244,7 @@ function Test-TargetResource
     return $testResults
 }
 
-function GetPowerShellVirtualDirectory
+function Get-PowerShellVirtualDirectoryInternal
 {
     [CmdletBinding()]
     param

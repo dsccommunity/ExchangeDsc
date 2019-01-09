@@ -59,7 +59,7 @@ function Get-TargetResource
         Set-ADServerSettings -PreferredServer "$($AdServerSettingsPreferredServer)"
     }
 
-    $db = GetMailboxDatabase @PSBoundParameters
+    $db = Get-MailboxDatabaseInternal @PSBoundParameters
 
     $serverHasCopy = $false
 
@@ -169,7 +169,7 @@ function Set-TargetResource
     $copy = Get-TargetResource @PSBoundParameters
 
     $copyCount = 0
-    $existingDb = GetMailboxDatabase @PSBoundParameters -ErrorAction SilentlyContinue
+    $existingDb = Get-MailboxDatabaseInternal @PSBoundParameters -ErrorAction SilentlyContinue
 
     if ($null -ne $existingDb)
     {
@@ -348,7 +348,7 @@ function Test-TargetResource
     return $testResults
 }
 
-function GetMailboxDatabase
+function Get-MailboxDatabaseInternal
 {
     [CmdletBinding()]
     param

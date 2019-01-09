@@ -41,7 +41,7 @@ function Get-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PopSettings' -Verbose:$VerbosePreference
 
-    $pop = GetPopSettings @PSBoundParameters
+    $pop = Get-PopSettingsInternal @PSBoundParameters
 
     if ($null -ne $pop)
     {
@@ -158,7 +158,7 @@ function Test-TargetResource
 
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    $pop = GetPopSettings @PSBoundParameters
+    $pop = Get-PopSettingsInternal @PSBoundParameters
 
     $testResults = $true
 
@@ -190,7 +190,7 @@ function Test-TargetResource
     return $testResults
 }
 
-function GetPopSettings
+function Get-PopSettingsInternal
 {
     [CmdletBinding()]
     param

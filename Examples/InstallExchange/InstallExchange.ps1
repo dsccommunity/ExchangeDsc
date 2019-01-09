@@ -50,7 +50,7 @@ Configuration Example
         xExchInstall InstallExchange
         {
             Path       = 'C:\Binaries\E15CU6\Setup.exe'
-            Arguments  = '/mode:Install /role:Mailbox,ClientAccess /Iacceptexchangeserverlicenseterms'
+            Arguments  = '/mode:Install /role:Mailbox /Iacceptexchangeserverlicenseterms'
             Credential = $ExchangeAdminCredential
             DependsOn  = '[xPendingReboot]BeforeExchangeInstall'
         }

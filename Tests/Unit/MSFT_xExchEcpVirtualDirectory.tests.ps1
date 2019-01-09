@@ -63,7 +63,7 @@ try
             Context 'When Get-TargetResource is called' {
                 Mock -CommandName Write-FunctionEntry -Verifiable
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                Mock -CommandName GetEcpVirtualDirectory -Verifiable -MockWith { return $getEcpVirtualDirectoryStandardOutput }
+                Mock -CommandName Get-EcpVirtualDirectoryInternal -Verifiable -MockWith { return $getEcpVirtualDirectoryStandardOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }

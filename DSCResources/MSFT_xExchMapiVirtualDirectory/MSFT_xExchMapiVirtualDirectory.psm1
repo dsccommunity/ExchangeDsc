@@ -40,7 +40,7 @@ function Get-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MapiVirtualDirectory' -Verbose:$VerbosePreference
 
-    $vdir = GetMapiVirtualDirectory @PSBoundParameters
+    $vdir = Get-MapiVirtualDirectoryInternal @PSBoundParameters
 
     if ($null -ne $vdir)
     {
@@ -156,7 +156,7 @@ function Test-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MapiVirtualDirectory' -Verbose:$VerbosePreference
 
-    $vdir = GetMapiVirtualDirectory @PSBoundParameters
+    $vdir = Get-MapiVirtualDirectoryInternal @PSBoundParameters
 
     $testResults = $true
 
@@ -187,7 +187,7 @@ function Test-TargetResource
     return $testResults
 }
 
-function GetMapiVirtualDirectory
+function Get-MapiVirtualDirectoryInternal
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]

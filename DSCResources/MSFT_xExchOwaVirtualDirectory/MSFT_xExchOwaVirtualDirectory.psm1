@@ -124,7 +124,7 @@ function Get-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OwaVirtualDirectory' -Verbose:$VerbosePreference
 
-    $OwaVdir = GetOwaVirtualDirectory @PSBoundParameters
+    $OwaVdir = Get-OwaVirtualDirectoryInternal @PSBoundParameters
 
     if ($null -ne $OwaVdir)
     {
@@ -430,7 +430,7 @@ function Test-TargetResource
     # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-    $OwaVdir = GetOwaVirtualDirectory @PSBoundParameters
+    $OwaVdir = Get-OwaVirtualDirectoryInternal @PSBoundParameters
 
     $testResults = $true
 
@@ -561,7 +561,7 @@ function Test-TargetResource
     return $testResults
 }
 
-function GetOwaVirtualDirectory
+function Get-OwaVirtualDirectoryInternal
 {
     [CmdletBinding()]
     param

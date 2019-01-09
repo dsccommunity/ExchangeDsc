@@ -230,14 +230,14 @@ function Get-TargetResource
         $Usage
     )
 
-    ValidateIdentity -Identity $Identity
+    Assert-IdentityIsValid -Identity $Identity
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ReceiveConnector' -Verbose:$VerbosePreference
 
-    $connector = GetReceiveConnector @PSBoundParameters
+    $connector = Get-ReceiveConnectorInternal @PSBoundParameters
 
     if ($null -ne $connector)
     {
@@ -529,14 +529,14 @@ function Set-TargetResource
         $Usage
     )
 
-    ValidateIdentity -Identity $Identity
+    Assert-IdentityIsValid -Identity $Identity
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*ReceiveConnector', '*ADPermission' -Verbose:$VerbosePreference
 
-    $connector = GetReceiveConnector @PSBoundParameters
+    $connector = Get-ReceiveConnectorInternal @PSBoundParameters
 
     if ($Ensure -eq 'Absent')
     {
@@ -857,14 +857,14 @@ function Test-TargetResource
         $Usage
     )
 
-    ValidateIdentity -Identity $Identity
+    Assert-IdentityIsValid -Identity $Identity
 
     Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ReceiveConnector', 'Get-ADPermission' -Verbose:$VerbosePreference
 
-    $connector = GetReceiveConnector @PSBoundParameters
+    $connector = Get-ReceiveConnectorInternal @PSBoundParameters
 
     # get AD permissions if necessary
     if (($ExtendedRightAllowEntries) -or ($ExtendedRightDenyEntries))
@@ -1132,7 +1132,7 @@ function Test-TargetResource
             # check AD permissions if necessary
             if ($ExtendedRightAllowEntries)
             {
-                if (!(ExtendedRightExists -ADPermissions $ADPermissions -ExtendedRights $ExtendedRightAllowEntries -ShouldbeTrue:$True -Verbose:$VerbosePreference))
+                if (!(Test-ExtendedRightsPresent -ADPermissions $ADPermissions -ExtendedRights $ExtendedRightAllowEntries -ShouldbeTrue:$True -Verbose:$VerbosePreference))
                 {
                     $testResults = $false
                 }
@@ -1140,7 +1140,7 @@ function Test-TargetResource
 
             if ($ExtendedRightDenyEntries)
             {
-                if (ExtendedRightExists -ADPermissions $ADPermissions -ExtendedRights $ExtendedRightDenyEntries -ShouldbeTrue:$false -Verbose:$VerbosePreference)
+                if (Test-ExtendedRightsPresent -ADPermissions $ADPermissions -ExtendedRights $ExtendedRightDenyEntries -ShouldbeTrue:$false -Verbose:$VerbosePreference)
                 {
                     $testResults = $false
                 }
@@ -1152,7 +1152,7 @@ function Test-TargetResource
 }
 
 # Runs Get-ReceiveConnector, only specifying Identity, ErrorAction, and optionally DomainController
-function GetReceiveConnector
+function Get-ReceiveConnectorInternal
 {
     [CmdletBinding()]
     param
@@ -1396,7 +1396,7 @@ function GetReceiveConnector
 }
 
 # Ensure that a connector Identity is in the proper form
-function ValidateIdentity
+function Assert-IdentityIsValid
 {
     param
     (
@@ -1412,7 +1412,7 @@ function ValidateIdentity
 }
 
 # check a connector for specific extended rights
-function ExtendedRightExists
+function Test-ExtendedRightsPresent
 {
     [cmdletbinding()]
     [OutputType([System.Boolean])]
@@ -1429,7 +1429,9 @@ function ExtendedRightExists
         [System.Boolean]
         $ShouldbeTrue
     )
+
     $returnvalue = $false
+
     foreach ($Right in $ExtendedRights)
     {
         foreach ($Value in $($Right.Value.Split(',')))
@@ -1437,27 +1439,30 @@ function ExtendedRightExists
             if ($null -ne ($ADPermissions | Where-Object {($_.User.RawIdentity -eq $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value)}))
             {
                 $returnvalue = $true
+
                 if (!($ShouldbeTrue))
                 {
                     Write-Verbose -Message 'Should report exist!'
                     Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue 'Present' -Verbose:$VerbosePreference
                     return $returnvalue
-                    exit;
+                    exit
                 }
             }
             else
             {
                 $returnvalue = $false
+
                 if ($ShouldbeTrue)
                 {
                     Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue 'Absent' -Verbose:$VerbosePreference
                     return $returnvalue
-                    exit;
+                    exit
                 }
             }
         }
     }
-return $returnvalue
+
+    return $returnvalue
 }
 
 Export-ModuleMember -Function *-TargetResource

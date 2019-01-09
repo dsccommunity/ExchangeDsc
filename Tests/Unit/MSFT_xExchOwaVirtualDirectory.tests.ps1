@@ -76,7 +76,7 @@ try
             Context 'When Get-TargetResource is called' {
                 Mock -CommandName Write-FunctionEntry -Verifiable
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                Mock -CommandName GetOwaVirtualDirectory -Verifiable -MockWith { return $getOwaVirtualDirectoryStandardOutput }
+                Mock -CommandName Get-OwaVirtualDirectoryInternal -Verifiable -MockWith { return $getOwaVirtualDirectoryStandardOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }

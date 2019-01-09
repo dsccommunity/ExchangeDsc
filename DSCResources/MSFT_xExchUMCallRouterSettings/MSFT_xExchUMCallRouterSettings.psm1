@@ -14,6 +14,31 @@ function Get-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
+        [System.String[]]
+        $DialPlans,
+
+        [Parameter()]
+        [ValidateSet('IPv4Only','IPv6Only','Any')]
+        [System.String]
+        $IPAddressFamily,
+
+        [Parameter()]
+        [System.Boolean]
+        $IPAddressFamilyConfigurable,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxCallsAllowed,
+
+        [Parameter()]
+        [System.Int32]
+        $SipTcpListeningPort,
+
+        [Parameter()]
+        [System.Int32]
+        $SipTlsListeningPort,
+
         [Parameter(Mandatory = $true)]
         [ValidateSet('TCP', 'TLS', 'Dual')]
         [System.String]
@@ -38,8 +63,14 @@ function Get-TargetResource
     if ($null -ne $umService)
     {
         $returnValue = @{
-            Server        = [System.String] $Server
-            UMStartupMode = [System.String] $umService.UMStartupMode
+            Server                      = [System.String] $Server
+            UMStartupMode               = [System.String] $umService.UMStartupMode
+            DialPlans                   = [System.String[]] $umService.DialPlans
+            IPAddressFamily             = [System.String] $umService.IPAddressFamily
+            IPAddressFamilyConfigurable = [System.Boolean] $umService.IPAddressFamilyConfigurable
+            MaxCallsAllowed             = [System.Int32] $umService.MaxCallsAllowed
+            SipTcpListeningPort         = [System.Int32] $umService.SipTcpListeningPort
+            SipTlsListeningPort         = [System.Int32] $umService.SipTlsListeningPort
         }
     }
 
@@ -60,6 +91,31 @@ function Set-TargetResource
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
+
+        [Parameter()]
+        [System.String[]]
+        $DialPlans,
+
+        [Parameter()]
+        [ValidateSet('IPv4Only','IPv6Only','Any')]
+        [System.String]
+        $IPAddressFamily,
+
+        [Parameter()]
+        [System.Boolean]
+        $IPAddressFamilyConfigurable,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxCallsAllowed,
+
+        [Parameter()]
+        [System.Int32]
+        $SipTcpListeningPort,
+
+        [Parameter()]
+        [System.Int32]
+        $SipTlsListeningPort,
 
         [Parameter(Mandatory = $true)]
         [ValidateSet('TCP', 'TLS', 'Dual')]
@@ -99,6 +155,31 @@ function Test-TargetResource
         [System.Management.Automation.Credential()]
         $Credential,
 
+        [Parameter()]
+        [System.String[]]
+        $DialPlans,
+
+        [Parameter()]
+        [ValidateSet('IPv4Only','IPv6Only','Any')]
+        [System.String]
+        $IPAddressFamily,
+
+        [Parameter()]
+        [System.Boolean]
+        $IPAddressFamilyConfigurable,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxCallsAllowed,
+
+        [Parameter()]
+        [System.Int32]
+        $SipTcpListeningPort,
+
+        [Parameter()]
+        [System.Int32]
+        $SipTlsListeningPort,
+
         [Parameter(Mandatory = $true)]
         [ValidateSet('TCP', 'TLS', 'Dual')]
         [System.String]
@@ -129,6 +210,37 @@ function Test-TargetResource
         {
             $testResults = $false
         }
+
+        if (!(Test-ExchangeSetting -Name 'DialPlans' -Type 'Array' -ExpectedValue $DialPlans -ActualValue $umService.DialPlans -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'IPAddressFamily' -Type 'String' -ExpectedValue $IPAddressFamily -ActualValue $umService.IPAddressFamily -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'IPAddressFamilyConfigurable' -Type 'Boolean' -ExpectedValue $IPAddressFamilyConfigurable -ActualValue $umService.IPAddressFamilyConfigurable -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'MaxCallsAllowed' -Type 'Int' -ExpectedValue $MaxCallsAllowed -ActualValue $umService.MaxCallsAllowed -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'SipTcpListeningPort' -Type 'Int' -ExpectedValue $SipTcpListeningPort -ActualValue $umService.SipTcpListeningPort -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'SipTlsListeningPort' -Type 'Int' -ExpectedValue $SipTlsListeningPort -ActualValue $umService.SipTlsListeningPort -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
     }
 
     return $testResults

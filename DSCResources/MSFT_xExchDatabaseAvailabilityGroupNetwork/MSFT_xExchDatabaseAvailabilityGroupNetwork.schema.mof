@@ -2,18 +2,12 @@
 [ClassVersion("1.0.0.0"), FriendlyName("xExchDatabaseAvailabilityGroupNetwork")]
 class MSFT_xExchDatabaseAvailabilityGroupNetwork : OMI_BaseResource
 {
-    [Key] String Name; //The name of the DAG network
-    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange
-    [Required] String DatabaseAvailabilityGroup; //The DAG where the network will live
-    [Required, ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure; //Whethe the DAG network should exist or not
-
-    //Remaining properties correspond directly to Set-DatabaseAvailabilityGroupNetwork parameters
-    //http://technet.microsoft.com/en-us/library/dd298008(v=exchg.150).aspx
-    [Write] String DomainController;
-    [Write] Boolean IgnoreNetwork;
-    [Write] Boolean ReplicationEnabled;
-    [Write] String Subnets[];
+    [Key, Description("The name of the DAG network.")] String Name;
+    [Required, Description("Credentials used to establish a remote PowerShell session to Exchange."), EmbeddedInstance("MSFT_Credential")] String Credential;
+    [Required, Description("The DAG where the network will live.")] String DatabaseAvailabilityGroup;
+    [Required, Description("Whether the DAG network should exist or not."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write, Description("The DomainController parameter specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory. You identify the domain controller by its fully qualified domain name (FQDN). For example, dc01.contoso.com.")] String DomainController;
+    [Write, Description("The IgnoreNetwork parameter indicates that the specified network should be ignored and not used by the DAG.")] Boolean IgnoreNetwork;
+    [Write, Description("The ReplicationEnabled parameter specifies whether the network can be used for replication activity. If this parameter isn't specified, the default behavior is to enable the network for replication.")] Boolean ReplicationEnabled;
+    [Write, Description("The Subnets parameter specifies one or more subnets that are associated with the DAG network.")] String Subnets[];
 };
-
-
-

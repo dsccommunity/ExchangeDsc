@@ -64,7 +64,7 @@ try
             Context 'When Get-TargetResource is called' {
                 Mock -CommandName Write-FunctionEntry -Verifiable
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                Mock -CommandName GetOutlookAnywhere -Verifiable -MockWith { return $getOutlookAnywhereStandardOutput }
+                Mock -CommandName Get-OutlookAnywhereInternal -Verifiable -MockWith { return $getOutlookAnywhereStandardOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }
