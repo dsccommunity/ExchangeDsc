@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added additional parameters to the MSFT_xExchTransportService resource
+
 ## 1.26.0.0
 
 - Add support for Exchange Server 2019
@@ -11,7 +13,6 @@
   MSFT_xExchEcpVirtualDirectory, MSFT_xExchExchangeCertificate,
   MSFT_xExchImapSettings.
 - Added additional parameters to the MSFT_xExchUMCallRouterSettings resource
-- Added additional parameters to the MSFT_xExchTransportService resource
 
 ## 1.25.0.0
 
