@@ -2,7 +2,7 @@
 [ClassVersion("1.0.0.0"), FriendlyName("xExchAutodiscoverVirtualDirectory")]
 class MSFT_xExchAutodiscoverVirtualDirectory : OMI_BaseResource
 {
-    [Key, Description ("The Identity parameter specifies the Autodiscover virtual directory that you want to modify.") String Identity;
+    [Key, Description ("The Identity parameter specifies the Autodiscover virtual directory that you want to modify.")] String Identity;
     [Required, EmbeddedInstance("MSFT_Credential"), Description("Credentials used to establish a remote PowerShell session to Exchange.")] String Credential;
     [Write, Description("Whether it is OK to recycle the app pool after making changes. Defaults to $true.")] Boolean AllowServiceRestart;
     [Write, Description("Specifies whether Basic authentication is enabled on the virtual directory.")] Boolean BasicAuthentication;
