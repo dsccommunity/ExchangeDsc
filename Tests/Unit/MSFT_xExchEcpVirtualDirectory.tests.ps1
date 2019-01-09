@@ -105,7 +105,7 @@ try
                 It 'Should throw error about SPN' {
                     Mock -CommandName Test-ExtendedProtectionSPNList -Verifiable -MockWith { return $false }
 
-                    Set-TargetResource @commonTargetResourceParams | Should -Throw -ExpectedMessage 'SPN list contains DotlesSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags or invalid combination was used!'
+                    Set-TargetResource @commonTargetResourceParams | Should -Throw -ExpectedMessage 'SPN list contains DotlessSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags or invalid combination was used!'
                 }
             }
         }
@@ -121,7 +121,7 @@ try
 
                     Test-TargetResource @commonTargetResourceParams -ErrorAction SilentlyContinue | Should -Be $false
                 }
-                
+
                 It 'Should return False when Test-ExchangeSetting returns False' {
                     Mock -CommandName Get-EcpVirtualDirectoryInternal  -Verifiable -MockWith { return $commonEcpVirtualDirectoryStandardOutput }
                     Mock -CommandName Test-ExchangeSetting -Verifiable -MockWith { return $false }
