@@ -105,11 +105,11 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String[]]
+        [ValidateSet('None', 'Proxy', 'NoServiceNameCheck', 'AllowDotlessSpn', 'ProxyCohosting')]
         $ExtendedProtectionFlags,
 
         [Parameter()]
         [System.String[]]
-        [ValidateSet('None', 'Proxy', 'NoServiceNameCheck', 'AllowDotlessSpn', 'ProxyCohosting')]
         $ExtendedProtectionSPNList,
 
         [Parameter()]
@@ -283,11 +283,11 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String[]]
+        [ValidateSet('None', 'Proxy', 'NoServiceNameCheck', 'AllowDotlessSpn', 'ProxyCohosting')]
         $ExtendedProtectionFlags,
 
         [Parameter()]
         [System.String[]]
-        [ValidateSet('None', 'Proxy', 'NoServiceNameCheck', 'AllowDotlessSpn', 'ProxyCohosting')]
         $ExtendedProtectionSPNList,
 
         [Parameter()]
@@ -464,11 +464,11 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String[]]
+        [ValidateSet('None', 'Proxy', 'NoServiceNameCheck', 'AllowDotlessSpn', 'ProxyCohosting')]
         $ExtendedProtectionFlags,
 
         [Parameter()]
         [System.String[]]
-        [ValidateSet('None', 'Proxy', 'NoServiceNameCheck', 'AllowDotlessSpn', 'ProxyCohosting')]
         $ExtendedProtectionSPNList,
 
         [Parameter()]
