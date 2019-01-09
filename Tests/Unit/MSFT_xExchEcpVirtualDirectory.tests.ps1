@@ -42,7 +42,7 @@ try
         }
 
         Mock -CommandName Write-FunctionEntry -Verifiable
-        Mock -CommandName Get-RemoteExchangeSession -Verifiable
+
 
         $commonTargetResourceParams = @{
             Identity   = 'EcpVirtualDirectory'
@@ -72,6 +72,7 @@ try
             }
 
             Context 'When Get-TargetResource is called' {
+                Mock -CommandName Get-RemoteExchangeSession -Verifiable
                 Mock -CommandName Get-EcpVirtualDirectoryInternal -Verifiable -MockWith { return $commonEcpVirtualDirectoryStandardOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $commonTargetResourceParams
@@ -79,11 +80,12 @@ try
         }
 
         Describe 'MSFT_xExchEcpVirtualDirectory\Set-TargetResource' -Tag 'Set' {
-            AfterEach {
-                Assert-VerifiableMock
-            }
+            # AfterEach {
+            #     Assert-VerifiableMock
+            # }
 
             Context 'When Set-TargetResource is called' {
+                Mock -CommandName Get-RemoteExchangeSession -Verifiable
                 It 'Should warn about restarting the MSExchangeECPAppPool' {
                     Mock -CommandName Set-ECPVirtualDirectory -Verifiable
                     Mock -CommandName Write-Warning -ParameterFilter {$message -eq 'The configuration will not take effect until MSExchangeECPAppPool is manually recycled.'}
@@ -116,6 +118,7 @@ try
             }
 
             Context 'When Test-TargetResource is called' {
+                Mock -CommandName Get-RemoteExchangeSession -Verifiable
                 It 'Should return False when Get-ECPVirtualDirectoryInternal returns False' {
                     Mock -CommandName Get-EcpVirtualDirectoryInternal  -Verifiable
 
