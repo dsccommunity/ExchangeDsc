@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Added additional parameters to the MSFT_xExchTransportService resource
+- Added additional parameters to the MSFT_xExchEcpVirtualDirectory resource
+- Added additional unit tests to the MSFT_xExchAutodiscoverVirutalDirectory resource
+
 ## 1.26.0.0
 
 - Add support for Exchange Server 2019
