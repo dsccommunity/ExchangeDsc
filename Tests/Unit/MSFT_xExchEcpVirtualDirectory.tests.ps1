@@ -107,7 +107,7 @@ try
                 It 'Should throw error about SPN' {
                     Mock -CommandName Test-ExtendedProtectionSPNList -Verifiable -MockWith { return $false }
 
-                    Set-TargetResource @commonTargetResourceParams | Should -Throw -ExpectedMessage 'SPN list contains DotlessSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags or invalid combination was used!'
+                    { Set-TargetResource @commonTargetResourceParams } | Should -Throw -ExpectedMessage 'SPN list contains DotlessSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags or invalid combination was used!'
                 }
             }
         }
