@@ -105,6 +105,20 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String[]]
+        $ExtendedProtectionFlags,
+
+        [Parameter()]
+        [System.String[]]
+        [ValidateSet('None', 'Proxy', 'NoServiceNameCheck', 'AllowDotlessSpn', 'ProxyCohosting')]
+        $ExtendedProtectionSPNList,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('None','Allow','Require')]
+        $ExtendedProtectionTokenChecking,
+
+        [Parameter()]
+        [System.String[]]
         $ExternalAuthenticationMethods,
 
         [Parameter()]
@@ -126,6 +140,10 @@ function Get-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $OwaOptionsEnabled,
+
+        [Parameter()]
+        [System.Boolean]
         $WindowsAuthentication
     )
 
@@ -139,17 +157,21 @@ function Get-TargetResource
     if ($null -ne $EcpVdir)
     {
         $returnValue = @{
-            Identity                      = [System.String] $Identity
-            AdminEnabled                  = [System.Boolean] $EcpVdir.AdminEnabled
-            AdfsAuthentication            = [System.Boolean] $EcpVdir.AdfsAuthentication
-            BasicAuthentication           = [System.Boolean] $EcpVdir.BasicAuthentication
-            DigestAuthentication          = [System.Boolean] $EcpVdir.DigestAuthentication
-            ExternalAuthenticationMethods = [System.String[]] $EcpVdir.ExternalAuthenticationMethods
-            ExternalUrl                   = [System.String] $EcpVdir.ExternalUrl
-            FormsAuthentication           = [System.Boolean] $EcpVdir.FormsAuthentication
-            GzipLevel                     = [System.String] $EcpVdir.GzipLevel
-            InternalUrl                   = [System.String] $EcpVdir.InternalUrl
-            WindowsAuthentication         = [System.Boolean] $EcpVdir.WindowsAuthentication
+            Identity                        = [System.String] $Identity
+            AdminEnabled                    = [System.Boolean] $EcpVdir.AdminEnabled
+            AdfsAuthentication              = [System.Boolean] $EcpVdir.AdfsAuthentication
+            BasicAuthentication             = [System.Boolean] $EcpVdir.BasicAuthentication
+            DigestAuthentication            = [System.Boolean] $EcpVdir.DigestAuthentication
+            ExtendedProtectionFlags         = [System.String[]] $EcpVdir.ExtendedProtectionFlags
+            ExtendedProtectionSPNList       = [System.String[]] $EcpVdir.ExtendedProtectionSPNList
+            ExtendedProtectionTokenChecking = [System.String] $EcpVdir.ExtendedProtectionTokenChecking
+            ExternalAuthenticationMethods   = [System.String[]] $EcpVdir.ExternalAuthenticationMethods
+            ExternalUrl                     = [System.String] $EcpVdir.ExternalUrl
+            FormsAuthentication             = [System.Boolean] $EcpVdir.FormsAuthentication
+            GzipLevel                       = [System.String] $EcpVdir.GzipLevel
+            InternalUrl                     = [System.String] $EcpVdir.InternalUrl
+            WindowsAuthentication           = [System.Boolean] $EcpVdir.WindowsAuthentication
+            OwaOptionsEnabled               = [System.Boolean] $EcpVdir.OwaOptionsEnabled
         }
     }
 
@@ -261,6 +283,20 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String[]]
+        $ExtendedProtectionFlags,
+
+        [Parameter()]
+        [System.String[]]
+        [ValidateSet('None', 'Proxy', 'NoServiceNameCheck', 'AllowDotlessSpn', 'ProxyCohosting')]
+        $ExtendedProtectionSPNList,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('None','Allow','Require')]
+        $ExtendedProtectionTokenChecking,
+
+        [Parameter()]
+        [System.String[]]
         $ExternalAuthenticationMethods,
 
         [Parameter()]
@@ -282,6 +318,10 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $OwaOptionsEnabled,
+
+        [Parameter()]
+        [System.Boolean]
         $WindowsAuthentication
     )
 
@@ -295,6 +335,12 @@ function Set-TargetResource
 
     # Remove Credential and AllowServiceRestart because those parameters do not exist on Set-OwaVirtualDirectory
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
+
+    # Verify SPNs depending on AllowDotlesSPN
+    if ( -not (Test-ExtendedProtectionSPNList -SPNList $ExtendedProtectionSPNList -Flags $ExtendedProtectionFlags))
+    {
+        throw 'SPN list contains DotlessSPN, but AllowDotlessSPN is not added to ExtendedProtectionFlags or invalid combination was used!'
+    }
 
     Set-EcpVirtualDirectory @PSBoundParameters
 
@@ -418,6 +464,20 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String[]]
+        $ExtendedProtectionFlags,
+
+        [Parameter()]
+        [System.String[]]
+        [ValidateSet('None', 'Proxy', 'NoServiceNameCheck', 'AllowDotlessSpn', 'ProxyCohosting')]
+        $ExtendedProtectionSPNList,
+
+        [Parameter()]
+        [System.String]
+        [ValidateSet('None','Allow','Require')]
+        $ExtendedProtectionTokenChecking,
+
+        [Parameter()]
+        [System.String[]]
         $ExternalAuthenticationMethods,
 
         [Parameter()]
@@ -429,13 +489,17 @@ function Test-TargetResource
         $FormsAuthentication,
 
         [Parameter()]
-        [ValidateSet('Off', 'Low',  'High', 'Error')]
+        [ValidateSet('Off', 'Low', 'High', 'Error')]
         [System.String]
         $GzipLevel,
 
         [Parameter()]
         [System.String]
         $InternalUrl,
+
+        [Parameter()]
+        [System.Boolean]
+        $OwaOptionsEnabled,
 
         [Parameter()]
         [System.Boolean]
@@ -623,6 +687,20 @@ function Get-EcpVirtualDirectoryInternal
         $DomainController,
 
         [Parameter()]
+        [ValidateSet('None', 'Proxy', 'NoServiceNameCheck', 'AllowDotlessSpn', 'ProxyCohosting')]
+        [System.String[]]
+        $ExtendedProtectionFlags,
+
+        [Parameter()]
+        [System.String[]]
+        $ExtendedProtectionSPNList,
+
+        [Parameter()]
+        [ValidateSet('None', 'Allow', 'Require')]
+        [System.String]
+        $ExtendedProtectionTokenChecking,
+
+        [Parameter()]
         [System.String[]]
         $ExternalAuthenticationMethods,
 
@@ -642,6 +720,10 @@ function Get-EcpVirtualDirectoryInternal
         [Parameter()]
         [System.String]
         $InternalUrl,
+
+        [Parameter()]
+        [System.Boolean]
+        $OwaOptionsEnabled,
 
         [Parameter()]
         [System.Boolean]

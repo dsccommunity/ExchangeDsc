@@ -10,10 +10,14 @@ class MSFT_xExchEcpVirtualDirectory : OMI_BaseResource
     [Write, Description("The BasicAuthentication parameter specifies whether Basic authentication is enabled on the virtual directory. ")] Boolean BasicAuthentication;
     [Write, Description("The DigestAuthentication parameter specifies whether Digest authentication is enabled on the virtual directory.")] Boolean DigestAuthentication;
     [Write, Description("The DomainController parameter specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory. You identify the domain controller by its fully qualified domain name (FQDN). For example, dc01.contoso.com.")] String DomainController;
+    [Write, Description("Specifies custom settings for Extended Protection for Authentication on the virtual directory."), ValueMap{"None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting"}, Values{"None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting"}] String ExtendedProtectionFlags[];
+    [Write, Description("Specifies a list of valid Service Principal Names (SPNs) if you're using Extended Protection for Authentication on the virtual directory.")] String ExtendedProtectionSPNList[];
+    [Write, Description("Defines how you want to use Extended Protection for Authentication on the virtual directory."), ValueMap{"None","Allow","Require"}, Values{"None","Allow","Require"}] String ExtendedProtectionTokenChecking;
     [Write, Description("The ExternalAuthenticationMethods parameter specifies the authentication methods supported on the Exchange server from outside the firewall.")] String ExternalAuthenticationMethods[];
     [Write, Description("The FormsAuthentication parameter specifies whether forms-based authentication is enabled on the ECP virtual directory.")] Boolean FormsAuthentication;
     [Write, Description("The GzipLevel parameter sets Gzip configuration information for the ECP virtual directory."), ValueMap{"Off", "Low", "High", "Error"}, Values{"Off", "Low", "High", "Error"}] String GzipLevel;
     [Write, Description("The ExternalURL parameter specifies the URL that's used to connect to the virtual directory from outside the firewall.")] String ExternalUrl;
     [Write, Description("The InternalURL parameter specifies the URL that's used to connect to the virtual directory from inside the firewall.")] String InternalUrl;
+    [Write, Description("Specifies that Outlook on the web Options is enabled for end users.")] Boolean OwaOptionsEnabled;
     [Write, Description("The WindowsAuthentication parameter specifies whether Integrated Windows authentication is enabled on the virtual directory.")] Boolean WindowsAuthentication;
 };
