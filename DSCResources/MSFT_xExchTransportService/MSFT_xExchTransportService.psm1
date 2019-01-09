@@ -56,6 +56,10 @@ function Get-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $AntispamAgentsEnabled,
+
+        [Parameter()]
+        [System.Boolean]
         $ConnectivityLogEnabled,
 
         [Parameter()]
@@ -394,6 +398,7 @@ function Get-TargetResource
             AgentLogMaxDirectorySize                        = [System.String] $TransportService.AgentLogMaxDirectorySize
             AgentLogMaxFileSize                             = [System.String] $TransportService.AgentLogMaxFileSize
             AgentLogPath                                    = [System.String] $TransportService.AgentLogPath
+            AntispamAgentsEnabled                           = [System.Boolean] $TransportService.AntispamAgentsEnabled
             ConnectivityLogEnabled                          = [System.Boolean] $TransportService.ConnectivityLogEnabled
             ConnectivityLogMaxAge                           = [System.String] $TransportService.ConnectivityLogMaxAge
             ConnectivityLogMaxDirectorySize                 = [System.String] $TransportService.ConnectivityLogMaxDirectorySize
@@ -529,6 +534,10 @@ function Set-TargetResource
         [Parameter()]
         [System.String]
         $AgentLogPath,
+
+        [Parameter()]
+        [System.Boolean]
+        $AntispamAgentsEnabled,
 
         [Parameter()]
         [System.Boolean]
@@ -848,64 +857,59 @@ function Set-TargetResource
         $UseDowngradedExchangeServerAuth
     )
 
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-TransportService' -Verbose:$VerbosePreference
 
     # Remove Credential and Ensure so we don't pass it into the next command
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'AllowServiceRestart'
 
-    try
+    # If PipelineTracingSenderAddress exists and is $null remove it from $PSBoundParameters and add argument
+    if ($PSBoundParameters.ContainsKey('PipelineTracingSenderAddress'))
     {
-        # If PipelineTracingSenderAddress exists and is $null remove it from $PSBoundParameters and add argument
-        if ($PSBoundParameters.ContainsKey('PipelineTracingSenderAddress'))
+        if ([System.String]::IsNullOrEmpty($PipelineTracingSenderAddress))
         {
-            if ([System.String]::IsNullOrEmpty($PipelineTracingSenderAddress))
-            {
-                Write-Verbose -Message 'PipelineTracingSenderAddress is NULL'
-                Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'PipelineTracingSenderAddress'
-                $PSBoundParameters['PipelineTracingSenderAddress'] = $null
-            }
+            Write-Verbose -Message 'PipelineTracingSenderAddress is NULL'
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'PipelineTracingSenderAddress'
+            $PSBoundParameters['PipelineTracingSenderAddress'] = $null
         }
-
-        # If ExternalIPAddress exists and is $null remove it from $PSBoundParameters and add argument
-        if ($PSBoundParameters.ContainsKey('ExternalIPAddress'))
-        {
-            if ([System.String]::IsNullOrEmpty($ExternalIPAddress))
-            {
-                Write-Verbose -Message 'ExternalIPAddress is NULL'
-                Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'ExternalIPAddress'
-                $PSBoundParameters['ExternalIPAddress'] = $null
-            }
-        }
-
-        # If InternalDNSServers exists and is $null remove it from $PSBoundParameters and add argument
-        if ($PSBoundParameters.ContainsKey('InternalDNSServers'))
-        {
-            if ([System.String]::IsNullOrEmpty($InternalDNSServers))
-            {
-                Write-Verbose -Message 'InternalDNSServers is NULL'
-                Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'InternalDNSServers'
-                $PSBoundParameters['InternalDNSServers'] = $null
-            }
-        }
-
-        # If ExternalDNSServers exists and is $null remove it from $PSBoundParameters and add argument
-        if ($PSBoundParameters.ContainsKey('ExternalDNSServers'))
-        {
-            if ([System.String]::IsNullOrEmpty($ExternalDNSServers))
-            {
-                Write-Verbose -Message 'ExternalDNSServers is NULL'
-                Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'ExternalDNSServers'
-                $PSBoundParameters['ExternalDNSServers'] = $null
-            }
-        }
-
-        Set-TransportService @PSBoundParameters
     }
-    catch
+
+    # If ExternalIPAddress exists and is $null remove it from $PSBoundParameters and add argument
+    if ($PSBoundParameters.ContainsKey('ExternalIPAddress'))
     {
-        Write-Verbose -Message "The following exception was thrown:$($_.Exception.Message)"
+        if ([System.String]::IsNullOrEmpty($ExternalIPAddress))
+        {
+            Write-Verbose -Message 'ExternalIPAddress is NULL'
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'ExternalIPAddress'
+            $PSBoundParameters['ExternalIPAddress'] = $null
+        }
     }
+
+    # If InternalDNSServers exists and is $null remove it from $PSBoundParameters and add argument
+    if ($PSBoundParameters.ContainsKey('InternalDNSServers'))
+    {
+        if ([System.String]::IsNullOrEmpty($InternalDNSServers))
+        {
+            Write-Verbose -Message 'InternalDNSServers is NULL'
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'InternalDNSServers'
+            $PSBoundParameters['InternalDNSServers'] = $null
+        }
+    }
+
+    # If ExternalDNSServers exists and is $null remove it from $PSBoundParameters and add argument
+    if ($PSBoundParameters.ContainsKey('ExternalDNSServers'))
+    {
+        if ([System.String]::IsNullOrEmpty($ExternalDNSServers))
+        {
+            Write-Verbose -Message 'ExternalDNSServers is NULL'
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'ExternalDNSServers'
+            $PSBoundParameters['ExternalDNSServers'] = $null
+        }
+    }
+
+    Set-TransportService @PSBoundParameters
 
     if ($AllowServiceRestart -eq $true)
     {
@@ -973,6 +977,10 @@ function Test-TargetResource
         [Parameter()]
         [System.String]
         $AgentLogPath,
+
+        [Parameter()]
+        [System.Boolean]
+        $AntispamAgentsEnabled,
 
         [Parameter()]
         [System.Boolean]
@@ -1350,6 +1358,11 @@ function Test-TargetResource
         }
 
         if (!(Test-ExchangeSetting -Name 'AgentLogPath' -Type 'String' -ExpectedValue $AgentLogPath -ActualValue $TransportService.AgentLogPath -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'AntispamAgentsEnabled' -Type 'Boolean' -ExpectedValue $AntispamAgentsEnabled -ActualValue $TransportService.AntispamAgentsEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
