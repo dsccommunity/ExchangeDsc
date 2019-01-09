@@ -80,9 +80,9 @@ try
         }
 
         Describe 'MSFT_xExchEcpVirtualDirectory\Set-TargetResource' -Tag 'Set' {
-            # AfterEach {
-            #     Assert-VerifiableMock
-            # }
+            AfterEach {
+                Assert-VerifiableMock
+            }
 
             Context 'When Set-TargetResource is called' {
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
