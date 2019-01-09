@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.26.0.0
+
 - Add support for Exchange Server 2019
 - Added additional parameters to the MSFT_xExchUMService resource
 - Rename improperly named functions, and add comment based help in
