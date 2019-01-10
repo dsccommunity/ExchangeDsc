@@ -43,7 +43,6 @@ try
 
         Mock -CommandName Write-FunctionEntry -Verifiable
 
-
         $commonTargetResourceParams = @{
             Identity   = 'EcpVirtualDirectory'
             Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
@@ -86,6 +85,7 @@ try
 
             Context 'When Set-TargetResource is called' {
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
+
                 It 'Should warn about restarting the MSExchangeECPAppPool' {
                     Mock -CommandName Set-ECPVirtualDirectory -Verifiable
                     Mock -CommandName Write-Warning -ParameterFilter {$message -eq 'The configuration will not take effect until MSExchangeECPAppPool is manually recycled.'}
@@ -119,6 +119,7 @@ try
 
             Context 'When Test-TargetResource is called' {
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
+
                 It 'Should return False when Get-ECPVirtualDirectoryInternal returns False' {
                     Mock -CommandName Get-EcpVirtualDirectoryInternal  -Verifiable
 

@@ -575,6 +575,10 @@ function Test-TargetResource
         {
             $testResults = $false
         }
+        if (!(Test-ExchangeSetting -Name 'OwaOptionsEnabled' -Type 'Boolean' -ExpectedValue $OwaOptionsEnabled -ActualValue $EcpVdir.OwaOptionsEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
     }
 
     return $testResults
