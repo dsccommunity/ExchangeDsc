@@ -398,8 +398,7 @@ function Set-TargetResource
     if ($AllowServiceRestart -eq $true)
     {
         Write-Verbose -Message 'Restarting IMAP Services'
-
-        Get-Service MSExchangeIMAP4* | Restart-Service
+        Restart-Service -Name  MSExchangeIMAP4* -WarningAction SilentlyContinue
     }
     else
     {
@@ -611,6 +610,126 @@ function Test-TargetResource
         }
 
         if (!(Test-ExchangeSetting -Name 'X509CertificateName' -Type 'String' -ExpectedValue $X509CertificateName -ActualValue $imap.X509CertificateName -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'AuthenticatedConnectionTimeout' -Type 'Timespan' -ExpectedValue $AuthenticatedConnectionTimeout -ActualValue $imap.AuthenticatedConnectionTimeout -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'Banner' -Type 'String' -ExpectedValue $Banner -ActualValue $imap.Banner -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'CalendarItemRetrievalOption' -Type 'String' -ExpectedValue $CalendarItemRetrievalOption -ActualValue $imap.CalendarItemRetrievalOption -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'EnableExactRFC822Size' -Type 'Boolean' -ExpectedValue $EnableExactRFC822Size -ActualValue $imap.EnableExactRFC822Size -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'EnableGSSAPIAndNTLMAuth' -Type 'Boolean' -ExpectedValue $EnableGSSAPIAndNTLMAuth -ActualValue $imap.EnableGSSAPIAndNTLMAuth -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'EnforceCertificateErrors' -Type 'Boolean' -ExpectedValue $EnforceCertificateErrors -ActualValue $imap.EnforceCertificateErrors -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'ExtendedProtectionPolicy' -Type 'String' -ExpectedValue $ExtendedProtectionPolicy -ActualValue $imap.ExtendedProtectionPolicy -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'InternalConnectionSettings' -Type 'Array' -ExpectedValue $InternalConnectionSettings -ActualValue $imap.InternalConnectionSettings -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'LogFileLocation' -Type 'String' -ExpectedValue $LogFileLocation -ActualValue $imap.LogFileLocation -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'LogFileRollOverSettings' -Type 'String' -ExpectedValue $LogFileRollOverSettings -ActualValue $imap.LogFileRollOverSettings -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'LogPerFileSizeQuota' -Type 'Array' -ExpectedValue $LogPerFileSizeQuota -ActualValue $imap.LogPerFileSizeQuota -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'MaxCommandSize' -Type 'Int' -ExpectedValue $MaxCommandSize -ActualValue $imap.MaxCommandSize -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'MaxConnectionFromSingleIP' -Type 'Int' -ExpectedValue $MaxConnectionFromSingleIP -ActualValue $imap.MaxConnectionFromSingleIP -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'MaxConnections' -Type 'Int' -ExpectedValue $MaxConnections -ActualValue $imap.MaxConnections -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'MaxConnectionsPerUser' -Type 'Int' -ExpectedValue $MaxConnectionsPerUser -ActualValue $imap.MaxConnectionsPerUser -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'MessageRetrievalMimeFormat' -Type 'String' -ExpectedValue $MessageRetrievalMimeFormat -ActualValue $imap.MessageRetrievalMimeFormat -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'OwaServerUrl' -Type 'String' -ExpectedValue $OwaServerUrl -ActualValue $imap.OwaServerUrl -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'PreAuthenticatedConnectionTimeout' -Type 'Timespan' -ExpectedValue $PreAuthenticatedConnectionTimeout -ActualValue $imap.PreAuthenticatedConnectionTimeout -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'ProtocolLogEnabled' -Type 'Boolean' -ExpectedValue $ProtocolLogEnabled -ActualValue $imap.ProtocolLogEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'ProxyTargetPort' -Type 'Int' -ExpectedValue $ProxyTargetPort -ActualValue $imap.ProxyTargetPort -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'ShowHiddenFoldersEnabled' -Type 'Boolean' -ExpectedValue $ShowHiddenFoldersEnabled -ActualValue $imap.ShowHiddenFoldersEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'SSLBindings' -Type 'Array' -ExpectedValue $SSLBindings -ActualValue $imap.SSLBindings -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'SuppressReadReceipt' -Type 'Boolean' -ExpectedValue $SuppressReadReceipt -ActualValue $imap.SuppressReadReceipt -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'UnencryptedOrTLSBindings' -Type 'Array' -ExpectedValue $UnencryptedOrTLSBindings -ActualValue $imap.UnencryptedOrTLSBindings -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
