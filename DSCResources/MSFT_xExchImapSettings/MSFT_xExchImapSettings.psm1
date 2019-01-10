@@ -66,7 +66,107 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String]
-        $X509CertificateName
+        $X509CertificateName,
+
+        [Parameter()]
+        [System.String]
+        $AuthenticatedConnectionTimeout, # <EnhancedTimeSpan>
+
+        [Parameter()]
+        [System.String]
+        $Banner,
+
+        [Parameter()]
+        [ValidateSet('iCalendar', 'intranetUrl', 'InternetUrl', 'Custom')]
+        [System.String]
+        $CalendarItemRetrievalOption,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableExactRFC822Size,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableGSSAPIAndNTLMAuth,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnforceCertificateErrors,
+
+        [Parameter()]
+        [ValidateSet('None', 'Allow', 'Require')]
+        [System.String]
+        $ExtendedProtectionPolicy,
+
+        [Parameter()]
+        [System.String[]]
+        $InternalConnectionSettings,
+
+        [Parameter()]
+        [System.String]
+        $LogFileLocation,
+
+        [Parameter()]
+        [ValidateSet('Hourly', 'Daily', 'Weekly', 'Monthly')]
+        [System.String]
+        $LogFileRollOverSettings,
+
+        [Parameter()]
+        [System.String[]]
+        $LogPerFileSizeQuota,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxCommandSize,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxConnectionFromSingleIP,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxConnections,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxConnectionsPerUser,
+
+        [Parameter()]
+        [ValidateSet('TextOnly', 'HtmlOnly', 'HtmlAndTextAlternative', 'TextEnrichedOnly', 'TextEnrichedAndTextAlternative', 'BestBodyFormat', 'Tnef')]
+        [System.String]
+        $MessageRetrievalMimeFormat,
+
+        [Parameter()]
+        [System.String]
+        $OwaServerUrl,
+
+        [Parameter()]
+        [System.String]
+        $PreAuthenticatedConnectionTimeout,
+
+        [Parameter()]
+        [System.Boolean]
+        $ProtocolLogEnabled,
+
+        [Parameter()]
+        [System.Int32]
+        $ProxyTargetPort,
+
+        [Parameter()]
+        [System.Boolean]
+        $ShowHiddenFoldersEnabled,
+
+        [Parameter()]
+        [System.String[]]
+        $SSLBindings,
+
+        [Parameter()]
+        [System.Boolean]
+        $SuppressReadReceipt,
+
+        [Parameter()]
+        [System.String[]]
+        $UnencryptedOrTLSBindings
     )
 
     Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
@@ -79,10 +179,34 @@ function Get-TargetResource
     if ($null -ne $imap)
     {
         $returnValue = @{
-            Server                     = [System.String] $Server
-            ExternalConnectionSettings = [System.String[]] $imap.ExternalConnectionSettings
-            LoginType                  = [System.String] $imap.LoginType
-            X509CertificateName        = [System.String] $imap.X509CertificateName
+            Server                            = [System.String] $Server
+            ExternalConnectionSettings        = [System.String[]] $imap.ExternalConnectionSettings
+            LoginType                         = [System.String] $imap.LoginType
+            X509CertificateName               = [System.String] $imap.X509CertificateName
+            AuthenticatedConnectionTimeout    = [System.String] $imap.AuthenticatedConnectionTimeout
+            Banner                            = [System.String] $imap.Banner
+            CalendarItemRetrievalOption       = [System.String] $imap.CalendarItemRetrievalOption
+            EnableExactRFC822Size             = [System.Boolean] $imap.EnableExactRFC822Size
+            EnableGSSAPIAndNTLMAuth           = [System.Boolean] $imap.EnableGSSAPIAndNTLMAuth
+            EnforceCertificateErrors          = [System.Boolean] $imap.EnforceCertificateErrors
+            ExtendedProtectionPolicy          = [System.String] $imap.ExtendedProtectionPolicy
+            InternalConnectionSettings        = [System.String[]] $imap.InternalConnectionSettings
+            LogFileLocation                   = [System.String] $imap.LogFileLocation
+            LogFileRollOverSettings           = [System.String] $imap.LogFileRollOverSettings
+            LogPerFileSizeQuota               = [System.String[]] $imap.LogPerFileSizeQuota
+            MaxCommandSize                    = [System.Int32] $imap.MaxCommandSize
+            MaxConnectionFromSingleIP         = [System.Int32] $imap.MaxConnectionFromSingleIP
+            MaxConnections                    = [System.Int32] $imap.MaxConnections
+            MaxConnectionsPerUser             = [System.Int32] $imap.MaxConnectionsPerUser
+            MessageRetrievalMimeFormat        = [System.String] $imap.MessageRetrievalMimeFormat
+            OwaServerUrl                      = [System.String] $imap.OwaServerUrl
+            PreAuthenticatedConnectionTimeout = [System.String] $imap.PreAuthenticatedConnectionTimeout
+            ProtocolLogEnabled                = [System.Boolean] $imap.ProtocolLogEnabled
+            ProxyTargetPort                   = [System.Int32] $imap.ProxyTargetPort
+            ShowHiddenFoldersEnabled          = [System.Boolean] $imap.ShowHiddenFoldersEnabled
+            SSLBindings                       = [System.String[]] $imap.SSLBindings
+            SuppressReadReceipt               = [System.Boolean] $imap.SuppressReadReceipt
+            UnencryptedOrTLSBindings          = [System.String[]] $imap.UnencryptedOrTLSBindings
         }
     }
 
@@ -155,7 +279,107 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        $X509CertificateName
+        $X509CertificateName,
+
+        [Parameter()]
+        [System.String]
+        $AuthenticatedConnectionTimeout, # <EnhancedTimeSpan>
+
+        [Parameter()]
+        [System.String]
+        $Banner,
+
+        [Parameter()]
+        [ValidateSet('iCalendar', 'intranetUrl', 'InternetUrl', 'Custom')]
+        [System.String]
+        $CalendarItemRetrievalOption,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableExactRFC822Size,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableGSSAPIAndNTLMAuth,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnforceCertificateErrors,
+
+        [Parameter()]
+        [ValidateSet('None', 'Allow', 'Require')]
+        [System.String]
+        $ExtendedProtectionPolicy,
+
+        [Parameter()]
+        [System.String[]]
+        $InternalConnectionSettings,
+
+        [Parameter()]
+        [System.String]
+        $LogFileLocation,
+
+        [Parameter()]
+        [ValidateSet('Hourly', 'Daily', 'Weekly', 'Monthly')]
+        [System.String]
+        $LogFileRollOverSettings,
+
+        [Parameter()]
+        [System.String[]]
+        $LogPerFileSizeQuota,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxCommandSize,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxConnectionFromSingleIP,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxConnections,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxConnectionsPerUser,
+
+        [Parameter()]
+        [ValidateSet('TextOnly', 'HtmlOnly', 'HtmlAndTextAlternative', 'TextEnrichedOnly', 'TextEnrichedAndTextAlternative', 'BestBodyFormat', 'Tnef')]
+        [System.String]
+        $MessageRetrievalMimeFormat,
+
+        [Parameter()]
+        [System.String]
+        $OwaServerUrl,
+
+        [Parameter()]
+        [System.String]
+        $PreAuthenticatedConnectionTimeout,
+
+        [Parameter()]
+        [System.Boolean]
+        $ProtocolLogEnabled,
+
+        [Parameter()]
+        [System.Int32]
+        $ProxyTargetPort,
+
+        [Parameter()]
+        [System.Boolean]
+        $ShowHiddenFoldersEnabled,
+
+        [Parameter()]
+        [System.String[]]
+        $SSLBindings,
+
+        [Parameter()]
+        [System.Boolean]
+        $SuppressReadReceipt,
+
+        [Parameter()]
+        [System.String[]]
+        $UnencryptedOrTLSBindings
     )
 
     Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
@@ -248,7 +472,107 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $X509CertificateName
+        $X509CertificateName,
+
+        [Parameter()]
+        [System.String]
+        $AuthenticatedConnectionTimeout, # <EnhancedTimeSpan>
+
+        [Parameter()]
+        [System.String]
+        $Banner,
+
+        [Parameter()]
+        [ValidateSet('iCalendar', 'intranetUrl', 'InternetUrl', 'Custom')]
+        [System.String]
+        $CalendarItemRetrievalOption,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableExactRFC822Size,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableGSSAPIAndNTLMAuth,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnforceCertificateErrors,
+
+        [Parameter()]
+        [ValidateSet('None', 'Allow', 'Require')]
+        [System.String]
+        $ExtendedProtectionPolicy,
+
+        [Parameter()]
+        [System.String[]]
+        $InternalConnectionSettings,
+
+        [Parameter()]
+        [System.String]
+        $LogFileLocation,
+
+        [Parameter()]
+        [ValidateSet('Hourly', 'Daily', 'Weekly', 'Monthly')]
+        [System.String]
+        $LogFileRollOverSettings,
+
+        [Parameter()]
+        [System.String[]]
+        $LogPerFileSizeQuota,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxCommandSize,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxConnectionFromSingleIP,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxConnections,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxConnectionsPerUser,
+
+        [Parameter()]
+        [ValidateSet('TextOnly', 'HtmlOnly', 'HtmlAndTextAlternative', 'TextEnrichedOnly', 'TextEnrichedAndTextAlternative', 'BestBodyFormat', 'Tnef')]
+        [System.String]
+        $MessageRetrievalMimeFormat,
+
+        [Parameter()]
+        [System.String]
+        $OwaServerUrl,
+
+        [Parameter()]
+        [System.String]
+        $PreAuthenticatedConnectionTimeout,
+
+        [Parameter()]
+        [System.Boolean]
+        $ProtocolLogEnabled,
+
+        [Parameter()]
+        [System.Int32]
+        $ProxyTargetPort,
+
+        [Parameter()]
+        [System.Boolean]
+        $ShowHiddenFoldersEnabled,
+
+        [Parameter()]
+        [System.String[]]
+        $SSLBindings,
+
+        [Parameter()]
+        [System.Boolean]
+        $SuppressReadReceipt,
+
+        [Parameter()]
+        [System.String[]]
+        $UnencryptedOrTLSBindings
     )
 
     Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
@@ -357,7 +681,107 @@ function Get-ImapSettingsInternal
 
         [Parameter()]
         [System.String]
-        $X509CertificateName
+        $X509CertificateName,
+
+        [Parameter()]
+        [System.String]
+        $AuthenticatedConnectionTimeout, # <EnhancedTimeSpan>
+
+        [Parameter()]
+        [System.String]
+        $Banner,
+
+        [Parameter()]
+        [ValidateSet('iCalendar', 'intranetUrl', 'InternetUrl', 'Custom')]
+        [System.String]
+        $CalendarItemRetrievalOption,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableExactRFC822Size,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnableGSSAPIAndNTLMAuth,
+
+        [Parameter()]
+        [System.Boolean]
+        $EnforceCertificateErrors,
+
+        [Parameter()]
+        [ValidateSet('None', 'Allow', 'Require')]
+        [System.String]
+        $ExtendedProtectionPolicy,
+
+        [Parameter()]
+        [System.String[]]
+        $InternalConnectionSettings,
+
+        [Parameter()]
+        [System.String]
+        $LogFileLocation,
+
+        [Parameter()]
+        [ValidateSet('Hourly', 'Daily', 'Weekly', 'Monthly')]
+        [System.String]
+        $LogFileRollOverSettings,
+
+        [Parameter()]
+        [System.String[]]
+        $LogPerFileSizeQuota,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxCommandSize,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxConnectionFromSingleIP,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxConnections,
+
+        [Parameter()]
+        [System.Int32]
+        $MaxConnectionsPerUser,
+
+        [Parameter()]
+        [ValidateSet('TextOnly', 'HtmlOnly', 'HtmlAndTextAlternative', 'TextEnrichedOnly', 'TextEnrichedAndTextAlternative', 'BestBodyFormat', 'Tnef')]
+        [System.String]
+        $MessageRetrievalMimeFormat,
+
+        [Parameter()]
+        [System.String]
+        $OwaServerUrl,
+
+        [Parameter()]
+        [System.String]
+        $PreAuthenticatedConnectionTimeout,
+
+        [Parameter()]
+        [System.Boolean]
+        $ProtocolLogEnabled,
+
+        [Parameter()]
+        [System.Int32]
+        $ProxyTargetPort,
+
+        [Parameter()]
+        [System.Boolean]
+        $ShowHiddenFoldersEnabled,
+
+        [Parameter()]
+        [System.String[]]
+        $SSLBindings,
+
+        [Parameter()]
+        [System.Boolean]
+        $SuppressReadReceipt,
+
+        [Parameter()]
+        [System.String[]]
+        $UnencryptedOrTLSBindings
     )
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Server', 'DomainController'
