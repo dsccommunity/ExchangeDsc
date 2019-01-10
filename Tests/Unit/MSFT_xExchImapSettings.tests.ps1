@@ -41,8 +41,9 @@ try
         Mock -CommandName Write-FunctionEntry -Verifiable
 
         $commonTargetResourceParams = @{
-            Server     = 'Server'
-            Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
+            Server              = 'Server'
+            Credential          = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
+            AllowServiceRestart = $true
         }
 
         $commonImapSettingsStandardOutput = @{
@@ -74,6 +75,7 @@ try
             SuppressReadReceipt               = [System.Boolean] $false
             UnencryptedOrTLSBindings          = [System.String[]] @()
         }
+
         Describe 'MSFT_xExchImapSettings\Get-TargetResource' -Tag 'Get' {
             AfterEach {
                 Assert-VerifiableMock
@@ -85,6 +87,67 @@ try
                 Mock -CommandName Get-ImapSettingsInternal -Verifiable -MockWith { return $commonImapSettingsStandardOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $commonTargetResourceParams
+            }
+        }
+
+        Describe 'MSFT_xExchImapSettings\Set-TargetResource' -Tag 'Set' {
+            # Override Exchange cmdlets
+            Mock -CommandName Get-RemoteExchangeSession -Verifiable
+            function Set-ImapSettings {}
+
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Set-TargetResource is called' {
+                It 'Should call expected functions when AllowServiceRestart is true' {
+                    Mock -CommandName Set-ImapSettings -Verifiable
+                    Mock -CommandName Restart-Service -Verifiable
+
+                    Set-TargetResource @commonTargetResourceParams
+                }
+
+
+                It 'Should warn that a MSExchangeIMAP4 service restart is required' {
+                    $AllowServiceRestart = $commonTargetResourceParams.AllowServiceRestart
+                    $commonTargetResourceParams.AllowServiceRestart = $false
+                    Mock -CommandName Set-ImapSettings -Verifiable
+                    Mock -CommandName Write-Warning -Verifiable -ParameterFilter {$Message -eq 'The configuration will not take effect until MSExchangeIMAP4 services are manually restarted.'}
+
+                    Set-TargetResource @commonTargetResourceParams
+                    $commonTargetResourceParams.AllowServiceRestart = $AllowServiceRestart
+                }
+            }
+        }
+
+        Describe 'MSFT_xExchImapSettings\Test-TargetResource' -Tag 'Test' {
+            # Override Exchange cmdlets
+            Mock -CommandName Get-RemoteExchangeSession -Verifiable
+
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Test-TargetResource is called' {
+                It 'Should return False when Get-UMCallRouterSettings returns null' {
+                    Mock -CommandName Get-ImapSettingsInternal -Verifiable
+
+                    Test-TargetResource @commonTargetResourceParams -ErrorAction SilentlyContinue | Should -Be $false
+                }
+
+                It 'Should return False when Test-ExchangeSetting returns False' {
+                    Mock -CommandName Get-ImapSettingsInternal -Verifiable -MockWith { return $commonImapSettingsStandardOutput }
+                    Mock -CommandName Test-ExchangeSetting -Verifiable -MockWith { return $false }
+
+                    Test-TargetResource @commonTargetResourceParams | Should -Be $false
+                }
+
+                It 'Should return True when Test-ExchangeSetting returns True' {
+                    Mock -CommandName Get-ImapSettingsInternal -Verifiable -MockWith { return $commonImapSettingsStandardOutput }
+                    Mock -CommandName Test-ExchangeSetting -Verifiable -MockWith { return $true }
+
+                    Test-TargetResource @commonTargetResourceParams | Should -Be $true
+                }
             }
         }
     }

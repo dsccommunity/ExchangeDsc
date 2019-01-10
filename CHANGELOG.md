@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Added additional parameters to the MSFT_xExchImapSettings resource
+
 ## 1.27.0.0
 
 - Added additional parameters to the MSFT_xExchTransportService resource
