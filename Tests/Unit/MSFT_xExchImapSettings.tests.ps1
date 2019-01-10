@@ -75,7 +75,6 @@ try
             SuppressReadReceipt               = [System.Boolean] $false
             UnencryptedOrTLSBindings          = [System.String[]] @()
         }
-
         Describe 'MSFT_xExchImapSettings\Get-TargetResource' -Tag 'Get' {
             AfterEach {
                 Assert-VerifiableMock
