@@ -120,7 +120,7 @@ try
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
 
                 It 'Should return False when Get-ECPVirtualDirectoryInternal returns False' {
-                    Mock -CommandName Get-EcpVirtualDirectoryInternal  -Verifiable
+                    Mock -CommandName Get-EcpVirtualDirectoryInternal -Verifiable
 
                     Test-TargetResource @commonTargetResourceParams -ErrorAction SilentlyContinue | Should -Be $false
                 }

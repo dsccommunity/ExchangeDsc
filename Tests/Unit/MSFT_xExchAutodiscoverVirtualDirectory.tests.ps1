@@ -75,8 +75,7 @@ try
             }
 
             Context 'When Set-TargetResource is called' {
-                function Set-AutodiscoverVirtualDirectory{
-                }
+                function Set-AutodiscoverVirtualDirectory { }
 
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
                 It 'Should warn about restarting the MSExchangeAutodiscoverAppPool' {
