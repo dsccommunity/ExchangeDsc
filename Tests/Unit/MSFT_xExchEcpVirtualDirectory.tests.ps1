@@ -38,8 +38,7 @@ try
 
     InModuleScope $script:DSCResourceName {
 
-        function Set-ECPVirtualDirectory {
-        }
+        function Set-ECPVirtualDirectory { }
 
         Mock -CommandName Write-FunctionEntry -Verifiable
 
@@ -88,7 +87,7 @@ try
 
                 It 'Should warn about restarting the MSExchangeECPAppPool' {
                     Mock -CommandName Set-ECPVirtualDirectory -Verifiable
-                    Mock -CommandName Write-Warning -ParameterFilter {$message -eq 'The configuration will not take effect until MSExchangeECPAppPool is manually recycled.'}
+                    Mock -CommandName Write-Warning -ParameterFilter {$Message -eq 'The configuration will not take effect until MSExchangeECPAppPool is manually recycled.'}
 
                     Set-TargetResource @commonTargetResourceParams
                 }
@@ -101,7 +100,7 @@ try
 
                     Set-TargetResource @commonTargetResourceParams
 
-                    $commonTargetResourceParams.Remove('AllowServiceReset')
+                    $commonTargetResourceParams.Remove('AllowServiceRestart')
                 }
 
                 It 'Should throw error about SPN' {
@@ -127,7 +126,7 @@ try
                 }
 
                 It 'Should return False when Test-ExchangeSetting returns False' {
-                    Mock -CommandName Get-EcpVirtualDirectoryInternal  -Verifiable -MockWith { return $commonEcpVirtualDirectoryStandardOutput }
+                    Mock -CommandName Get-EcpVirtualDirectoryInternal -Verifiable -MockWith { return $commonEcpVirtualDirectoryStandardOutput }
                     Mock -CommandName Test-ExchangeSetting -Verifiable -MockWith { return $false }
 
                     Test-TargetResource @commonTargetResourceParams | Should -Be $false

@@ -114,7 +114,7 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         $ExtendedProtectionTokenChecking,
 
         [Parameter()]
@@ -292,7 +292,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         $ExtendedProtectionTokenChecking,
 
         [Parameter()]
@@ -473,7 +473,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        [ValidateSet('None','Allow','Require')]
+        [ValidateSet('None', 'Allow', 'Require')]
         $ExtendedProtectionTokenChecking,
 
         [Parameter()]

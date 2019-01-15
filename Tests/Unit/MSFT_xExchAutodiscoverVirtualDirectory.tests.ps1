@@ -81,7 +81,7 @@ try
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
                 It 'Should warn about restarting the MSExchangeAutodiscoverAppPool' {
                     Mock -CommandName Set-AutodiscoverVirtualDirectory -Verifiable
-                    Mock -CommandName Write-Warning -ParameterFilter {$message -eq 'The configuration will not take effect until MSExchangeAutodiscoverAppPool is manually recycled.'}
+                    Mock -CommandName Write-Warning -ParameterFilter {$Message -eq 'The configuration will not take effect until MSExchangeAutodiscoverAppPool is manually recycled.'}
                     Set-TargetResource @commonTargetResourceParams
                 }
 
@@ -90,7 +90,7 @@ try
                     Mock -CommandName Set-AutodiscoverVirtualDirectory -Verifiable
                     Mock -CommandName Restart-ExistingAppPool -Verifiable
                     Set-TargetResource @commonTargetResourceParams
-                    $commonTargetResourceParams.Remove('AllowServiceReset')
+                    $commonTargetResourceParams.Remove('AllowServiceRestart')
                 }
 
                 It 'Should throw error about SPN' {
