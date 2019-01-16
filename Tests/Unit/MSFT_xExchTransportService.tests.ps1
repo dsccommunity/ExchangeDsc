@@ -150,6 +150,7 @@ try
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $commonTargetResourceParams
             }
         }
+
         Describe 'MSFT_xExchTransportService\Set-TargetResource' -Tag 'Set' {
             # Override Exchange cmdlets
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
@@ -158,6 +159,11 @@ try
             AfterEach {
                 Assert-VerifiableMock
             }
+        }
+        Describe 'MSFT_xExchTransportService\Set-TargetResource' -Tag 'Set' {
+            # Override Exchange cmdlets
+            Mock -CommandName Get-RemoteExchangeSession -Verifiable
+            function Set-TransportService {}
 
             $setTargetResourceParams = @{
                 Identity            = 'TransportService'
@@ -224,6 +230,7 @@ try
                 }
 
                 It 'Should return a warning when AllowServiceRestart is false' {
+                    $AllowServiceRestart = $setTargetResourceParams.AllowServiceRestart
                     $setTargetResourceParams.AllowServiceRestart = $false
                     Mock -CommandName Set-TransportService -Verifiable
                     Mock -CommandName Write-Warning -Verifiable -ParameterFilter {$Message -eq 'The configuration will not take effect until the MSExchangeTransport service is manually restarted.'}
