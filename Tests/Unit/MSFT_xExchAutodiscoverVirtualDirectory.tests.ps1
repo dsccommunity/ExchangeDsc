@@ -61,7 +61,6 @@ try
             }
 
             Context 'When Get-TargetResource is called' {
-
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
                 Mock -CommandName Get-AutodiscoverVirtualDirectoryInternal -Verifiable -MockWith { return $commonAutodiscoverVirtualDirectoryInternalStandardOutput }
 
@@ -81,6 +80,7 @@ try
                 It 'Should warn about restarting the MSExchangeAutodiscoverAppPool' {
                     Mock -CommandName Set-AutodiscoverVirtualDirectory -Verifiable
                     Mock -CommandName Write-Warning -ParameterFilter {$message -eq 'The configuration will not take effect until MSExchangeAutodiscoverAppPool is manually recycled.'}
+
                     Set-TargetResource @commonTargetResourceParams
                 }
 
@@ -88,6 +88,7 @@ try
                     $commonTargetResourceParams.AllowServiceRestart = $true
                     Mock -CommandName Set-AutodiscoverVirtualDirectory -Verifiable
                     Mock -CommandName Restart-ExistingAppPool -Verifiable
+
                     Set-TargetResource @commonTargetResourceParams
                     $commonTargetResourceParams.Remove('AllowServiceReset')
                 }
