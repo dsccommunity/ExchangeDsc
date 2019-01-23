@@ -55,6 +55,8 @@ try
             WSSecurityAuthentication        = [System.Boolean] $false
         }
 
+        function Get-AutodiscoverVirtualDirectory {}
+
         Describe 'MSFT_xExchAutodiscoverVirtualDirectory\Get-TargetResource' -Tag 'Get' {
             AfterEach {
                 Assert-VerifiableMock
@@ -62,7 +64,7 @@ try
 
             Context 'When Get-TargetResource is called' {
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                Mock -CommandName Get-AutodiscoverVirtualDirectoryInternal -Verifiable -MockWith { return $commonAutodiscoverVirtualDirectoryInternalStandardOutput }
+                Mock -CommandName Get-AutodiscoverVirtualDirectory -Verifiable -MockWith { return $commonAutodiscoverVirtualDirectoryInternalStandardOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $commonTargetResourceParams
             }
@@ -79,7 +81,7 @@ try
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
                 It 'Should warn about restarting the MSExchangeAutodiscoverAppPool' {
                     Mock -CommandName Set-AutodiscoverVirtualDirectory -Verifiable
-                    Mock -CommandName Write-Warning -ParameterFilter {$message -eq 'The configuration will not take effect until MSExchangeAutodiscoverAppPool is manually recycled.'}
+                    Mock -CommandName Write-Warning -ParameterFilter {$Message -eq 'The configuration will not take effect until MSExchangeAutodiscoverAppPool is manually recycled.'}
 
                     Set-TargetResource @commonTargetResourceParams
                 }
@@ -90,7 +92,7 @@ try
                     Mock -CommandName Restart-ExistingAppPool -Verifiable
 
                     Set-TargetResource @commonTargetResourceParams
-                    $commonTargetResourceParams.Remove('AllowServiceReset')
+                    $commonTargetResourceParams.Remove('AllowServiceRestart')
                 }
 
                 It 'Should throw error about SPN' {
@@ -110,20 +112,20 @@ try
             Context 'When Test-TargetResource is called' {
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
                 It 'Should return False when Get-UMCallRouterSettings returns null' {
-                    Mock -CommandName Get-AutodiscoverVirtualDirectoryInternal -Verifiable
+                    Mock -CommandName Get-AutodiscoverVirtualDirectory -Verifiable
 
                     Test-TargetResource @commonTargetResourceParams -ErrorAction SilentlyContinue | Should -Be $false
                 }
 
                 It 'Should return False when Test-ExchangeSetting returns False' {
-                    Mock -CommandName Get-AutodiscoverVirtualDirectoryInternal -Verifiable -MockWith { return $commonAutodiscoverVirtualDirectoryInternalStandardOutput }
+                    Mock -CommandName Get-AutodiscoverVirtualDirectory -Verifiable -MockWith { return $commonAutodiscoverVirtualDirectoryInternalStandardOutput }
                     Mock -CommandName Test-ExchangeSetting -Verifiable -MockWith { return $false }
 
                     Test-TargetResource @commonTargetResourceParams | Should -Be $false
                 }
 
                 It 'Should return True when Test-ExchangeSetting returns True' {
-                    Mock -CommandName Get-AutodiscoverVirtualDirectoryInternal -Verifiable -MockWith { return $commonAutodiscoverVirtualDirectoryInternalStandardOutput }
+                    Mock -CommandName Get-AutodiscoverVirtualDirectory -Verifiable -MockWith { return $commonAutodiscoverVirtualDirectoryInternalStandardOutput }
                     Mock -CommandName Test-ExchangeSetting -Verifiable -MockWith { return $true }
 
                     Test-TargetResource @commonTargetResourceParams | Should -Be $true
