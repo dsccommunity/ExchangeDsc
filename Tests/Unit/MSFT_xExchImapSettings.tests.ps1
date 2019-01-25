@@ -60,7 +60,7 @@ try
             InternalConnectionSettings        = [System.String[]] @()
             LogFileLocation                   = [System.String] ''
             LogFileRollOverSettings           = [System.String] ''
-            LogPerFileSizeQuota               = [System.String[]] @()
+            LogPerFileSizeQuota               = [System.String ''
             MaxCommandSize                    = [System.Int32] 1
             MaxConnectionFromSingleIP         = [System.Int32] 1
             MaxConnections                    = [System.Int32] 1
