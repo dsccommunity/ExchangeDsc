@@ -416,6 +416,12 @@ an ExchangeCertificate using *-ExchangeCertificate cmdlets.
 * **CertCreds**: Credentials containing the password to the .pfx file in CertFilePath.
 * **CertFilePath**: The file path to the certificate .pfx file that should be imported.
 * **DomainController**: Domain Controller to talk to.
+* **DoNotRequireSsl**: Setting DoNotRequireSsl to True prevents DSC from
+  enabling the Require SSL setting on the Default Web Site when you enable the
+  certificate for IIS. Defaults to False.
+* **NetworkServiceAllowed**: Setting NetworkServiceAllowed to True gives the
+  built-in Network Service account permission to read the certificate's private
+  key without enabling the certificate for SMTP. Defaults to False.
 * **Services**: Services to enable on the certificate.
   See [Enable-ExchangeCertificate](https://docs.microsoft.com/en-us/powershell/module/exchange/encryption-and-certificates/enable-exchangecertificate)
   documentation.

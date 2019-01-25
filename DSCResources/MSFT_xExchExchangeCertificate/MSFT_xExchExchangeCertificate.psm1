@@ -29,6 +29,16 @@
         Directory. You identify the domain controller by its fully qualified
         domain name (FQDN). For example, dc01.contoso.com.
 
+    .PARAMETER DoNotRequireSsl
+        Setting DoNotRequireSsl to True prevents DSC from enabling the Require
+        SSL setting on the Default Web Site when you enable the certificate for
+        IIS. Defaults to False.
+
+    .PARAMETER NetworkServiceAllowed
+        Setting NetworkServiceAllowed to True gives the built-in Network
+        Service account permission to read the certificate's private key
+        without enabling the certificate for SMTP. Defaults to False.
+
     .PARAMETER Services
         Services to enable on the certificate.
 #>
@@ -69,6 +79,14 @@ function Get-TargetResource
         [Parameter()]
         [System.String]
         $DomainController,
+
+        [Parameter()]
+        [System.Boolean]
+        $DoNotRequireSsl = $false,
+
+        [Parameter()]
+        [System.Boolean]
+        $NetworkServiceAllowed = $false,
 
         [Parameter()]
         [System.String[]]
@@ -124,6 +142,16 @@ function Get-TargetResource
         Directory. You identify the domain controller by its fully qualified
         domain name (FQDN). For example, dc01.contoso.com.
 
+    .PARAMETER DoNotRequireSsl
+        Setting DoNotRequireSsl to True prevents DSC from enabling the Require
+        SSL setting on the Default Web Site when you enable the certificate for
+        IIS. Defaults to False.
+
+    .PARAMETER NetworkServiceAllowed
+        Setting NetworkServiceAllowed to True gives the built-in Network
+        Service account permission to read the certificate's private key
+        without enabling the certificate for SMTP. Defaults to False.
+
     .PARAMETER Services
         Services to enable on the certificate.
 #>
@@ -162,6 +190,14 @@ function Set-TargetResource
         [Parameter()]
         [System.String]
         $DomainController,
+
+        [Parameter()]
+        [System.Boolean]
+        $DoNotRequireSsl = $false,
+
+        [Parameter()]
+        [System.Boolean]
+        $NetworkServiceAllowed = $false,
 
         [Parameter()]
         [System.String[]]
@@ -238,7 +274,24 @@ function Set-TargetResource
         {
             $previousError = Get-PreviousError
 
-            Enable-ExchangeCertificate -Thumbprint $Thumbprint -Services $Services -Force -Server $env:COMPUTERNAME
+            $enableParams = @{
+                Server     = $env:COMPUTERNAME
+                Services   = $Services
+                Thumbprint = $Thumbprint
+                Force      = $true
+            }
+
+            if ($DoNotRequireSsl)
+            {
+                $enableParams.Add('DoNotRequireSsl', $true)
+            }
+
+            if ($NetworkServiceAllowed)
+            {
+                $enableParams.Add('NetworkServiceAllowed', $true)
+            }
+
+            Enable-ExchangeCertificate @enableParams
 
             Assert-NoNewError -CmdletBeingRun 'Enable-ExchangeCertificate' -PreviousError $previousError -Verbose:$VerbosePreference
         }
@@ -294,6 +347,16 @@ function Set-TargetResource
         Directory. You identify the domain controller by its fully qualified
         domain name (FQDN). For example, dc01.contoso.com.
 
+    .PARAMETER DoNotRequireSsl
+        Setting DoNotRequireSsl to True prevents DSC from enabling the Require
+        SSL setting on the Default Web Site when you enable the certificate for
+        IIS. Defaults to False.
+
+    .PARAMETER NetworkServiceAllowed
+        Setting NetworkServiceAllowed to True gives the built-in Network
+        Service account permission to read the certificate's private key
+        without enabling the certificate for SMTP. Defaults to False.
+
     .PARAMETER Services
         Services to enable on the certificate.
 #>
@@ -334,6 +397,14 @@ function Test-TargetResource
         [Parameter()]
         [System.String]
         $DomainController,
+
+        [Parameter()]
+        [System.Boolean]
+        $DoNotRequireSsl = $false,
+
+        [Parameter()]
+        [System.Boolean]
+        $NetworkServiceAllowed = $false,
 
         [Parameter()]
         [System.String[]]
@@ -410,6 +481,16 @@ function Test-TargetResource
         Directory. You identify the domain controller by its fully qualified
         domain name (FQDN). For example, dc01.contoso.com.
 
+    .PARAMETER DoNotRequireSsl
+        Setting DoNotRequireSsl to True prevents DSC from enabling the Require
+        SSL setting on the Default Web Site when you enable the certificate for
+        IIS. Defaults to False.
+
+    .PARAMETER NetworkServiceAllowed
+        Setting NetworkServiceAllowed to True gives the built-in Network
+        Service account permission to read the certificate's private key
+        without enabling the certificate for SMTP. Defaults to False.
+
     .PARAMETER Services
         Services to enable on the certificate.
 #>
@@ -449,6 +530,14 @@ function Get-ExchangeCertificateInternal
         [Parameter()]
         [System.String]
         $DomainController,
+
+        [Parameter()]
+        [System.Boolean]
+        $DoNotRequireSsl = $false,
+
+        [Parameter()]
+        [System.Boolean]
+        $NetworkServiceAllowed = $false,
 
         [Parameter()]
         [System.String[]]

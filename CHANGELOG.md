@@ -5,6 +5,7 @@
 - Added additional parameters to the MSFT_xExchTransportService resource
 - Added additional parameters to the MSFT_xExchEcpVirtualDirectory resource
 - Added additional unit tests to the MSFT_xExchAutodiscoverVirutalDirectory resource
+- Added additional parameters to the MSFT_xExchExchangeCertificate resource
 
 ## 1.26.0.0
 
