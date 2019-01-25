@@ -112,7 +112,7 @@ function Get-TargetResource
         $LogFileRollOverSettings,
 
         [Parameter()]
-        [System.String[]]
+        [System.String]
         $LogPerFileSizeQuota,
 
         [Parameter()]
@@ -327,7 +327,7 @@ function Set-TargetResource
         $LogFileRollOverSettings,
 
         [Parameter()]
-        [System.String[]]
+        [System.String]
         $LogPerFileSizeQuota,
 
         [Parameter()]
@@ -521,7 +521,7 @@ function Test-TargetResource
         $LogFileRollOverSettings,
 
         [Parameter()]
-        [System.String[]]
+        [System.String]
         $LogPerFileSizeQuota,
 
         [Parameter()]
@@ -852,7 +852,7 @@ function Get-ImapSettingsInternal
         $LogFileRollOverSettings,
 
         [Parameter()]
-        [System.String[]]
+        [System.String]
         $LogPerFileSizeQuota,
 
         [Parameter()]
