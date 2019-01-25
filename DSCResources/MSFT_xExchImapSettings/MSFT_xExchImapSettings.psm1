@@ -70,7 +70,7 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String]
-        $AuthenticatedConnectionTimeout, # <EnhancedTimeSpan>
+        $AuthenticatedConnectionTimeout,
 
         [Parameter()]
         [System.String]
@@ -285,7 +285,7 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
-        $AuthenticatedConnectionTimeout, # <EnhancedTimeSpan>
+        $AuthenticatedConnectionTimeout,
 
         [Parameter()]
         [System.String]
@@ -479,7 +479,7 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
-        $AuthenticatedConnectionTimeout, # <EnhancedTimeSpan>
+        $AuthenticatedConnectionTimeout,
 
         [Parameter()]
         [System.String]
@@ -810,7 +810,7 @@ function Get-ImapSettingsInternal
 
         [Parameter()]
         [System.String]
-        $AuthenticatedConnectionTimeout, # <EnhancedTimeSpan>
+        $AuthenticatedConnectionTimeout,
 
         [Parameter()]
         [System.String]
