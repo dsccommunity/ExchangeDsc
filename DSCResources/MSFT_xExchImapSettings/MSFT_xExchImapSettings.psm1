@@ -658,7 +658,7 @@ function Test-TargetResource
             $testResults = $false
         }
 
-        if (!(Test-ExchangeSetting -Name 'LogPerFileSizeQuota' -Type 'Array' -ExpectedValue $LogPerFileSizeQuota -ActualValue $imap.LogPerFileSizeQuota -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        if (!(Test-ExchangeSetting -Name 'LogPerFileSizeQuota' -Type 'String' -ExpectedValue $LogPerFileSizeQuota -ActualValue $imap.LogPerFileSizeQuota -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
