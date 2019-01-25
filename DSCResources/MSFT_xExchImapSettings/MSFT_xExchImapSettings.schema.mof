@@ -19,7 +19,7 @@ class MSFT_xExchImapSettings : OMI_BaseResource
     [Write, Description("The InternalConnectionSettings parameter specifies the host name, port, and encryption method that's used by internal IMAP4 clients (IMAP4 connections from inside your corporate network).")] String InternalConnectionSettings[];
     [Write, Description("The LogFileLocation parameter specifies the location for the IMAP4 protocol log files.")] String LogFileLocation;
     [Write, Description("The LogFileRollOverSettings parameter specifies how frequently IMAP4 protocol logging creates a new log file."), ValueMap{"Hourly","Daily","Weekly", "Monthly"}, Values{"Hourly","Daily","Weekly", "Monthly"}] String LogFileRollOverSettings;
-    [Write, Description("The LogPerFileSizeQuota parameter specifies the maximum size of a IMAP4 protocol log file.")] String LogPerFileSizeQuota;
+    [Write, Description("The LogPerFileSizeQuota parameter specifies the maximum size of a IMAP4 protocol log file.")] String LogPerFileSizeQuota[];
     [Write, Description("The MaxCommandSize parameter specifies the maximum size in bytes of a single IMAP4 command.")] SInt32 MaxCommandSize;
     [Write, Description("The MaxConnectionFromSingleIP parameter specifies the maximum number of IMAP4 connections that are accepted by the Exchange server from a single IP address.")] SInt32 MaxConnectionFromSingleIP;
     [Write, Description("The MaxConnections parameter specifies the maximum number of IMAP4 connections that are accepted by the Exchange server.")] SInt32 MaxConnections;
