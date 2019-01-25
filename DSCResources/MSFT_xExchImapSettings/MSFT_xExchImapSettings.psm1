@@ -77,7 +77,7 @@ function Get-TargetResource
         $Banner,
 
         [Parameter()]
-        [ValidateSet('iCalendar', 'intranetUrl', 'InternetUrl', 'Custom')]
+        [ValidateSet('iCalendar', 'IntranetUrl', 'InternetUrl', 'Custom')]
         [System.String]
         $CalendarItemRetrievalOption,
 
@@ -290,7 +290,7 @@ function Set-TargetResource
         $Banner,
 
         [Parameter()]
-        [ValidateSet('iCalendar', 'intranetUrl', 'InternetUrl', 'Custom')]
+        [ValidateSet('iCalendar', 'IntranetUrl', 'InternetUrl', 'Custom')]
         [System.String]
         $CalendarItemRetrievalOption,
 
