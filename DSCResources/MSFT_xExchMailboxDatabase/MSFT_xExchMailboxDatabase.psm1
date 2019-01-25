@@ -607,7 +607,7 @@ function Test-TargetResource
                 $testResults = $false
             }
 
-            if (!(Test-ExchangeSetting -Name 'DataMoveReplicationConstraint' -Type 'Boolean' -ExpectedValue $DataMoveReplicationConstraint -ActualValue $db.DataMoveReplicationConstraint -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+            if (!(Test-ExchangeSetting -Name 'DataMoveReplicationConstraint' -Type 'String' -ExpectedValue $DataMoveReplicationConstraint -ActualValue $db.DataMoveReplicationConstraint -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
                 $testResults = $false
             }
