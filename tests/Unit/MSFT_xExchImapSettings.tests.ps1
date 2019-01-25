@@ -169,6 +169,24 @@ try
                 }
             }
         }
+
+        Describe 'MSFT_xExchImapSettings\Get-ImapSettingsInternal' -Tag 'Helper' {
+            # Override Exchange cmdlets
+            function Get-ImapSettings { }
+
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When Get-ImapSettingsInternal is called' {
+                It 'Should call expected functions' {
+                    Mock -CommandName Get-ImapSettings -Verifiable -MockWith { return $commonImapSettingsStandardOutput }
+                    Mock -CommandName Restart-Service -Verifiable
+
+                    Get-ImapSettingsInternal @commonTargetResourceParams
+                }
+            }
+        }
     }
 }
 finally
