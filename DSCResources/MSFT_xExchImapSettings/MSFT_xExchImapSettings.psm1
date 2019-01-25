@@ -193,7 +193,7 @@ function Get-TargetResource
             InternalConnectionSettings        = [System.String[]] $imap.InternalConnectionSettings
             LogFileLocation                   = [System.String] $imap.LogFileLocation
             LogFileRollOverSettings           = [System.String] $imap.LogFileRollOverSettings
-            LogPerFileSizeQuota               = [System.String[]] $imap.LogPerFileSizeQuota
+            LogPerFileSizeQuota               = [System.String] $imap.LogPerFileSizeQuota
             MaxCommandSize                    = [System.Int32] $imap.MaxCommandSize
             MaxConnectionFromSingleIP         = [System.Int32] $imap.MaxConnectionFromSingleIP
             MaxConnections                    = [System.Int32] $imap.MaxConnections
