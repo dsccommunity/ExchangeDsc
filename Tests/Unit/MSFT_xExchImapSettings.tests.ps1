@@ -179,7 +179,6 @@ try
             Context 'When Get-ImapSettingsInternal is called' {
                 It 'Should call expected functions' {
                     Mock -CommandName Get-ImapSettings -Verifiable -MockWith { return $commonImapSettingsStandardOutput }
-                    Mock -CommandName Restart-Service -Verifiable
 
                     Get-ImapSettingsInternal @commonTargetResourceParams
                 }
