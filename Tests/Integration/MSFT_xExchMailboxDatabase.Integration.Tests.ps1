@@ -89,6 +89,7 @@ if ($exchangeInstalled)
             CalendarLoggingQuota = 'unlimited'
             CircularLoggingEnabled = $true
             DatabaseCopyCount = 1
+            DataMoveReplicationConstraint = 'None'
             DeletedItemRetention = '14.00:00:00'
             EventHistoryRetentionPeriod = '03:04:05'
             IndexEnabled = $true
@@ -116,6 +117,7 @@ if ($exchangeInstalled)
             CalendarLoggingQuota = 'unlimited'
             CircularLoggingEnabled = $true
             DatabaseCopyCount = 1
+            DataMoveReplicationConstraint = 'None'
             DeletedItemRetention = '14.00:00:00'
             EventHistoryRetentionPeriod = '03:04:05'
             IndexEnabled = $true
