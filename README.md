@@ -602,43 +602,96 @@ result in a configuration loop.
 **xExchMailboxDatabase** is used to create, remove, or change properties on a
 Mailbox Database.
 
-Where no description is listed, properties correspond directly to
+Most properties correspond directly to
 [Set-MailboxDatabase](https://docs.microsoft.com/en-us/powershell/module/exchange/mailbox-databases-and-servers/set-mailboxdatabase)
 parameters.
 
-* **Name**: The name of the Mailbox Database.
-* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
+* **Name**: The Name parameter specifies the unique name of the mailbox
+  database.
+* **Credential**: Credentials used to establish a remote PowerShell session to
+  Exchange.
 * **DatabaseCopyCount**: The number of copies that the database will have once
   fully configured. If circular logging is configured, it will not be enabled
   until this number of copies is met.
-* **EdbFilePath**: Full path to where the database file will be located.
-* **LogFolderPath**: Folder where logs for the DB will exist.
-* **Server**: The server to create the database on.
+* **EdbFilePath**: The EdbFilePath parameter specifies the path to the database
+  files.
+* **LogFolderPath**: The LogFolderPath parameter specifies the folder location
+  for log files.
+* **Server**: The Server parameter specifies the server on which you want to
+  create the database.
+* **AllowFileRestore**: The AllowFileRestore parameter specifies whether to
+  allow a database to be restored from a backup.
 * **AllowServiceRestart**: Whether it is okay to restart the Information Store
-  Service after adding a database.
-  Defaults to $false.
-* **AutoDagExcludeFromMonitoring**
-* **BackgroundDatabaseMaintenance**
-* **CalendarLoggingQuota**
-* **CircularLoggingEnabled**: NOTE: Will not be enabled until the number of
-  copies specified in DatabaseCopyCount have been added.
-* **DataMoveReplicationConstraint**
-* **DeletedItemRetention**
-* **EventHistoryRetentionPeriod**
-* **IndexEnabled**
-* **IsExcludedFromProvisioning**
-* **IsExcludedFromProvisioningReason**
-* **IssueWarningQuota**
-* **IsSuspendedFromProvisioning**
-* **JournalRecipient**
-* **MailboxRetention**
-* **MountAtStartup**
-* **OfflineAddressBook**
-* **ProhibitSendQuota**
-* **ProhibitSendReceiveQuota**
-* **RecoverableItemsQuota**
-* **RecoverableItemsWarningQuota**
-* **RetainDeletedItemsUntilBackup**
+  Service after adding a database. Defaults to $false.
+* **AutoDagExcludeFromMonitoring**: The AutoDagExcludedFromMonitoringparameter
+  specifies whether to exclude the mailbox database from the
+  ServerOneCopyMonitor, which alerts an administrator when a replicated
+  database has only one healthy copy available.
+* **BackgroundDatabaseMaintenance**: The BackgroundDatabaseMaintenance
+  parameter specifies whether the Extensible Storage Engine (ESE) performs
+  database maintenance.
+* **CalendarLoggingQuota**: The CalendarLoggingQuota parameter specifies the
+  maximum size of the log in the Recoverable Items folder of the mailbox that
+  stores changes to calendar items.
+* **CircularLoggingEnabled**: The CircularLoggingEnabled parameter specifies
+  whether circular logging is enabled for the database. NOTE: Will not be
+  enabled until the number of copies specified in DatabaseCopyCount have been
+  added.
+* **DataMoveReplicationConstraint**: The DataMoveReplicationConstraint
+  parameter specifies the throttling behavior for high availability mailbox
+  moves.
+* **DeletedItemRetention**: The DeletedItemRetention parameter specifies the
+  length of time to keep deleted items in the Recoverable Items\Deletions
+  folder in mailboxes.
+* **DomainController**: The DomainController parameter specifies the domain
+  controller that's used by this cmdlet to read data from or write data to
+  Active Directory. You identify the domain controller by its fully qualified
+  domain name (FQDN). For example, dc01.contoso.com.
+* **EventHistoryRetentionPeriod**: The EventHistoryRetentionPeriod parameter
+  specifies the length of time to keep event data.
+* **IndexEnabled**: The IndexEnabled parameter specifies whether Exchange
+  Search indexes the mailbox database.
+* **IsExcludedFromProvisioning**: The IsExcludedFromProvisioning parameter
+  specifies whether to exclude the database from the mailbox provisioning load
+  balancer that distributes new mailboxes randomly and evenly across the
+  available databases.
+* **IsExcludedFromProvisioningReason**: The IsExcludedFromProvisioningReason
+  parameter specifies the reason why you excluded the mailbox database from the
+  mailbox provisioning load balancer.
+* **IssueWarningQuota**: The IssueWarningQuota parameter specifies the warning
+  threshold for the size of the mailbox.
+* **IsSuspendedFromProvisioning**: The IsSuspendedFromProvisioning parameter
+  specifies whether to exclude the database from the mailbox provisioning load
+  balancer that distributes new mailboxes randomly and evenly across the
+  available databases.
+* **JournalRecipient**: The JournalRecipient parameter specifies the journal
+  recipient to use for per-database journaling for all mailboxes on the
+  database.
+* **MailboxRetention**: The MailboxRetention parameter specifies the length of
+  time to keep deleted mailboxes before they are permanently deleted or purged.
+* **MountAtStartup**: The MountAtStartup parameter specifies whether to mount
+  the mailbox database when the Microsoft Exchange Information Store service
+  starts.
+* **OfflineAddressBook**: The OfflineAddressBook parameter specifies the
+  offline address book that's associated with the mailbox database.
+* **ProhibitSendQuota**: The ProhibitSendQuota parameter specifies a size limit
+  for the mailbox. If the mailbox reaches or exceeds this size, the mailbox
+  can't send new messages, and the user receives a descriptive warning message.
+* **ProhibitSendReceiveQuota**: The ProhibitSendReceiveQuota parameter
+  specifies a size limit for the mailbox. If the mailbox reaches or exceeds
+  this size, the mailbox can't send or receive new messages. Messages sent to
+  the mailbox are returned to the sender with a descriptive error message. This
+  value effectively determines the maximum size of the mailbox.
+* **RecoverableItemsQuota**: The RecoverableItemsQuota parameter specifies the
+  maximum size for the Recoverable Items folder of the mailbox.
+* **RecoverableItemsWarningQuota**: The RecoverableItemsWarningQuota parameter
+  specifies the warning threshold for the size of the Recoverable Items folder
+  for the mailbox.
+* **RetainDeletedItemsUntilBackup**: The RetainDeletedItemsUntilBackup
+  parameter specifies whether to keep items in the Recoverable Items\Deletions
+  folder of the mailbox until the next database backup occurs.
+* **SkipInitialDatabaseMount**: Whether the initial mount of databases should
+  be skipped after database creation.
 
 ### xExchMailboxDatabaseCopy
 

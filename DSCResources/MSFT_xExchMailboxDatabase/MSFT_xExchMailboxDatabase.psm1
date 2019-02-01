@@ -1,3 +1,103 @@
+<#
+    .SYNOPSIS
+        Retrieves the current DSC configuration for this resource.
+
+    .PARAMETER Name
+        The Name parameter specifies the unique name of the mailbox database.
+
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange
+
+    .PARAMETER DatabaseCopyCount
+        The number of copies that the database will have once fully configured
+
+    .PARAMETER EdbFilePath
+        The EdbFilePath parameter specifies the path to the database files.
+
+    .PARAMETER LogFolderPath
+        The LogFolderPath parameter specifies the folder location for log files.
+
+    .PARAMETER Server
+        The Server parameter specifies the server on which you want to create the database.
+
+    .PARAMETER AdServerSettingsPreferredServer
+        An optional domain controller to pass to Set-AdServerSettings -PreferredServer
+
+    .PARAMETER AllowFileRestore
+        The AllowFileRestore parameter specifies whether to allow a database to be restored from a backup.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is okay to restart the Information Store Service after adding a database. Defaults to $false.
+
+    .PARAMETER AutoDagExcludeFromMonitoring
+        The AutoDagExcludedFromMonitoringparameter specifies whether to exclude the mailbox database from the ServerOneCopyMonitor, which alerts an administrator when a replicated database has only one healthy copy available.
+
+    .PARAMETER BackgroundDatabaseMaintenance
+        The BackgroundDatabaseMaintenance parameter specifies whether the Extensible Storage Engine (ESE) performs database maintenance.
+
+    .PARAMETER CalendarLoggingQuota
+        The CalendarLoggingQuota parameter specifies the maximum size of the log in the Recoverable Items folder of the mailbox that stores changes to calendar items.
+
+    .PARAMETER CircularLoggingEnabled
+        The CircularLoggingEnabled parameter specifies whether circular logging is enabled for the database.
+
+    .PARAMETER DataMoveReplicationConstraint
+        The DataMoveReplicationConstraint parameter specifies the throttling behavior for high availability mailbox moves.
+
+    .PARAMETER DeletedItemRetention
+        The DeletedItemRetention parameter specifies the length of time to keep deleted items in the Recoverable Items\Deletions folder in mailboxes.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory. You identify the domain controller by its fully qualified domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER EventHistoryRetentionPeriod
+        The EventHistoryRetentionPeriod parameter specifies the length of time to keep event data.
+
+    .PARAMETER IndexEnabled
+        The IndexEnabled parameter specifies whether Exchange Search indexes the mailbox database.
+
+    .PARAMETER IsExcludedFromProvisioning
+        The IsExcludedFromProvisioning parameter specifies whether to exclude the database from the mailbox provisioning load balancer that distributes new mailboxes randomly and evenly across the available databases.
+
+    .PARAMETER IsExcludedFromProvisioningReason
+        The IsExcludedFromProvisioningReason parameter specifies the reason why you excluded the mailbox database from the mailbox provisioning load balancer.
+
+    .PARAMETER IssueWarningQuota
+        The IssueWarningQuota parameter specifies the warning threshold for the size of the mailbox.
+
+    .PARAMETER IsSuspendedFromProvisioning
+        The IsSuspendedFromProvisioning parameter specifies whether to exclude the database from the mailbox provisioning load balancer that distributes new mailboxes randomly and evenly across the available databases.
+
+    .PARAMETER JournalRecipient
+        The JournalRecipient parameter specifies the journal recipient to use for per-database journaling for all mailboxes on the database.
+
+    .PARAMETER MailboxRetention
+        The MailboxRetention parameter specifies the length of time to keep deleted mailboxes before they are permanently deleted or purged.
+
+    .PARAMETER MountAtStartup
+        The MountAtStartup parameter specifies whether to mount the mailbox database when the Microsoft Exchange Information Store service starts.
+
+    .PARAMETER OfflineAddressBook
+        The OfflineAddressBook parameter specifies the offline address book that's associated with the mailbox database.
+
+    .PARAMETER ProhibitSendQuota
+        The ProhibitSendQuota parameter specifies a size limit for the mailbox. If the mailbox reaches or exceeds this size, the mailbox can't send new messages, and the user receives a descriptive warning message.
+
+    .PARAMETER ProhibitSendReceiveQuota
+        The ProhibitSendReceiveQuota parameter specifies a size limit for the mailbox. If the mailbox reaches or exceeds this size, the mailbox can't send or receive new messages. Messages sent to the mailbox are returned to the sender with a descriptive error message. This value effectively determines the maximum size of the mailbox.
+
+    .PARAMETER RecoverableItemsQuota
+        The RecoverableItemsQuota parameter specifies the maximum size for the Recoverable Items folder of the mailbox.
+
+    .PARAMETER RecoverableItemsWarningQuota
+        The RecoverableItemsWarningQuota parameter specifies the warning threshold for the size of the Recoverable Items folder for the mailbox.
+
+    .PARAMETER RetainDeletedItemsUntilBackup
+        The RetainDeletedItemsUntilBackup parameter specifies whether to keep items in the Recoverable Items\Deletions folder of the mailbox until the next database backup occurs.
+
+    .PARAMETER SkipInitialDatabaseMount
+        Whether the initial mount of databases should be skipped after database creation
+#>
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -29,6 +129,10 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [System.String]
         $Server,
+
+        [Parameter()]
+        [System.String]
+        $AdServerSettingsPreferredServer,
 
         [Parameter()]
         [System.Boolean]
@@ -122,10 +226,6 @@ function Get-TargetResource
         [Parameter()]
         [System.Boolean]
         $RetainDeletedItemsUntilBackup,
-
-        [Parameter()]
-        [System.String]
-        $AdServerSettingsPreferredServer,
 
         [Parameter()]
         [System.Boolean]
