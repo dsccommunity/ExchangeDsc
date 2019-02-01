@@ -655,6 +655,14 @@ parameters.
   specifies whether to exclude the database from the mailbox provisioning load
   balancer that distributes new mailboxes randomly and evenly across the
   available databases.
+* **IsExcludedFromProvisioningByOperator**: The
+  IIsExcludedFromProvisioningByOperator parameter specifies whether to exclude
+  the database from the mailbox provisioning load balancer that distributes new
+  mailboxes randomly and evenly across the available databases.
+* **IsExcludedFromProvisioningDueToLogicalCorruption*: The
+  IsExcludedFromProvisioningDueToLogicalCorruption parameter specifies whether
+  to exclude the database from the mailbox provisioning load balancer that
+  distributes new mailboxes randomly and evenly across the available databases.
 * **IsExcludedFromProvisioningReason**: The IsExcludedFromProvisioningReason
   parameter specifies the reason why you excluded the mailbox database from the
   mailbox provisioning load balancer.
@@ -669,6 +677,10 @@ parameters.
   database.
 * **MailboxRetention**: The MailboxRetention parameter specifies the length of
   time to keep deleted mailboxes before they are permanently deleted or purged.
+* **MetaCacheDatabaseMaxCapacityInBytes**: The
+  MetaCacheDatabaseMaxCapacityInBytes parameter specifies the size of the
+  metacache database in bytes. To convert gigabytes to bytes, multiply the
+  value by 1024^3. For terabytes to bytes, multiply by 1024^4.
 * **MountAtStartup**: The MountAtStartup parameter specifies whether to mount
   the mailbox database when the Microsoft Exchange Information Store service
   starts.

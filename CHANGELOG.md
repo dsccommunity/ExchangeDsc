@@ -8,6 +8,8 @@
 - Added additional parameters to the MSFT_xExchExchangeCertificate resource
 - MSFT_xExchMailboxDatabase: Fixes issue with DataMoveReplicationConstraint
   parameter (#401)
+- Added additional parameters and comment based help to the
+  MSFT_xExchMailboxDatabase resource
 
 ## 1.26.0.0
 

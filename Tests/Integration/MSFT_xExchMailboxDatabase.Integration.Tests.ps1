@@ -83,6 +83,7 @@ if ($exchangeInstalled)
             Server = $env:COMPUTERNAME
             EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)\$($TestDBName).edb"
             LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)"
+            AllowFileRestore = $true
             AllowServiceRestart = $true
             AutoDagExcludeFromMonitoring = $true
             BackgroundDatabaseMaintenance = $true
@@ -92,7 +93,6 @@ if ($exchangeInstalled)
             DataMoveReplicationConstraint = 'None'
             DeletedItemRetention = '14.00:00:00'
             EventHistoryRetentionPeriod = '03:04:05'
-            IndexEnabled = $true
             IsExcludedFromProvisioning = $false
             IsSuspendedFromProvisioning = $false
             JournalRecipient = $testMailbox.PrimarySmtpAddress.Address
@@ -112,6 +112,7 @@ if ($exchangeInstalled)
             Server = $env:COMPUTERNAME
             EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)\$($TestDBName).edb"
             LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)"
+            AllowFileRestore = $true
             AutoDagExcludeFromMonitoring = $true
             BackgroundDatabaseMaintenance = $true
             CalendarLoggingQuota = 'unlimited'
@@ -120,7 +121,6 @@ if ($exchangeInstalled)
             DataMoveReplicationConstraint = 'None'
             DeletedItemRetention = '14.00:00:00'
             EventHistoryRetentionPeriod = '03:04:05'
-            IndexEnabled = $true
             IsExcludedFromProvisioning = $false
             IsSuspendedFromProvisioning = $false
             JournalRecipient = $testMailboxADObjectIDString
@@ -147,11 +147,11 @@ if ($exchangeInstalled)
                                          -ExpectedGetResults $expectedGetResults
 
         # Now change properties on the test database
+        $testParams.AllowFileRestore = $false
         $testParams.CalendarLoggingQuota = '30mb'
         $testParams.CircularLoggingEnabled = $false
         $testParams.DeletedItemRetention = '15.00:00:00'
         $testParams.EventHistoryRetentionPeriod = '04:05:06'
-        $testParams.IndexEnabled = $false
         $testParams.IsExcludedFromProvisioning = $true
         $testParams.IsSuspendedFromProvisioning = $true
         $testParams.JournalRecipient = $null
@@ -164,11 +164,11 @@ if ($exchangeInstalled)
         $testParams.RecoverableItemsQuota = '2 GB'
         $testParams.RecoverableItemsWarningQuota = '1.5 GB'
 
+        $expectedGetResults.AllowFileRestore = $false
         $expectedGetResults.CalendarLoggingQuota = '30 MB (31,457,280 bytes)'
         $expectedGetResults.CircularLoggingEnabled = $false
         $expectedGetResults.DeletedItemRetention = '15.00:00:00'
         $expectedGetResults.EventHistoryRetentionPeriod = '04:05:06'
-        $expectedGetResults.IndexEnabled = $false
         $expectedGetResults.IsExcludedFromProvisioning = $true
         $expectedGetResults.IsSuspendedFromProvisioning = $true
         $expectedGetResults.JournalRecipient = ''
@@ -183,10 +183,28 @@ if ($exchangeInstalled)
 
         $serverVersion = Get-ExchangeVersionYear
 
+        if ($serverVersion -in '2013', '2016')
+        {
+            $testParams.Add('IndexEnabled', $false)
+            $expectedGetResults.Add('IndexEnabled', $false)
+        }
+
         if ($serverVersion -in '2016', '2019')
         {
+            $testParams.Add('IsExcludedFromProvisioningByOperator', $true)
+            $expectedGetResults.Add('IsExcludedFromProvisioningByOperator', $true)
+
+            $testParams.Add('IsExcludedFromProvisioningDueToLogicalCorruption', $true)
+            $expectedGetResults.Add('IsExcludedFromProvisioningDueToLogicalCorruption', $true)
+
             $testParams.Add('IsExcludedFromProvisioningReason', 'Testing Excluding the Database')
             $expectedGetResults.Add('IsExcludedFromProvisioningReason', 'Testing Excluding the Database')
+        }
+
+        if ($serverVersion -in '2019')
+        {
+            $testParams.Add('MetaCacheDatabaseMaxCapacityInBytes', 1073741824)
+            $expectedGetResults.Add('MetaCacheDatabaseMaxCapacityInBytes', 1073741824)
         }
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Change many DB properties' -ExpectedGetResults $expectedGetResults
