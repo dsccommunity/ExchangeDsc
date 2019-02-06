@@ -1,3 +1,164 @@
+<#
+    .SYNOPSIS
+        Retrieves the current DSC configuration for this resource.
+
+    .PARAMETER Name
+        The Name parameter specifies the unique name of the mailbox database.
+
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+
+    .PARAMETER DatabaseCopyCount
+        The number of copies that the database will have once fully configured.
+
+    .PARAMETER EdbFilePath
+        The EdbFilePath parameter specifies the path to the database files.
+
+    .PARAMETER LogFolderPath
+        The LogFolderPath parameter specifies the folder location for log
+        files.
+
+    .PARAMETER Server
+        The Server parameter specifies the server on which you want to create
+        the database.
+
+    .PARAMETER AdServerSettingsPreferredServer
+        An optional domain controller to pass to Set-AdServerSettings
+        -PreferredServer.
+
+    .PARAMETER AllowFileRestore
+        The AllowFileRestore parameter specifies whether to allow a database to
+        be restored from a backup.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is okay to restart the Information Store Service after
+        adding a database. Defaults to $false.
+
+    .PARAMETER AutoDagExcludeFromMonitoring
+        The AutoDagExcludedFromMonitoringparameter specifies whether to
+        exclude the mailbox database from the ServerOneCopyMonitor, which
+        alerts an administrator when a replicated database has only one healthy
+        copy available.
+
+    .PARAMETER BackgroundDatabaseMaintenance
+        The BackgroundDatabaseMaintenance parameter specifies whether the
+        Extensible Storage Engine (ESE) performs database maintenance.
+
+    .PARAMETER CalendarLoggingQuota
+        The CalendarLoggingQuota parameter specifies the maximum size of the
+        log in the Recoverable Items folder of the mailbox that stores
+        changes to calendar items.
+
+    .PARAMETER CircularLoggingEnabled
+        The CircularLoggingEnabled parameter specifies whether circular
+        logging is enabled for the database.
+
+    .PARAMETER DataMoveReplicationConstraint
+        The DataMoveReplicationConstraint parameter specifies the throttling
+        behavior for high availability mailbox moves.
+
+    .PARAMETER DeletedItemRetention
+        The DeletedItemRetention parameter specifies the length of time to keep
+        deleted items in the Recoverable Items\Deletions folder in mailboxes.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER EventHistoryRetentionPeriod
+        The EventHistoryRetentionPeriod parameter specifies the length of time
+        to keep event data.
+
+    .PARAMETER IndexEnabled
+        The IndexEnabled parameter specifies whether Exchange Search indexes
+        the mailbox database.
+
+    .PARAMETER IsExcludedFromProvisioning
+        The IsExcludedFromProvisioning parameter specifies whether to exclude
+        the database from the mailbox provisioning load balancer that
+        distributes new mailboxes randomly and evenly across the available
+        databases.
+
+    .PARAMETER IsExcludedFromProvisioningByOperator
+        The IIsExcludedFromProvisioningByOperator parameter specifies whether
+        to exclude the database from the mailbox provisioning load balancer
+        that distributes new mailboxes randomly and evenly across the available
+        databases.
+
+    .PARAMETER IsExcludedFromProvisioningDueToLogicalCorruption
+        The IsExcludedFromProvisioningDueToLogicalCorruption parameter
+        specifies whether to exclude the database from the mailbox
+        provisioning load balancer that distributes new mailboxes randomly and
+        evenly across the available databases.
+
+    .PARAMETER IsExcludedFromProvisioningReason
+        The IsExcludedFromProvisioningReason parameter specifies the reason
+        why you excluded the mailbox database from the mailbox provisioning
+        load balancer.
+
+    .PARAMETER IssueWarningQuota
+        The IssueWarningQuota parameter specifies the warning threshold for the
+        size of the mailbox.
+
+    .PARAMETER IsSuspendedFromProvisioning
+        The IsSuspendedFromProvisioning parameter specifies whether to exclude
+        the database from the mailbox provisioning load balancer that
+        distributes new mailboxes randomly and evenly across the available
+        databases.
+
+    .PARAMETER JournalRecipient
+        The JournalRecipient parameter specifies the journal recipient to use
+        for per-database journaling for all mailboxes on the database.
+
+    .PARAMETER MailboxRetention
+        The MailboxRetention parameter specifies the length of time to keep
+        deleted mailboxes before they are permanently deleted or purged.
+
+    .PARAMETER MetaCacheDatabaseMaxCapacityInBytes
+        The MetaCacheDatabaseMaxCapacityInBytes parameter specifies the size of
+        the metacache database in bytes. To convert gigabytes to bytes,
+        multiply the value by 1024^3. For terabytes to bytes, multiply by
+        1024^4.
+
+    .PARAMETER MountAtStartup
+        The MountAtStartup parameter specifies whether to mount the mailbox
+        database when the Microsoft Exchange Information Store service starts.
+
+    .PARAMETER OfflineAddressBook
+        The OfflineAddressBook parameter specifies the offline address book
+        that's associated with the mailbox database.
+
+    .PARAMETER ProhibitSendQuota
+        The ProhibitSendQuota parameter specifies a size limit for the mailbox.
+        If the mailbox reaches or exceeds this size, the mailbox can't send
+        new messages, and the user receives a descriptive warning message.
+
+    .PARAMETER ProhibitSendReceiveQuota
+        The ProhibitSendReceiveQuota parameter specifies a size limit for the
+        mailbox. If the mailbox reaches or exceeds this size, the mailbox can't
+        send or receive new messages. Messages sent to the mailbox are returned
+        to the sender with a descriptive error message. This value effectively
+        determines the maximum size of the mailbox.
+
+    .PARAMETER RecoverableItemsQuota
+        The RecoverableItemsQuota parameter specifies the maximum size for the
+        Recoverable Items folder of the mailbox.
+
+    .PARAMETER RecoverableItemsWarningQuota
+        The RecoverableItemsWarningQuota parameter specifies the warning
+        threshold for the size of the Recoverable Items folder for the mailbox.
+
+    .PARAMETER RetainDeletedItemsUntilBackup
+        The RetainDeletedItemsUntilBackup parameter specifies whether to keep
+        items in the Recoverable Items\Deletions folder of the mailbox until
+        the next database backup occurs.
+
+    .PARAMETER SkipInitialDatabaseMount
+        Whether the initial mount of databases should be skipped after database
+        creation.
+#>
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -31,6 +192,14 @@ function Get-TargetResource
         $Server,
 
         [Parameter()]
+        [System.String]
+        $AdServerSettingsPreferredServer,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowFileRestore,
+
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
@@ -76,6 +245,14 @@ function Get-TargetResource
         $IsExcludedFromProvisioning,
 
         [Parameter()]
+        [System.Boolean]
+        $IsExcludedFromProvisioningByOperator,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsExcludedFromProvisioningDueToLogicalCorruption,
+
+        [Parameter()]
         [System.String]
         $IsExcludedFromProvisioningReason,
 
@@ -94,6 +271,10 @@ function Get-TargetResource
         [Parameter()]
         [System.String]
         $MailboxRetention,
+
+        [Parameter()]
+        [System.Int64]
+        $MetaCacheDatabaseMaxCapacityInBytes,
 
         [Parameter()]
         [System.Boolean]
@@ -124,10 +305,6 @@ function Get-TargetResource
         $RetainDeletedItemsUntilBackup,
 
         [Parameter()]
-        [System.String]
-        $AdServerSettingsPreferredServer,
-
-        [Parameter()]
         [System.Boolean]
         $SkipInitialDatabaseMount
     )
@@ -152,6 +329,7 @@ function Get-TargetResource
             EdbFilePath                   = [System.String] $EdbFilePath
             LogFolderPath                 = [System.String] $LogFolderPath
             DatabaseCopyCount             = [System.UInt32] $DatabaseCopyCount
+            AllowFileRestore              = [System.Boolean] $db.AllowFileRestore
             AutoDagExcludeFromMonitoring  = [System.Boolean] $db.AutoDagExcludeFromMonitoring
             BackgroundDatabaseMaintenance = [System.Boolean] $db.BackgroundDatabaseMaintenance
             CalendarLoggingQuota          = [System.String] $db.CalendarLoggingQuota
@@ -159,7 +337,6 @@ function Get-TargetResource
             DataMoveReplicationConstraint = [System.String] $db.DataMoveReplicationConstraint
             DeletedItemRetention          = [System.String] $db.DeletedItemRetention
             EventHistoryRetentionPeriod   = [System.String] $db.EventHistoryRetentionPeriod
-            IndexEnabled                  = [System.Boolean] $db.IndexEnabled
             IsExcludedFromProvisioning    = [System.Boolean] $db.IsExcludedFromProvisioning
             IssueWarningQuota             = [System.String] $db.IssueWarningQuota
             IsSuspendedFromProvisioning   = [System.Boolean] $db.IsSuspendedFromProvisioning
@@ -172,20 +349,193 @@ function Get-TargetResource
             RecoverableItemsQuota         = [System.String] $db.RecoverableItemsQuota
             RecoverableItemsWarningQuota  = [System.String] $db.RecoverableItemsWarningQuota
             RetainDeletedItemsUntilBackup = [System.Boolean] $db.RetainDeletedItemsUntilBackup
+            SkipInitialDatabaseMount      = [System.Boolean] $SkipInitialDatabaseMount
         }
 
         $serverVersion = Get-ExchangeVersionYear
 
+        if ($serverVersion -in '2013', '2016')
+        {
+            $returnValue.Add('IndexEnabled', [System.Boolean] $db.IndexEnabled)
+        }
+
         if ($serverVersion -in '2016', '2019')
         {
+            $returnValue.Add('IsExcludedFromProvisioningByOperator', [System.Boolean] $db.IsExcludedFromProvisioningByOperator)
+            $returnValue.Add('IsExcludedFromProvisioningDueToLogicalCorruption', [System.Boolean] $db.IsExcludedFromProvisioningDueToLogicalCorruption)
             $returnValue.Add('IsExcludedFromProvisioningReason', [System.String] $db.IsExcludedFromProvisioningReason)
+        }
+
+        if ($serverVersion -in '2019')
+        {
+            $returnValue.Add('MetaCacheDatabaseMaxCapacityInBytes', [System.Int64] $db.MetaCacheDatabaseMaxCapacityInBytes)
         }
     }
 
     $returnValue
 }
 
+<#
+    .SYNOPSIS
+        Sets the DSC configuration for this resource.
 
+    .PARAMETER Name
+        The Name parameter specifies the unique name of the mailbox database.
+
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+
+    .PARAMETER DatabaseCopyCount
+        The number of copies that the database will have once fully configured.
+
+    .PARAMETER EdbFilePath
+        The EdbFilePath parameter specifies the path to the database files.
+
+    .PARAMETER LogFolderPath
+        The LogFolderPath parameter specifies the folder location for log
+        files.
+
+    .PARAMETER Server
+        The Server parameter specifies the server on which you want to create
+        the database.
+
+    .PARAMETER AdServerSettingsPreferredServer
+        An optional domain controller to pass to Set-AdServerSettings
+        -PreferredServer.
+
+    .PARAMETER AllowFileRestore
+        The AllowFileRestore parameter specifies whether to allow a database to
+        be restored from a backup.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is okay to restart the Information Store Service after
+        adding a database. Defaults to $false.
+
+    .PARAMETER AutoDagExcludeFromMonitoring
+        The AutoDagExcludedFromMonitoringparameter specifies whether to
+        exclude the mailbox database from the ServerOneCopyMonitor, which
+        alerts an administrator when a replicated database has only one healthy
+        copy available.
+
+    .PARAMETER BackgroundDatabaseMaintenance
+        The BackgroundDatabaseMaintenance parameter specifies whether the
+        Extensible Storage Engine (ESE) performs database maintenance.
+
+    .PARAMETER CalendarLoggingQuota
+        The CalendarLoggingQuota parameter specifies the maximum size of the
+        log in the Recoverable Items folder of the mailbox that stores
+        changes to calendar items.
+
+    .PARAMETER CircularLoggingEnabled
+        The CircularLoggingEnabled parameter specifies whether circular
+        logging is enabled for the database.
+
+    .PARAMETER DataMoveReplicationConstraint
+        The DataMoveReplicationConstraint parameter specifies the throttling
+        behavior for high availability mailbox moves.
+
+    .PARAMETER DeletedItemRetention
+        The DeletedItemRetention parameter specifies the length of time to keep
+        deleted items in the Recoverable Items\Deletions folder in mailboxes.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER EventHistoryRetentionPeriod
+        The EventHistoryRetentionPeriod parameter specifies the length of time
+        to keep event data.
+
+    .PARAMETER IndexEnabled
+        The IndexEnabled parameter specifies whether Exchange Search indexes
+        the mailbox database.
+
+    .PARAMETER IsExcludedFromProvisioning
+        The IsExcludedFromProvisioning parameter specifies whether to exclude
+        the database from the mailbox provisioning load balancer that
+        distributes new mailboxes randomly and evenly across the available
+        databases.
+
+    .PARAMETER IsExcludedFromProvisioningByOperator
+        The IIsExcludedFromProvisioningByOperator parameter specifies whether
+        to exclude the database from the mailbox provisioning load balancer
+        that distributes new mailboxes randomly and evenly across the available
+        databases.
+
+    .PARAMETER IsExcludedFromProvisioningDueToLogicalCorruption
+        The IsExcludedFromProvisioningDueToLogicalCorruption parameter
+        specifies whether to exclude the database from the mailbox
+        provisioning load balancer that distributes new mailboxes randomly and
+        evenly across the available databases.
+
+    .PARAMETER IsExcludedFromProvisioningReason
+        The IsExcludedFromProvisioningReason parameter specifies the reason
+        why you excluded the mailbox database from the mailbox provisioning
+        load balancer.
+
+    .PARAMETER IssueWarningQuota
+        The IssueWarningQuota parameter specifies the warning threshold for the
+        size of the mailbox.
+
+    .PARAMETER IsSuspendedFromProvisioning
+        The IsSuspendedFromProvisioning parameter specifies whether to exclude
+        the database from the mailbox provisioning load balancer that
+        distributes new mailboxes randomly and evenly across the available
+        databases.
+
+    .PARAMETER JournalRecipient
+        The JournalRecipient parameter specifies the journal recipient to use
+        for per-database journaling for all mailboxes on the database.
+
+    .PARAMETER MailboxRetention
+        The MailboxRetention parameter specifies the length of time to keep
+        deleted mailboxes before they are permanently deleted or purged.
+
+    .PARAMETER MetaCacheDatabaseMaxCapacityInBytes
+        The MetaCacheDatabaseMaxCapacityInBytes parameter specifies the size of
+        the metacache database in bytes. To convert gigabytes to bytes,
+        multiply the value by 1024^3. For terabytes to bytes, multiply by
+        1024^4.
+
+    .PARAMETER MountAtStartup
+        The MountAtStartup parameter specifies whether to mount the mailbox
+        database when the Microsoft Exchange Information Store service starts.
+
+    .PARAMETER OfflineAddressBook
+        The OfflineAddressBook parameter specifies the offline address book
+        that's associated with the mailbox database.
+
+    .PARAMETER ProhibitSendQuota
+        The ProhibitSendQuota parameter specifies a size limit for the mailbox.
+        If the mailbox reaches or exceeds this size, the mailbox can't send
+        new messages, and the user receives a descriptive warning message.
+
+    .PARAMETER ProhibitSendReceiveQuota
+        The ProhibitSendReceiveQuota parameter specifies a size limit for the
+        mailbox. If the mailbox reaches or exceeds this size, the mailbox can't
+        send or receive new messages. Messages sent to the mailbox are returned
+        to the sender with a descriptive error message. This value effectively
+        determines the maximum size of the mailbox.
+
+    .PARAMETER RecoverableItemsQuota
+        The RecoverableItemsQuota parameter specifies the maximum size for the
+        Recoverable Items folder of the mailbox.
+
+    .PARAMETER RecoverableItemsWarningQuota
+        The RecoverableItemsWarningQuota parameter specifies the warning
+        threshold for the size of the Recoverable Items folder for the mailbox.
+
+    .PARAMETER RetainDeletedItemsUntilBackup
+        The RetainDeletedItemsUntilBackup parameter specifies whether to keep
+        items in the Recoverable Items\Deletions folder of the mailbox until
+        the next database backup occurs.
+
+    .PARAMETER SkipInitialDatabaseMount
+        Whether the initial mount of databases should be skipped after database
+        creation.
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
@@ -217,6 +567,14 @@ function Set-TargetResource
         $Server,
 
         [Parameter()]
+        [System.String]
+        $AdServerSettingsPreferredServer,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowFileRestore,
+
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
@@ -262,6 +620,14 @@ function Set-TargetResource
         $IsExcludedFromProvisioning,
 
         [Parameter()]
+        [System.Boolean]
+        $IsExcludedFromProvisioningByOperator,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsExcludedFromProvisioningDueToLogicalCorruption,
+
+        [Parameter()]
         [System.String]
         $IsExcludedFromProvisioningReason,
 
@@ -280,6 +646,10 @@ function Set-TargetResource
         [Parameter()]
         [System.String]
         $MailboxRetention,
+
+        [Parameter()]
+        [System.Int64]
+        $MetaCacheDatabaseMaxCapacityInBytes,
 
         [Parameter()]
         [System.Boolean]
@@ -310,10 +680,6 @@ function Set-TargetResource
         $RetainDeletedItemsUntilBackup,
 
         [Parameter()]
-        [System.String]
-        $AdServerSettingsPreferredServer,
-
-        [Parameter()]
         [System.Boolean]
         $SkipInitialDatabaseMount
     )
@@ -327,9 +693,31 @@ function Set-TargetResource
 
     # Check for non-existent parameters in Exchange 2013
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
+                                    -ParamName 'IsExcludedFromProvisioningByOperator' `
+                                    -ResourceName 'xExchMailboxDatabase' `
+                                    -ParamExistsInVersion '2016', '2019'
+
+    Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
+                                    -ParamName 'IsExcludedFromProvisioningDueToLogicalCorruption' `
+                                    -ResourceName 'xExchMailboxDatabase' `
+                                    -ParamExistsInVersion '2016', '2019'
+
+    Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
                                     -ParamName 'IsExcludedFromProvisioningReason' `
                                     -ResourceName 'xExchMailboxDatabase' `
                                     -ParamExistsInVersion '2016', '2019'
+
+    # Check for non-existent parameters in Exchange 2013 or 2016
+    Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
+                                    -ParamName 'MetaCacheDatabaseMaxCapacityInBytes' `
+                                    -ResourceName 'xExchMailboxDatabase' `
+                                    -ParamExistsInVersion '2019'
+
+    # Check for non-existent parameters in Exchange 2019
+    Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
+                                    -ParamName 'IndexEnabled' `
+                                    -ResourceName 'xExchMailboxDatabase' `
+                                    -ParamExistsInVersion '2013', '2016'
 
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
@@ -419,7 +807,168 @@ function Set-TargetResource
     }
 }
 
+<#
+    .SYNOPSIS
+        Tests whether the desired configuration for this resource has been
+        applied.
 
+    .PARAMETER Name
+        The Name parameter specifies the unique name of the mailbox database.
+
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+
+    .PARAMETER DatabaseCopyCount
+        The number of copies that the database will have once fully configured.
+
+    .PARAMETER EdbFilePath
+        The EdbFilePath parameter specifies the path to the database files.
+
+    .PARAMETER LogFolderPath
+        The LogFolderPath parameter specifies the folder location for log
+        files.
+
+    .PARAMETER Server
+        The Server parameter specifies the server on which you want to create
+        the database.
+
+    .PARAMETER AdServerSettingsPreferredServer
+        An optional domain controller to pass to Set-AdServerSettings
+        -PreferredServer.
+
+    .PARAMETER AllowFileRestore
+        The AllowFileRestore parameter specifies whether to allow a database to
+        be restored from a backup.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is okay to restart the Information Store Service after
+        adding a database. Defaults to $false.
+
+    .PARAMETER AutoDagExcludeFromMonitoring
+        The AutoDagExcludedFromMonitoringparameter specifies whether to
+        exclude the mailbox database from the ServerOneCopyMonitor, which
+        alerts an administrator when a replicated database has only one healthy
+        copy available.
+
+    .PARAMETER BackgroundDatabaseMaintenance
+        The BackgroundDatabaseMaintenance parameter specifies whether the
+        Extensible Storage Engine (ESE) performs database maintenance.
+
+    .PARAMETER CalendarLoggingQuota
+        The CalendarLoggingQuota parameter specifies the maximum size of the
+        log in the Recoverable Items folder of the mailbox that stores
+        changes to calendar items.
+
+    .PARAMETER CircularLoggingEnabled
+        The CircularLoggingEnabled parameter specifies whether circular
+        logging is enabled for the database.
+
+    .PARAMETER DataMoveReplicationConstraint
+        The DataMoveReplicationConstraint parameter specifies the throttling
+        behavior for high availability mailbox moves.
+
+    .PARAMETER DeletedItemRetention
+        The DeletedItemRetention parameter specifies the length of time to keep
+        deleted items in the Recoverable Items\Deletions folder in mailboxes.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER EventHistoryRetentionPeriod
+        The EventHistoryRetentionPeriod parameter specifies the length of time
+        to keep event data.
+
+    .PARAMETER IndexEnabled
+        The IndexEnabled parameter specifies whether Exchange Search indexes
+        the mailbox database.
+
+    .PARAMETER IsExcludedFromProvisioning
+        The IsExcludedFromProvisioning parameter specifies whether to exclude
+        the database from the mailbox provisioning load balancer that
+        distributes new mailboxes randomly and evenly across the available
+        databases.
+
+    .PARAMETER IsExcludedFromProvisioningByOperator
+        The IIsExcludedFromProvisioningByOperator parameter specifies whether
+        to exclude the database from the mailbox provisioning load balancer
+        that distributes new mailboxes randomly and evenly across the available
+        databases.
+
+    .PARAMETER IsExcludedFromProvisioningDueToLogicalCorruption
+        The IsExcludedFromProvisioningDueToLogicalCorruption parameter
+        specifies whether to exclude the database from the mailbox
+        provisioning load balancer that distributes new mailboxes randomly and
+        evenly across the available databases.
+
+    .PARAMETER IsExcludedFromProvisioningReason
+        The IsExcludedFromProvisioningReason parameter specifies the reason
+        why you excluded the mailbox database from the mailbox provisioning
+        load balancer.
+
+    .PARAMETER IssueWarningQuota
+        The IssueWarningQuota parameter specifies the warning threshold for the
+        size of the mailbox.
+
+    .PARAMETER IsSuspendedFromProvisioning
+        The IsSuspendedFromProvisioning parameter specifies whether to exclude
+        the database from the mailbox provisioning load balancer that
+        distributes new mailboxes randomly and evenly across the available
+        databases.
+
+    .PARAMETER JournalRecipient
+        The JournalRecipient parameter specifies the journal recipient to use
+        for per-database journaling for all mailboxes on the database.
+
+    .PARAMETER MailboxRetention
+        The MailboxRetention parameter specifies the length of time to keep
+        deleted mailboxes before they are permanently deleted or purged.
+
+    .PARAMETER MetaCacheDatabaseMaxCapacityInBytes
+        The MetaCacheDatabaseMaxCapacityInBytes parameter specifies the size of
+        the metacache database in bytes. To convert gigabytes to bytes,
+        multiply the value by 1024^3. For terabytes to bytes, multiply by
+        1024^4.
+
+    .PARAMETER MountAtStartup
+        The MountAtStartup parameter specifies whether to mount the mailbox
+        database when the Microsoft Exchange Information Store service starts.
+
+    .PARAMETER OfflineAddressBook
+        The OfflineAddressBook parameter specifies the offline address book
+        that's associated with the mailbox database.
+
+    .PARAMETER ProhibitSendQuota
+        The ProhibitSendQuota parameter specifies a size limit for the mailbox.
+        If the mailbox reaches or exceeds this size, the mailbox can't send
+        new messages, and the user receives a descriptive warning message.
+
+    .PARAMETER ProhibitSendReceiveQuota
+        The ProhibitSendReceiveQuota parameter specifies a size limit for the
+        mailbox. If the mailbox reaches or exceeds this size, the mailbox can't
+        send or receive new messages. Messages sent to the mailbox are returned
+        to the sender with a descriptive error message. This value effectively
+        determines the maximum size of the mailbox.
+
+    .PARAMETER RecoverableItemsQuota
+        The RecoverableItemsQuota parameter specifies the maximum size for the
+        Recoverable Items folder of the mailbox.
+
+    .PARAMETER RecoverableItemsWarningQuota
+        The RecoverableItemsWarningQuota parameter specifies the warning
+        threshold for the size of the Recoverable Items folder for the mailbox.
+
+    .PARAMETER RetainDeletedItemsUntilBackup
+        The RetainDeletedItemsUntilBackup parameter specifies whether to keep
+        items in the Recoverable Items\Deletions folder of the mailbox until
+        the next database backup occurs.
+
+    .PARAMETER SkipInitialDatabaseMount
+        Whether the initial mount of databases should be skipped after database
+        creation.
+#>
 function Test-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -451,6 +1000,14 @@ function Test-TargetResource
         [Parameter(Mandatory = $true)]
         [System.String]
         $Server,
+
+        [Parameter()]
+        [System.String]
+        $AdServerSettingsPreferredServer,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowFileRestore,
 
         [Parameter()]
         [System.Boolean]
@@ -498,6 +1055,14 @@ function Test-TargetResource
         $IsExcludedFromProvisioning,
 
         [Parameter()]
+        [System.Boolean]
+        $IsExcludedFromProvisioningByOperator,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsExcludedFromProvisioningDueToLogicalCorruption,
+
+        [Parameter()]
         [System.String]
         $IsExcludedFromProvisioningReason,
 
@@ -516,6 +1081,10 @@ function Test-TargetResource
         [Parameter()]
         [System.String]
         $MailboxRetention,
+
+        [Parameter()]
+        [System.Int64]
+        $MetaCacheDatabaseMaxCapacityInBytes,
 
         [Parameter()]
         [System.Boolean]
@@ -546,10 +1115,6 @@ function Test-TargetResource
         $RetainDeletedItemsUntilBackup,
 
         [Parameter()]
-        [System.String]
-        $AdServerSettingsPreferredServer,
-
-        [Parameter()]
         [System.Boolean]
         $SkipInitialDatabaseMount
     )
@@ -563,9 +1128,31 @@ function Test-TargetResource
 
     # Check for non-existent parameters in Exchange 2013
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
+                                    -ParamName 'IsExcludedFromProvisioningByOperator' `
+                                    -ResourceName 'xExchMailboxDatabase' `
+                                    -ParamExistsInVersion '2016', '2019'
+
+    Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
+                                    -ParamName 'IsExcludedFromProvisioningDueToLogicalCorruption' `
+                                    -ResourceName 'xExchMailboxDatabase' `
+                                    -ParamExistsInVersion '2016', '2019'
+
+    Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
                                     -ParamName 'IsExcludedFromProvisioningReason' `
                                     -ResourceName 'xExchMailboxDatabase' `
                                     -ParamExistsInVersion '2016', '2019'
+
+    # Check for non-existent parameters in Exchange 2013 or 2016
+    Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
+                                    -ParamName 'MetaCacheDatabaseMaxCapacityInBytes' `
+                                    -ResourceName 'xExchMailboxDatabase' `
+                                    -ParamExistsInVersion '2019'
+
+    # Check for non-existent parameters in Exchange 2019
+    Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
+                                    -ParamName 'IndexEnabled' `
+                                    -ResourceName 'xExchMailboxDatabase' `
+                                    -ParamExistsInVersion '2013', '2016'
 
     if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
@@ -584,6 +1171,11 @@ function Test-TargetResource
     }
     else
     {
+        if (!(Test-ExchangeSetting -Name 'AllowFileRestore' -Type 'Boolean' -ExpectedValue $AllowFileRestore -ActualValue $db.AllowFileRestore -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
         if (!(Test-ExchangeSetting -Name 'AutoDagExcludeFromMonitoring' -Type 'Boolean' -ExpectedValue $AutoDagExcludeFromMonitoring -ActualValue $db.AutoDagExcludeFromMonitoring -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
@@ -638,6 +1230,21 @@ function Test-TargetResource
             $testResults = $false
         }
 
+        if (!(Test-ExchangeSetting -Name 'IsExcludedFromProvisioningReason' -Type 'String' -ExpectedValue $IsExcludedFromProvisioningReason -ActualValue $db.IsExcludedFromProvisioningReason -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'IsExcludedFromProvisioningByOperator' -Type 'Boolean' -ExpectedValue $IsExcludedFromProvisioningByOperator -ActualValue $db.IsExcludedFromProvisioningByOperator -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'IsExcludedFromProvisioningDueToLogicalCorruption' -Type 'Boolean' -ExpectedValue $IsExcludedFromProvisioningDueToLogicalCorruption -ActualValue $db.IsExcludedFromProvisioningDueToLogicalCorruption -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
         if (!(Test-ExchangeSetting -Name 'IssueWarningQuota' -Type 'Unlimited' -ExpectedValue $IssueWarningQuota -ActualValue $db.IssueWarningQuota -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
@@ -659,6 +1266,11 @@ function Test-TargetResource
         }
 
         if (!(Test-ExchangeSetting -Name 'MailboxRetention' -Type 'Timespan' -ExpectedValue $MailboxRetention -ActualValue $db.MailboxRetention -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'MetaCacheDatabaseMaxCapacityInBytes' -Type 'Int' -ExpectedValue $MetaCacheDatabaseMaxCapacityInBytes -ActualValue $db.MetaCacheDatabaseMaxCapacityInBytes -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
@@ -720,7 +1332,168 @@ function Test-TargetResource
     return $testResults
 }
 
-# Runs Get-MailboxDatabase, only specifying Identity and optionally DomainController
+<#
+    .SYNOPSIS
+        Runs Get-MailboxDatabase, only specifying Identity and optionally
+        DomainController.
+
+    .PARAMETER Name
+        The Name parameter specifies the unique name of the mailbox database.
+
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+
+    .PARAMETER DatabaseCopyCount
+        The number of copies that the database will have once fully configured.
+
+    .PARAMETER EdbFilePath
+        The EdbFilePath parameter specifies the path to the database files.
+
+    .PARAMETER LogFolderPath
+        The LogFolderPath parameter specifies the folder location for log
+        files.
+
+    .PARAMETER Server
+        The Server parameter specifies the server on which you want to create
+        the database.
+
+    .PARAMETER AdServerSettingsPreferredServer
+        An optional domain controller to pass to Set-AdServerSettings
+        -PreferredServer.
+
+    .PARAMETER AllowFileRestore
+        The AllowFileRestore parameter specifies whether to allow a database to
+        be restored from a backup.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is okay to restart the Information Store Service after
+        adding a database. Defaults to $false.
+
+    .PARAMETER AutoDagExcludeFromMonitoring
+        The AutoDagExcludedFromMonitoringparameter specifies whether to
+        exclude the mailbox database from the ServerOneCopyMonitor, which
+        alerts an administrator when a replicated database has only one healthy
+        copy available.
+
+    .PARAMETER BackgroundDatabaseMaintenance
+        The BackgroundDatabaseMaintenance parameter specifies whether the
+        Extensible Storage Engine (ESE) performs database maintenance.
+
+    .PARAMETER CalendarLoggingQuota
+        The CalendarLoggingQuota parameter specifies the maximum size of the
+        log in the Recoverable Items folder of the mailbox that stores
+        changes to calendar items.
+
+    .PARAMETER CircularLoggingEnabled
+        The CircularLoggingEnabled parameter specifies whether circular
+        logging is enabled for the database.
+
+    .PARAMETER DataMoveReplicationConstraint
+        The DataMoveReplicationConstraint parameter specifies the throttling
+        behavior for high availability mailbox moves.
+
+    .PARAMETER DeletedItemRetention
+        The DeletedItemRetention parameter specifies the length of time to keep
+        deleted items in the Recoverable Items\Deletions folder in mailboxes.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER EventHistoryRetentionPeriod
+        The EventHistoryRetentionPeriod parameter specifies the length of time
+        to keep event data.
+
+    .PARAMETER IndexEnabled
+        The IndexEnabled parameter specifies whether Exchange Search indexes
+        the mailbox database.
+
+    .PARAMETER IsExcludedFromProvisioning
+        The IsExcludedFromProvisioning parameter specifies whether to exclude
+        the database from the mailbox provisioning load balancer that
+        distributes new mailboxes randomly and evenly across the available
+        databases.
+
+    .PARAMETER IsExcludedFromProvisioningByOperator
+        The IIsExcludedFromProvisioningByOperator parameter specifies whether
+        to exclude the database from the mailbox provisioning load balancer
+        that distributes new mailboxes randomly and evenly across the available
+        databases.
+
+    .PARAMETER IsExcludedFromProvisioningDueToLogicalCorruption
+        The IsExcludedFromProvisioningDueToLogicalCorruption parameter
+        specifies whether to exclude the database from the mailbox
+        provisioning load balancer that distributes new mailboxes randomly and
+        evenly across the available databases.
+
+    .PARAMETER IsExcludedFromProvisioningReason
+        The IsExcludedFromProvisioningReason parameter specifies the reason
+        why you excluded the mailbox database from the mailbox provisioning
+        load balancer.
+
+    .PARAMETER IssueWarningQuota
+        The IssueWarningQuota parameter specifies the warning threshold for the
+        size of the mailbox.
+
+    .PARAMETER IsSuspendedFromProvisioning
+        The IsSuspendedFromProvisioning parameter specifies whether to exclude
+        the database from the mailbox provisioning load balancer that
+        distributes new mailboxes randomly and evenly across the available
+        databases.
+
+    .PARAMETER JournalRecipient
+        The JournalRecipient parameter specifies the journal recipient to use
+        for per-database journaling for all mailboxes on the database.
+
+    .PARAMETER MailboxRetention
+        The MailboxRetention parameter specifies the length of time to keep
+        deleted mailboxes before they are permanently deleted or purged.
+
+    .PARAMETER MetaCacheDatabaseMaxCapacityInBytes
+        The MetaCacheDatabaseMaxCapacityInBytes parameter specifies the size of
+        the metacache database in bytes. To convert gigabytes to bytes,
+        multiply the value by 1024^3. For terabytes to bytes, multiply by
+        1024^4.
+
+    .PARAMETER MountAtStartup
+        The MountAtStartup parameter specifies whether to mount the mailbox
+        database when the Microsoft Exchange Information Store service starts.
+
+    .PARAMETER OfflineAddressBook
+        The OfflineAddressBook parameter specifies the offline address book
+        that's associated with the mailbox database.
+
+    .PARAMETER ProhibitSendQuota
+        The ProhibitSendQuota parameter specifies a size limit for the mailbox.
+        If the mailbox reaches or exceeds this size, the mailbox can't send
+        new messages, and the user receives a descriptive warning message.
+
+    .PARAMETER ProhibitSendReceiveQuota
+        The ProhibitSendReceiveQuota parameter specifies a size limit for the
+        mailbox. If the mailbox reaches or exceeds this size, the mailbox can't
+        send or receive new messages. Messages sent to the mailbox are returned
+        to the sender with a descriptive error message. This value effectively
+        determines the maximum size of the mailbox.
+
+    .PARAMETER RecoverableItemsQuota
+        The RecoverableItemsQuota parameter specifies the maximum size for the
+        Recoverable Items folder of the mailbox.
+
+    .PARAMETER RecoverableItemsWarningQuota
+        The RecoverableItemsWarningQuota parameter specifies the warning
+        threshold for the size of the Recoverable Items folder for the mailbox.
+
+    .PARAMETER RetainDeletedItemsUntilBackup
+        The RetainDeletedItemsUntilBackup parameter specifies whether to keep
+        items in the Recoverable Items\Deletions folder of the mailbox until
+        the next database backup occurs.
+
+    .PARAMETER SkipInitialDatabaseMount
+        Whether the initial mount of databases should be skipped after database
+        creation.
+#>
 function Get-MailboxDatabaseInternal
 {
     [CmdletBinding()]
@@ -752,6 +1525,14 @@ function Get-MailboxDatabaseInternal
         $Server,
 
         [Parameter()]
+        [System.String]
+        $AdServerSettingsPreferredServer,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowFileRestore,
+
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
@@ -797,6 +1578,14 @@ function Get-MailboxDatabaseInternal
         $IsExcludedFromProvisioning,
 
         [Parameter()]
+        [System.Boolean]
+        $IsExcludedFromProvisioningByOperator,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsExcludedFromProvisioningDueToLogicalCorruption,
+
+        [Parameter()]
         [System.String]
         $IsExcludedFromProvisioningReason,
 
@@ -815,6 +1604,10 @@ function Get-MailboxDatabaseInternal
         [Parameter()]
         [System.String]
         $MailboxRetention,
+
+        [Parameter()]
+        [System.Int64]
+        $MetaCacheDatabaseMaxCapacityInBytes,
 
         [Parameter()]
         [System.Boolean]
@@ -845,10 +1638,6 @@ function Get-MailboxDatabaseInternal
         $RetainDeletedItemsUntilBackup,
 
         [Parameter()]
-        [System.String]
-        $AdServerSettingsPreferredServer,
-
-        [Parameter()]
         [System.Boolean]
         $SkipInitialDatabaseMount
     )
@@ -859,7 +1648,168 @@ function Get-MailboxDatabaseInternal
     return (Get-MailboxDatabase @PSBoundParameters -ErrorAction SilentlyContinue)
 }
 
-# Moves the database or log path. Doesn't validate that the DB is in a good condition to move. Caller should do that.
+<#
+    .SYNOPSIS
+        Moves the database or log path. Doesn't validate that the DB is in a
+        good condition to move. Caller should do that.
+
+    .PARAMETER Name
+        The Name parameter specifies the unique name of the mailbox database.
+
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+
+    .PARAMETER DatabaseCopyCount
+        The number of copies that the database will have once fully configured.
+
+    .PARAMETER EdbFilePath
+        The EdbFilePath parameter specifies the path to the database files.
+
+    .PARAMETER LogFolderPath
+        The LogFolderPath parameter specifies the folder location for log
+        files.
+
+    .PARAMETER Server
+        The Server parameter specifies the server on which you want to create
+        the database.
+
+    .PARAMETER AdServerSettingsPreferredServer
+        An optional domain controller to pass to Set-AdServerSettings
+        -PreferredServer.
+
+    .PARAMETER AllowFileRestore
+        The AllowFileRestore parameter specifies whether to allow a database to
+        be restored from a backup.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is okay to restart the Information Store Service after
+        adding a database. Defaults to $false.
+
+    .PARAMETER AutoDagExcludeFromMonitoring
+        The AutoDagExcludedFromMonitoringparameter specifies whether to
+        exclude the mailbox database from the ServerOneCopyMonitor, which
+        alerts an administrator when a replicated database has only one healthy
+        copy available.
+
+    .PARAMETER BackgroundDatabaseMaintenance
+        The BackgroundDatabaseMaintenance parameter specifies whether the
+        Extensible Storage Engine (ESE) performs database maintenance.
+
+    .PARAMETER CalendarLoggingQuota
+        The CalendarLoggingQuota parameter specifies the maximum size of the
+        log in the Recoverable Items folder of the mailbox that stores
+        changes to calendar items.
+
+    .PARAMETER CircularLoggingEnabled
+        The CircularLoggingEnabled parameter specifies whether circular
+        logging is enabled for the database.
+
+    .PARAMETER DataMoveReplicationConstraint
+        The DataMoveReplicationConstraint parameter specifies the throttling
+        behavior for high availability mailbox moves.
+
+    .PARAMETER DeletedItemRetention
+        The DeletedItemRetention parameter specifies the length of time to keep
+        deleted items in the Recoverable Items\Deletions folder in mailboxes.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER EventHistoryRetentionPeriod
+        The EventHistoryRetentionPeriod parameter specifies the length of time
+        to keep event data.
+
+    .PARAMETER IndexEnabled
+        The IndexEnabled parameter specifies whether Exchange Search indexes
+        the mailbox database.
+
+    .PARAMETER IsExcludedFromProvisioning
+        The IsExcludedFromProvisioning parameter specifies whether to exclude
+        the database from the mailbox provisioning load balancer that
+        distributes new mailboxes randomly and evenly across the available
+        databases.
+
+    .PARAMETER IsExcludedFromProvisioningByOperator
+        The IIsExcludedFromProvisioningByOperator parameter specifies whether
+        to exclude the database from the mailbox provisioning load balancer
+        that distributes new mailboxes randomly and evenly across the available
+        databases.
+
+    .PARAMETER IsExcludedFromProvisioningDueToLogicalCorruption
+        The IsExcludedFromProvisioningDueToLogicalCorruption parameter
+        specifies whether to exclude the database from the mailbox
+        provisioning load balancer that distributes new mailboxes randomly and
+        evenly across the available databases.
+
+    .PARAMETER IsExcludedFromProvisioningReason
+        The IsExcludedFromProvisioningReason parameter specifies the reason
+        why you excluded the mailbox database from the mailbox provisioning
+        load balancer.
+
+    .PARAMETER IssueWarningQuota
+        The IssueWarningQuota parameter specifies the warning threshold for the
+        size of the mailbox.
+
+    .PARAMETER IsSuspendedFromProvisioning
+        The IsSuspendedFromProvisioning parameter specifies whether to exclude
+        the database from the mailbox provisioning load balancer that
+        distributes new mailboxes randomly and evenly across the available
+        databases.
+
+    .PARAMETER JournalRecipient
+        The JournalRecipient parameter specifies the journal recipient to use
+        for per-database journaling for all mailboxes on the database.
+
+    .PARAMETER MailboxRetention
+        The MailboxRetention parameter specifies the length of time to keep
+        deleted mailboxes before they are permanently deleted or purged.
+
+    .PARAMETER MetaCacheDatabaseMaxCapacityInBytes
+        The MetaCacheDatabaseMaxCapacityInBytes parameter specifies the size of
+        the metacache database in bytes. To convert gigabytes to bytes,
+        multiply the value by 1024^3. For terabytes to bytes, multiply by
+        1024^4.
+
+    .PARAMETER MountAtStartup
+        The MountAtStartup parameter specifies whether to mount the mailbox
+        database when the Microsoft Exchange Information Store service starts.
+
+    .PARAMETER OfflineAddressBook
+        The OfflineAddressBook parameter specifies the offline address book
+        that's associated with the mailbox database.
+
+    .PARAMETER ProhibitSendQuota
+        The ProhibitSendQuota parameter specifies a size limit for the mailbox.
+        If the mailbox reaches or exceeds this size, the mailbox can't send
+        new messages, and the user receives a descriptive warning message.
+
+    .PARAMETER ProhibitSendReceiveQuota
+        The ProhibitSendReceiveQuota parameter specifies a size limit for the
+        mailbox. If the mailbox reaches or exceeds this size, the mailbox can't
+        send or receive new messages. Messages sent to the mailbox are returned
+        to the sender with a descriptive error message. This value effectively
+        determines the maximum size of the mailbox.
+
+    .PARAMETER RecoverableItemsQuota
+        The RecoverableItemsQuota parameter specifies the maximum size for the
+        Recoverable Items folder of the mailbox.
+
+    .PARAMETER RecoverableItemsWarningQuota
+        The RecoverableItemsWarningQuota parameter specifies the warning
+        threshold for the size of the Recoverable Items folder for the mailbox.
+
+    .PARAMETER RetainDeletedItemsUntilBackup
+        The RetainDeletedItemsUntilBackup parameter specifies whether to keep
+        items in the Recoverable Items\Deletions folder of the mailbox until
+        the next database backup occurs.
+
+    .PARAMETER SkipInitialDatabaseMount
+        Whether the initial mount of databases should be skipped after database
+        creation.
+#>
 function Move-DatabaseOrLogPath
 {
     [CmdletBinding()]
@@ -891,6 +1841,14 @@ function Move-DatabaseOrLogPath
         $Server,
 
         [Parameter()]
+        [System.String]
+        $AdServerSettingsPreferredServer,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowFileRestore,
+
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
@@ -936,6 +1894,14 @@ function Move-DatabaseOrLogPath
         $IsExcludedFromProvisioning,
 
         [Parameter()]
+        [System.Boolean]
+        $IsExcludedFromProvisioningByOperator,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsExcludedFromProvisioningDueToLogicalCorruption,
+
+        [Parameter()]
         [System.String]
         $IsExcludedFromProvisioningReason,
 
@@ -954,6 +1920,10 @@ function Move-DatabaseOrLogPath
         [Parameter()]
         [System.String]
         $MailboxRetention,
+
+        [Parameter()]
+        [System.Int64]
+        $MetaCacheDatabaseMaxCapacityInBytes,
 
         [Parameter()]
         [System.Boolean]
@@ -984,10 +1954,6 @@ function Move-DatabaseOrLogPath
         $RetainDeletedItemsUntilBackup,
 
         [Parameter()]
-        [System.String]
-        $AdServerSettingsPreferredServer,
-
-        [Parameter()]
         [System.Boolean]
         $SkipInitialDatabaseMount
     )
@@ -998,7 +1964,167 @@ function Move-DatabaseOrLogPath
     Move-DatabasePath @PSBoundParameters -Confirm:$false -Force
 }
 
-# Mounts the specified database
+<#
+    .SYNOPSIS
+        Mounts the specified database.
+
+    .PARAMETER Name
+        The Name parameter specifies the unique name of the mailbox database.
+
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+
+    .PARAMETER DatabaseCopyCount
+        The number of copies that the database will have once fully configured.
+
+    .PARAMETER EdbFilePath
+        The EdbFilePath parameter specifies the path to the database files.
+
+    .PARAMETER LogFolderPath
+        The LogFolderPath parameter specifies the folder location for log
+        files.
+
+    .PARAMETER Server
+        The Server parameter specifies the server on which you want to create
+        the database.
+
+    .PARAMETER AdServerSettingsPreferredServer
+        An optional domain controller to pass to Set-AdServerSettings
+        -PreferredServer.
+
+    .PARAMETER AllowFileRestore
+        The AllowFileRestore parameter specifies whether to allow a database to
+        be restored from a backup.
+
+    .PARAMETER AllowServiceRestart
+        Whether it is okay to restart the Information Store Service after
+        adding a database. Defaults to $false.
+
+    .PARAMETER AutoDagExcludeFromMonitoring
+        The AutoDagExcludedFromMonitoringparameter specifies whether to
+        exclude the mailbox database from the ServerOneCopyMonitor, which
+        alerts an administrator when a replicated database has only one healthy
+        copy available.
+
+    .PARAMETER BackgroundDatabaseMaintenance
+        The BackgroundDatabaseMaintenance parameter specifies whether the
+        Extensible Storage Engine (ESE) performs database maintenance.
+
+    .PARAMETER CalendarLoggingQuota
+        The CalendarLoggingQuota parameter specifies the maximum size of the
+        log in the Recoverable Items folder of the mailbox that stores
+        changes to calendar items.
+
+    .PARAMETER CircularLoggingEnabled
+        The CircularLoggingEnabled parameter specifies whether circular
+        logging is enabled for the database.
+
+    .PARAMETER DataMoveReplicationConstraint
+        The DataMoveReplicationConstraint parameter specifies the throttling
+        behavior for high availability mailbox moves.
+
+    .PARAMETER DeletedItemRetention
+        The DeletedItemRetention parameter specifies the length of time to keep
+        deleted items in the Recoverable Items\Deletions folder in mailboxes.
+
+    .PARAMETER DomainController
+        The DomainController parameter specifies the domain controller that's
+        used by this cmdlet to read data from or write data to Active
+        Directory. You identify the domain controller by its fully qualified
+        domain name (FQDN). For example, dc01.contoso.com.
+
+    .PARAMETER EventHistoryRetentionPeriod
+        The EventHistoryRetentionPeriod parameter specifies the length of time
+        to keep event data.
+
+    .PARAMETER IndexEnabled
+        The IndexEnabled parameter specifies whether Exchange Search indexes
+        the mailbox database.
+
+    .PARAMETER IsExcludedFromProvisioning
+        The IsExcludedFromProvisioning parameter specifies whether to exclude
+        the database from the mailbox provisioning load balancer that
+        distributes new mailboxes randomly and evenly across the available
+        databases.
+
+    .PARAMETER IsExcludedFromProvisioningByOperator
+        The IIsExcludedFromProvisioningByOperator parameter specifies whether
+        to exclude the database from the mailbox provisioning load balancer
+        that distributes new mailboxes randomly and evenly across the available
+        databases.
+
+    .PARAMETER IsExcludedFromProvisioningDueToLogicalCorruption
+        The IsExcludedFromProvisioningDueToLogicalCorruption parameter
+        specifies whether to exclude the database from the mailbox
+        provisioning load balancer that distributes new mailboxes randomly and
+        evenly across the available databases.
+
+    .PARAMETER IsExcludedFromProvisioningReason
+        The IsExcludedFromProvisioningReason parameter specifies the reason
+        why you excluded the mailbox database from the mailbox provisioning
+        load balancer.
+
+    .PARAMETER IssueWarningQuota
+        The IssueWarningQuota parameter specifies the warning threshold for the
+        size of the mailbox.
+
+    .PARAMETER IsSuspendedFromProvisioning
+        The IsSuspendedFromProvisioning parameter specifies whether to exclude
+        the database from the mailbox provisioning load balancer that
+        distributes new mailboxes randomly and evenly across the available
+        databases.
+
+    .PARAMETER JournalRecipient
+        The JournalRecipient parameter specifies the journal recipient to use
+        for per-database journaling for all mailboxes on the database.
+
+    .PARAMETER MailboxRetention
+        The MailboxRetention parameter specifies the length of time to keep
+        deleted mailboxes before they are permanently deleted or purged.
+
+    .PARAMETER MetaCacheDatabaseMaxCapacityInBytes
+        The MetaCacheDatabaseMaxCapacityInBytes parameter specifies the size of
+        the metacache database in bytes. To convert gigabytes to bytes,
+        multiply the value by 1024^3. For terabytes to bytes, multiply by
+        1024^4.
+
+    .PARAMETER MountAtStartup
+        The MountAtStartup parameter specifies whether to mount the mailbox
+        database when the Microsoft Exchange Information Store service starts.
+
+    .PARAMETER OfflineAddressBook
+        The OfflineAddressBook parameter specifies the offline address book
+        that's associated with the mailbox database.
+
+    .PARAMETER ProhibitSendQuota
+        The ProhibitSendQuota parameter specifies a size limit for the mailbox.
+        If the mailbox reaches or exceeds this size, the mailbox can't send
+        new messages, and the user receives a descriptive warning message.
+
+    .PARAMETER ProhibitSendReceiveQuota
+        The ProhibitSendReceiveQuota parameter specifies a size limit for the
+        mailbox. If the mailbox reaches or exceeds this size, the mailbox can't
+        send or receive new messages. Messages sent to the mailbox are returned
+        to the sender with a descriptive error message. This value effectively
+        determines the maximum size of the mailbox.
+
+    .PARAMETER RecoverableItemsQuota
+        The RecoverableItemsQuota parameter specifies the maximum size for the
+        Recoverable Items folder of the mailbox.
+
+    .PARAMETER RecoverableItemsWarningQuota
+        The RecoverableItemsWarningQuota parameter specifies the warning
+        threshold for the size of the Recoverable Items folder for the mailbox.
+
+    .PARAMETER RetainDeletedItemsUntilBackup
+        The RetainDeletedItemsUntilBackup parameter specifies whether to keep
+        items in the Recoverable Items\Deletions folder of the mailbox until
+        the next database backup occurs.
+
+    .PARAMETER SkipInitialDatabaseMount
+        Whether the initial mount of databases should be skipped after database
+        creation.
+#>
 function Mount-DatabaseInternal
 {
     [CmdletBinding()]
@@ -1030,6 +2156,14 @@ function Mount-DatabaseInternal
         $Server,
 
         [Parameter()]
+        [System.String]
+        $AdServerSettingsPreferredServer,
+
+        [Parameter()]
+        [System.Boolean]
+        $AllowFileRestore,
+
+        [Parameter()]
         [System.Boolean]
         $AllowServiceRestart = $false,
 
@@ -1075,6 +2209,14 @@ function Mount-DatabaseInternal
         $IsExcludedFromProvisioning,
 
         [Parameter()]
+        [System.Boolean]
+        $IsExcludedFromProvisioningByOperator,
+
+        [Parameter()]
+        [System.Boolean]
+        $IsExcludedFromProvisioningDueToLogicalCorruption,
+
+        [Parameter()]
         [System.String]
         $IsExcludedFromProvisioningReason,
 
@@ -1093,6 +2235,10 @@ function Mount-DatabaseInternal
         [Parameter()]
         [System.String]
         $MailboxRetention,
+
+        [Parameter()]
+        [System.Int64]
+        $MetaCacheDatabaseMaxCapacityInBytes,
 
         [Parameter()]
         [System.Boolean]
@@ -1121,10 +2267,6 @@ function Mount-DatabaseInternal
         [Parameter()]
         [System.Boolean]
         $RetainDeletedItemsUntilBackup,
-
-        [Parameter()]
-        [System.String]
-        $AdServerSettingsPreferredServer,
 
         [Parameter()]
         [System.Boolean]
