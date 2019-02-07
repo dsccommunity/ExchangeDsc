@@ -10,6 +10,9 @@
   parameter (#401)
 - Added additional parameters and comment based help to the
   MSFT_xExchMailboxDatabase resource
+- Move code that sets $global:DSCMachineStatus into a dedicated helper
+  function.
+  [Issue #407](https://github.com/PowerShell/xExchange/issues/407)
 
 ## 1.26.0.0
 

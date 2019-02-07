@@ -57,13 +57,6 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
-    # Suppressing this rule because $global:DSCMachineStatus is used to trigger a reboot.
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
-    <#
-        Suppressing this rule because $global:DSCMachineStatus is only set,
-        never used (by design of Desired State Configuration).
-    #>
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function', Target='DSCMachineStatus')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
     [CmdletBinding()]
     param
@@ -111,7 +104,7 @@ function Set-TargetResource
     elseif ($failoverClusteringRole.InstallState -like 'InstallPending')
     {
         Write-Warning -Message 'A reboot is required to finish installing the Failover-Clustering role. This must occur before the server can be added to the DAG.'
-        $global:DSCMachineStatus = 1
+        Set-DSCMachineStatus -NewDSCMachineStatus 1
         return
     }
 
