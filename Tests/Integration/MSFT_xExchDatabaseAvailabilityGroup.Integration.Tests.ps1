@@ -266,16 +266,28 @@ if ($null -ne $adModule)
                     Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "MSFT_xExchMailboxDatabaseCopy" -ChildPath "MSFT_xExchMailboxDatabaseCopy.psm1")))
 
                     $dagDBCopyTestParams = @{
-                        Identity = $testDBName
-                        MailboxServer = $secondDAGMember
-                        Credential = $shellCredentials
+                        Identity             = $testDBName
+                        MailboxServer        = $secondDAGMember
+                        Credential           = $shellCredentials
                         ActivationPreference = 2
+                        ReplayLagTime        = '7.00:00:00'
+                        TruncationLagTime    = '1.00:00:00'
                     }
 
                     $dagDBCopyExpectedGetResults = @{
-                        Identity = $testDBName
-                        MailboxServer = $secondDAGMember
+                        Identity             = $testDBName
+                        MailboxServer        = $secondDAGMember
                         ActivationPreference = 2
+                        ReplayLagTime        = '7.00:00:00'
+                        TruncationLagTime    = '1.00:00:00'
+                    }
+
+                    $serverVersion = Get-ExchangeVersionYear
+
+                    if ($serverVersion -in '2016', '2019')
+                    {
+                        $dagDBCopyTestParams.Add('ReplayLagMaxDelay', '2.00:00:00')
+                        $dagDBCopyExpectedGetResults.Add('ReplayLagMaxDelay', '2.00:00:00')
                     }
 
                     Test-TargetResourceFunctionality -Params $dagDBCopyTestParams `

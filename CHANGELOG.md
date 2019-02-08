@@ -13,6 +13,8 @@
 - Move code that sets $global:DSCMachineStatus into a dedicated helper
   function.
   [Issue #407](https://github.com/PowerShell/xExchange/issues/407)
+- Add missing parameters for xExchMailboxDatabaseCopy, adds comment based help,
+  and adds remaining Unit tests.
 
 ## 1.26.0.0
 

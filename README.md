@@ -710,20 +710,44 @@ parameters.
 **xExchMailboxDatabaseCopy** is used to create, remove, or change properties on
 a Mailbox Database Copy.
 
-Where no description is listed, properties correspond directly to
+Most properties correspond directly to
 [Add-MailboxDatabaseCopy](https://docs.microsoft.com/en-us/powershell/module/exchange/database-availability-groups/add-mailboxdatabasecopy)
+or
+[Set-MailboxDatabaseCopy](https://docs.microsoft.com/en-us/powershell/module/exchange/database-availability-groups/set-mailboxdatabasecopy)
 parameters.
 
-* **Identity**: The name of the Mailbox Database.
-* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
-* **MailboxServer**: The server to create the database copy on.
-* **AllowServiceRestart**: Whether it is OK to restart the Information Store
+* **Identity**: The Identity parameter specifies the name of the database whose
+  copy is being modified.
+* **Credential**: Credentials used to establish a remote PowerShell session to
+  Exchange.
+* **MailboxServer**: The MailboxServer parameter specifies the name of the
+  server that will host the database copy.
+* **AdServerSettingsPreferredServer**: An optional domain controller to pass to
+  Set-AdServerSettings -PreferredServer.
+* **AllowServiceRestart**: Whether it is OK to restart the Information Store.
   service after adding a database copy.
   Defaults to $false.
-* **ActivationPreference**
-* **DomainController**
-* **ReplayLagTime**
-* **TruncationLagTime**
+* **ActivationPreference**: The ActivationPreference parameter value is used as
+  part of Active Manager's best copy selection process and to redistribute
+  active mailbox databases throughout the database availability group (DAG)
+  when using the RedistributeActiveDatabases.ps1 script.
+* **DomainController**: The DomainController parameter specifies the domain
+  controller that's used by this cmdlet to read data from or write data to
+  Active Directory. You identify the domain controller by its fully qualified
+  domain name (FQDN). For example, dc01.contoso.com.
+* **ReplayLagMaxDelay**: The ReplayLagMaxDelay parameter specifies the maximum
+  delay for lagged database copy play down (also known as deferred lagged copy
+  play down).
+* **ReplayLagTime**: The ReplayLagTime parameter specifies the amount of time
+  that the Microsoft Exchange Replication service should wait before replaying
+  log files that have been copied to the passive database copy.
+* **SeedingPostponed**: The SeedingPostponed switch specifies that the task
+  doesn't seed the database copy, so you need to explicitly seed the database
+  copy.
+* **TruncationLagTime**: The TruncationLagTime parameter specifies the amount
+  of time that the Microsoft Exchange Replication service should wait before
+  truncating log files that have replayed into the passive copy of the
+  database.
 
 ### xExchMailboxServer
 
