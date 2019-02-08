@@ -3082,6 +3082,25 @@ try
                 }
             }
         }
+
+        Describe 'xExchangeHelper\Set-DSCMachineStatus' -Tag 'Helper' {
+            Context 'When Set-DSCMachineStatus is called' {
+                It 'Should set the desired DSCMachineStatus value' {
+                    # A new value we'll attempt to set to $global:DSCMachineStatus
+                    $newValue = 100
+
+                    # Store the previous $global:DSCMachineStatus value
+                    $prevDSCMachineStatus = $global:DSCMachineStatus
+                    
+                    # Set and test for the new value
+                    Set-DSCMachineStatus -NewDSCMachineStatus $newValue
+                    $global:DSCMachineStatus | Should -Be $newValue
+
+                    # Revert to previous $global:DSCMachineStatus value
+                    $global:DSCMachineStatus = $prevDSCMachineStatus
+                }
+            }
+        }
     }
 }
 finally
