@@ -325,24 +325,10 @@ function Initialize-TestForDAG
     $existingDB = Get-MailboxDatabase -Identity "$($DatabaseName)" -Status -ErrorAction SilentlyContinue
 
     # First remove the test database copies
-    if ($null -ne $existingDB)
-    {
-        Get-MailboxDatabaseCopyStatus -Identity "$($DatabaseName)" | Where-Object -FilterScript {
-            $existingDB.MountedOnServer.ToLower().Contains($_.MailboxServer.ToLower()) -eq $false
-        } | Remove-MailboxDatabaseCopy -Confirm:$false
-    }
+    Remove-CopiesOfTestDatabase -DatabaseName $DatabaseName
 
     # Now remove the actual DB's
-    Get-MailboxDatabase | Where-Object -FilterScript {
-        $_.Name -like "$($DatabaseName)"
-    } | Remove-MailboxDatabase -Confirm:$false
-
-    # Remove the files
-    foreach ($server in $ServerName)
-    {
-        Get-ChildItem -LiteralPath "\\$($server)\c`$\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($DatabaseName)" `
-                      -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
-    }
+    Remove-TestDatabase -DatabaseName $DatabaseName -ServerName $ServerName
 
     # Last remove the test DAG
     $dag = Get-DatabaseAvailabilityGroup -Identity "$($DAGName)" -ErrorAction SilentlyContinue
@@ -373,6 +359,72 @@ function Initialize-TestForDAG
     }
 
     Write-Verbose -Message 'Finished cleaning up test DAG and related resources'
+}
+
+<#
+    .SYNOPSIS
+        Removes all copies of the given Mailbox Database that are not currently
+        mounted.
+
+    .PARAMETER DatabaseName
+        The name of the Database to remove copies from.
+#>
+function Remove-CopiesOfTestDatabase
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [System.String]
+        $DatabaseName
+    )
+
+    $existingDB = Get-MailboxDatabase -Identity "$($DatabaseName)" -Status -ErrorAction SilentlyContinue
+
+    # First remove the test database copies
+    if ($null -ne $existingDB)
+    {
+        Get-MailboxDatabaseCopyStatus -Identity "$($DatabaseName)" | Where-Object -FilterScript {
+            $_.Status -notlike 'Mounted'
+        } | Remove-MailboxDatabaseCopy -Confirm:$false
+    }
+}
+
+<#
+    .SYNOPSIS
+        Removes the specified Mailbox Database, as well as associated database
+        files from the specified Servers.
+
+    .PARAMETER ServerName
+        The servers to remove database files from.
+
+    .PARAMETER DatabaseName
+        The name of the Database to remove.
+#>
+function Remove-TestDatabase
+{
+    [CmdletBinding()]
+    param
+    (
+        [Parameter()]
+        [System.String[]]
+        $ServerName,
+
+        [Parameter()]
+        [System.String]
+        $DatabaseName
+    )
+
+    Get-MailboxDatabase | Where-Object -FilterScript {
+        $_.Name -like "$($DatabaseName)"
+    } | Remove-MailboxDatabase -Confirm:$false
+
+    # Remove the files
+    foreach ($server in $ServerName)
+    {
+        Get-ChildItem -LiteralPath "\\$($server)\c`$\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($DatabaseName)" `
+                      -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
+    }
 }
 
 <#
@@ -606,6 +658,29 @@ function Get-DSCTestMailContact
     }
 
     return $testMailContact
+}
+
+<#
+    .SYNOPSIS
+        Returns the FQDN of the first domain controller discovered using
+        Get-ADDomainController.
+#>
+function Get-TestDomainController
+{
+    [CmdletBinding()]
+    [OutputType([System.String])]
+    param()
+
+    $dcToTestAgainst = ''
+
+    [System.Object[]] $foundDCs = Get-ADDomainController
+
+    if ($foundDCs.Count -gt 0)
+    {
+        [System.String] $dcToTestAgainst = $foundDCs[0].HostName
+    }
+
+    return $dcToTestAgainst
 }
 
 Export-ModuleMember -Function *

@@ -351,13 +351,9 @@ if ($exchangeInstalled)
     }
 
     # Get Domain Controller
-    [System.Object[]] $foundDCs = Get-ADDomainController
+    [System.String] $dcToTestAgainst = Get-TestDomainController
 
-    if ($foundDCs.Count -gt 0)
-    {
-        [System.String] $dcToTestAgainst = $foundDCs[0].HostName
-    }
-    else
+    if ([System.String]::IsNullOrEmpty($dcToTestAgainst))
     {
         Write-Error -Message 'Unable to discover Domain Controller to use for DC specific tests.'
         return

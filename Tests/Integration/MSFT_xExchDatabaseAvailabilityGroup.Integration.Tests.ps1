@@ -101,6 +101,15 @@ if ($null -ne $adModule)
                 }
             }
 
+            # Get Domain Controller
+            [System.String] $dcToTestAgainst = Get-TestDomainController
+
+            if ([System.String]::IsNullOrEmpty($dcToTestAgainst))
+            {
+                Write-Error -Message 'Unable to discover Domain Controller to use for DC specific tests.'
+                return
+            }
+
             # Remove the existing DAG
             Initialize-TestForDAG -ServerName @($env:COMPUTERNAME,$secondDAGMember) `
                                   -DAGName $dagName `
@@ -110,44 +119,45 @@ if ($null -ne $adModule)
             Describe 'Test Creating and Modifying a DAG, adding DAG members, creating a DAG database, and adding database copies' {
                 # Create a new DAG
                 $dagTestParams = @{
-                    Name = $dagName
-                    Credential = $shellCredentials
-                    AutoDagAutoReseedEnabled = $true
-                    AutoDagDatabaseCopiesPerDatabase = 2
-                    AutoDagDatabaseCopiesPerVolume = 2
-                    AutoDagDatabasesRootFolderPath = 'C:\ExchangeDatabases'
-                    AutoDagDiskReclaimerEnabled = $true
-                    AutoDagTotalNumberOfServers = 2
-                    AutoDagTotalNumberOfDatabases = 2
-                    AutoDagVolumesRootFolderPath = 'C:\ExchangeVolumes'
+                    Name                                 = $dagName
+                    Credential                           = $shellCredentials
+                    AutoDagAutoReseedEnabled             = $true
+                    AutoDagDatabaseCopiesPerDatabase     = 2
+                    AutoDagDatabaseCopiesPerVolume       = 2
+                    AutoDagDatabasesRootFolderPath       = 'C:\ExchangeDatabases'
+                    AutoDagDiskReclaimerEnabled          = $true
+                    AutoDagTotalNumberOfServers          = 2
+                    AutoDagTotalNumberOfDatabases        = 2
+                    AutoDagVolumesRootFolderPath         = 'C:\ExchangeVolumes'
                     DatabaseAvailabilityGroupIpAddresses = '192.168.1.99', '192.168.2.99'
-                    DatacenterActivationMode = 'DagOnly'
-                    ManualDagNetworkConfiguration = $true
-                    NetworkCompression = 'Enabled'
-                    NetworkEncryption = 'InterSubnetOnly'
-                    ReplayLagManagerEnabled = $true
-                    SkipDagValidation = $true
-                    WitnessDirectory = 'C:\FSW'
-                    WitnessServer = $witness1
+                    DatacenterActivationMode             = 'DagOnly'
+                    DomainController                     = $dcToTestAgainst
+                    ManualDagNetworkConfiguration        = $true
+                    NetworkCompression                   = 'Enabled'
+                    NetworkEncryption                    = 'InterSubnetOnly'
+                    ReplayLagManagerEnabled              = $true
+                    SkipDagValidation                    = $true
+                    WitnessDirectory                     = 'C:\FSW'
+                    WitnessServer                        = $witness1
                 }
 
                 # Skip checking DatacenterActivationMode until we have DAG members
                 $dagExpectedGetResults = @{
-                    Name = $dagName
-                    AutoDagAutoReseedEnabled = $true
+                    Name                             = $dagName
+                    AutoDagAutoReseedEnabled         = $true
                     AutoDagDatabaseCopiesPerDatabase = 2
-                    AutoDagDatabaseCopiesPerVolume = 2
-                    AutoDagDatabasesRootFolderPath = 'C:\ExchangeDatabases'
-                    AutoDagDiskReclaimerEnabled = $true
-                    AutoDagTotalNumberOfServers = 2
-                    AutoDagTotalNumberOfDatabases = 2
-                    AutoDagVolumesRootFolderPath = 'C:\ExchangeVolumes'
-                    ManualDagNetworkConfiguration = $true
-                    NetworkCompression = 'Enabled'
-                    NetworkEncryption = 'InterSubnetOnly'
-                    ReplayLagManagerEnabled = $true
-                    WitnessDirectory = 'C:\FSW'
-                    WitnessServer = $witness1
+                    AutoDagDatabaseCopiesPerVolume   = 2
+                    AutoDagDatabasesRootFolderPath   = 'C:\ExchangeDatabases'
+                    AutoDagDiskReclaimerEnabled      = $true
+                    AutoDagTotalNumberOfServers      = 2
+                    AutoDagTotalNumberOfDatabases    = 2
+                    AutoDagVolumesRootFolderPath     = 'C:\ExchangeVolumes'
+                    ManualDagNetworkConfiguration    = $true
+                    NetworkCompression               = 'Enabled'
+                    NetworkEncryption                = 'InterSubnetOnly'
+                    ReplayLagManagerEnabled          = $true
+                    WitnessDirectory                 = 'C:\FSW'
+                    WitnessServer                    = $witness1
                 }
 
                 if (!([System.String]::IsNullOrEmpty($witness2)))
@@ -185,15 +195,16 @@ if ($null -ne $adModule)
                 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "MSFT_xExchDatabaseAvailabilityGroupMember" -ChildPath "MSFT_xExchDatabaseAvailabilityGroupMember.psm1")))
 
                 $dagMemberTestParams = @{
-                    MailboxServer = $env:COMPUTERNAME
-                    Credential = $shellCredentials
-                    DAGName = $dagName
+                    MailboxServer     = $env:COMPUTERNAME
+                    Credential        = $shellCredentials
+                    DAGName           = $dagName
+                    DomainController  = $dcToTestAgainst
                     SkipDagValidation = $true
                 }
 
                 $dagMemberExpectedGetResults = @{
                     MailboxServer = $env:COMPUTERNAME
-                    DAGName = $dagName
+                    DAGName       = $dagName
                 }
 
                 Test-TargetResourceFunctionality -Params $dagMemberTestParams `
@@ -205,15 +216,16 @@ if ($null -ne $adModule)
                 {
                     # Add second DAG member
                     $dagMemberTestParams = @{
-                        MailboxServer = $secondDAGMember
-                        Credential = $shellCredentials
-                        DAGName = $dagName
+                        MailboxServer     = $secondDAGMember
+                        Credential        = $shellCredentials
+                        DAGName           = $dagName
+                        DomainController  = $dcToTestAgainst
                         SkipDagValidation = $true
                     }
 
                     $dagMemberExpectedGetResults = @{
                         MailboxServer = $secondDAGMember
-                        DAGName = $dagName
+                        DAGName       = $dagName
                     }
 
                     Test-TargetResourceFunctionality -Params $dagMemberTestParams `
@@ -241,20 +253,21 @@ if ($null -ne $adModule)
                     Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "MSFT_xExchMailboxDatabase" -ChildPath "MSFT_xExchMailboxDatabase.psm1")))
 
                     $dagDBTestParams = @{
-                        Name = $testDBName
-                        Credential = $shellCredentials
+                        Name                = $testDBName
+                        Credential          = $shellCredentials
                         AllowServiceRestart = $true
-                        DatabaseCopyCount = 2
-                        EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($testDBName)\$($testDBName).edb"
-                        LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($testDBName)"
-                        Server = $env:COMPUTERNAME
+                        DatabaseCopyCount   = 2
+                        DomainController    = $dcToTestAgainst
+                        EdbFilePath         = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($testDBName)\$($testDBName).edb"
+                        LogFolderPath       = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($testDBName)"
+                        Server              = $env:COMPUTERNAME
                     }
 
                     $dagDBExpectedGetResults = @{
-                        Name = $testDBName
-                        EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($testDBName)\$($testDBName).edb"
+                        Name          = $testDBName
+                        EdbFilePath   = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($testDBName)\$($testDBName).edb"
                         LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($testDBName)"
-                        Server = $env:COMPUTERNAME
+                        Server        = $env:COMPUTERNAME
                     }
 
                     Test-TargetResourceFunctionality -Params $dagDBTestParams `
@@ -266,12 +279,15 @@ if ($null -ne $adModule)
                     Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "MSFT_xExchMailboxDatabaseCopy" -ChildPath "MSFT_xExchMailboxDatabaseCopy.psm1")))
 
                     $dagDBCopyTestParams = @{
-                        Identity             = $testDBName
-                        MailboxServer        = $secondDAGMember
-                        Credential           = $shellCredentials
-                        ActivationPreference = 2
-                        ReplayLagTime        = '7.00:00:00'
-                        TruncationLagTime    = '1.00:00:00'
+                        Identity                        = $testDBName
+                        Credential                      = $shellCredentials
+                        MailboxServer                   = $secondDAGMember
+                        ActivationPreference            = 2
+                        AdServerSettingsPreferredServer = $dcToTestAgainst
+                        DomainController                = $dcToTestAgainst
+                        ReplayLagTime                   = '7.00:00:00'
+                        SeedingPostponed                = $false
+                        TruncationLagTime               = '1.00:00:00'
                     }
 
                     $dagDBCopyExpectedGetResults = @{
@@ -293,6 +309,61 @@ if ($null -ne $adModule)
                     Test-TargetResourceFunctionality -Params $dagDBCopyTestParams `
                                                      -ContextLabel 'Add a database copy' `
                                                      -ExpectedGetResults $dagDBCopyExpectedGetResults
+
+                    $dagDBCopyTestParams = @{
+                        Identity                        = $testDBName
+                        Credential                      = $shellCredentials
+                        MailboxServer                   = $secondDAGMember
+                        ActivationPreference            = 1
+                        AdServerSettingsPreferredServer = $dcToTestAgainst
+                        DomainController                = $dcToTestAgainst
+                        ReplayLagTime                   = '0.00:00:00'
+                        TruncationLagTime               = '0.00:00:00'
+                    }
+
+                    $dagDBCopyExpectedGetResults = @{
+                        Identity             = $testDBName
+                        MailboxServer        = $secondDAGMember
+                        ActivationPreference = 1
+                        ReplayLagTime        = '00:00:00'
+                        TruncationLagTime    = '00:00:00'
+                    }
+
+                    if ($serverVersion -in '2016', '2019')
+                    {
+                        $dagDBCopyTestParams.Add('ReplayLagMaxDelay', '0.00:00:00')
+                        $dagDBCopyExpectedGetResults.Add('ReplayLagMaxDelay', '00:00:00')
+                    }
+
+                    Test-TargetResourceFunctionality -Params $dagDBCopyTestParams `
+                                                     -ContextLabel 'Change database copy settings' `
+                                                     -ExpectedGetResults $dagDBCopyExpectedGetResults
+
+
+                    #Remove test database before doing other add copy tests.
+                    Remove-CopiesOfTestDatabase -DatabaseName $testDBName
+
+                    $dagDBCopyTestParams.ActivationPreference = 4
+
+                    $dagDBCopyExpectedGetResults.ActivationPreference = 2
+
+                    Test-TargetResourceFunctionality -Params $dagDBCopyTestParams `
+                                                     -ContextLabel 'Add a database copy with ActivationPreference higher than future copy count' `
+                                                     -ExpectedGetResults $dagDBCopyExpectedGetResults `
+                                                     -ExpectedTestResult $false
+
+                    #Remove test database before doing other add copy tests.
+                    Remove-CopiesOfTestDatabase -DatabaseName $testDBName
+
+                    $dagDBCopyTestParams.ActivationPreference = 2
+                    $dagDBCopyTestParams.SeedingPostponed = $true
+
+                    $dagDBCopyExpectedGetResults.ActivationPreference = 2
+
+                    Test-TargetResourceFunctionality -Params $dagDBCopyTestParams `
+                                                     -ContextLabel 'Add a database copy with SeedingPostponed' `
+                                                     -ExpectedGetResults $dagDBCopyExpectedGetResults `
+                                                     -ExpectedTestResult $true
                 }
             }
         }
