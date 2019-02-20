@@ -129,7 +129,7 @@ try
             }
 
             Context 'When Test-TargetResource is called' {
-                It 'Should return False when Get-UMCallRouterSettings returns null' {
+                It 'Should return False when Get-ImapSettingsInternal returns null' {
                     Mock -CommandName Get-ImapSettingsInternal -Verifiable
 
                     Test-TargetResource @commonTargetResourceParams -ErrorAction SilentlyContinue | Should -Be $false
