@@ -1,6 +1,6 @@
 @{
     # Version number of this module.
-    moduleVersion = '1.26.0.0'
+    moduleVersion = '1.27.0.0'
 
     # ID used to uniquely identify this module
     GUID = '9a908ca3-8a67-485c-a014-66ba37fcc2a4'
@@ -48,22 +48,19 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-        ReleaseNotes = '- Add support for Exchange Server 2019
-- Added additional parameters to the MSFT_xExchUMService resource
-- Rename improperly named functions, and add comment based help in
-  MSFT_xExchClientAccessServer, MSFT_xExchDatabaseAvailabilityGroupNetwork,
-  MSFT_xExchEcpVirtualDirectory, MSFT_xExchExchangeCertificate,
-  MSFT_xExchImapSettings.
-- Added additional parameters to the MSFT_xExchUMCallRouterSettings resource
-- Rename improper function names in MSFT_xExchDatabaseAvailabilityGroup,
-  MSFT_xExchJetstress, MSFT_xExchJetstressCleanup, MSFT_xExchMailboxDatabase,
-  MSFT_xExchMailboxDatabaseCopy, MSFT_xExchMailboxServer,
-  MSFT_xExchMaintenanceMode, MSFT_xExchMapiVirtualDirectory,
-  MSFT_xExchOabVirtualDirectory, MSFT_xExchOutlookAnywhere,
-  MSFT_xExchOwaVirtualDirectory, MSFT_xExchPopSettings,
-  MSFT_xExchPowershellVirtualDirectory, MSFT_xExchReceiveConnector,
-  MSFT_xExchWaitForMailboxDatabase, and MSFT_xExchWebServicesVirtualDirectory.
-- Add remaining unit and integration tests for MSFT_xExchExchangeServer.
+        ReleaseNotes = '- Added additional parameters to the MSFT_xExchTransportService resource
+- Added additional parameters to the MSFT_xExchEcpVirtualDirectory resource
+- Added additional unit tests to the MSFT_xExchAutodiscoverVirutalDirectory resource
+- Added additional parameters to the MSFT_xExchExchangeCertificate resource
+- MSFT_xExchMailboxDatabase: Fixes issue with DataMoveReplicationConstraint
+  parameter (401)
+- Added additional parameters and comment based help to the
+  MSFT_xExchMailboxDatabase resource
+- Move code that sets $global:DSCMachineStatus into a dedicated helper
+  function.
+  [Issue 407](https://github.com/PowerShell/xExchange/issues/407)
+- Add missing parameters for xExchMailboxDatabaseCopy, adds comment based help,
+  and adds remaining Unit tests.
 
 '
 
@@ -71,6 +68,7 @@
 
     } # End of PrivateData hashtable
 }
+
 
 
 

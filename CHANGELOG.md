@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.27.0.0
+
 - Added additional parameters to the MSFT_xExchTransportService resource
 - Added additional parameters to the MSFT_xExchEcpVirtualDirectory resource
 - Added additional unit tests to the MSFT_xExchAutodiscoverVirutalDirectory resource
