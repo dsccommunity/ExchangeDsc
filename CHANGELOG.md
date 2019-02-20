@@ -36,7 +36,6 @@
   MSFT_xExchPowershellVirtualDirectory, MSFT_xExchReceiveConnector,
   MSFT_xExchWaitForMailboxDatabase, and MSFT_xExchWebServicesVirtualDirectory.
 - Add remaining unit and integration tests for MSFT_xExchExchangeServer.
-- Added additional parameters to the MSFT_xExchTransportService resource
 
 ## 1.25.0.0
 
