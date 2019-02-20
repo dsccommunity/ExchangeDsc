@@ -641,13 +641,6 @@ function Get-ExchangeInstallStatus
 #>
 function Set-WSManConfigStatus
 {
-    # Suppressing this rule because $global:DSCMachineStatus is used to trigger a reboot.
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
-    <#
-        Suppressing this rule because $global:DSCMachineStatus is only set,
-        never used (by design of Desired State Configuration).
-    #>
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function', Target='DSCMachineStatus')]
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param ()
@@ -669,7 +662,7 @@ function Set-WSManConfigStatus
 
             Write-Verbose -Message 'Machine needs to be rebooted before Exchange setup can proceed'
 
-            $global:DSCMachineStatus = 1
+            Set-DSCMachineStatus -NewDSCMachineStatus 1
         }
     }
     else
@@ -2534,6 +2527,33 @@ function Get-DomainDNFromFQDN
     )
 
     return 'dc=' + $Fqdn.Replace('.', ',dc=')
+}
+
+<#
+    .SYNOPSIS
+        Sets the Global DSCMachineStatus variable to the desired value.
+
+    .PARAMETER NewDSCMachineStatus
+        The value to set $global:DSCMachineStatus to.
+#>
+function Set-DSCMachineStatus
+{
+    # Suppressing this rule because $global:DSCMachineStatus is used to trigger a reboot.
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
+    <#
+        Suppressing this rule because $global:DSCMachineStatus is only set,
+        never used (by design of Desired State Configuration).
+    #>
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+    [CmdletBinding()]
+    param
+    (
+        [Parameter(Mandatory=$true)]
+        [System.Int32]
+        $NewDSCMachineStatus
+    )
+
+    $global:DSCMachineStatus = $NewDSCMachineStatus
 }
 
 Export-ModuleMember -Function *

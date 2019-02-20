@@ -62,6 +62,8 @@ if ($exchangeInstalled)
         # Test installing and enabling test cert2
         $testParams.Thumbprint = $testCertThumbprint2
         $testParams.CertFilePath = $testCertPath2
+        $testParams.Add('DoNotRequireSsl', $true)
+        $testParams.Add('NetworkServiceAllowed', $true)
         $expectedGetResults.Thumbprint = $testCertThumbprint2
 
         Test-TargetResourceFunctionality -Params $testParams `

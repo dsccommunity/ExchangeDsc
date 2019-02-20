@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+## 1.27.0.0
+
+- Added additional parameters to the MSFT_xExchTransportService resource
+- Added additional parameters to the MSFT_xExchEcpVirtualDirectory resource
+- Added additional unit tests to the MSFT_xExchAutodiscoverVirutalDirectory resource
+- Added additional parameters to the MSFT_xExchExchangeCertificate resource
+- MSFT_xExchMailboxDatabase: Fixes issue with DataMoveReplicationConstraint
+  parameter (#401)
+- Added additional parameters and comment based help to the
+  MSFT_xExchMailboxDatabase resource
+- Move code that sets $global:DSCMachineStatus into a dedicated helper
+  function.
+  [Issue #407](https://github.com/PowerShell/xExchange/issues/407)
+- Add missing parameters for xExchMailboxDatabaseCopy, adds comment based help,
+  and adds remaining Unit tests.
+
 ## 1.26.0.0
 
 - Add support for Exchange Server 2019

@@ -41,13 +41,6 @@ function Get-TargetResource
 
 function Set-TargetResource
 {
-    # Suppressing this rule because $global:DSCMachineStatus is used to trigger a reboot.
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '')]
-    <#
-        Suppressing this rule because $global:DSCMachineStatus is only set,
-        never used (by design of Desired State Configuration).
-    #>
-    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function', Target='DSCMachineStatus')]
     [CmdletBinding()]
     param
     (
@@ -128,7 +121,7 @@ function Set-TargetResource
                 {
                     Write-Verbose -Message 'ESE performance counters were registered. Need to reboot server.'
 
-                    $global:DSCMachineStatus = 1
+                    Set-DSCMachineStatus -NewDSCMachineStatus 1
                     return
                 }
                 else

@@ -9,5 +9,7 @@ class MSFT_xExchExchangeCertificate : OMI_BaseResource
     [Write, Description("Credentials containing the password to the .pfx file in CertFilePath."), EmbeddedInstance("MSFT_Credential")] String CertCreds;
     [Write, Description("The file path to the certificate .pfx file that should be imported.")] String CertFilePath;
     [Write, Description("The DomainController parameter specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory. You identify the domain controller by its fully qualified domain name (FQDN). For example, dc01.contoso.com.")] String DomainController;
+    [Write, Description("Setting DoNotRequireSsl to True prevents DSC from enabling the Require SSL setting on the Default Web Site when you enable the certificate for IIS. Defaults to False.")] Boolean DoNotRequireSsl;
+    [Write, Description("Setting NetworkServiceAllowed to True gives the built-in Network Service account permission to read the certificate's private key without enabling the certificate for SMTP. Defaults to False.")] Boolean NetworkServiceAllowed;
     [Write, Description("The Services parameter specifies the Exchange services that the certificate is enabled for.")] String Services[];
 };
