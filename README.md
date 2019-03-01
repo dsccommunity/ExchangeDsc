@@ -758,6 +758,69 @@ parameters.
   for IMAP4 connections.
 * **X509CertificateName**: The X509CertificateName parameter specifies the
   certificate that's used for encrypting IMAP4 client connections.
+* **AuthenticatedConnectionTimeout**: The AuthenticatedConnectionTimeout
+ parameter specifies the period of time to wait before closing an idle
+ authenticated connection.")] String AuthenticatedConnectionTimeout.
+* **Banner**: The Banner parameter specifies the text string that's displayed to
+ connecting IMAP4 clients.
+* **CalendarItemRetrievalOption**: The CalendarItemRetrievalOption parameter
+ specifies how calendar items are presented to IMAP4 clients.
+ {iCalendar | IntranetUrl | InternetUrl | Custom}
+* **EnableExactRFC822Size**: The EnableExactRFC822Size parameter specifies how
+ message sizes are presented to IMAP4 clients.
+* **EnableGSSAPIAndNTLMAuth**: The EnableGSSAPIAndNTLMAuth parameter specifies
+ whether connections can use Integrated Windows authentication (NTLM) using the
+ Generic Security Services application programming interface (GSSAPI). This
+ setting applies to connections where Transport Layer Security (TLS) is disabled.
+* **EnforceCertificateErrors**: The EnforceCertificateErrors parameter specifies
+ whether to enforce valid Secure Sockets Layer (SSL) certificate validation failures.
+* **ExtendedProtectionPolicy**: The ExtendedProtectionPolicy parameter specifies
+ how Extended Protection for Authentication is used. {None | Allow | Required}
+* **InternalConnectionSettings**: The InternalConnectionSettings parameter
+ specifies the host name, port, and encryption method that's used by internal
+ IMAP4 clients (IMAP4 connections from inside your corporate network).
+* **LogFileLocation**: The LogFileLocation parameter specifies the location for
+ the IMAP4 protocol log files.
+* **LogFileRollOverSettings**: The LogFileRollOverSettings parameter specifies
+ how frequently IMAP4 protocol logging creates a new log file.
+ {Hourly | Daily | Weekly | Monthly}
+* **LogPerFileSizeQuota**: The LogPerFileSizeQuota parameter specifies the
+ maximum size of a IMAP4 protocol log file.
+* **MaxCommandSize**: The MaxCommandSize parameter specifies the maximum size in
+ bytes of a single IMAP4 command.
+* **MaxConnectionFromSingleIP**: The MaxConnectionFromSingleIP parameter
+ specifies the maximum number of IMAP4 connections that are accepted by the
+ Exchange server from a single IP address.
+* **MaxConnections**: The MaxConnections parameter specifies the maximum number
+ of IMAP4 connections that are accepted by the Exchange server.
+* **MaxConnectionsPerUser**: The MaxConnectionsPerUser parameter specifies the
+ maximum number of IMAP4 connections that are allowed for each user.
+* **MessageRetrievalMimeFormat**: The MessageRetrievalMimeFormat parameter
+ specifies the MIME encoding of messages.
+{TextOnly | HtmlOnly | HtmlAndTextAlternative |
+ TextEnrichedOnly  | TextEnrichedAndTextAlternative | BestBodyFormat | Tnef}
+* **OwaServerUrl**: The OwaServerUrl parameter specifies the URL that's used to
+ retrieve calendar information for instances of custom Outlook on the web
+ calendar items.
+* **PreAuthenticatedConnectionTimeout**: The PreAuthenticatedConnectionTimeout
+ parameter specifies the period of time to wait before closing an idle IMAP4
+ connection that isn't authenticated.
+* **ProtocolLogEnabled**: The ProtocolLogEnabled parameter specifies whether to
+ enable protocol logging for IMAP4.
+* **ProxyTargetPort**: The ProxyTargetPort parameter specifies the port on the
+ Microsoft Exchange IMAP4 Backend service that listens for client connections
+ that are proxied from the Microsoft Exchange IMAP4 service.
+* **ShowHiddenFoldersEnabled**: The ShowHiddenFoldersEnabled parameter specifies
+ whether hidden mailbox folders are visible.
+* **SSLBindings**: The SSLBindings parameter specifies the IP address and TCP
+ port that's used for IMAP4 connection that's always encrypted by SSL/TLS. This
+ parameter uses the syntax <IPv4OrIPv6Address>:<Port>.
+* **SuppressReadReceipt**: The SuppressReadReceipt parameter specifies whether
+ to stop duplicate read receipts from being sent to IMAP4 clients that have the
+ Send read receipts for messages I send setting configured in their IMAP4 email
+ program.
+* **UnencryptedOrTLSBindings**: The X509CertificateName parameter specifies the
+ certificate that's used for encrypting IMAP4 client connections.
 
 ### xExchInstall
 
