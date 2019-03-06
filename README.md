@@ -562,7 +562,7 @@ parameters.
  whether hidden mailbox folders are visible.
 * **SSLBindings**: The SSLBindings parameter specifies the IP address and TCP
  port that's used for IMAP4 connection that's always encrypted by SSL/TLS. This
- parameter uses the syntax <IPv4OrIPv6Address>:<Port>.
+ parameter uses the syntax {IPv4OrIPv6Address}:{Port}.
 * **SuppressReadReceipt**: The SuppressReadReceipt parameter specifies whether
  to stop duplicate read receipts from being sent to IMAP4 clients that have the
  Send read receipts for messages I send setting configured in their IMAP4 email
