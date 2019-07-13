@@ -344,7 +344,7 @@ function Set-TargetResource
 
     Set-EcpVirtualDirectory @PSBoundParameters
 
-    If($AllowServiceRestart -eq $true)
+    if ($AllowServiceRestart -eq $true)
     {
         Write-Verbose -Message 'Recycling MSExchangeECPAppPool'
 
