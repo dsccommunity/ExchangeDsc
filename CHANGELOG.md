@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Minor style fix in MSFT_xExchEcpVirtualDirectory to ensure new PowerShell
+  Script Analyzer custom rules pass.
+
 ## 1.27.0.0
 
 - Added additional parameters to the MSFT_xExchTransportService resource
