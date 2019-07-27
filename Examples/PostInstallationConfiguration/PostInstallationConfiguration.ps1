@@ -408,16 +408,17 @@ Configuration Example
         # Create a custom receive connector which could be used to receive SMTP mail from internal non-Exchange mail servers
         xExchReceiveConnector CustomConnector1
         {
-            Identity         = "$($Node.NodeName)\Internal SMTP Servers to $($Node.NodeName)"
-            Credential       = $ExchangeAdminCredential
-            Ensure           = 'Present'
-            AuthMechanism    = 'Tls', 'ExternalAuthoritative'
-            Bindings         = '0.0.0.0:25'
-            MaxMessageSize   = '25MB'
-            PermissionGroups = 'AnonymousUsers', 'ExchangeServers'
-            RemoteIPRanges   = '192.168.1.101', '192.168.1.102'
-            TransportRole    = 'FrontendTransport'
-            Usage            = 'Custom'
+            Identity             = "$($Node.NodeName)\Internal SMTP Servers to $($Node.NodeName)"
+            Credential           = $ExchangeAdminCredential
+            Ensure               = 'Present'
+            AuthMechanism        = 'Tls', 'ExternalAuthoritative'
+            Bindings             = '0.0.0.0:25'
+            MaxMessageSize       = '25MB'
+            PermissionGroups     = 'AnonymousUsers', 'ExchangeServers'
+            RemoteIPRanges       = '192.168.1.101', '192.168.1.102'
+            ProtocolLoggingLevel = 'Verbose'
+            TransportRole        = 'FrontendTransport'
+            Usage                = 'Custom'
         }
 
         # Ensures that Exchange built in AntiMalware Scanning is enabled or disabled
@@ -425,6 +426,16 @@ Configuration Example
         {
             Enabled    = $true
             Credential = $ExchangeAdminCredential
+        }
+
+        #Ensure that the Receive Protocol logs are enabled for the Frontend Transport service and that they are kept for an adequate length of time.
+        xExchFrontendTransportService FrontendTransportService
+        {
+            Credential                         = $ExchangeAdminCredential
+            Identity                           = $Node.NodeName
+            AllowServiceRestart                = $true
+            ReceiveProtocolLogMaxAge           = (New-TimeSpan -Days 60).ToString()
+            ReceiveProtocolLogMaxDirectorySize = '2GB'
         }
 
         ###Mailbox Server settings###

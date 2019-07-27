@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Added MSFT_xExchFrontendTransportService resource, based on
+  MSFT_xExchTransportService resource.
+  [Issue #283](https://github.com/PowerShell/xExchange/issues/283)
+- Added unit and integration tests to the MSFT_xExchFrontendTransportService resource.
+- Added comment based help to the MSFT_xExchFrontendTransportService resource.
 - Minor style fix in MSFT_xExchEcpVirtualDirectory to ensure new PowerShell
   Script Analyzer custom rules pass.
 

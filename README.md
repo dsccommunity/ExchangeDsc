@@ -96,6 +96,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **xExchExchangeCertificate** can install, remove, or configure
   an ExchangeCertificate using *-ExchangeCertificate cmdlets.
 * **xExchExchangeServer**
+* **xExchFrontendTransportService** configures Front End Transport service settings.
 * **xExchImapSettings** configures IMAP settings using Set-ImapSettings.
 * **xExchInstall** installs or updates Exchange 2013, 2016, or 2019.
 * **xExchJetstress** automatically runs Jetstress using
@@ -481,6 +482,68 @@ parameters.
   cmdlets have been deprecated. System workload management settings should be
   customized only under the direction of Microsoft Customer Service and
   Support.
+
+### xExchFrontendTransportService
+
+**xExchFrontendTransportService** configures the Front End Transport service
+settings on Mailbox servers or Edge Transport servers using
+Set-FrontendTransportService.
+
+Where no description is listed, properties correspond directly to
+[Set-FrontendTransportService](https://docs.microsoft.com/en-us/powershell/module/exchange/mail-flow/Set-FrontendTransportService)
+parameters.
+
+* **Identity**: Hostname of the server to configure.
+* **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
+* **AllowServiceRestart**: Whether it is OK to restart service to make changes active
+* **AgentLogEnabled**
+* **AgentLogMaxAge**
+* **AgentLogMaxDirectorySize**
+* **AgentLogMaxFileSize**
+* **AgentLogPath**
+* **AntispamAgentsEnabled**
+* **ConnectivityLogEnabled**
+* **ConnectivityLogMaxAge**
+* **ConnectivityLogMaxDirectorySize**
+* **ConnectivityLogMaxFileSize**
+* **ConnectivityLogPath**
+* **DnsLogEnabled**
+* **DnsLogMaxAge**
+* **DnsLogMaxDirectorySize**
+* **DnsLogMaxFileSize**
+* **DnsLogPath**
+* **ExternalDNSAdapterEnabled**
+* **ExternalDNSAdapterGuid**
+* **ExternalDNSProtocolOption**
+* **ExternalDNSServers**
+* **ExternalIPAddress**
+* **InternalDNSAdapterEnabled**
+* **InternalDNSAdapterGuid**
+* **InternalDNSProtocolOption**
+* **InternalDNSServers**
+* **IntraOrgConnectorProtocolLoggingLevel**
+* **MaxConnectionRatePerMinute**
+* **ReceiveProtocolLogMaxAge**
+* **ReceiveProtocolLogMaxDirectorySize**
+* **ReceiveProtocolLogMaxFileSize**
+* **ReceiveProtocolLogPath**
+* **RoutingTableLogMaxAge**
+* **RoutingTableLogMaxDirectorySize**
+* **RoutingTableLogPath**
+* **SendProtocolLogMaxAge**
+* **SendProtocolLogMaxDirectorySize**
+* **SendProtocolLogMaxFileSize**
+* **SendProtocolLogPath**
+* **TransientFailureRetryCount**
+* **TransientFailureRetryInterval**
+
+#### Common Issues
+
+To set some settings to NULL you need to set the value to '' instead of using $null.
+The following settings are affected:
+ExternalDNSServers
+ExternalIPAddress
+InternalDNSServers
 
 ### xExchImapSettings
 
