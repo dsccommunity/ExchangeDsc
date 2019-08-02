@@ -116,7 +116,7 @@ if ($exchangeInstalled)
 
      Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Set default Frontend Transport Service configuration' -ExpectedGetResults $expectedGetResults
 
-     # modify configuration
+     # Modify configuration
      $testParams.InternalDNSServers = '192.168.1.10'
      $testParams.ExternalDNSServers = '10.1.1.10'
 
@@ -125,7 +125,7 @@ if ($exchangeInstalled)
 
      Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Modify Transport Service configuration' -ExpectedGetResults $expectedGetResults
 
-     # modify configuration
+     # Modify configuration
      $testParams.InternalDNSServers = ''
      $testParams.ExternalDNSServers = ''
 
