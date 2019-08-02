@@ -1,7 +1,7 @@
 <#
     .SYNOPSIS
         Retrieves the current DSC configuration for this resource.
-        
+
     .PARAMETER Identity
         The Identity parameter specifies the server that you want to modify.
 
@@ -12,205 +12,205 @@
     .PARAMETER AllowServiceRestart
         Whether it is OK to restart the MSExchangeFrontEndTransport service
         after making changes. Defaults to $false.
- 
+
     .PARAMETER AgentLogEnabled
         The AgentLogEnabled parameter specifies whether the agent log is
         enabled. The default value is $true.
- 
+
     .PARAMETER AgentLogMaxAge
         The AgentLogMaxAge parameter specifies the maximum age for the agent
         log file. Log files older than the specified value are deleted. The
         default value is 7.00:00:00 or 7 days.
- 
+
     .PARAMETER AgentLogMaxDirectorySize
         The AgentLogMaxDirectorySize parameter specifies the maximum size of
         all agent logs in the agent log directory. When a directory reaches its
         maximum file size, the server deletes the oldest log files first. The
         default value is 250 MB.
- 
+
     .PARAMETER AgentLogMaxFileSize
         The AgentLogMaxFileSize parameter specifies the maximum size of each
         agent log file. When a log file reaches its maximum file size, a new
         log file is created. The default value is 10 MB.
- 
+
     .PARAMETER AgentLogPath
         The AgentLogPath parameter specifies the default agent log directory
         location.
- 
+
     .PARAMETER AntispamAgentsEnabled
         The AntispamAgentsEnabled parameter specifies whether anti-spam agents
         are installed on the server specified with the Identity parameter. The
         default value is $false for the Front End Transport service.
- 
+
     .PARAMETER ConnectivityLogEnabled
         The ConnectivityLogEnabled parameter specifies whether the connectivity
         log is enabled. The default value is $true.
- 
+
     .PARAMETER ConnectivityLogMaxAge
         The ConnectivityLogMaxAge parameter specifies the maximum age for the
         connectivity log file. Log files older than the specified value are
         deleted. The default value is 30 days.
- 
+
     .PARAMETER ConnectivityLogMaxDirectorySize
         The ConnectivityLogMaxDirectorySize parameter specifies the maximum
         size of all connectivity logs in the connectivity log directory. When a
         directory reaches its maximum file size, the server deletes the oldest
         log files first. The default value is 1000 MB.
- 
+
     .PARAMETER ConnectivityLogMaxFileSize
         The ConnectivityLogMaxFileSize parameter specifies the maximum size of
         each connectivity log file. When a log file reaches its maximum file
         size, a new log file is created. The default value is 10 MB.
- 
+
     .PARAMETER ConnectivityLogPath
         The ConnectivityLogPath parameter specifies the default connectivity
         log directory location.
- 
+
     .PARAMETER DnsLogEnabled
         The DnsLogEnabled parameter specifies whether the DNS log is enabled.
         The default value is $false.
- 
+
     .PARAMETER DnsLogMaxAge
         The DnsLogMaxAge parameter specifies the maximum age for the DNS log
         file. Log files older than the specified value are deleted. The default
         value is 7.00:00:00 or 7 days.
- 
+
     .PARAMETER DnsLogMaxDirectorySize
         The DnsLogMaxDirectorySize parameter specifies the maximum size of all
         DNS logs in the DNS log directory. When a directory reaches its maximum
         file size, the server deletes the oldest log files first. The default
         value is 100 MB.
- 
+
     .PARAMETER DnsLogMaxFileSize
         The DnsLogMaxFileSize parameter specifies the maximum size of each DNS
         log file. When a log file reaches its maximum file size, a new log file
         is created. The default value is 10 MB.
- 
+
     .PARAMETER DnsLogPath
         The DnsLogPath parameter specifies the DNS log directory location. The
         default value is blank ($null), which indicates no location is
         configured. If you enable DNS logging, you need to specify a local file
         path for the DNS log files by using this parameter.
- 
+
     .PARAMETER ExternalDNSAdapterEnabled
         The ExternalDNSAdapterEnabled parameter specifies one or more Domain
         Name System (DNS) servers that Exchange uses for external DNS lookups.
- 
+
     .PARAMETER ExternalDNSAdapterGuid
         The ExternalDNSAdapterGuid parameter specifies the network adapter that
         has the DNS settings used for DNS lookups of destinations that exist
         outside the Exchange organization.
- 
+
     .PARAMETER ExternalDNSProtocolOption
         The ExternalDNSProtocolOption parameter specifies which protocol to use
         when querying external DNS servers. The valid options for this
         parameter are Any, UseTcpOnly, and UseUdpOnly. The default value is
         Any.
- 
+
     .PARAMETER ExternalDNSServers
         The ExternalDNSServers parameter specifies the list of external DNS
         servers that the server queries when resolving a remote domain. You
         must separate IP addresses by using commas. The default value is an
         empty list ({}).
- 
+
     .PARAMETER ExternalIPAddress
         The ExternalIPAddress parameter specifies the IP address used in the
         Received message header field for every message that travels through
         the Front End Transport service.
- 
+
     .PARAMETER InternalDNSAdapterEnabled
         The InternalDNSAdapterEnabled parameter specifies one or more DNS
         servers that Exchange uses for internal DNS lookups.
- 
+
     .PARAMETER InternalDNSAdapterGuid
         The InternalDNSAdapterGuid parameter specifies the network adapter that
         has the DNS settings used for DNS lookups of servers that exist inside
         the Exchange organization.
- 
+
     .PARAMETER InternalDNSProtocolOption
         The InternalDNSProtocolOption parameter specifies which protocol to use
         when you query internal DNS servers. Valid options for this parameter
         are Any, UseTcpOnly, or UseUdpOnly. The default value is Any.
- 
+
     .PARAMETER InternalDNSServers
         The InternalDNSServers parameter specifies the list of DNS servers that
         should be used when resolving a domain name. DNS servers are specified
         by IP address and are separated by commas. The default value is any
         empty list ({}).
- 
+
     .PARAMETER IntraOrgConnectorProtocolLoggingLevel
         The IntraOrgConnectorProtocolLoggingLevel parameter enables or disables
         SMTP protocol logging on the implicit and invisible intra-organization
         Send connector in the Front End Transport service.
- 
+
     .PARAMETER MaxConnectionRatePerMinute
         The MaxConnectionRatePerMinute parameter specifies the maximum rate
         that connections are allowed to be opened with the transport service.
- 
+
     .PARAMETER ReceiveProtocolLogMaxAge
         The ReceiveProtocolLogMaxAge parameter specifies the maximum age of a
         protocol log file that's shared by all Receive connectors in the
         Transport service on the server. Log files that are older than the
         specified value are automatically deleted.
- 
+
     .PARAMETER ReceiveProtocolLogMaxDirectorySize
         The ReceiveProtocolLogMaxDirectorySize parameter specifies the maximum
         size of the protocol log directory that's shared by all Receive
         connectors in the Front End Transport service on the server. When the
         maximum directory size is reached, the server deletes the oldest log
         files first.
- 
+
     .PARAMETER ReceiveProtocolLogMaxFileSize
         The ReceiveProtocolLogMaxFileSize parameter specifies the maximum size
         of a protocol log file that's shared by all Receive connectors in the
         Front End Transport service on the server. When a log file reaches its
         maximum file size, a new log file is created.
- 
+
     .PARAMETER ReceiveProtocolLogPath
         The ReceiveProtocolLogPath parameter specifies the location of the
         protocol log directory for all Receive connectors in the Front End
         Transport service on the server.
- 
+
     .PARAMETER RoutingTableLogMaxAge
         The RoutingTableLogMaxAge parameter specifies the maximum routing table
         log age. Log files older than the specified value are deleted. The
         default value is 7 days.
- 
+
     .PARAMETER RoutingTableLogMaxDirectorySize
         The RoutingTableLogMaxDirectorySize parameter specifies the maximum
         size of the routing table log directory. When the maximum directory
         size is reached, the server deletes the oldest log files first. The
         default value is 250 MB.
- 
+
     .PARAMETER RoutingTableLogPath
         The RoutingTableLogPath parameter specifies the directory location
         where routing table log files should be stored.
- 
+
     .PARAMETER SendProtocolLogMaxAge
         The SendProtocolLogMaxAge parameter specifies the maximum age of a
         protocol log file that's shared by all Send connectors in the Front End
         Transport service that have this server configured as a source server.
         Log files that are older than the specified value are deleted.
- 
+
     .PARAMETER SendProtocolLogMaxDirectorySize
         The SendProtocolLogMaxDirectorySize parameter specifies the maximum
         size of the protocol log directory that's shared by all Send connectors
         in the Front End Transport service that have this server configured as
         a source server. When the maximum directory size is reached, the server
         deletes the oldest log files first.
- 
+
     .PARAMETER SendProtocolLogMaxFileSize
         The SendProtocolLogMaxFileSize parameter specifies the maximum size of
         a protocol log file that's shared by all the Send connectors in the
         Front End Transport service that have this server configured as a
         source server. When a log file reaches its maximum file size, a new log
         file is created.
- 
+
     .PARAMETER SendProtocolLogPath
         The SendProtocolLogPath parameter specifies the location of the
         protocol log directory for all Send connectors in the Front End
         Transport service that have this server configured as a source server.
- 
+
     .PARAMETER TransientFailureRetryCount
         The TransientFailureRetryCount parameter specifies the maximum number
         of immediate connection retries attempted when the server encounters a
@@ -218,13 +218,13 @@
         valid input range for this parameter is from 0 through 15. When the
         value of this parameter is set to 0, the server doesn't immediately
         attempt to retry an unsuccessful connection.
- 
+
     .PARAMETER TransientFailureRetryInterval
         The TransientFailureRetryInterval parameter controls the connection
         interval between each connection attempt specified by the
         TransientFailureRetryCount parameter. For the Front End Transport
         service, the default value of the TransientFailureRetryInterval
-        parameter is 5 minutes. 
+        parameter is 5 minutes.
 #>
 function Get-TargetResource
 {
@@ -472,7 +472,7 @@ function Get-TargetResource
 <#
     .SYNOPSIS
         Sets the DSC configuration for this resource.
-        
+
     .PARAMETER Identity
         The Identity parameter specifies the server that you want to modify.
 
@@ -483,205 +483,205 @@ function Get-TargetResource
     .PARAMETER AllowServiceRestart
         Whether it is OK to restart the MSExchangeFrontEndTransport service
         after making changes. Defaults to $false.
- 
+
     .PARAMETER AgentLogEnabled
         The AgentLogEnabled parameter specifies whether the agent log is
         enabled. The default value is $true.
- 
+
     .PARAMETER AgentLogMaxAge
         The AgentLogMaxAge parameter specifies the maximum age for the agent
         log file. Log files older than the specified value are deleted. The
         default value is 7.00:00:00 or 7 days.
- 
+
     .PARAMETER AgentLogMaxDirectorySize
         The AgentLogMaxDirectorySize parameter specifies the maximum size of
         all agent logs in the agent log directory. When a directory reaches its
         maximum file size, the server deletes the oldest log files first. The
         default value is 250 MB.
- 
+
     .PARAMETER AgentLogMaxFileSize
         The AgentLogMaxFileSize parameter specifies the maximum size of each
         agent log file. When a log file reaches its maximum file size, a new
         log file is created. The default value is 10 MB.
- 
+
     .PARAMETER AgentLogPath
         The AgentLogPath parameter specifies the default agent log directory
         location.
- 
+
     .PARAMETER AntispamAgentsEnabled
         The AntispamAgentsEnabled parameter specifies whether anti-spam agents
         are installed on the server specified with the Identity parameter. The
         default value is $false for the Front End Transport service.
- 
+
     .PARAMETER ConnectivityLogEnabled
         The ConnectivityLogEnabled parameter specifies whether the connectivity
         log is enabled. The default value is $true.
- 
+
     .PARAMETER ConnectivityLogMaxAge
         The ConnectivityLogMaxAge parameter specifies the maximum age for the
         connectivity log file. Log files older than the specified value are
         deleted. The default value is 30 days.
- 
+
     .PARAMETER ConnectivityLogMaxDirectorySize
         The ConnectivityLogMaxDirectorySize parameter specifies the maximum
         size of all connectivity logs in the connectivity log directory. When a
         directory reaches its maximum file size, the server deletes the oldest
         log files first. The default value is 1000 MB.
- 
+
     .PARAMETER ConnectivityLogMaxFileSize
         The ConnectivityLogMaxFileSize parameter specifies the maximum size of
         each connectivity log file. When a log file reaches its maximum file
         size, a new log file is created. The default value is 10 MB.
- 
+
     .PARAMETER ConnectivityLogPath
         The ConnectivityLogPath parameter specifies the default connectivity
         log directory location.
- 
+
     .PARAMETER DnsLogEnabled
         The DnsLogEnabled parameter specifies whether the DNS log is enabled.
         The default value is $false.
- 
+
     .PARAMETER DnsLogMaxAge
         The DnsLogMaxAge parameter specifies the maximum age for the DNS log
         file. Log files older than the specified value are deleted. The default
         value is 7.00:00:00 or 7 days.
- 
+
     .PARAMETER DnsLogMaxDirectorySize
         The DnsLogMaxDirectorySize parameter specifies the maximum size of all
         DNS logs in the DNS log directory. When a directory reaches its maximum
         file size, the server deletes the oldest log files first. The default
         value is 100 MB.
- 
+
     .PARAMETER DnsLogMaxFileSize
         The DnsLogMaxFileSize parameter specifies the maximum size of each DNS
         log file. When a log file reaches its maximum file size, a new log file
         is created. The default value is 10 MB.
- 
+
     .PARAMETER DnsLogPath
         The DnsLogPath parameter specifies the DNS log directory location. The
         default value is blank ($null), which indicates no location is
         configured. If you enable DNS logging, you need to specify a local file
         path for the DNS log files by using this parameter.
- 
+
     .PARAMETER ExternalDNSAdapterEnabled
         The ExternalDNSAdapterEnabled parameter specifies one or more Domain
         Name System (DNS) servers that Exchange uses for external DNS lookups.
- 
+
     .PARAMETER ExternalDNSAdapterGuid
         The ExternalDNSAdapterGuid parameter specifies the network adapter that
         has the DNS settings used for DNS lookups of destinations that exist
         outside the Exchange organization.
- 
+
     .PARAMETER ExternalDNSProtocolOption
         The ExternalDNSProtocolOption parameter specifies which protocol to use
         when querying external DNS servers. The valid options for this
         parameter are Any, UseTcpOnly, and UseUdpOnly. The default value is
         Any.
- 
+
     .PARAMETER ExternalDNSServers
         The ExternalDNSServers parameter specifies the list of external DNS
         servers that the server queries when resolving a remote domain. You
         must separate IP addresses by using commas. The default value is an
         empty list ({}).
- 
+
     .PARAMETER ExternalIPAddress
         The ExternalIPAddress parameter specifies the IP address used in the
         Received message header field for every message that travels through
         the Front End Transport service.
- 
+
     .PARAMETER InternalDNSAdapterEnabled
         The InternalDNSAdapterEnabled parameter specifies one or more DNS
         servers that Exchange uses for internal DNS lookups.
- 
+
     .PARAMETER InternalDNSAdapterGuid
         The InternalDNSAdapterGuid parameter specifies the network adapter that
         has the DNS settings used for DNS lookups of servers that exist inside
         the Exchange organization.
- 
+
     .PARAMETER InternalDNSProtocolOption
         The InternalDNSProtocolOption parameter specifies which protocol to use
         when you query internal DNS servers. Valid options for this parameter
         are Any, UseTcpOnly, or UseUdpOnly. The default value is Any.
- 
+
     .PARAMETER InternalDNSServers
         The InternalDNSServers parameter specifies the list of DNS servers that
         should be used when resolving a domain name. DNS servers are specified
         by IP address and are separated by commas. The default value is any
         empty list ({}).
- 
+
     .PARAMETER IntraOrgConnectorProtocolLoggingLevel
         The IntraOrgConnectorProtocolLoggingLevel parameter enables or disables
         SMTP protocol logging on the implicit and invisible intra-organization
         Send connector in the Front End Transport service.
- 
+
     .PARAMETER MaxConnectionRatePerMinute
         The MaxConnectionRatePerMinute parameter specifies the maximum rate
         that connections are allowed to be opened with the transport service.
- 
+
     .PARAMETER ReceiveProtocolLogMaxAge
         The ReceiveProtocolLogMaxAge parameter specifies the maximum age of a
         protocol log file that's shared by all Receive connectors in the
         Transport service on the server. Log files that are older than the
         specified value are automatically deleted.
- 
+
     .PARAMETER ReceiveProtocolLogMaxDirectorySize
         The ReceiveProtocolLogMaxDirectorySize parameter specifies the maximum
         size of the protocol log directory that's shared by all Receive
         connectors in the Front End Transport service on the server. When the
         maximum directory size is reached, the server deletes the oldest log
         files first.
- 
+
     .PARAMETER ReceiveProtocolLogMaxFileSize
         The ReceiveProtocolLogMaxFileSize parameter specifies the maximum size
         of a protocol log file that's shared by all Receive connectors in the
         Front End Transport service on the server. When a log file reaches its
         maximum file size, a new log file is created.
- 
+
     .PARAMETER ReceiveProtocolLogPath
         The ReceiveProtocolLogPath parameter specifies the location of the
         protocol log directory for all Receive connectors in the Front End
         Transport service on the server.
- 
+
     .PARAMETER RoutingTableLogMaxAge
         The RoutingTableLogMaxAge parameter specifies the maximum routing table
         log age. Log files older than the specified value are deleted. The
         default value is 7 days.
- 
+
     .PARAMETER RoutingTableLogMaxDirectorySize
         The RoutingTableLogMaxDirectorySize parameter specifies the maximum
         size of the routing table log directory. When the maximum directory
         size is reached, the server deletes the oldest log files first. The
         default value is 250 MB.
- 
+
     .PARAMETER RoutingTableLogPath
         The RoutingTableLogPath parameter specifies the directory location
         where routing table log files should be stored.
- 
+
     .PARAMETER SendProtocolLogMaxAge
         The SendProtocolLogMaxAge parameter specifies the maximum age of a
         protocol log file that's shared by all Send connectors in the Front End
         Transport service that have this server configured as a source server.
         Log files that are older than the specified value are deleted.
- 
+
     .PARAMETER SendProtocolLogMaxDirectorySize
         The SendProtocolLogMaxDirectorySize parameter specifies the maximum
         size of the protocol log directory that's shared by all Send connectors
         in the Front End Transport service that have this server configured as
         a source server. When the maximum directory size is reached, the server
         deletes the oldest log files first.
- 
+
     .PARAMETER SendProtocolLogMaxFileSize
         The SendProtocolLogMaxFileSize parameter specifies the maximum size of
         a protocol log file that's shared by all the Send connectors in the
         Front End Transport service that have this server configured as a
         source server. When a log file reaches its maximum file size, a new log
         file is created.
- 
+
     .PARAMETER SendProtocolLogPath
         The SendProtocolLogPath parameter specifies the location of the
         protocol log directory for all Send connectors in the Front End
         Transport service that have this server configured as a source server.
- 
+
     .PARAMETER TransientFailureRetryCount
         The TransientFailureRetryCount parameter specifies the maximum number
         of immediate connection retries attempted when the server encounters a
@@ -689,13 +689,13 @@ function Get-TargetResource
         valid input range for this parameter is from 0 through 15. When the
         value of this parameter is set to 0, the server doesn't immediately
         attempt to retry an unsuccessful connection.
- 
+
     .PARAMETER TransientFailureRetryInterval
         The TransientFailureRetryInterval parameter controls the connection
         interval between each connection attempt specified by the
         TransientFailureRetryCount parameter. For the Front End Transport
         service, the default value of the TransientFailureRetryInterval
-        parameter is 5 minutes. 
+        parameter is 5 minutes.
 #>
 function Set-TargetResource
 {
@@ -938,7 +938,7 @@ function Set-TargetResource
     .SYNOPSIS
         Tests whether the desired configuration for this resource has been
         applied.
-        
+
     .PARAMETER Identity
         The Identity parameter specifies the server that you want to modify.
 
@@ -949,205 +949,205 @@ function Set-TargetResource
     .PARAMETER AllowServiceRestart
         Whether it is OK to restart the MSExchangeFrontEndTransport service
         after making changes. Defaults to $false.
- 
+
     .PARAMETER AgentLogEnabled
         The AgentLogEnabled parameter specifies whether the agent log is
         enabled. The default value is $true.
- 
+
     .PARAMETER AgentLogMaxAge
         The AgentLogMaxAge parameter specifies the maximum age for the agent
         log file. Log files older than the specified value are deleted. The
         default value is 7.00:00:00 or 7 days.
- 
+
     .PARAMETER AgentLogMaxDirectorySize
         The AgentLogMaxDirectorySize parameter specifies the maximum size of
         all agent logs in the agent log directory. When a directory reaches its
         maximum file size, the server deletes the oldest log files first. The
         default value is 250 MB.
- 
+
     .PARAMETER AgentLogMaxFileSize
         The AgentLogMaxFileSize parameter specifies the maximum size of each
         agent log file. When a log file reaches its maximum file size, a new
         log file is created. The default value is 10 MB.
- 
+
     .PARAMETER AgentLogPath
         The AgentLogPath parameter specifies the default agent log directory
         location.
- 
+
     .PARAMETER AntispamAgentsEnabled
         The AntispamAgentsEnabled parameter specifies whether anti-spam agents
         are installed on the server specified with the Identity parameter. The
         default value is $false for the Front End Transport service.
- 
+
     .PARAMETER ConnectivityLogEnabled
         The ConnectivityLogEnabled parameter specifies whether the connectivity
         log is enabled. The default value is $true.
- 
+
     .PARAMETER ConnectivityLogMaxAge
         The ConnectivityLogMaxAge parameter specifies the maximum age for the
         connectivity log file. Log files older than the specified value are
         deleted. The default value is 30 days.
- 
+
     .PARAMETER ConnectivityLogMaxDirectorySize
         The ConnectivityLogMaxDirectorySize parameter specifies the maximum
         size of all connectivity logs in the connectivity log directory. When a
         directory reaches its maximum file size, the server deletes the oldest
         log files first. The default value is 1000 MB.
- 
+
     .PARAMETER ConnectivityLogMaxFileSize
         The ConnectivityLogMaxFileSize parameter specifies the maximum size of
         each connectivity log file. When a log file reaches its maximum file
         size, a new log file is created. The default value is 10 MB.
- 
+
     .PARAMETER ConnectivityLogPath
         The ConnectivityLogPath parameter specifies the default connectivity
         log directory location.
- 
+
     .PARAMETER DnsLogEnabled
         The DnsLogEnabled parameter specifies whether the DNS log is enabled.
         The default value is $false.
- 
+
     .PARAMETER DnsLogMaxAge
         The DnsLogMaxAge parameter specifies the maximum age for the DNS log
         file. Log files older than the specified value are deleted. The default
         value is 7.00:00:00 or 7 days.
- 
+
     .PARAMETER DnsLogMaxDirectorySize
         The DnsLogMaxDirectorySize parameter specifies the maximum size of all
         DNS logs in the DNS log directory. When a directory reaches its maximum
         file size, the server deletes the oldest log files first. The default
         value is 100 MB.
- 
+
     .PARAMETER DnsLogMaxFileSize
         The DnsLogMaxFileSize parameter specifies the maximum size of each DNS
         log file. When a log file reaches its maximum file size, a new log file
         is created. The default value is 10 MB.
- 
+
     .PARAMETER DnsLogPath
         The DnsLogPath parameter specifies the DNS log directory location. The
         default value is blank ($null), which indicates no location is
         configured. If you enable DNS logging, you need to specify a local file
         path for the DNS log files by using this parameter.
- 
+
     .PARAMETER ExternalDNSAdapterEnabled
         The ExternalDNSAdapterEnabled parameter specifies one or more Domain
         Name System (DNS) servers that Exchange uses for external DNS lookups.
- 
+
     .PARAMETER ExternalDNSAdapterGuid
         The ExternalDNSAdapterGuid parameter specifies the network adapter that
         has the DNS settings used for DNS lookups of destinations that exist
         outside the Exchange organization.
- 
+
     .PARAMETER ExternalDNSProtocolOption
         The ExternalDNSProtocolOption parameter specifies which protocol to use
         when querying external DNS servers. The valid options for this
         parameter are Any, UseTcpOnly, and UseUdpOnly. The default value is
         Any.
- 
+
     .PARAMETER ExternalDNSServers
         The ExternalDNSServers parameter specifies the list of external DNS
         servers that the server queries when resolving a remote domain. You
         must separate IP addresses by using commas. The default value is an
         empty list ({}).
- 
+
     .PARAMETER ExternalIPAddress
         The ExternalIPAddress parameter specifies the IP address used in the
         Received message header field for every message that travels through
         the Front End Transport service.
- 
+
     .PARAMETER InternalDNSAdapterEnabled
         The InternalDNSAdapterEnabled parameter specifies one or more DNS
         servers that Exchange uses for internal DNS lookups.
- 
+
     .PARAMETER InternalDNSAdapterGuid
         The InternalDNSAdapterGuid parameter specifies the network adapter that
         has the DNS settings used for DNS lookups of servers that exist inside
         the Exchange organization.
- 
+
     .PARAMETER InternalDNSProtocolOption
         The InternalDNSProtocolOption parameter specifies which protocol to use
         when you query internal DNS servers. Valid options for this parameter
         are Any, UseTcpOnly, or UseUdpOnly. The default value is Any.
- 
+
     .PARAMETER InternalDNSServers
         The InternalDNSServers parameter specifies the list of DNS servers that
         should be used when resolving a domain name. DNS servers are specified
         by IP address and are separated by commas. The default value is any
         empty list ({}).
- 
+
     .PARAMETER IntraOrgConnectorProtocolLoggingLevel
         The IntraOrgConnectorProtocolLoggingLevel parameter enables or disables
         SMTP protocol logging on the implicit and invisible intra-organization
         Send connector in the Front End Transport service.
- 
+
     .PARAMETER MaxConnectionRatePerMinute
         The MaxConnectionRatePerMinute parameter specifies the maximum rate
         that connections are allowed to be opened with the transport service.
- 
+
     .PARAMETER ReceiveProtocolLogMaxAge
         The ReceiveProtocolLogMaxAge parameter specifies the maximum age of a
         protocol log file that's shared by all Receive connectors in the
         Transport service on the server. Log files that are older than the
         specified value are automatically deleted.
- 
+
     .PARAMETER ReceiveProtocolLogMaxDirectorySize
         The ReceiveProtocolLogMaxDirectorySize parameter specifies the maximum
         size of the protocol log directory that's shared by all Receive
         connectors in the Front End Transport service on the server. When the
         maximum directory size is reached, the server deletes the oldest log
         files first.
- 
+
     .PARAMETER ReceiveProtocolLogMaxFileSize
         The ReceiveProtocolLogMaxFileSize parameter specifies the maximum size
         of a protocol log file that's shared by all Receive connectors in the
         Front End Transport service on the server. When a log file reaches its
         maximum file size, a new log file is created.
- 
+
     .PARAMETER ReceiveProtocolLogPath
         The ReceiveProtocolLogPath parameter specifies the location of the
         protocol log directory for all Receive connectors in the Front End
         Transport service on the server.
- 
+
     .PARAMETER RoutingTableLogMaxAge
         The RoutingTableLogMaxAge parameter specifies the maximum routing table
         log age. Log files older than the specified value are deleted. The
         default value is 7 days.
- 
+
     .PARAMETER RoutingTableLogMaxDirectorySize
         The RoutingTableLogMaxDirectorySize parameter specifies the maximum
         size of the routing table log directory. When the maximum directory
         size is reached, the server deletes the oldest log files first. The
         default value is 250 MB.
- 
+
     .PARAMETER RoutingTableLogPath
         The RoutingTableLogPath parameter specifies the directory location
         where routing table log files should be stored.
- 
+
     .PARAMETER SendProtocolLogMaxAge
         The SendProtocolLogMaxAge parameter specifies the maximum age of a
         protocol log file that's shared by all Send connectors in the Front End
         Transport service that have this server configured as a source server.
         Log files that are older than the specified value are deleted.
- 
+
     .PARAMETER SendProtocolLogMaxDirectorySize
         The SendProtocolLogMaxDirectorySize parameter specifies the maximum
         size of the protocol log directory that's shared by all Send connectors
         in the Front End Transport service that have this server configured as
         a source server. When the maximum directory size is reached, the server
         deletes the oldest log files first.
- 
+
     .PARAMETER SendProtocolLogMaxFileSize
         The SendProtocolLogMaxFileSize parameter specifies the maximum size of
         a protocol log file that's shared by all the Send connectors in the
         Front End Transport service that have this server configured as a
         source server. When a log file reaches its maximum file size, a new log
         file is created.
- 
+
     .PARAMETER SendProtocolLogPath
         The SendProtocolLogPath parameter specifies the location of the
         protocol log directory for all Send connectors in the Front End
         Transport service that have this server configured as a source server.
- 
+
     .PARAMETER TransientFailureRetryCount
         The TransientFailureRetryCount parameter specifies the maximum number
         of immediate connection retries attempted when the server encounters a
@@ -1155,13 +1155,13 @@ function Set-TargetResource
         valid input range for this parameter is from 0 through 15. When the
         value of this parameter is set to 0, the server doesn't immediately
         attempt to retry an unsuccessful connection.
- 
+
     .PARAMETER TransientFailureRetryInterval
         The TransientFailureRetryInterval parameter controls the connection
         interval between each connection attempt specified by the
         TransientFailureRetryCount parameter. For the Front End Transport
         service, the default value of the TransientFailureRetryInterval
-        parameter is 5 minutes. 
+        parameter is 5 minutes.
 #>
 function Test-TargetResource
 {
