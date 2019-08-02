@@ -1,7 +1,7 @@
 [ClassVersion("1.0.0.0"), FriendlyName("xExchFrontendTransportService")]
 class MSFT_xExchFrontendTransportService : OMI_BaseResource
 {
-    [Key, Description("The Identity of the ECP Virtual Directory.")] String Identity;
+    [Key, Description("Hostname of the server to configure.")] String Identity;
     [Required, Description("Credentials used to establish a remote PowerShell session to Exchange."), EmbeddedInstance("MSFT_Credential")] String Credential;
     [Write, Description("Whether it is OK to restart the MSExchangeFrontEndTransport service after making changes. Defaults to $false.")] Boolean AllowServiceRestart;
     [Write, Description("The AgentLogEnabled parameter specifies whether the agent log is enabled. The default value is $true.")] Boolean AgentLogEnabled;
@@ -43,5 +43,5 @@ class MSFT_xExchFrontendTransportService : OMI_BaseResource
     [Write, Description("The SendProtocolLogMaxFileSize parameter specifies the maximum size of a protocol log file that's shared by all the Send connectors in the Front End Transport service that have this server configured as a source server. When a log file reaches its maximum file size, a new log file is created.")] String SendProtocolLogMaxFileSize;
     [Write, Description("The SendProtocolLogPath parameter specifies the location of the protocol log directory for all Send connectors in the Front End Transport service that have this server configured as a source server.")] String SendProtocolLogPath;
     [Write, Description("The TransientFailureRetryCount parameter specifies the maximum number of immediate connection retries attempted when the server encounters a connection failure with a remote server. The default value is 6. The valid input range for this parameter is from 0 through 15. When the value of this parameter is set to 0, the server doesn't immediately attempt to retry an unsuccessful connection.")] SInt32 TransientFailureRetryCount;
-    [Write, Description("The TransientFailureRetryInterval parameter controls the connection interval between each connection attempt specified by the TransientFailureRetryCount parameter. For the Front End Transport service, the default value of the TransientFailureRetryInterval parameter is 5 minutes. ")] String TransientFailureRetryInterval;
+    [Write, Description("The TransientFailureRetryInterval parameter controls the connection interval between each connection attempt specified by the TransientFailureRetryCount parameter. For the Front End Transport service, the default value of the TransientFailureRetryInterval parameter is 5 minutes.")] String TransientFailureRetryInterval;
 };
