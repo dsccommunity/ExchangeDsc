@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.28.0.0
+
 - Added MSFT_xExchFrontendTransportService resource, based on
   MSFT_xExchTransportService resource.
   [Issue #283](https://github.com/PowerShell/xExchange/issues/283)
