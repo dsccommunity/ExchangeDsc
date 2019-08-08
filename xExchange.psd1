@@ -1,6 +1,6 @@
 @{
     # Version number of this module.
-    moduleVersion = '1.27.0.0'
+    moduleVersion = '1.28.0.0'
 
     # ID used to uniquely identify this module
     GUID = '9a908ca3-8a67-485c-a014-66ba37fcc2a4'
@@ -48,19 +48,13 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-        ReleaseNotes = '- Added additional parameters to the MSFT_xExchTransportService resource
-- Added additional parameters to the MSFT_xExchEcpVirtualDirectory resource
-- Added additional unit tests to the MSFT_xExchAutodiscoverVirutalDirectory resource
-- Added additional parameters to the MSFT_xExchExchangeCertificate resource
-- MSFT_xExchMailboxDatabase: Fixes issue with DataMoveReplicationConstraint
-  parameter (401)
-- Added additional parameters and comment based help to the
-  MSFT_xExchMailboxDatabase resource
-- Move code that sets $global:DSCMachineStatus into a dedicated helper
-  function.
-  [Issue 407](https://github.com/PowerShell/xExchange/issues/407)
-- Add missing parameters for xExchMailboxDatabaseCopy, adds comment based help,
-  and adds remaining Unit tests.
+        ReleaseNotes = '- Added MSFT_xExchFrontendTransportService resource, based on
+  MSFT_xExchTransportService resource.
+  [Issue 283](https://github.com/PowerShell/xExchange/issues/283)
+- Added unit and integration tests to the MSFT_xExchFrontendTransportService resource.
+- Added comment based help to the MSFT_xExchFrontendTransportService resource.
+- Minor style fix in MSFT_xExchEcpVirtualDirectory to ensure new PowerShell
+  Script Analyzer custom rules pass.
 
 '
 
@@ -68,6 +62,7 @@
 
     } # End of PrivateData hashtable
 }
+
 
 
 

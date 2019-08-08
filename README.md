@@ -96,6 +96,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **xExchExchangeCertificate** can install, remove, or configure
   an ExchangeCertificate using *-ExchangeCertificate cmdlets.
 * **xExchExchangeServer**
+* **xExchFrontendTransportService** configures Front End Transport service settings.
 * **xExchImapSettings** configures IMAP settings using Set-ImapSettings.
 * **xExchInstall** installs or updates Exchange 2013, 2016, or 2019.
 * **xExchJetstress** automatically runs Jetstress using
@@ -481,6 +482,169 @@ parameters.
   cmdlets have been deprecated. System workload management settings should be
   customized only under the direction of Microsoft Customer Service and
   Support.
+
+### xExchFrontendTransportService
+
+**xExchFrontendTransportService** configures the Front End Transport service
+settings on Mailbox servers or Edge Transport servers using
+Set-FrontendTransportService.
+
+Most properties correspond directly to properties in
+[Set-FrontendTransportService](https://docs.microsoft.com/en-us/powershell/module/exchange/mail-flow/Set-FrontendTransportService)
+parameters.
+
+* **Identity**: Hostname of the server to configure.
+* **Credential**: Credentials used to establish a remote PowerShell session to
+Exchange.
+* **AllowServiceRestart**: Whether it is OK to restart the
+MSExchangeFrontEndTransport service after making changes. Defaults to $false.
+* **AgentLogEnabled**: The AgentLogEnabled parameter specifies whether the
+agent log is enabled. The default value is $true.
+* **AgentLogMaxAge**: The AgentLogMaxAge parameter specifies the maximum age
+for the agent log file. Log files older than the specified value are deleted.
+The default value is 7.00:00:00 or 7 days.
+* **AgentLogMaxDirectorySize**: The AgentLogMaxDirectorySize parameter
+specifies the maximum size of all agent logs in the agent log directory. When a
+directory reaches its maximum file size, the server deletes the oldest log
+files first. The default value is 250 MB.
+* **AgentLogMaxFileSize**: The AgentLogMaxFileSize parameter specifies the
+maximum size of each agent log file. When a log file reaches its maximum file
+size, a new log file is created. The default value is 10 MB.
+* **AgentLogPath**: The AgentLogPath parameter specifies the default agent log
+directory location.
+* **AntispamAgentsEnabled**: The AntispamAgentsEnabled parameter specifies
+whether anti-spam agents are installed on the server specified with the
+Identity parameter. The default value is $false for the Front End Transport
+service.
+* **ConnectivityLogEnabled**: The ConnectivityLogEnabled parameter specifies
+whether the connectivity log is enabled. The default value is $true.
+* **ConnectivityLogMaxAge**: The ConnectivityLogMaxAge parameter specifies the
+maximum age for the connectivity log file. Log files older than the specified
+value are deleted. The default value is 30 days.
+* **ConnectivityLogMaxDirectorySize**: The ConnectivityLogMaxDirectorySize
+parameter specifies the maximum size of all connectivity logs in the
+connectivity log directory. When a directory reaches its maximum file size, the
+server deletes the oldest log files first. The default value is 1000 MB.
+* **ConnectivityLogMaxFileSize**: The ConnectivityLogMaxFileSize parameter
+specifies the maximum size of each connectivity log file. When a log file
+reaches its maximum file size, a new log file is created. The default value is
+10 MB.
+* **ConnectivityLogPath**: The ConnectivityLogPath parameter specifies the
+default connectivity log directory location.
+* **DnsLogEnabled**: The DnsLogEnabled parameter specifies whether the DNS log
+is enabled. The default value is $false.
+* **DnsLogMaxAge**: The DnsLogMaxAge parameter specifies the maximum age for
+the DNS log file. Log files older than the specified value are deleted. The
+default value is 7.00:00:00 or 7 days.
+* **DnsLogMaxDirectorySize**: The DnsLogMaxDirectorySize parameter specifies
+the maximum size of all DNS logs in the DNS log directory. When a directory
+reaches its maximum file size, the server deletes the oldest log files first.
+The default value is 100 MB.
+* **DnsLogMaxFileSize**: The DnsLogMaxFileSize parameter specifies the maximum
+size of each DNS log file. When a log file reaches its maximum file size, a new
+log file is created. The default value is 10 MB.
+* **DnsLogPath**: DnsLogPath parameter specifies the DNS log directory
+location. The default value is blank ($null), which indicates no location is
+configured. If you enable DNS logging, you need to specify a local file path
+for the DNS log files by using this parameter.
+* **ExternalDNSAdapterEnabled**: The ExternalDNSAdapterEnabled parameter
+specifies one or more Domain Name System (DNS) servers that Exchange uses for
+external DNS lookups.
+* **ExternalDNSAdapterGuid**: The ExternalDNSAdapterGuid parameter specifies
+the network adapter that has the DNS settings used for DNS lookups of
+destinations that exist outside the Exchange organization.
+* **ExternalDNSProtocolOption**: The ExternalDNSProtocolOption parameter
+specifies which protocol to use when querying external DNS servers. The valid
+options for this parameter are Any, UseTcpOnly, and UseUdpOnly. The default
+value is Any.
+* **ExternalDNSServers**: The ExternalDNSServers parameter specifies the list
+of external DNS servers that the server queries when resolving a remote domain.
+You must separate IP addresses by using commas. The default value is an empty
+list ({}).
+* **ExternalIPAddress**: The ExternalIPAddress parameter specifies the IP
+address used in the Received message header field for every message that
+travels through the Front End Transport service.
+* **InternalDNSAdapterEnabled**: The InternalDNSAdapterEnabled parameter
+specifies one or more DNS servers that Exchange uses for internal DNS lookups.
+* **InternalDNSAdapterGuid**: The InternalDNSAdapterGuid parameter specifies
+the network adapter that has the DNS settings used for DNS lookups of servers
+that exist inside the Exchange organization.
+* **InternalDNSProtocolOption**: The InternalDNSProtocolOption parameter
+specifies which protocol to use when you query internal DNS servers. Valid
+options for this parameter are Any, UseTcpOnly, or UseUdpOnly. The default
+value is Any.
+* **InternalDNSServers**: The InternalDNSServers parameter specifies the list
+of DNS servers that should be used when resolving a domain name. DNS servers
+are specified by IP address and are separated by commas. The default value is
+any empty list ({}).
+* **IntraOrgConnectorProtocolLoggingLevel**: The
+IntraOrgConnectorProtocolLoggingLevel parameter enables or disables SMTP
+protocol logging on the implicit and invisible intra-organization Send
+connector in the Front End Transport service.
+* **MaxConnectionRatePerMinute**: The MaxConnectionRatePerMinute parameter
+specifies the maximum rate that connections are allowed to be opened with the
+transport service.
+* **ReceiveProtocolLogMaxAge**: The ReceiveProtocolLogMaxAge parameter
+specifies the maximum age of a protocol log file that's shared by all Receive
+connectors in the Transport service on the server. Log files that are older
+than the specified value are automatically deleted.
+* **ReceiveProtocolLogMaxDirectorySize**: The
+ReceiveProtocolLogMaxDirectorySize parameter specifies the maximum size of the
+protocol log directory that's shared by all Receive connectors in the Front End
+Transport service on the server. When the maximum directory size is reached,
+the server deletes the oldest log files first.
+* **ReceiveProtocolLogMaxFileSize**: The ReceiveProtocolLogMaxFileSize
+parameter specifies the maximum size of a protocol log file that's shared by
+all Receive connectors in the Front End Transport service on the server. When a
+log file reaches its maximum file size, a new log file is created.
+* **ReceiveProtocolLogPath**: The ReceiveProtocolLogPath parameter specifies
+the location of the protocol log directory for all Receive connectors in the
+Front End Transport service on the server.
+* **RoutingTableLogMaxAge**: The RoutingTableLogMaxAge parameter specifies the
+maximum routing table log age. Log files older than the specified value are
+deleted. The default value is 7 days.
+* **RoutingTableLogMaxDirectorySize**: The RoutingTableLogMaxDirectorySize
+parameter specifies the maximum size of the routing table log directory. When
+the maximum directory size is reached, the server deletes the oldest log files
+first. The default value is 250 MB.
+* **RoutingTableLogPath**: The RoutingTableLogPath parameter specifies the
+directory location where routing table log files should be stored.
+* **SendProtocolLogMaxAge**: The SendProtocolLogMaxAge parameter specifies the
+maximum age of a protocol log file that's shared by all Send connectors in the
+Front End Transport service that have this server configured as a source
+server. Log files that are older than the specified value are deleted.
+* **SendProtocolLogMaxDirectorySize**: The SendProtocolLogMaxDirectorySize
+parameter specifies the maximum size of the protocol log directory that's
+shared by all Send connectors in the Front End Transport service that have this
+server configured as a source server. When the maximum directory size is
+reached, the server deletes the oldest log files first.
+* **SendProtocolLogMaxFileSize**: The SendProtocolLogMaxFileSize parameter
+specifies the maximum size of a protocol log file that's shared by all the Send
+connectors in the Front End Transport service that have this server configured
+as a source server. When a log file reaches its maximum file size, a new log
+file is created.
+* **SendProtocolLogPath**: The SendProtocolLogPath parameter specifies the
+location of the protocol log directory for all Send connectors in the Front End
+Transport service that have this server configured as a source server.
+* **TransientFailureRetryCount**: The TransientFailureRetryCount parameter
+specifies the maximum number of immediate connection retries attempted when the
+server encounters a connection failure with a remote server. The default value
+is 6. The valid input range for this parameter is from 0 through 15. When the
+value of this parameter is set to 0, the server doesn't immediately attempt to
+retry an unsuccessful connection.
+* **TransientFailureRetryInterval**: The TransientFailureRetryInterval
+parameter controls the connection interval between each connection attempt
+specified by the TransientFailureRetryCount parameter. For the Front End
+Transport service, the default value of the TransientFailureRetryInterval
+parameter is 5 minutes.
+
+#### Common Issues
+
+To set some settings to NULL you need to set the value to '' instead of using $null.
+The following settings are affected:
+ExternalDNSServers
+ExternalIPAddress
+InternalDNSServers
 
 ### xExchImapSettings
 
