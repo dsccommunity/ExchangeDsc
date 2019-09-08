@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Enable Script Analyzer default rules
+- Fixed keywords in upper case
 
 ## 1.28.0.0
 
