@@ -916,7 +916,7 @@ function Set-TargetResource
         Write-Verbose -Message 'Restart service MSExchangeTransport'
         Restart-Service -Name MSExchangeTransport -WarningAction SilentlyContinue
     }
-    Else
+    else
     {
         Write-Warning -Message 'The configuration will not take effect until the MSExchangeTransport service is manually restarted.'
     }
