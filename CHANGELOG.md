@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Enable Script Analyzer default rules
+- Add the AutoDagBitlockerEnabled parameter to DSC resource MSFT_xExchDatabaseAvailabilityGroup
 
 ## 1.28.0.0
 
