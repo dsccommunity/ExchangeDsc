@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.29.0.0
+
 - Enable Script Analyzer default rules
 - Fixed keywords in upper case
 
