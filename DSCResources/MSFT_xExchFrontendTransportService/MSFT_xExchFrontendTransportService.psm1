@@ -402,7 +402,7 @@ function Get-TargetResource
         $SendProtocolLogPath,
 
         [Parameter()]
-        [ValidateRange(1,15)]
+        [ValidateRange(1, 15)]
         [System.Int32]
         $TransientFailureRetryCount,
 
@@ -411,7 +411,7 @@ function Get-TargetResource
         $TransientFailureRetryInterval
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-FrontendTransportService' -Verbose:$VerbosePreference
@@ -423,47 +423,47 @@ function Get-TargetResource
     if ($null -ne $FrontendTransportService)
     {
         $returnValue = @{
-            Identity                                        = [System.String] $Identity
-            AgentLogEnabled                                 = [System.Boolean] $FrontendTransportService.AgentLogEnabled
-            AgentLogMaxAge                                  = [System.String] $FrontendTransportService.AgentLogMaxAge
-            AgentLogMaxDirectorySize                        = [System.String] $FrontendTransportService.AgentLogMaxDirectorySize
-            AgentLogMaxFileSize                             = [System.String] $FrontendTransportService.AgentLogMaxFileSize
-            AgentLogPath                                    = [System.String] $FrontendTransportService.AgentLogPath
-            AntispamAgentsEnabled                           = [System.Boolean] $FrontendTransportService.AntispamAgentsEnabled
-            ConnectivityLogEnabled                          = [System.Boolean] $FrontendTransportService.ConnectivityLogEnabled
-            ConnectivityLogMaxAge                           = [System.String] $FrontendTransportService.ConnectivityLogMaxAge
-            ConnectivityLogMaxDirectorySize                 = [System.String] $FrontendTransportService.ConnectivityLogMaxDirectorySize
-            ConnectivityLogMaxFileSize                      = [System.String] $FrontendTransportService.ConnectivityLogMaxFileSize
-            ConnectivityLogPath                             = [System.String] $FrontendTransportService.ConnectivityLogPath
-            DnsLogEnabled                                   = [System.Boolean] $FrontendTransportService.DnsLogEnabled
-            DnsLogMaxAge                                    = [System.String] $FrontendTransportService.DnsLogMaxAge
-            DnsLogMaxDirectorySize                          = [System.String] $FrontendTransportService.DnsLogMaxDirectorySize
-            DnsLogMaxFileSize                               = [System.String] $FrontendTransportService.DnsLogMaxFileSize
-            DnsLogPath                                      = [System.String] $FrontendTransportService.DnsLogPath
-            ExternalDNSAdapterEnabled                       = [System.Boolean] $FrontendTransportService.ExternalDNSAdapterEnabled
-            ExternalDNSAdapterGuid                          = [System.String] $FrontendTransportService.ExternalDNSAdapterGuid
-            ExternalDNSProtocolOption                       = [System.String] $FrontendTransportService.ExternalDNSProtocolOption
-            ExternalDNSServers                              = [System.String[]] $FrontendTransportService.ExternalDNSServers
-            ExternalIPAddress                               = [System.String] $FrontendTransportService.ExternalIPAddress
-            InternalDNSAdapterEnabled                       = [System.Boolean] $FrontendTransportService.InternalDNSAdapterEnabled
-            InternalDNSAdapterGuid                          = [System.String] $FrontendTransportService.InternalDNSAdapterGuid
-            InternalDNSProtocolOption                       = [System.String] $FrontendTransportService.InternalDNSProtocolOption
-            InternalDNSServers                              = [System.String[]] $FrontendTransportService.InternalDNSServers
-            IntraOrgConnectorProtocolLoggingLevel           = [System.String] $FrontendTransportService.IntraOrgConnectorProtocolLoggingLevel
-            MaxConnectionRatePerMinute                      = [System.Int32] $FrontendTransportService.MaxConnectionRatePerMinute
-            ReceiveProtocolLogMaxAge                        = [System.String] $FrontendTransportService.ReceiveProtocolLogMaxAge
-            ReceiveProtocolLogMaxDirectorySize              = [System.String] $FrontendTransportService.ReceiveProtocolLogMaxDirectorySize
-            ReceiveProtocolLogMaxFileSize                   = [System.String] $FrontendTransportService.ReceiveProtocolLogMaxFileSize
-            ReceiveProtocolLogPath                          = [System.String] $FrontendTransportService.ReceiveProtocolLogPath
-            RoutingTableLogMaxAge                           = [System.String] $FrontendTransportService.RoutingTableLogMaxAge
-            RoutingTableLogMaxDirectorySize                 = [System.String] $FrontendTransportService.RoutingTableLogMaxDirectorySize
-            RoutingTableLogPath                             = [System.String] $FrontendTransportService.RoutingTableLogPath
-            SendProtocolLogMaxAge                           = [System.String] $FrontendTransportService.SendProtocolLogMaxAge
-            SendProtocolLogMaxDirectorySize                 = [System.String] $FrontendTransportService.SendProtocolLogMaxDirectorySize
-            SendProtocolLogMaxFileSize                      = [System.String] $FrontendTransportService.SendProtocolLogMaxFileSize
-            SendProtocolLogPath                             = [System.String] $FrontendTransportService.SendProtocolLogPath
-            TransientFailureRetryCount                      = [System.Int32] $FrontendTransportService.TransientFailureRetryCount
-            TransientFailureRetryInterval                   = [System.String] $FrontendTransportService.TransientFailureRetryInterval.ToString()
+            Identity                              = [System.String] $Identity
+            AgentLogEnabled                       = [System.Boolean] $FrontendTransportService.AgentLogEnabled
+            AgentLogMaxAge                        = [System.String] $FrontendTransportService.AgentLogMaxAge
+            AgentLogMaxDirectorySize              = [System.String] $FrontendTransportService.AgentLogMaxDirectorySize
+            AgentLogMaxFileSize                   = [System.String] $FrontendTransportService.AgentLogMaxFileSize
+            AgentLogPath                          = [System.String] $FrontendTransportService.AgentLogPath
+            AntispamAgentsEnabled                 = [System.Boolean] $FrontendTransportService.AntispamAgentsEnabled
+            ConnectivityLogEnabled                = [System.Boolean] $FrontendTransportService.ConnectivityLogEnabled
+            ConnectivityLogMaxAge                 = [System.String] $FrontendTransportService.ConnectivityLogMaxAge
+            ConnectivityLogMaxDirectorySize       = [System.String] $FrontendTransportService.ConnectivityLogMaxDirectorySize
+            ConnectivityLogMaxFileSize            = [System.String] $FrontendTransportService.ConnectivityLogMaxFileSize
+            ConnectivityLogPath                   = [System.String] $FrontendTransportService.ConnectivityLogPath
+            DnsLogEnabled                         = [System.Boolean] $FrontendTransportService.DnsLogEnabled
+            DnsLogMaxAge                          = [System.String] $FrontendTransportService.DnsLogMaxAge
+            DnsLogMaxDirectorySize                = [System.String] $FrontendTransportService.DnsLogMaxDirectorySize
+            DnsLogMaxFileSize                     = [System.String] $FrontendTransportService.DnsLogMaxFileSize
+            DnsLogPath                            = [System.String] $FrontendTransportService.DnsLogPath
+            ExternalDNSAdapterEnabled             = [System.Boolean] $FrontendTransportService.ExternalDNSAdapterEnabled
+            ExternalDNSAdapterGuid                = [System.String] $FrontendTransportService.ExternalDNSAdapterGuid
+            ExternalDNSProtocolOption             = [System.String] $FrontendTransportService.ExternalDNSProtocolOption
+            ExternalDNSServers                    = [System.String[]] $FrontendTransportService.ExternalDNSServers
+            ExternalIPAddress                     = [System.String] $FrontendTransportService.ExternalIPAddress
+            InternalDNSAdapterEnabled             = [System.Boolean] $FrontendTransportService.InternalDNSAdapterEnabled
+            InternalDNSAdapterGuid                = [System.String] $FrontendTransportService.InternalDNSAdapterGuid
+            InternalDNSProtocolOption             = [System.String] $FrontendTransportService.InternalDNSProtocolOption
+            InternalDNSServers                    = [System.String[]] $FrontendTransportService.InternalDNSServers
+            IntraOrgConnectorProtocolLoggingLevel = [System.String] $FrontendTransportService.IntraOrgConnectorProtocolLoggingLevel
+            MaxConnectionRatePerMinute            = [System.Int32] $FrontendTransportService.MaxConnectionRatePerMinute
+            ReceiveProtocolLogMaxAge              = [System.String] $FrontendTransportService.ReceiveProtocolLogMaxAge
+            ReceiveProtocolLogMaxDirectorySize    = [System.String] $FrontendTransportService.ReceiveProtocolLogMaxDirectorySize
+            ReceiveProtocolLogMaxFileSize         = [System.String] $FrontendTransportService.ReceiveProtocolLogMaxFileSize
+            ReceiveProtocolLogPath                = [System.String] $FrontendTransportService.ReceiveProtocolLogPath
+            RoutingTableLogMaxAge                 = [System.String] $FrontendTransportService.RoutingTableLogMaxAge
+            RoutingTableLogMaxDirectorySize       = [System.String] $FrontendTransportService.RoutingTableLogMaxDirectorySize
+            RoutingTableLogPath                   = [System.String] $FrontendTransportService.RoutingTableLogPath
+            SendProtocolLogMaxAge                 = [System.String] $FrontendTransportService.SendProtocolLogMaxAge
+            SendProtocolLogMaxDirectorySize       = [System.String] $FrontendTransportService.SendProtocolLogMaxDirectorySize
+            SendProtocolLogMaxFileSize            = [System.String] $FrontendTransportService.SendProtocolLogMaxFileSize
+            SendProtocolLogPath                   = [System.String] $FrontendTransportService.SendProtocolLogPath
+            TransientFailureRetryCount            = [System.Int32] $FrontendTransportService.TransientFailureRetryCount
+            TransientFailureRetryInterval         = [System.String] $FrontendTransportService.TransientFailureRetryInterval.ToString()
         }
     }
     $returnValue
@@ -871,7 +871,7 @@ function Set-TargetResource
         $SendProtocolLogPath,
 
         [Parameter()]
-        [ValidateRange(1,15)]
+        [ValidateRange(1, 15)]
         [System.Int32]
         $TransientFailureRetryCount,
 
@@ -880,7 +880,7 @@ function Set-TargetResource
         $TransientFailureRetryInterval
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-FrontendTransportService' -Verbose:$VerbosePreference
@@ -928,7 +928,7 @@ function Set-TargetResource
         Write-Verbose -Message 'Restart service MSExchangeFrontEndTransport'
         Restart-Service -Name MSExchangeFrontEndTransport -WarningAction SilentlyContinue
     }
-    Else
+    else
     {
         Write-Warning -Message 'The configuration will not take effect until the MSExchangeFrontEndTransport service is manually restarted.'
     }
@@ -1339,7 +1339,7 @@ function Test-TargetResource
         $SendProtocolLogPath,
 
         [Parameter()]
-        [ValidateRange(1,15)]
+        [ValidateRange(1, 15)]
         [System.Int32]
         $TransientFailureRetryCount,
 
@@ -1348,7 +1348,7 @@ function Test-TargetResource
         $TransientFailureRetryInterval
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Identity' = $Identity } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-FrontendTransportService' -Verbose:$VerbosePreference

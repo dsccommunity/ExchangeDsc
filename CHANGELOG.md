@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.29.0.0
+
+- Enable Script Analyzer default rules
+- Fixed keywords in upper case
+
 ## 1.28.0.0
 
 - Added MSFT_xExchFrontendTransportService resource, based on
