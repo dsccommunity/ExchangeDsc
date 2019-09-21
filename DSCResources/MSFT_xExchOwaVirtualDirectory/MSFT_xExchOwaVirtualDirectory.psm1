@@ -290,7 +290,7 @@ function Set-TargetResource
 
     Set-OwaVirtualDirectory @PSBoundParameters
 
-    if($AllowServiceRestart -eq $true)
+    if ($AllowServiceRestart -eq $true)
     {
         Write-Verbose -Message 'Recycling MSExchangeOWAAppPool'
         Restart-ExistingAppPool -Name MSExchangeOWAAppPool
