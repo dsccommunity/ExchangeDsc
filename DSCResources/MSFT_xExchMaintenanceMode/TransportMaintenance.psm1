@@ -540,22 +540,7 @@ function Get-ServersInDag
 
     Write-Verbose -Message "$server - Retrieving other hub transport servers in the DAG - $dag"
 
-    $dagServers = @(
-        (Get-DatabaseAvailabilityGroup $dag).Servers |
-            ForEach-Object -Process {
-                if ($_.Name)
-                {
-                    $_.Name
-                }
-                else
-                {
-                    $_
-                }
-            } |
-            Where-Object -FilterScript {
-                $_ -ne $server
-            }
-    )
+    $dagServers = @((Get-DatabaseAvailabilityGroup $dag).Servers | ForEach-Object {if ($_.Name){$_.Name}else{$_}} | Where-Object {$_ -ne $server})
 
     if ($null -ne $dagServers)
     {
