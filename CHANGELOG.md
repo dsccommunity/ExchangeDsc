@@ -8,6 +8,7 @@
 ## 1.29.0.0
 
 - Enable Script Analyzer default rules
+- Add the AutoDagBitlockerEnabled parameter to DSC resource MSFT_xExchDatabaseAvailabilityGroup
 - Fixed keywords in upper case
 
 ## 1.28.0.0
