@@ -1,0 +1,12 @@
+[ClassVersion("1.0.0.0"), FriendlyName("MSFT_xAddressList")]
+class MSFT_xAddressList : OMI_BaseResource
+{
+    [Key, Description("The name of the address list.")] String DomainName;
+    [Required, Description("Credentials used to establish a remote PowerShell session to Exchange."), EmbeddedInstance("MSFT_Credential")] String Credential;
+    [Write, Description("Should this resource be present or absent"), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write, Description("The AddressBookEnabled parameter specifies whether to enable recipient filtering for this accepted domain.")] Boolean AddressBookEnabled;
+    [Write, Description("The DomainType parameter specifies the type of accepted domain that you want to configure."), Values {"Authoritative", "ExternalRelay", "InternalRelay"}] String DomainType;
+    [Write, Description("The MakeDefault parameter specifies whether the accepted domain is the default domain.")] Boolean Default;
+    [Write, Description("The MatchSubDomains parameter enables mail to be sent by and received from users on any subdomain of this accepted domain.")] Boolean MatchSubDomains;
+    [Write, Description("The Name parameter specifies a unique name for the accepted domain object.")] String Name;
+};
