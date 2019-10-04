@@ -312,7 +312,7 @@ function Invoke-RemoteMaintenance
 function Start-HUBEndMaintenance
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
-    param()
+    param ()
 
     $reasons = @{
         ServiceState = $ServiceState
@@ -412,7 +412,7 @@ function Enable-SubmissionQueue
 function Set-TransportActive
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
-    param()
+    param ()
 
     Write-Output 'Enter [Set-TransportActive]'
 
@@ -460,7 +460,7 @@ function Set-TransportActive
 function Set-TransportInactive
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseShouldProcessForStateChangingFunctions", "")]
-    param()
+    param ()
 
     Write-Output 'Enter [Set-TransportInactive]'
 
@@ -540,7 +540,7 @@ function Get-ServersInDag
 
     Write-Verbose -Message "$server - Retrieving other hub transport servers in the DAG - $dag"
 
-    $dagServers = @((Get-DatabaseAvailabilityGroup $dag).Servers | ForEach-Object {if($_.Name){$_.Name}else{$_}} | Where-Object {$_ -ne $server})
+    $dagServers = @((Get-DatabaseAvailabilityGroup $dag).Servers | ForEach-Object {if ($_.Name){$_.Name}else{$_}} | Where-Object {$_ -ne $server})
 
     if ($null -ne $dagServers)
     {
@@ -722,7 +722,7 @@ function Register-TransportMaintenanceLog
     if (-not $newestLog -or $newestLog.Length -ge $maxFileSize)
     {
         $instance = 0
-        while($true)
+        while ($true)
         {
             $newLogFileName = $Script:TransportMaintenanceLogNameFormat -f `
                                 $LogPath, `
@@ -1042,7 +1042,7 @@ function Set-ServiceState
         Write-EventOfEntry -Event Start -Entry $logEntry
     }
 
-    switch($State)
+    switch ($State)
     {
         'Stopped'
         {
@@ -1214,7 +1214,7 @@ function Write-EventOfEntry
                         $Event, `
                         $Entry.Id, `
                         $duration, `
-                        $(if($Entry.Count -ne -1){$Entry.Count} else {''}), `
+                        $(if ($Entry.Count -ne -1){$Entry.Count} else {''}), `
                         $ReasonStr, `
                         $Script:ExchangeVersion)
 
@@ -1226,7 +1226,7 @@ function Write-EventOfEntry
     }
 
     $maxTries = 3
-    while($maxTries -gt 0)
+    while ($maxTries -gt 0)
     {
         try
         {
@@ -1567,7 +1567,7 @@ function Wait-EmptyEntriesCompletion
     $summaryLog = $null
     $firstTime = $true
 
-    while($true)
+    while ($true)
     {
         $activeEntries = Invoke-Command -ScriptBlock $GetEntries -ArgumentList $GetEntriesArgs | Where-Object {$_.Count -gt 0}
 
@@ -1612,7 +1612,7 @@ function Wait-EmptyEntriesCompletion
             $Reason = $Script:AllotedTimeExceeded
             break;
         }
-        elseif($foundCompleted -or $foundUpdate)
+        elseif ($foundCompleted -or $foundUpdate)
         {
             $remaningCount = $activeEntries | Measure-Object -Sum -Property Count | ForEach-Object {$_.Sum}
             Write-Verbose -Message "$Source - $Stage Progress made. $remaningCount items remain."

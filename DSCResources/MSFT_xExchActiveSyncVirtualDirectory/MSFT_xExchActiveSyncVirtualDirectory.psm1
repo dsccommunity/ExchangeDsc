@@ -339,7 +339,7 @@ function Set-TargetResource
             throw 'AutoCertBasedAuthThumbprint must be specified when AutoCertBasedAuth is set to true'
         }
 
-        if($AllowServiceRestart)
+        if ($AllowServiceRestart)
         {
             # Need to restart all of IIS for auth settings to stick
             Write-Verbose -Message 'Restarting IIS'
@@ -355,7 +355,7 @@ function Set-TargetResource
     # Only bounce the app pool if we didn't already restart IIS for CBA
     if (-not $AutoCertBasedAuth)
     {
-        if($AllowServiceRestart)
+        if ($AllowServiceRestart)
         {
             Write-Verbose -Message 'Recycling MSExchangeSyncAppPool'
 

@@ -180,7 +180,7 @@ function Set-TargetResource
 
     Set-OutlookAnywhere @PSBoundParameters
 
-    if($AllowServiceRestart -eq $true)
+    if ($AllowServiceRestart -eq $true)
     {
         Write-Verbose -Message 'Recycling MSExchangeRpcProxyAppPool and MSExchangeRpcProxyFrontEndAppPool'
 

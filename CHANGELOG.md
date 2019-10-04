@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Changes to xExchange
+  - Resolved custom Script Analyzer rules that was added to the test framework.
+
+## 1.29.0.0
+
 - Enable Script Analyzer default rules
 - Add the AutoDagBitlockerEnabled parameter to DSC resource MSFT_xExchDatabaseAvailabilityGroup
 - Fixed keywords in upper case

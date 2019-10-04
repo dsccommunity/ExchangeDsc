@@ -130,7 +130,7 @@ function Test-TargetResource
 
     if ($installStatus.ShouldStartInstall -eq $true)
     {
-        if($installStatus.ShouldInstallLanguagePack -eq $true)
+        if ($installStatus.ShouldInstallLanguagePack -eq $true)
         {
             Write-Verbose -Message 'Language pack will be installed'
         }

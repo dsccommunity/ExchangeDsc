@@ -1,6 +1,6 @@
 @{
     # Version number of this module.
-    moduleVersion = '1.28.0.0'
+    moduleVersion = '1.29.0.0'
 
     # ID used to uniquely identify this module
     GUID = '9a908ca3-8a67-485c-a014-66ba37fcc2a4'
@@ -48,13 +48,8 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-        ReleaseNotes = '- Added MSFT_xExchFrontendTransportService resource, based on
-  MSFT_xExchTransportService resource.
-  [Issue 283](https://github.com/PowerShell/xExchange/issues/283)
-- Added unit and integration tests to the MSFT_xExchFrontendTransportService resource.
-- Added comment based help to the MSFT_xExchFrontendTransportService resource.
-- Minor style fix in MSFT_xExchEcpVirtualDirectory to ensure new PowerShell
-  Script Analyzer custom rules pass.
+        ReleaseNotes = '- Enable Script Analyzer default rules
+- Fixed keywords in upper case
 
 '
 
@@ -62,6 +57,7 @@
 
     } # End of PrivateData hashtable
 }
+
 
 
 
