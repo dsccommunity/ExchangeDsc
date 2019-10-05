@@ -3,6 +3,8 @@
 ## Unreleased
 
 - Added xExchAddressList ressource
+- Added xExchSendConnector resource
+- Enchanced xExchImapSettings resource
 
 ## 1.30.0.0
 

@@ -1,12 +1,29 @@
-
 [ClassVersion("1.0.0.0"), FriendlyName("xExchImapSettings")]
 class MSFT_xExchImapSettings : OMI_BaseResource
 {
     [Key, Description("The IMAP server to configure.")] String Server;
     [Required, Description("Credentials used to establish a remote PowerShell session to Exchange."), EmbeddedInstance("MSFT_Credential")] String Credential;
     [Write, Description("Whether it is OK to restart the IMAP services after making changes. Defaults to $false.")] Boolean AllowServiceRestart;
+    [Write, Description("The AuthenticatedConnectionTimeout parameter specifies the period of time to wait before closing an idle authenticated connection.")] String AuthenticatedConnectionTimeout;
+    [Write, Description("The Banner parameter specifies the text string that's displayed to connecting IMAP4 clients.")] String Banner;
+    [Write, Description("The CalendarItemRetrievalOption parameter specifies how calendar items are presented to IMAP4 clients."), ValueMap{"iCalendar","intranetUrl","InternetUrl","Custom"}, Values{"iCalendar","intranetUrl","InternetUrl","Custom"}] String CalendarItemRetrievalOption;
     [Write, Description("The DomainController parameter specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory. You identify the domain controller by its fully qualified domain name (FQDN). For example, dc01.contoso.com.")] String DomainController; //Optional Domain Controller to connect to
+    [Write, Description("The EnableExactRFC822Size parameter specifies how message sizes are presented to IMAP4 clients.")] Boolean EnableExactRFC822Size;
+    [Write, Description("The EnableGSSAPIAndNTLMAuth parameter specifies whether connections can use Integrated Windows authentication (NTLM) using the Generic Security Services application programming interface (GSSAPI).")] Boolean EnableGSSAPIAndNTLMAuth;
+    [Write, Description("The EnforceCertificateErrors parameter specifies whether to enforce valid Secure Sockets Layer (SSL) certificate validation failures.")] Boolean EnforceCertificateErrors;
+    [Write, Description("The ExtendedProtectionPolicy parameter specifies how Extended Protection for Authentication is used."), ValueMap{"None","Allow","Require"}, Values{"None","Allow","Require"}] String ExtendedProtectionPolicy;
     [Write, Description("The ExternalConnectionSettings parameter specifies the host name, port, and encryption method that's used by external IMAP4 clients (IMAP4 connections from outside your corporate network).")] String ExternalConnectionSettings[];
-    [Write, Description("The LoginType parameter specifies the authentication method for IMAP4 connections."), ValueMap{"PlainTextLogin","PlainTextAuthentication","SecureLogin"}, Values{"PlainTextLogin","PlainTextAuthentication","SecureLogin"}] String LoginType;
+    [Write, Description("The InternalConnectionSettings parameter specifies the host name, port, and encryption method that's used by internal IMAP4 clients (IMAP4 connections from inside your corporate network).")] String InternalConnectionSettings[];
+    [Write, Description("The LogFileRollOverSettings parameter specifies how frequently IMAP4 protocol logging creates a new log file."), ValueMap{"Hourly","Daily","Weekly","Monthly"}, Values{"Hourly","Daily","Weekly","Monthly"}] String LogFileRollOverSettings;
+    [Write, Description("The LoginType parameter specifies the authentication method for IMAP4 connections."), ValueMap{"PlainTextLogin","PlainTextAuthentication", "SecureLogin"}, Values{"PlainTextLogin","PlainTextAuthentication" ,"SecureLogin"}] String LoginType;
+    [Write, Description("The MaxCommandSize parameter specifies the maximum size in bytes of a single IMAP4 command.")] sint32 MaxCommandSize;
+    [Write, Description("The MaxConnectionFromSingleIP parameter specifies the maximum number of IMAP4 connections that are accepted by the Exchange server from a single IP address.")] sint32 MaxConnectionFromSingleIP;
+    [Write, Description("The MaxConnections parameter specifies the maximum number of IMAP4 connections that are accepted by the Exchange server.")] sint32 MaxConnections;
+    [Write, Description("The MaxConnectionsPerUser parameter specifies the maximum number of IMAP4 connections that are allowed for each user.")] sint32 MaxConnectionsPerUser;
+    [Write, Description("The PreAuthenticatedConnectionTimeout parameter specifies the period of time to wait before closing an idle IMAP4 connection that isn't authenticated.")] String PreAuthenticatedConnectionTimeout;
+    [Write, Description("The ProtocolLogEnabled parameter specifies whether to enable protocol logging for IMAP4.")] Boolean ProtocolLogEnabled;
+    [Write, Description("The ProxyTargetPort parameter specifies the port on the Microsoft Exchange IMAP4 Backend service that listens for client connections that are proxied from the Microsoft Exchange IMAP4 service.")] sint32 ProxyTargetPort;
+    [Write, Description("The SSLBindings parameter specifies the IP address and TCP port that's used for IMAP4 connection that's always encrypted by SSL/TLS.")] String SSLBindings[];
+    [Write, Description("The UnencryptedOrTLSBindings parameter specifies the IP address and TCP port that's used for unencrypted IMAP4 connections.")] String UnencryptedOrTLSBindings[];
     [Write, Description("The X509CertificateName parameter specifies the certificate that's used for encrypting IMAP4 client connections.")] String X509CertificateName;
 };

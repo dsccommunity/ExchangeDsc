@@ -118,6 +118,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **xExchPowerShellVirtualDirectory**
 * **xExchReceiveConnector**
 * **xExchRemoteDomain** is used to add remote domains
+* **xExchSendConnector** is used to add a send connector
 * **xExchTransportService**
 * **xExchUMCallRouterSettings** configures the UM Call Router service using Set-UMCallRouterSettings.
 * **xExchUMService** configures a UM server using Set-UMService.
@@ -277,7 +278,7 @@ filter that's based on the value of any available recipient property.
 * **AllowServiceRestart**: Whether the Transport services should be
   automatically restarted after a status change.
 
-## xExchAutodiscoverVirtualDirectory
+### xExchAutodiscoverVirtualDirectory
 
 **xExchAutodiscoverVirtualDirectory** is used to configure properties on an
 AutoDiscover Virtual Directory.
@@ -750,13 +751,55 @@ parameters.
   controller that's used by this cmdlet to read data from or write data to
   Active Directory. You identify the domain controller by its fully qualified
   domain name (FQDN). For example, dc01.contoso.com.
+* **AuthenticatedConnectionTimeout**: The AuthenticatedConnectionTimeout parameter
+  specifies the period of time to wait before closing an idle authenticated connection.
+* **Banner**: The Banner parameter specifies the text string that's displayed to
+  connecting IMAP4 clients.
+* **CalendarItemRetrievalOption**: The CalendarItemRetrievalOption parameter
+  specifies how calendar items are presented to IMAP4 clients.
+* **EnableExactRFC822Size**: The EnableExactRFC822Size parameter specifies how
+  message sizes are presented to IMAP4 clients.
+* **EnableGSSAPIAndNTLMAuth**: The EnableGSSAPIAndNTLMAuth parameter specifies
+  whether connections can use Integrated Windows authentication
+* **EnforceCertificateErrors**: The EnforceCertificateErrors parameter specifies
+  whether to enforce valid Secure Sockets Layer
+* **ExtendedProtectionPolicy**: The ExtendedProtectionPolicy parameter specifies
+  how Extended Protection for Authentication is used.
 * **ExternalConnectionSettings**: The ExternalConnectionSettings parameter
   specifies the host name, port, and encryption method that's used by external
   IMAP4 clients (IMAP4 connections from outside your corporate network).
+* **InternalConnectionSettings**: The InternalConnectionSettings parameter
+  specifies the host name
+* **LogFileRollOverSettings**: The LogFileRollOverSettings parameter specifies
+  how frequently IMAP4 protocol logging creates a new log file.
 * **LoginType**: The LoginType parameter specifies the authentication method
   for IMAP4 connections.
+* **MaxCommandSize**: The MaxCommandSize parameter specifies the maximum size
+ in bytes of a single IMAP4 command.
+* **MaxConnectionFromSingleIP**: The MaxConnectionFromSingleIP parameter specifies
+ the maximum number of IMAP4 connections that are accepted by the Exchange server
+  from a single IP address.
+* **MaxConnections**: The MaxConnections parameter specifies the maximum number
+ of IMAP4 connections that are accepted by the Exchange server.
+* **MaxConnectionsPerUser**: The MaxConnectionsPerUser parameter specifies the
+ maximum number of IMAP4 connections that are allowed for each user.
+* **PreAuthenticatedConnectionTimeout**: The PreAuthenticatedConnectionTimeout
+ parameter specifies the period of time to wait before closing an idle IMAP4
+  connection that isn't authenticated.
+* **ProtocolLogEnabled**: The ProtocolLogEnabled parameter specifies whether to
+ enable protocol logging for IMAP4.
+* **ProxyTargetPort**: The ProxyTargetPort parameter specifies the port on the
+ Microsoft Exchange IMAP4 Backend service that listens for client connections
+  that are proxied from the Microsoft Exchange IMAP4 service.
+* **SSLBindings**: The SSLBindings parameter specifies the IP address and TCP
+ port that's used for IMAP4 connection that's always encrypted by SSL
+* **UnencryptedOrTLSBindings**: The UnencryptedOrTLSBindings parameter specifies
+ the IP address and TCP port that's used for unencrypted IMAP4 connections.
+
 * **X509CertificateName**: The X509CertificateName parameter specifies the
   certificate that's used for encrypting IMAP4 client connections.
+
+
 
 ### xExchInstall
 
@@ -1604,6 +1647,64 @@ your organization to recipients in the remote domain.
 * **UseSimpleDisplayName** The UseSimpleDisplayName parameter specifies whether
 the sender's simple display name is used for the From email address in
 messages sent to recipients in the remote domain.
+
+### xExchSendConnector
+
+* **Name** Specifies a descriptive name for the connector.
+* **Credential** Credentials used to establish a remote PowerShell session to Exchange.
+* **Ensure** Whether the connector should be present or not.
+* **AddressSpaces** Specifies the domain names to which the Send connector routes
+mail.
+* **AuthenticationCredential** Specifies the username and password that's
+required to use the connector.
+* **Comment** Specifies an optional comment.
+* **ConnectionInactivityTimeout** Specifies the maximum time an idle connection
+can remain open.
+* **ConnectorType** Specifies whether the connector is used in hybrid deployments
+to send messages to Office 365.
+* **DNSRoutingEnabled** Specifies whether the Send connector uses Domain Name System
+* **DomainController** Specifies the domain controller that's used by this cmdlet
+to read data from or write data to ActivDirectory.
+* **DomainSecureEnabled** Enables mutual Transport Layer Security
+* **Enabled** Specifies whether to enable the Send connector to process email messages.
+* **ErrorPolicies** Specifies how communication errors are treated.
+* **ExtendedRightAllowEntries** Additional allow permissions.
+* **ExtendedRightDenyEntries** Additional deny permissions.
+* **ForceHELO** Specifies whether HELO is sent instead of the default EHLO.
+* **FrontendProxyEnabled** Routes outbound messages through the CAS server
+* **Fqdn** Specifies the FQDN used as the source server.
+* **IgnoreSTARTTLS** Specifies whether to ignore the StartTLS option offered by
+a remote sending server.
+* **IsCoexistenceConnector** Specifies whether this Send connector is used for
+secure mail flow between your on
+* **IsScopedConnector** Specifies the availability of the connector to other
+Mailbox servers with the Transport service.
+* **LinkedReceiveConnector** Specifies whether to force all messages received
+by the specified Receive connector out through thi Send connector.
+* **MaxMessageSize** Specifies the maximum size of a message that can pass
+through a connector.
+* **Port** Specifies the port number for smart host forwarding.
+* **ProtocolLoggingLevel** Specifies whether to enable protocol logging.
+* **RequireTLS** Specifies whether all messages sent through this connector must
+be transmitted using TLS.
+* **SmartHostAuthMechanism** Specifies the smart host authentication mechanism
+to use for authentication.
+* **SmartHosts** Specifies the smart hosts the Send connector uses to route mail.
+* **SmtpMaxMessagesPerConnection** Specifies the maximum number of messages the
+server can send per connection.
+* **SourceIPAddress** Specifies the local IP address to use as the endpoint for
+an SMTP connection.
+* **SourceTransportServers** Specifies the names of the Mailbox servers that can
+use this Send connector.
+* **TlsAuthLevel** Specifies the TLS authentication level that is used for
+outbound TLS connections.
+* **TlsDomain** Specifies the domain name that the Send connector uses to verify
+the FQDN of the target certificate.
+* **UseExternalDNSServersEnabled** Specifies whether the connector uses the
+DNS list specified by the ExternalDNSServerparameter of the Set
+* **TlsCertificateName** Specifies the X.509 certificate to use for TLS encryption.
+* **Usage** Specifies the default permissions and authentication methods
+assigned to the Send connector.
 
 ### xExchTransportService
 
