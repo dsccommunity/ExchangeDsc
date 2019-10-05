@@ -1,0 +1,46 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("xExchSendConnector")]
+class MSFT_xExchSendConnector : OMI_BaseResource
+{
+    [Key] String Identity; //Identity of the Receive Connector. Needs to be in format 'SERVERNAME\CONNECTORNAME' (no quotes)
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange
+    [Required, ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure; //Whether the connector should be present or not
+
+    //Remaining properties correspond directly to Set-ReceiveConnector parameters
+    //http://technet.microsoft.com/en-us/library/bb125140(v=exchg.150).aspx
+    [Write] String AddressSpaces;
+    [Write] String Comment;
+    [Write] String ConnectionInactivityTimeout;
+    [Write, ValueMap{"Default","XPremises"}, Values{"Default","XPremises"}] String ConnectorType;
+    [Write] Boolean DNSRoutingEnabled;
+    [Write] String DomainController;
+    [Write] Boolean DomainSecureEnabled;
+    [Write] Boolean Enabled;
+    [Write, ValueMap{"Default","DowngradeAuthFailures","DowngradeDNSFailures"}, Values{"Default","DowngradeAuthFailures","DowngradeDNSFailures"}] String ErrorPolicies;
+    [Write, EmbeddedInstance("MSFT_KeyValuePair")] String ExtendedRightAllowEntries[];
+    [Write, EmbeddedInstance("MSFT_KeyValuePair")] String ExtendedRightDenyEntries[];
+    [Write] Boolean ForceHELO;
+    [Write] Boolean FrontendProxyEnabled;
+    [Write] String Fqdn;
+    [Write] Boolean IgnoreSTARTTLS;
+    [Write] Boolean IsCoexistenceConnector;
+    [Write] Boolean IsScopedConnector;
+    [Write] String LinkedReceiveConnector;
+    [Write] String MaxMessageSize;
+    [Write] Sint32 Port;
+    [Write, ValueMap{"None","Verbose"}, Values{"None","Verbose"}] String ProtocolLoggingLevel;
+    [Write] Boolean RequireOorg;
+    [Write] Boolean RequireTLS;
+    [Write, ValueMap{"None","BasicAuth","BasicAuthRequireTLS","ExchangeServer","ExternalAuthoritative"}, Values{"None","BasicAuth","BasicAuthRequireTLS","ExchangeServer","ExternalAuthoritative"}] String SmartHostAuthMechanism;
+    [Write] String SmartHosts[];
+    [Write] Sint32 SmtpMaxMessagesPerConnection;
+    [Write] String SourceIPAddress;
+    [Write] String SourceTransportServers[];
+    [Write, ValueMap{"EncryptionOnly","CertificateValidation","DomainValidation"}, Values{"EncryptionOnly","CertificateValidation","DomainValidation"}] String TlsAuthLevel;
+    [Write] String TlsDomain;
+    [Write] Boolean UseExternalDNSServersEnabled;
+    [Write] Boolean CloudServicesMailEnabled;
+    [Write] String TlsCertificateName;
+    [Write, ValueMap{"Internal","Internet","Partner","Custom"}, Values{"Internal","Internet","Partner","Custom"}] String Usage;
+};
+
