@@ -1,3 +1,13 @@
+<#
+    .SYNOPSIS
+        Gets the resource state.
+     .PARAMETER Name
+        Specifies a descriptive name for the connector.
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+    .PARAMETER AddressSpaces
+        Specifies the domain names to which the Send connector routes mail.
+#>
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -7,7 +17,7 @@ function Get-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Identity,
+        $Name,
 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
@@ -15,202 +25,184 @@ function Get-TargetResource
         $Credential,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightAllowEntries = @(),
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightDenyEntries = @(),
-
-        [Parameter()]
         [System.String[]]
-        $AddressSpaces,
-
-        [Parameter()]
-        [System.String]
-        $Comment,
-
-        [Parameter()]
-        [System.String]
-        $ConnectionInactivityTimeout,
-
-        [Parameter()]
-        [ValidateSet('Default', 'XPremises')]
-        [System.String]
-        $ConnectorType,
-
-        [Parameter()]
-        [System.Boolean]
-        $DNSRoutingEnabled,
-
-        [Parameter()]
-        [System.String]
-        $DomainController,
-
-        [Parameter()]
-        [System.Boolean]
-        $DomainSecureEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $Enabled,
-
-        [Parameter()]
-        [ValidateSet('Default', 'DowngradeAuthFailures', 'DowngradeDNSFailures')]
-        [System.String]
-        $ErrorPolicies,
-
-        [Parameter()]
-        [System.Boolean]
-        $ForceHELO,
-
-        [Parameter()]
-        [System.Boolean]
-        $FrontendProxyEnabled,
-
-        [Parameter()]
-        [System.String]
-        $Fqdn,
-
-        [Parameter()]
-        [System.Boolean]
-        $IgnoreSTARTTLS,
-
-        [Parameter()]
-        [System.Boolean]
-        $IsCoexistenceConnector,
-
-        [Parameter()]
-        [System.Boolean]
-        $IsScopedConnector,
-
-        [Parameter()]
-        [System.String]
-        $LinkedReceiveConnector,
-
-        [Parameter()]
-        [System.String]
-        $MaxMessageSize,
-
-        [Parameter()]
-        [System.Int32]
-        $Port,
-
-        [Parameter()]
-        [ValidateSet('None', 'Verbose')]
-        [System.String]
-        $ProtocolLoggingLevel,
-
-        [Parameter()]
-        [System.Boolean]
-        $RequireOorg,
-
-        [Parameter()]
-        [System.Boolean]
-        $RequireTLS,
-
-        [Parameter()]
-        [ValidateSet('None', 'BasicAuth','BasicAuthRequireTLS','ExchangeServer','ExternalAuthoritative')]
-        [System.String]
-        $SmartHostAuthMechanism,
-
-        [Parameter()]
-        [System.String[]]
-        $SmartHosts,
-
-        [Parameter()]
-        [System.Int32]
-        $SmtpMaxMessagesPerConnection,
-
-        [Parameter()]
-        [System.String]
-        $SourceIPAddress,
-
-        [Parameter()]
-        [System.String[]]
-        $SourceTransportServers,
-
-        [Parameter()]
-        [ValidateSet('EncryptionOnly','CertificateValidation','DomainValidation')]
-        [System.String]
-        $TlsAuthLevel,
-
-        [Parameter()]
-        [System.String]
-        $TlsDomain,
-
-        [Parameter()]
-        [System.Boolean]
-        $UseExternalDNSServersEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $CloudServicesMailEnabled,
-
-        [Parameter()]
-        [System.String]
-        $TlsCertificateName,
-
-        [Parameter()]
-        [ValidateSet('Internal', 'Internet', 'Partner', 'Custom')]
-        [System.String]
-        $Usage
+        $AddressSpaces
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Name
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-SendConnector' -Verbose:$VerbosePreference
 
-    $connector = Get-SendConnectorInternal $Identity -ErrorAction SilentlyContinue
+    if (-not ($connector = Get-SendConnector -Identity $Name -ErrorAction SilentlyContinue))
+    {
+        $connector = Get-SendConnector | Where-Object -FilterScript {
+            Test-ExchangeSetting -Name 'AddressSpaces' -Type 'Array' -ExpectedValue $AddressSpaces -ActualValue $_.AddressSpaces -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference
+        }
+    }
 
     if ($null -ne $connector)
     {
+        $ADPermissions = Get-ADPermission -Identity $Name | Where-Object { $_.IsInherited -eq $false -and $null -ne $_.ExtendedRights }
+
+        $userNames = $ADPermissions.User | Select-Object -Property RawIdentity -Unique | ForEach-Object -MemberName RawIdentity
+        $ExtendedRightAllowEntries = [System.Collections.Generic.List[Microsoft.Management.Infrastructure.CimInstance]]::new()
+        $ExtendedRightDenyEntries = [System.Collections.Generic.List[Microsoft.Management.Infrastructure.CimInstance]]::new()
+
+        foreach ($user in $userNames)
+        {
+            $allowPermissions = ($ADPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $false } |
+                ForEach-Object -MemberName ExtendedRights | ForEach-Object -MemberName RawIdentity) -join ','
+            $denyPermissions = ($ADPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $true } |
+                ForEach-Object -MemberName ExtendedRights | ForEach-Object -MemberName RawIdentity) -join ','
+
+            if ($allowPermissions)
+            {
+                $ExtendedRightAllowEntries.Add(
+                    (
+                        New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                            key   = $user
+                            value = $allowPermissions
+                        } -ClientOnly
+                    )
+                )
+            }
+            if ($denyPermissions)
+            {
+                $ExtendedRightDenyEntries.Add(
+                    (
+                        New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                            key   = $user
+                            value = $denyPermissions
+                        } -ClientOnly
+                    )
+                )
+            }
+        }
+
         $returnValue = @{
-            Identity                                = [System.String] $Identity
-            AddressSpaces                           = [System.String[]] $connector.AddressSpaces
-            Comment                                 = [System.String] $connector.Comment
-            ConnectionInactivityTimeout             = [System.String] $connector.ConnectionInactivityTimeout
-            ConnectorType                           = [System.String] $connector.ConnectorType
-            DNSRoutingEnabled                       = [System.Boolean] $connector.DNSRoutingEnabled
-            DomainSecureEnabled                     = [System.Boolean] $connector.DomainSecureEnabled
-            Enabled                                 = [System.Boolean] $connector.Enabled
-            ErrorPolicies                           = [System.String] $connector.ErrorPolicies
-            ExtendedProtectionPolicy                = [System.String] $connector.ExtendedProtectionPolicy
-            ExtendedRightAllowEntries               = [Microsoft.Management.Infrastructure.CimInstance[]] $ExtendedRightAllowEntries
-            ExtendedRightDenyEntries                = [Microsoft.Management.Infrastructure.CimInstance[]] $ExtendedRightDenyEntries
-            ForceHELO                               = [System.Boolean] $connector.ForceHELO
-            FrontendProxyEnabled                    = [System.Boolean] $connector.FrontendProxyEnabled
-            Fqdn                                    = [System.String] $connector.Fqdn
-            IgnoreSTARTTLS                          = [System.Boolean] $connector.IgnoreSTARTTLS
-            IsCoexistenceConnector                  = [System.Boolean] $connector.IsCoexistenceConnector
-            IsScopedConnector                       = [System.Boolean] $connector.IsScopedConnector
-            LinkedReceiveConnector                  = [System.String] $connector.LinkedReceiveConnector
-            MaxMessageSize                          = [System.String] $connector.MaxMessageSize
-            Port                                    = [System.Int32] $connector.Port
-            ProtocolLoggingLevel                    = [System.String] $connector.ProtocolLoggingLevel
-            RequireOorg                             = [System.Boolean] $connector.RequireOorg
-            RequireTLS                              = [System.Boolean] $connector.RequireTLS
-            SmartHostAuthMechanism                  = [System.String] $connector.SmartHostAuthMechanism
-            SmartHosts                              = [System.String[]] $connector.SmartHosts
-            SmtpMaxMessagesPerConnection            = [System.Int32] $connector.SmtpMaxMessagesPerConnection
-            SourceIPAddress                         = [System.String] $connector.SourceIPAddress
-            SourceTransportServers                  = [System.String[]] $connector.SourceTransportServers
-            TlsDomain                               = [System.String] $connector.TlsDomain
-            UseExternalDNSServersEnabled            = [System.Boolean] $connector.UseExternalDNSServersEnabled
-            CloudServicesMailEnabled                = [System.Boolean] $connector.CloudServicesMailEnabled
-            TlsCertificateName                      = [System.String] $connector.TlsCertificateName
+            Name                         = [System.String] $connector.Name
+            AddressSpaces                = [System.String[]] $connector.AddressSpaces
+            Comment                      = [System.String] $connector.Comment
+            ConnectionInactivityTimeout  = [System.String] $connector.ConnectionInactivityTimeout
+            ConnectorType                = [System.String] $connector.ConnectorType
+            DNSRoutingEnabled            = [System.Boolean] $connector.DNSRoutingEnabled
+            DomainSecureEnabled          = [System.Boolean] $connector.DomainSecureEnabled
+            Enabled                      = [System.Boolean] $connector.Enabled
+            ErrorPolicies                = [System.String] $connector.ErrorPolicies
+            ExtendedProtectionPolicy     = [System.String] $connector.ExtendedProtectionPolicy
+            ExtendedRightAllowEntries    = [Microsoft.Management.Infrastructure.CimInstance[]] $ExtendedRightAllowEntries
+            ExtendedRightDenyEntries     = [Microsoft.Management.Infrastructure.CimInstance[]] $ExtendedRightDenyEntries
+            ForceHELO                    = [System.Boolean] $connector.ForceHELO
+            FrontendProxyEnabled         = [System.Boolean] $connector.FrontendProxyEnabled
+            Fqdn                         = [System.String] $connector.Fqdn
+            IgnoreSTARTTLS               = [System.Boolean] $connector.IgnoreSTARTTLS
+            IsCoexistenceConnector       = [System.Boolean] $connector.IsCoexistenceConnector
+            IsScopedConnector            = [System.Boolean] $connector.IsScopedConnector
+            LinkedReceiveConnector       = [System.String] $connector.LinkedReceiveConnector
+            MaxMessageSize               = [System.String] $connector.MaxMessageSize
+            Port                         = [System.Int32] $connector.Port
+            ProtocolLoggingLevel         = [System.String] $connector.ProtocolLoggingLevel
+            RequireTLS                   = [System.Boolean] $connector.RequireTLS
+            SmartHostAuthMechanism       = [System.String] $connector.SmartHostAuthMechanism
+            SmartHosts                   = [System.String[]] $connector.SmartHosts
+            SmtpMaxMessagesPerConnection = [System.Int32] $connector.SmtpMaxMessagesPerConnection
+            SourceIPAddress              = [System.String] $connector.SourceIPAddress
+            SourceTransportServers       = [System.String[]] $connector.SourceTransportServers
+            TlsDomain                    = [System.String] $connector.TlsDomain
+            UseExternalDNSServersEnabled = [System.Boolean] $connector.UseExternalDNSServersEnabled
+            TlsCertificateName           = [System.String] $connector.TlsCertificateName
+            Ensure                       = 'Present'
+        }
+    }
+    else
+    {
+        $returnValue = @{
+            Ensure = 'Absent'
         }
     }
 
     $returnValue
 }
 
+<#
+    .SYNOPSIS
+        Sets the resource state.
+    .PARAMETER Name
+        Specifies a descriptive name for the connector.
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+    .PARAMETER Ensure
+        Whether the connector should be present or not.
+    .PARAMETER AddressSpaces
+        Specifies the domain names to which the Send connector routes mail.
+    .PARAMETER AuthenticationCredential
+        Specifies the username and password that's required to use the connector.
+    .PARAMETER Comment
+        Specifies an optional comment.
+    .PARAMETER ConnectionInactivityTimeout
+        Specifies the maximum time an idle connection can remain open.
+    .PARAMETER ConnectorType
+        Specifies whether the connector is used in hybrid deployments to send messages to Office 365.
+    .PARAMETER DNSRoutingEnabled
+        Specifies whether the Send connector uses Domain Name System
+    .PARAMETER DomainController
+        Specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory.
+    .PARAMETER DomainSecureEnabled
+        Enables mutual Transport Layer Security
+    .PARAMETER Enabled
+        Specifies whether to enable the Send connector to process email messages.
+    .PARAMETER ErrorPolicies
+        Specifies how communication errors are treated.
+    .PARAMETER ExtendedRightAllowEntries
+        Additional allow permissions.
+    .PARAMETER ExtendedRightDenyEntries
+        Additional deny permissions.
+    .PARAMETER ForceHELO
+        Specifies whether HELO is sent instead of the default EHLO.
+    .PARAMETER FrontendProxyEnabled
+        Routes outbound messages through the CAS server
+    .PARAMETER Fqdn
+        Specifies the FQDN used as the source server.
+    .PARAMETER IgnoreSTARTTLS
+        Specifies whether to ignore the StartTLS option offered by a remote sending server.
+    .PARAMETER IsCoexistenceConnector
+        Specifies whether this Send connector is used for secure mail flow between your on
+    .PARAMETER IsScopedConnector
+        Specifies the availability of the connector to other Mailbox servers with the Transport service.
+    .PARAMETER LinkedReceiveConnector
+        Specifies whether to force all messages received by the specified Receive connector out through this Send connector.
+    .PARAMETER MaxMessageSize
+        Specifies the maximum size of a message that can pass through a connector.
+    .PARAMETER Port
+        Specifies the port number for smart host forwarding.
+    .PARAMETER ProtocolLoggingLevel
+        Specifies whether to enable protocol logging.
+    .PARAMETER RequireTLS
+        Specifies whether all messages sent through this connector must be transmitted using TLS.
+    .PARAMETER SmartHostAuthMechanism
+        Specifies the smart host authentication mechanism to use for authentication.
+    .PARAMETER SmartHosts
+        Specifies the smart hosts the Send connector uses to route mail.
+    .PARAMETER SmtpMaxMessagesPerConnection
+        Specifies the maximum number of messages the server can send per connection.
+    .PARAMETER SourceIPAddress
+        Specifies the local IP address to use as the endpoint for an SMTP connection.
+    .PARAMETER SourceTransportServers
+        Specifies the names of the Mailbox servers that can use this Send connector.
+    .PARAMETER TlsAuthLevel
+        Specifies the TLS authentication level that is used for outbound TLS connections.
+    .PARAMETER TlsDomain
+        Specifies the domain name that the Send connector uses to verify the FQDN of the target certificate.
+    .PARAMETER UseExternalDNSServersEnabled
+        Specifies whether the connector uses the external DNS list specified by the ExternalDNSServers parameter of the Set
+    .PARAMETER TlsCertificateName
+        Specifies the X.509 certificate to use for TLS encryption.
+    .PARAMETER Usage
+        Specifies the default permissions and authentication methods assigned to the Send connector.
+#>
 function Set-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -219,17 +211,17 @@ function Set-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Identity,
+        $Name,
 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
-        $Ensure,
+        $Ensure = 'Present',
 
         [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
@@ -239,7 +231,7 @@ function Set-TargetResource
         [Microsoft.Management.Infrastructure.CimInstance[]]
         $ExtendedRightDenyEntries = @(),
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String[]]
         $AddressSpaces,
 
@@ -320,14 +312,10 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $RequireOorg,
-
-        [Parameter()]
-        [System.Boolean]
         $RequireTLS,
 
         [Parameter()]
-        [ValidateSet('None', 'BasicAuth','BasicAuthRequireTLS','ExchangeServer','ExternalAuthoritative')]
+        [ValidateSet('None', 'BasicAuth', 'BasicAuthRequireTLS', 'ExchangeServer', 'ExternalAuthoritative')]
         [System.String]
         $SmartHostAuthMechanism,
 
@@ -348,7 +336,7 @@ function Set-TargetResource
         $SourceTransportServers,
 
         [Parameter()]
-        [ValidateSet('EncryptionOnly','CertificateValidation','DomainValidation')]
+        [ValidateSet('EncryptionOnly', 'CertificateValidation', 'DomainValidation')]
         [System.String]
         $TlsAuthLevel,
 
@@ -361,10 +349,6 @@ function Set-TargetResource
         $UseExternalDNSServersEnabled,
 
         [Parameter()]
-        [System.Boolean]
-        $CloudServicesMailEnabled,
-
-        [Parameter()]
         [System.String]
         $TlsCertificateName,
 
@@ -374,81 +358,43 @@ function Set-TargetResource
         $Usage
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Name
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*SendConnector', '*ADPermission' -Verbose:$VerbosePreference
 
-    $connector = Get-SendConnectorInternal @PSBoundParameters
+    $connector = Get-TargetResource -Name $Name -Credential $Credential -AddressSpaces $AddressSpaces
 
     if ($Ensure -eq 'Absent')
     {
-        if ($null -ne $connector)
-        {
-            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
+        Write-Verbose -Message "Removing send connector $Name."
 
-            Remove-SendConnector @PSBoundParameters -Confirm:$false
-        }
+        Remove-SendConnector -Identity $Name -Confirm:$false
     }
     else
     {
         # Remove Credential and Ensure so we don't pass it into the next command
-        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'Ensure'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'Ensure', 'ExtendedRightAllowEntries', 'ExtendedRightDenyEntries'
 
         Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
         # We need to create the new connector
-        if ($null -eq $connector)
+        if ($connector['Ensure'] -eq 'Absent')
         {
-            # Create a copy of the original parameters
-            $originalPSBoundParameters = @{} + $PSBoundParameters
-
-            # The following aren't valid for New-SendConnector
-            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Identity', 'BareLinefeedRejectionEnabled', 'ExtendedRightAllowEntries', 'ExtendedRightDenyEntries'
-
-            # Set the connectorName as Identity name
-            $connectorName = $Identity
-
-            # Add in server and name parameters
-            Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
-                'Name' = $connectorName
-            }
-
             # Create the connector
-            $connector = New-SendConnector @PSBoundParameters
+            Write-Verbose -Message "Creating send connector $Name."
 
-            # Ensure the connector exists, and if so, set us up so we can run Set-SendConnector next
-            $connector = Get-SendConnectorInternal @PSBoundParameters
-            if ($null -ne $connector)
-            {
-                # Remove the two props we added
-                Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Name'
+            New-SendConnector @PSBoundParameters
 
-                # Add original props back
-                Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
-            }
-            else
-            {
-                throw 'Failed to create new Receive Connector.'
-            }
-        }
-
-        # The connector already exists, so use Set-SendConnector
-        if ($null -ne $connector)
-        {
-            # Usage is not a valid command for Set-SendConnector
-            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Usage', 'ExtendedRightAllowEntries', 'ExtendedRightDenyEntries'
-
-            Set-SendConnector @PSBoundParameters
-
-            # set AD permissions
             if ($ExtendedRightAllowEntries)
             {
                 foreach ($ExtendedRightAllowEntry in $ExtendedRightAllowEntries)
                 {
                     foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(',')))
                     {
-                        $connector | Add-ADPermission -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
+                        Add-ADPermission -Identity $Name -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
                     }
                 }
             }
@@ -459,7 +405,40 @@ function Set-TargetResource
                 {
                     foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(',')))
                     {
-                        $connector | Remove-ADPermission -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Confirm:$false
+                        Add-ADPermission -Identity $Name -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false
+                    }
+                }
+            }
+        }
+        else
+        {
+            Write-Verbose -Message "Send connector $Name not compliant.Setting the properties."
+
+            # Usage is not a valid command for Set-SendConnector
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Ensure', 'ExtendedRightAllowEntries', 'ExtendedRightDenyEntries' , 'Name'
+
+            $PSBoundParameters['Identity'] = $Name
+            Set-SendConnector  @PSBoundParameters
+
+            # set AD permissions
+            if ($ExtendedRightAllowEntries)
+            {
+                foreach ($ExtendedRightAllowEntry in $ExtendedRightAllowEntries)
+                {
+                    foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(',')))
+                    {
+                        Add-ADPermission -Identity $Name -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
+                    }
+                }
+            }
+
+            if ($ExtendedRightDenyEntries)
+            {
+                foreach ($ExtendedRightDenyEntry in $ExtendedRightDenyEntries)
+                {
+                    foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(',')))
+                    {
+                        Add-ADPermission -Identity $Name -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false
                     }
                 }
             }
@@ -467,6 +446,82 @@ function Set-TargetResource
     }
 }
 
+<#
+    .SYNOPSIS
+        Tets the resource state.
+    .PARAMETER Name
+        Specifies a descriptive name for the connector.
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+    .PARAMETER Ensure
+        Whether the connector should be present or not.
+    .PARAMETER AddressSpaces
+        Specifies the domain names to which the Send connector routes mail.
+    .PARAMETER AuthenticationCredential
+        Specifies the username and password that's required to use the connector.
+    .PARAMETER Comment
+        Specifies an optional comment.
+    .PARAMETER ConnectionInactivityTimeout
+        Specifies the maximum time an idle connection can remain open.
+    .PARAMETER ConnectorType
+        Specifies whether the connector is used in hybrid deployments to send messages to Office 365.
+    .PARAMETER DNSRoutingEnabled
+        Specifies whether the Send connector uses Domain Name System
+    .PARAMETER DomainController
+        Specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory.
+    .PARAMETER DomainSecureEnabled
+        Enables mutual Transport Layer Security
+    .PARAMETER Enabled
+        Specifies whether to enable the Send connector to process email messages.
+    .PARAMETER ErrorPolicies
+        Specifies how communication errors are treated.
+    .PARAMETER ExtendedRightAllowEntries
+        Additional allow permissions.
+    .PARAMETER ExtendedRightDenyEntries
+        Additional deny permissions.
+    .PARAMETER ForceHELO
+        Specifies whether HELO is sent instead of the default EHLO.
+    .PARAMETER FrontendProxyEnabled
+        Routes outbound messages through the CAS server
+    .PARAMETER Fqdn
+        Specifies the FQDN used as the source server.
+    .PARAMETER IgnoreSTARTTLS
+        Specifies whether to ignore the StartTLS option offered by a remote sending server.
+    .PARAMETER IsCoexistenceConnector
+        Specifies whether this Send connector is used for secure mail flow between your on
+    .PARAMETER IsScopedConnector
+        Specifies the availability of the connector to other Mailbox servers with the Transport service.
+    .PARAMETER LinkedReceiveConnector
+        Specifies whether to force all messages received by the specified Receive connector out through this Send connector.
+    .PARAMETER MaxMessageSize
+        Specifies the maximum size of a message that can pass through a connector.
+    .PARAMETER Port
+        Specifies the port number for smart host forwarding.
+    .PARAMETER ProtocolLoggingLevel
+        Specifies whether to enable protocol logging.
+    .PARAMETER RequireTLS
+        Specifies whether all messages sent through this connector must be transmitted using TLS.
+    .PARAMETER SmartHostAuthMechanism
+        Specifies the smart host authentication mechanism to use for authentication.
+    .PARAMETER SmartHosts
+        Specifies the smart hosts the Send connector uses to route mail.
+    .PARAMETER SmtpMaxMessagesPerConnection
+        Specifies the maximum number of messages the server can send per connection.
+    .PARAMETER SourceIPAddress
+        Specifies the local IP address to use as the endpoint for an SMTP connection.
+    .PARAMETER SourceTransportServers
+        Specifies the names of the Mailbox servers that can use this Send connector.
+    .PARAMETER TlsAuthLevel
+        Specifies the TLS authentication level that is used for outbound TLS connections.
+    .PARAMETER TlsDomain
+        Specifies the domain name that the Send connector uses to verify the FQDN of the target certificate.
+    .PARAMETER UseExternalDNSServersEnabled
+        Specifies whether the connector uses the external DNS list specified by the ExternalDNSServers parameter of the Set
+    .PARAMETER TlsCertificateName
+        Specifies the X.509 certificate to use for TLS encryption.
+    .PARAMETER Usage
+        Specifies the default permissions and authentication methods assigned to the Send connector.
+#>
 function Test-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -476,14 +531,14 @@ function Test-TargetResource
     (
         [Parameter(Mandatory = $true)]
         [System.String]
-        $Identity,
+        $Name,
 
         [Parameter(Mandatory = $true)]
         [System.Management.Automation.PSCredential]
         [System.Management.Automation.Credential()]
         $Credential,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure,
@@ -496,7 +551,7 @@ function Test-TargetResource
         [Microsoft.Management.Infrastructure.CimInstance[]]
         $ExtendedRightDenyEntries = @(),
 
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
         [System.String[]]
         $AddressSpaces,
 
@@ -577,14 +632,10 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
-        $RequireOorg,
-
-        [Parameter()]
-        [System.Boolean]
         $RequireTLS,
 
         [Parameter()]
-        [ValidateSet('None', 'BasicAuth','BasicAuthRequireTLS','ExchangeServer','ExternalAuthoritative')]
+        [ValidateSet('None', 'BasicAuth', 'BasicAuthRequireTLS', 'ExchangeServer', 'ExternalAuthoritative')]
         [System.String]
         $SmartHostAuthMechanism,
 
@@ -605,7 +656,7 @@ function Test-TargetResource
         $SourceTransportServers,
 
         [Parameter()]
-        [ValidateSet('EncryptionOnly','CertificateValidation','DomainValidation')]
+        [ValidateSet('EncryptionOnly', 'CertificateValidation', 'DomainValidation')]
         [System.String]
         $TlsAuthLevel,
 
@@ -616,10 +667,6 @@ function Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $UseExternalDNSServersEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $CloudServicesMailEnabled,
 
         [Parameter()]
         [System.String]
@@ -633,22 +680,24 @@ function Test-TargetResource
 
     #Assert-IdentityIsValid -Identity $Identity
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-SendConnector', 'Get-ADPermission' -Verbose:$VerbosePreference
 
-    $connector = Get-SendConnectorInternal @PSBoundParameters
+    $connector = Get-TargetResource -Name $Name -Credential $Credential -AddressSpaces $AddressSpaces
 
     # get AD permissions if necessary
     if (($ExtendedRightAllowEntries) -or ($ExtendedRightDenyEntries))
     {
-        $ADPermissions = $connector | Get-ADPermission | Where-Object {$_.IsInherited -eq $false}
+        $ADPermissions = Get-ADPermission -Identity $Name | Where-Object { $_.IsInherited -eq $false }
     }
 
     $testResults = $true
 
-    if ($null -eq $connector)
+    if ($connector['Ensure'] -eq 'Absent')
     {
         if ($Ensure -eq 'Present')
         {
@@ -664,7 +713,7 @@ function Test-TargetResource
             $testResults = $false
         }
         else
-        {          
+        {
             if (!(Test-ExchangeSetting -Name 'AddressSpaces' -Type 'Array' -ExpectedValue $AddressSpaces -ActualValue $connector.AddressSpaces -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
                 $testResults = $false
@@ -719,7 +768,7 @@ function Test-TargetResource
             {
                 $testResults = $false
             }
-            
+
             if (!(Test-ExchangeSetting -Name 'FrontendProxyEnabled' -Type 'Boolean' -ExpectedValue $FrontendProxyEnabled -ActualValue $connector.FrontendProxyEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
                 $testResults = $false
@@ -765,11 +814,6 @@ function Test-TargetResource
                 $testResults = $false
             }
 
-            if (!(Test-ExchangeSetting -Name 'RequireOorg' -Type 'Boolean' -ExpectedValue $RequireOorg -ActualValue $connector.RequireOorg -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
-            {
-                $testResults = $false
-            }
-
             if (!(Test-ExchangeSetting -Name 'RequireTLS' -Type 'Boolean' -ExpectedValue $RequireTLS -ActualValue $connector.RequireTLS -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
                 $testResults = $false
@@ -780,7 +824,7 @@ function Test-TargetResource
                 $testResults = $false
             }
 
-            if (!(Test-ExchangeSetting -Name 'SmartHosts' -Type 'String' -ExpectedValue $SmartHosts -ActualValue (Convert-StringToArray -StringIn $connector.SmartHosts -Separator ',') -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+            if (!(Test-ExchangeSetting -Name 'SmartHosts' -Type 'Array' -ExpectedValue $SmartHosts -ActualValue $connector.SmartHosts -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
                 $testResults = $false
             }
@@ -795,7 +839,7 @@ function Test-TargetResource
                 $testResults = $false
             }
 
-            if (!(Test-ExchangeSetting -Name 'SourceTransportServers' -Type 'String' -ExpectedValue $SourceTransportServers -ActualValue (Convert-StringToArray -StringIn $connector.SourceTransportServers -Separator ',') -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+            if (!(Test-ExchangeSetting -Name 'SourceTransportServers' -Type 'Array' -ExpectedValue $SourceTransportServers -ActualValue $connector.SourceTransportServers -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
                 $testResults = $false
             }
@@ -815,212 +859,55 @@ function Test-TargetResource
                 $testResults = $false
             }
 
-            if (!(Test-ExchangeSetting -Name 'CloudServicesMailEnabled' -Type 'Boolean' -ExpectedValue $CloudServicesMailEnabled -ActualValue $connector.CloudServicesMailEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
-            {
-                $testResults = $false
-            }
-
             if (!(Test-ExchangeSetting -Name 'TlsCertificateName' -Type 'String' -ExpectedValue $TlsCertificateName -ActualValue $connector.TlsCertificateName -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
                 $testResults = $false
             }
 
-            # check AD permissions if necessary
-            if ($ExtendedRightAllowEntries)
+            if ($ExtendedRightAllowEntries -and $ADPermissions.Deny -contains $false)
             {
-                if (!(Test-ExtendedRightsPresent -ADPermissions $ADPermissions -ExtendedRights $ExtendedRightAllowEntries -ShouldbeTrue:$True -Verbose:$VerbosePreference))
+                $splat = @{
+                    ADPermissions  = $ADPermissions
+                    ExtendedRights = $ExtendedRightAllowEntries
+                    Deny           = $false
+                    Verbose        = $VerbosePreference
+                }
+
+                $permissionsPresent = Test-ExtendedRightsPresent @splat
+
+                if ($permissionsPresent -eq $false)
                 {
                     $testResults = $false
                 }
             }
-
-            if ($ExtendedRightDenyEntries)
+            if (-not $ExtendedRightAllowEntries -and $ADPermissions -and $ADPermissions.Deny -notcontains $false)
             {
-                if (Test-ExtendedRightsPresent -ADPermissions $ADPermissions -ExtendedRights $ExtendedRightDenyEntries -ShouldbeTrue:$false -Verbose:$VerbosePreference)
+                return $false
+            }
+            if ($ExtendedRightDenyEntries -and $ADPermissions.Deny -contains $true)
+            {
+                $splat = @{
+                    ADPermissions  = $ADPermissions
+                    ExtendedRights = $ExtendedRightDenyEntries
+                    Deny           = $true
+                    Verbose        = $VerbosePreference
+                }
+
+                $permissionsPresent = Test-ExtendedRightsPresent @splat
+
+                if ($permissionsPresent -eq $false)
                 {
                     $testResults = $false
                 }
+            }
+            if (-not $ExtendedRightDenyEntries -and $ADPermissions -and $ADPermissions.Deny -contains $true)
+            {
+                return $false
             }
         }
     }
 
     return $testResults
-}
-
-# Runs Get-SendConnector, only specifying Identity, ErrorAction, and optionally DomainController
-function Get-SendConnectorInternal
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Identity,
-
-        [Parameter(Mandatory = $true)]
-        [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $Credential,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightAllowEntries,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightDenyEntries,
-
-        [Parameter()]
-        [System.String[]]
-        $AddressSpaces,
-
-        [Parameter()]
-        [System.String]
-        $Comment,
-
-        [Parameter()]
-        [System.String]
-        $ConnectionInactivityTimeout,
-
-        [Parameter()]
-        [ValidateSet('Default', 'XPremises')]
-        [System.String]
-        $ConnectorType,
-
-        [Parameter()]
-        [System.Boolean]
-        $DNSRoutingEnabled,
-
-        [Parameter()]
-        [System.String]
-        $DomainController,
-
-        [Parameter()]
-        [System.Boolean]
-        $DomainSecureEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $Enabled,
-
-        [Parameter()]
-        [ValidateSet('Default', 'DowngradeAuthFailures', 'DowngradeDNSFailures')]
-        [System.String]
-        $ErrorPolicies,
-
-        [Parameter()]
-        [System.Boolean]
-        $ForceHELO,
-
-        [Parameter()]
-        [System.Boolean]
-        $FrontendProxyEnabled,
-
-        [Parameter()]
-        [System.String]
-        $Fqdn,
-
-        [Parameter()]
-        [System.Boolean]
-        $IgnoreSTARTTLS,
-
-        [Parameter()]
-        [System.Boolean]
-        $IsCoexistenceConnector,
-
-        [Parameter()]
-        [System.Boolean]
-        $IsScopedConnector,
-
-        [Parameter()]
-        [System.String]
-        $LinkedReceiveConnector,
-
-        [Parameter()]
-        [System.String]
-        $MaxMessageSize,
-
-        [Parameter()]
-        [System.Int32]
-        $Port,
-
-        [Parameter()]
-        [ValidateSet('None', 'Verbose')]
-        [System.String]
-        $ProtocolLoggingLevel,
-
-        [Parameter()]
-        [System.Boolean]
-        $RequireOorg,
-
-        [Parameter()]
-        [System.Boolean]
-        $RequireTLS,
-
-        [Parameter()]
-        [ValidateSet('None', 'BasicAuth','BasicAuthRequireTLS','ExchangeServer','ExternalAuthoritative')]
-        [System.String]
-        $SmartHostAuthMechanism,
-
-        [Parameter()]
-        [System.String[]]
-        $SmartHosts,
-
-        [Parameter()]
-        [System.Int32]
-        $SmtpMaxMessagesPerConnection,
-
-        [Parameter()]
-        [System.String]
-        $SourceIPAddress,
-
-        [Parameter()]
-        [System.String[]]
-        $SourceTransportServers,
-
-        [Parameter()]
-        [ValidateSet('EncryptionOnly','CertificateValidation','DomainValidation')]
-        [System.String]
-        $TlsAuthLevel,
-
-        [Parameter()]
-        [System.String]
-        $TlsDomain,
-
-        [Parameter()]
-        [System.Boolean]
-        $UseExternalDNSServersEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $CloudServicesMailEnabled,
-
-        [Parameter()]
-        [System.String]
-        $TlsCertificateName,
-
-        [Parameter()]
-        [ValidateSet('Internal', 'Internet', 'Partner', 'Custom')]
-        [System.String]
-        $Usage
-    )
-
-    $getParams = @{
-        Server      = $env:COMPUTERNAME
-        ErrorAction = 'SilentlyContinue'
-    }
-
-    if ($PSBoundParameters.ContainsKey('DomainController') -and ![String]::IsNullOrEmpty($PSBoundParameters['DomainController']))
-    {
-        $getParams.Add('DomainController', $PSBoundParameters['DomainController'])
-    }
-
-    return (Get-SendConnector @getParams | Where-Object -FilterScript {$_.Identity -like $PSBoundParameters['Identity']})
 }
 
 # Ensure that a connector Identity is in the proper form
@@ -1055,42 +942,33 @@ function Test-ExtendedRightsPresent
 
         [Parameter()]
         [System.Boolean]
-        $ShouldbeTrue
+        $Deny
     )
-
-    $returnvalue = $false
 
     foreach ($Right in $ExtendedRights)
     {
         foreach ($Value in $($Right.Value.Split(',')))
         {
-            if ($null -ne ($ADPermissions | Where-Object {($_.User.RawIdentity -eq $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value)}))
+            $permissionsFound = $ADPermissions | Where-Object { ($_.User.RawIdentity -eq $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value) }
+            if ($null -ne $permissionsFound)
             {
-                $returnvalue = $true
-
-                if (!($ShouldbeTrue))
+                if ($Deny -eq $true -and $permissionsFound.Deny -eq $false -or
+                    $Deny -eq $false -and $permissionsFound.Deny -eq $true)
                 {
-                    Write-Verbose -Message 'Should report exist!'
                     Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue 'Present' -Verbose:$VerbosePreference
-                    return $returnvalue
-                    exit
+                    return $false
+                }
+                else
+                {
+                    return $true
                 }
             }
             else
             {
-                $returnvalue = $false
-
-                if ($ShouldbeTrue)
-                {
-                    Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue 'Absent' -Verbose:$VerbosePreference
-                    return $returnvalue
-                    exit
-                }
+                Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue 'Absent' -Verbose:$VerbosePreference
+                return $false
             }
         }
     }
-
-    return $returnvalue
 }
 
-Export-ModuleMember -Function *-TargetResource
