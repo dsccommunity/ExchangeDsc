@@ -280,9 +280,9 @@ function Test-TargetResource
         if ($SchemaVersion -gt $adStatus.SchemaVersion)
         {
             Write-InvalidSettingVerbose -SettingName 'SchemaVersion' `
-                                        -ExpectedValue $SchemaVersion `
-                                        -ActualValue $adStatus.SchemaVersion `
-                                        -Verbose:$VerbosePreference
+                -ExpectedValue $SchemaVersion `
+                -ActualValue $adStatus.SchemaVersion `
+                -Verbose:$VerbosePreference
 
             $testResults = $false
         }
@@ -293,9 +293,9 @@ function Test-TargetResource
         if ($OrganizationVersion -gt $adStatus.OrganizationVersion)
         {
             Write-InvalidSettingVerbose -SettingName 'OrganizationVersion' `
-                                        -ExpectedValue $OrganizationVersion `
-                                        -ActualValue $adStatus.OrganizationVersion `
-                                        -Verbose:$VerbosePreference
+                -ExpectedValue $OrganizationVersion `
+                -ActualValue $adStatus.OrganizationVersion `
+                -Verbose:$VerbosePreference
 
             $testResults = $false
         }
@@ -311,9 +311,9 @@ function Test-TargetResource
             if ($DomainVersion -gt $adStatus.DomainVersionHashtable[$domain])
             {
                 Write-InvalidSettingVerbose -SettingName "DomainVersion: $domain" `
-                                            -ExpectedValue $DomainVersion `
-                                            -ActualValue $adStatus.DomainVersionHashtable[$domain] `
-                                            -Verbose:$VerbosePreference
+                    -ExpectedValue $DomainVersion `
+                    -ActualValue $adStatus.DomainVersionHashtable[$domain] `
+                    -Verbose:$VerbosePreference
 
                 $testResults = $false
             }
@@ -340,7 +340,9 @@ function Get-ADRootDSEInternal
         $Credential
     )
 
-    $cmdletParams = @{ ErrorAction = 'SilentlyContinue' }
+    $cmdletParams = @{
+        ErrorAction = 'SilentlyContinue'
+    }
 
     if ($null -ne $Credential)
     {
@@ -406,11 +408,15 @@ function Get-ADObjectInternal
 
     if ($Searching -eq $false)
     {
-        $getAdObjParams = @{'Identity' = $DistinguishedName}
+        $getAdObjParams = @{
+            'Identity' = $DistinguishedName
+        }
     }
     else
     {
-        $getAdObjParams = @{'SearchBase' = $DistinguishedName}
+        $getAdObjParams = @{
+            'SearchBase' = $DistinguishedName
+        }
 
         if ([System.String]::IsNullOrEmpty($Filter) -eq $false)
         {
@@ -465,7 +471,7 @@ function Get-SchemaVersion
     [OutputType([Nullable[System.Int32]])]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ADRootDSE,
 
@@ -511,7 +517,7 @@ function Get-OrganizationVersion
     [OutputType([Nullable[System.Int32]])]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.Object]
         $ADRootDSE,
 

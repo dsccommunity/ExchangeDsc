@@ -27,13 +27,18 @@ function Get-TargetResource
         $SkipDagValidation
     )
 
-    Write-FunctionEntry -Parameters @{'MailboxServer' = $MailboxServer;'DAGName' = $DAGName} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'MailboxServer' = $MailboxServer
+        'DAGName'       = $DAGName
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
     # Setup params
-    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $PSBoundParameters['DAGName']}
+    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
+        'Identity' = $PSBoundParameters['DAGName']
+    }
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     $dag = Get-DatabaseAvailabilityGroup @PSBoundParameters -Status -ErrorAction SilentlyContinue
@@ -41,7 +46,7 @@ function Get-TargetResource
     if ($null -ne $dag -and $null -ne $dag.Servers)
     {
         # See if this server is already in the DAG
-        $server = $dag.Servers | Where-Object {$_.Name -eq "$($MailboxServer)"}
+        $server = $dag.Servers | Where-Object { $_.Name -eq "$($MailboxServer)" }
 
         if ($null -ne $server)
         {
@@ -83,13 +88,18 @@ function Set-TargetResource
         $SkipDagValidation
     )
 
-    Write-FunctionEntry -Parameters @{'MailboxServer' = $MailboxServer;'DAGName' = $DAGName} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'MailboxServer' = $MailboxServer
+        'DAGName' = $DAGName
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Add-DatabaseAvailabilityGroupServer' -Verbose:$VerbosePreference
 
     # Setup params
-    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $PSBoundParameters['DAGName']}
+    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
+        'Identity' = $PSBoundParameters['DAGName']
+    }
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'DAGName', 'Credential'
 
     $failoverClusteringRole = Get-WindowsFeature -Name Failover-Clustering -ErrorAction SilentlyContinue
@@ -140,13 +150,18 @@ function Test-TargetResource
         $SkipDagValidation
     )
 
-    Write-FunctionEntry -Parameters @{'MailboxServer' = $MailboxServer;'DAGName' = $DAGName} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'MailboxServer' = $MailboxServer
+        'DAGName' = $DAGName
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
 
     # Setup params
-    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $PSBoundParameters['DAGName']}
+    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
+        'Identity' = $PSBoundParameters['DAGName']
+    }
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     $dag = Get-DatabaseAvailabilityGroup @PSBoundParameters -Status -ErrorAction SilentlyContinue
@@ -161,7 +176,7 @@ function Test-TargetResource
     }
     else
     {
-        if ($null -eq ($dag.Servers | Where-Object {$_.Name -eq "$($MailboxServer)"}))
+        if ($null -eq ($dag.Servers | Where-Object { $_.Name -eq "$($MailboxServer)" }))
         {
             Write-Verbose -Message 'Server is not a member of the Database Availability Group'
 

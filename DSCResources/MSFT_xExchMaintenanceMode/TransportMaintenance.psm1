@@ -265,7 +265,9 @@ function Invoke-FullyDrainTransport
 
     Write-Verbose -Message 'Setting HubTransport component state to Inactive'
     Set-ComponentState -Server $Target -State Inactive
-    Write-InfoEvent -Source $Target -Stage RestartTransport -Reason  @{ComponentState = 'Inactive'}
+    Write-InfoEvent -Source $Target -Stage RestartTransport -Reason  @{
+        ComponentState = 'Inactive'
+    }
 }
 
 # .DESCRIPTION
@@ -382,23 +384,31 @@ function Enable-SubmissionQueue
                 try
                 {
                     Resume-Queue $submissionQName -confirm:$false
-                    Write-InfoEvent -source $env:COMPUTERNAME -stage SubmissionQueueCheck -Reason @{EnableSubmissionQueue = 'Succeeded'}
+                    Write-InfoEvent -source $env:COMPUTERNAME -stage SubmissionQueueCheck -Reason @{
+                        EnableSubmissionQueue = 'Succeeded'
+                    }
                     return $true
                 }
                 catch
                 {
-                    Write-InfoEvent -source $env:COMPUTERNAME -stage SubmissionQueueCheck -Reason @{EnableSubmissionQueue = 'Failed'}
+                    Write-InfoEvent -source $env:COMPUTERNAME -stage SubmissionQueueCheck -Reason @{
+                        EnableSubmissionQueue = 'Failed'
+                    }
                     return $false
                 }
             }
 
-            Write-SkippedEvent -source $env:COMPUTERNAME -stage SubmissionQueueCheck -Reason @{EnableSubmissionQueue = $submissionQ.Status}
+            Write-SkippedEvent -source $env:COMPUTERNAME -stage SubmissionQueueCheck -Reason @{
+                EnableSubmissionQueue = $submissionQ.Status
+            }
             return $true
         }
 
         if ((Get-Date) -gt $endTime)
         {
-            Write-InfoEvent -source $env:COMPUTERNAME -stage SubmissionQueueCheck -Reason @{EnableSubmissionQueue = 'QueueNotFound'}
+            Write-InfoEvent -source $env:COMPUTERNAME -stage SubmissionQueueCheck -Reason @{
+                EnableSubmissionQueue = 'QueueNotFound'
+            }
             return $false
         }
         else
@@ -424,7 +434,9 @@ function Set-TransportActive
          -and $transportService.StartMode -eq 'Auto' `
          -and $transportService.State -eq 'Running')
     {
-        Write-SkippedEvent -Source $env:COMPUTERNAME -Stage StartTransport -Reason @{ComponentState = 'Active'}
+        Write-SkippedEvent -Source $env:COMPUTERNAME -Stage StartTransport -Reason @{
+            ComponentState = 'Active'
+        }
     }
     else
     {
@@ -472,7 +484,9 @@ function Set-TransportInactive
         -and $transportService.StartMode -eq 'Auto' `
         -and $transportService.State -eq 'Running')
     {
-        Write-SkippedEvent -Source $env:COMPUTERNAME -Stage StartTransport -Reason @{ComponentState = 'Inactive'}
+        Write-SkippedEvent -Source $env:COMPUTERNAME -Stage StartTransport -Reason @{
+            ComponentState = 'Inactive'
+        }
     }
     else
     {
@@ -1004,7 +1018,9 @@ function Set-ServiceState
     {
         if ($LoggingStage)
         {
-            Write-SkippedEvent -Source $Server -Stage $LoggingStage -Reason @{$ServiceName = 'NotFound'}
+            Write-SkippedEvent -Source $Server -Stage $LoggingStage -Reason @{
+                $ServiceName = 'NotFound'
+            }
         }
 
         if ($ThrowOnFailure)
@@ -1106,7 +1122,9 @@ function Set-ServiceState
 
     if ($LoggingStage)
     {
-        Write-EventOfEntry -Event Completed -Entry $logEntry -reason @{'MaxWaitMinutes' = $WaitTime.TotalMinutes}
+        Write-EventOfEntry -Event Completed -Entry $logEntry -reason @{
+            'MaxWaitMinutes' = $WaitTime.TotalMinutes
+        }
     }
 }
 
@@ -1575,7 +1593,9 @@ function Wait-EmptyEntriesCompletion
         {
             if ($DetailLogging -and -not $ActiveEntries)
             {
-                Write-SkippedEvent -Source $Source -Stage $Stage -Reason @{Reason = 'Not needed'}
+                Write-SkippedEvent -Source $Source -Stage $Stage -Reason @{
+                    Reason = 'Not needed'
+                }
             }
             else
             {
@@ -1637,7 +1657,11 @@ function Wait-EmptyEntriesCompletion
 
     if ($DetailLogging)
     {
-        $tracker.Values | ForEach-Object { Write-EventOfEntry -Event Completed -Entry $_.LogEntry -Reason @{Reason = $reason} }
+        $tracker.Values | ForEach-Object {
+            Write-EventOfEntry -Event Completed -Entry $_.LogEntry -Reason @{
+                Reason = $reason
+            }
+        }
     }
     else
     {
@@ -1645,7 +1669,9 @@ function Wait-EmptyEntriesCompletion
 
         if ($reason)
         {
-            Write-EventOfEntry -Event Completed -Entry $summaryLog -Reason @{Reason = $reason}
+            Write-EventOfEntry -Event Completed -Entry $summaryLog -Reason @{
+                Reason = $reason
+            }
         }
         else
         {
@@ -1915,7 +1941,9 @@ function Wait-EmptyDiscardsCompletion
     $discardInfo = Get-DiscardInfo -server $Server
     $discardInfo | Where-Object {$ActiveServers -notcontains $_.Id.Split('.')[0]} | ForEach-Object {
         Write-SkippedEvent -Source $Server -Stage ShadowDiscardDrain -Id $_.Id `
-            -Count $_.Count -Reason @{Reason = $Script:ServerInMM}
+            -Count $_.Count -Reason @{
+                Reason = $Script:ServerInMM
+            }
     }
 
     # wait for discard events to be drained
@@ -2235,8 +2263,12 @@ function Wait-BootLoaderReady
     if (-not $processLifeTime -or -not $processStartTime)
     {
         # EdgeTransport isn't running or Server isn't a HubTransport, nothing to wait here
-        Write-SkippedEvent -Source $Server -Stage BootLoaderCountCheck -Reason @{Reason = 'EdgeTransportUnreachable'}
-        Write-SkippedEvent -Source $Server -Stage BootLoaderSubmitCheck -Reason @{Reason = 'EdgeTransportUnreachable'}
+        Write-SkippedEvent -Source $Server -Stage BootLoaderCountCheck -Reason @{
+            Reason = 'EdgeTransportUnreachable'
+        }
+        Write-SkippedEvent -Source $Server -Stage BootLoaderSubmitCheck -Reason @{
+            Reason = 'EdgeTransportUnreachable'
+        }
 
         Write-Warning -Message "$Server - EdgeTransport is not running or server $server is unreachable. Skipping waiting for BootLoader."
         return 0
@@ -2244,8 +2276,12 @@ function Wait-BootLoaderReady
 
     if ($processLifeTime -gt $MaxBootLoaderProcessTimeout)
     {
-        Write-SkippedEvent -Source $Server -Stage BootLoaderCountCheck -Reason @{ProcessLifeTime = $processLifeTime}
-        Write-SkippedEvent -Source $Server -Stage BootLoaderSubmitCheck -Reason @{ProcessLifeTime = $processLifeTime}
+        Write-SkippedEvent -Source $Server -Stage BootLoaderCountCheck -Reason @{
+            ProcessLifeTime = $processLifeTime
+        }
+        Write-SkippedEvent -Source $Server -Stage BootLoaderSubmitCheck -Reason @{
+            ProcessLifeTime = $processLifeTime
+        }
 
         Write-Verbose -Message "$Server - EdgeTransport has been running for $processLifeTime. BootLoader is ready"
         return 0
@@ -2722,4 +2758,5 @@ function Stop-ServiceForcefully
 
 Export-ModuleMember -Function Start-TransportMaintenance
 Export-ModuleMember -Function Stop-TransportMaintenance
+Export-ModuleMember -Function Wait-BootLoaderReady
 Export-ModuleMember -Function Wait-BootLoaderReady

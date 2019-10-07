@@ -36,7 +36,9 @@ function Get-TargetResource
         $RemoveBinaries
     )
 
-    Write-FunctionEntry -Parameters @{'JetstressPath' = $JetstressPath} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'JetstressPath' = $JetstressPath
+    } -Verbose:$VerbosePreference
 
     $returnValue = @{
         JetstressPath = [System.String] $JetstressPath
@@ -79,7 +81,9 @@ function Set-TargetResource
         $RemoveBinaries
     )
 
-    Write-FunctionEntry -Parameters @{'JetstressPath' = $JetstressPath} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'JetstressPath' = $JetstressPath
+    } -Verbose:$VerbosePreference
 
     Assert-ParametersValidForJetstress @PSBoundParameters
 
@@ -160,11 +164,11 @@ function Set-TargetResource
 
             $outputFiles = Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object -FilterScript {
                 $_.Name -like 'Performance*' -or `
-                $_.Name -like 'Stress*' -or `
-                $_.Name -like 'DBChecksum*' -or `
-                $_.Name -like 'XmlConfig*' -or `
-                $_.Name -like '*.evt' -or `
-                $_.Name -like '*.log'
+                    $_.Name -like 'Stress*' -or `
+                    $_.Name -like 'DBChecksum*' -or `
+                    $_.Name -like 'XmlConfig*' -or `
+                    $_.Name -like '*.evt' -or `
+                    $_.Name -like '*.log'
             }
 
             $outputFiles | Move-Item -Destination "$($OutputSaveLocation)" -Confirm:$false -Force
@@ -175,7 +179,7 @@ function Set-TargetResource
         # If the config file is in the Jetstress directory, remove everything but the config file, or else running Test-TargetResource after removing the directory will fail
         if ((Get-FolderPathWithNoTrailingSlash -Folder "$($JetstressPath)") -like (Get-ParentFolderFromPathString -Folder "$($ConfigFilePath)"))
         {
-            Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object {$_.FullName -notlike "$($ConfigFilePath)"} | Remove-Item -Recurse -Confirm:$false -Force
+            Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object { $_.FullName -notlike "$($ConfigFilePath)" } | Remove-Item -Recurse -Confirm:$false -Force
         }
         else # No config file in this directory. Remove the whole thing
         {
@@ -229,7 +233,9 @@ function Test-TargetResource
         $RemoveBinaries
     )
 
-    Write-FunctionEntry -Parameters @{'JetstressPath' = $JetstressPath} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'JetstressPath' = $JetstressPath
+    } -Verbose:$VerbosePreference
 
     Assert-ParametersValidForJetstress @PSBoundParameters
 
@@ -286,7 +292,7 @@ function Test-TargetResource
         {
             if ((Get-FolderPathWithNoTrailingSlash -Folder "$($JetstressPath)") -like (Get-ParentFolderFromPathString -Folder "$($ConfigFilePath)"))
             {
-                $items = Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object {$_.FullName -notlike "$($ConfigFilePath)"}
+                $items = Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object { $_.FullName -notlike "$($ConfigFilePath)" }
 
                 if ($null -ne $items -or $items.Count -gt 0)
                 {
@@ -346,8 +352,8 @@ function Assert-ParametersValidForJetstress
     )
 
     if ($PSBoundParameters.ContainsKey('ConfigFilePath') -eq $false -and `
-       ($PSBoundParameters.ContainsKey('DatabasePaths') -eq $false -or `
-        $PSBoundParameters.ContainsKey('LogPaths') -eq $false))
+        ($PSBoundParameters.ContainsKey('DatabasePaths') -eq $false -or `
+                $PSBoundParameters.ContainsKey('LogPaths') -eq $false))
     {
         throw 'Either the ConfigFilePath parameter must be specified, or DatabasePaths and LogPaths must be specified.'
     }

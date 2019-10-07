@@ -49,7 +49,9 @@ function Get-TargetResource
         $DomainController
     )
 
-    Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Server' = $Server
+    } -Verbose:$VerbosePreference
 
     Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMCallRouterSettings' -SupportedVersions '2013', '2016'
 
@@ -127,7 +129,9 @@ function Set-TargetResource
         $DomainController
     )
 
-    Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Server' = $Server
+    } -Verbose:$VerbosePreference
 
     Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMCallRouterSettings' -SupportedVersions '2013', '2016'
 
@@ -190,7 +194,9 @@ function Test-TargetResource
         $DomainController
     )
 
-    Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Server' = $Server
+    } -Verbose:$VerbosePreference
 
     Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMCallRouterSettings' -SupportedVersions '2013', '2016'
 

@@ -72,7 +72,9 @@ function Get-TargetResource
         $UpgradedServerVersion
     )
 
-    Write-FunctionEntry -Parameters @{'Enabled' = $Enabled} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Enabled' = $Enabled
+    } -Verbose:$VerbosePreference
 
     # Load TransportMaintenanceMode Helper
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)"))\TransportMaintenance.psm1" -Verbose:0
@@ -195,7 +197,9 @@ function Set-TargetResource
         $UpgradedServerVersion
     )
 
-    Write-FunctionEntry -Parameters @{'Enabled' = $Enabled} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Enabled' = $Enabled
+    } -Verbose:$VerbosePreference
 
     # Load TransportMaintenanceMode Helper
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)"))\TransportMaintenance.psm1" -Verbose:0
@@ -245,7 +249,9 @@ function Set-TargetResource
             if ($maintenanceModeStatus.MailboxServer.DatabaseCopyAutoActivationPolicy -ne "Blocked")
             {
                 Write-Verbose -Message 'Setting DatabaseCopyAutoActivationPolicy to Blocked'
-                Set-MailboxServerInternal -Identity $env:COMPUTERNAME -DomainController $DomainController -AdditionalParams @{"DatabaseCopyAutoActivationPolicy" = "Blocked"}
+                Set-MailboxServerInternal -Identity $env:COMPUTERNAME -DomainController $DomainController -AdditionalParams @{
+                    "DatabaseCopyAutoActivationPolicy" = "Blocked"
+                }
             }
 
             # Set UM to draining before anything else
@@ -465,7 +471,9 @@ function Test-TargetResource
         $UpgradedServerVersion
     )
 
-    Write-FunctionEntry -Parameters @{'Enabled' = $Enabled} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Enabled' = $Enabled
+    } -Verbose:$VerbosePreference
 
     # Load TransportMaintenanceMode Helper
     Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)"))\TransportMaintenance.psm1" -Verbose:0
