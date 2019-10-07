@@ -3,7 +3,7 @@ function Get-TargetResource
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
 
-    param(
+    param (
         # The name of the address book
         [Parameter(Mandatory = $true)]
         [string]
@@ -17,12 +17,14 @@ function Get-TargetResource
 
     Write-Verbose -Message 'Getting the Exchange Accepted Domains List'
 
-    Write-FunctionEntry -Parameters @{'Identity' = $DomainName } -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $DomainName
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-AcceptedDomain' -Verbose:$VerbosePreference
 
-    $acceptedDomain = Get-AcceptedDomain -Identity $DomainName -ErrorAction SilentlyContinue
+    $acceptedDomain = Get-AcceptedDomain -ErrorAction SilentlyContinue | Where-Object { $_.DomainName -eq $DomainName }
 
     $acceptedDomainProperties = @(
         'Name'
@@ -58,7 +60,7 @@ function Get-TargetResource
 function Set-TargetResource
 {
     [CmdletBinding()]
-    param(
+    param (
         # The name of the accepted domain
         [Parameter(Mandatory = $true)]
         [string]
@@ -74,23 +76,23 @@ function Set-TargetResource
         [System.String]
         $Ensure = 'Present',
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $AddressBookEnabled = $true,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]
         $DomainType,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $Default = $false,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $MatchSubDomains = $false,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]
         $Name
 
@@ -98,7 +100,9 @@ function Set-TargetResource
 
     Write-Verbose -Message 'Setting the Exchange AddresslList settings'
 
-    Write-FunctionEntry -Parameters @{'Identity' = $DomainName } -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $DomainName
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*-AcceptedDomain' -Verbose:$VerbosePreference
@@ -107,7 +111,7 @@ function Set-TargetResource
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove Credential, Ensure, 'Default'
 
-    $acceptedDomain = Get-TargetResource -Name $DomainName -Credential $Credential
+    $acceptedDomain = Get-TargetResource -DomainName $DomainName -Credential $Credential
 
     if ($acceptedDomain['Ensure'] -eq 'Present')
     {
@@ -120,14 +124,7 @@ function Set-TargetResource
         {
             Write-Verbose -Message ('Address list {0} not compliant. Setting the desired attributes.' -f $acceptedDomain.Name)
 
-            if ($null -eq $PSBoundParameters['Name'])
-            {
-                $PSBoundParameters['Identity'] = $acceptedDomain['DomainName']
-            }
-            else
-            {
-                $PSBoundParameters['Identity'] = $acceptedDomain['Name']
-            }
+            $PSBoundParameters['Identity'] = $acceptedDomain['Name']
 
             Set-AcceptedDomain @PSBoundParameters -confirm:$false
         }
@@ -136,15 +133,15 @@ function Set-TargetResource
     {
         Write-Verbose -Message ('Address list {0} does not exist. Creating it...' -f $acceptedDomain.Name)
 
-        New-AcceptedDomain -DomainName $DomainName -confirm:$false
-
         if ($null -eq $PSBoundParameters['Name'])
         {
-            $PSBoundParameters['Identity'] = $acceptedDomain['DomainName']
+            New-AcceptedDomain -DomainName $DomainName -confirm:$false
+            $PSBoundParameters['Identity'] = $DomainName
         }
         else
         {
-            $PSBoundParameters['Identity'] = $acceptedDomain['Name']
+            New-AcceptedDomain -DomainName $DomainName -Name $Name -confirm:$false
+            $PSBoundParameters['Identity'] = $Name
         }
 
         Set-AcceptedDomain @PSBoundParameters -confirm:$false
@@ -154,7 +151,7 @@ function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param(
+    param (
         # The name of the accepted domain
         [Parameter(Mandatory = $true)]
         [string]
@@ -170,30 +167,32 @@ function Test-TargetResource
         [System.String]
         $Ensure = 'Present',
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $AddressBookEnabled = $true,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]
         $DomainType,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $Default = $false,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $MatchSubDomains = $false,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]
         $Name
     )
 
     Write-Verbose -Message 'Testing the Exchange AddresslList settings'
 
-    Write-FunctionEntry -Parameters @{'Identity' = $DomainName } -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $DomainName
+    } -Verbose:$VerbosePreference
 
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
@@ -202,7 +201,7 @@ function Test-TargetResource
     $acceptedDomain = Get-TargetResource -Name $DomainName -Credential $Credential
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential'
-    $DifferenceObjectHashTable = @{ } + $PSBoundParameters
+    $DifferenceObjectHashTable = @{} + $PSBoundParameters
 
     if ($null -eq $PSBoundParameters['Name'])
     {
