@@ -1,7 +1,7 @@
 [ClassVersion("1.0.0.0"), FriendlyName("xExchAcceptedDomain")]
 class MSFT_xExchAcceptedDomain : OMI_BaseResource
 {
-    [Key, Description("The name of the address list.")] String DomainName;
+    [Key, Description("The domain name of the accepted domain.")] String DomainName;
     [Required, Description("Credentials used to establish a remote PowerShell session to Exchange."), EmbeddedInstance("MSFT_Credential")] String Credential;
     [Write, Description("Should this resource be present or absent"), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
     [Write, Description("The AddressBookEnabled parameter specifies whether to enable recipient filtering for this accepted domain.")] Boolean AddressBookEnabled;
