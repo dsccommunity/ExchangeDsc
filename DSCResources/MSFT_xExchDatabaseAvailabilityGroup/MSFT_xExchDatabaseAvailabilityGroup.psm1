@@ -28,6 +28,10 @@ function Get-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $AutoDagBitlockerEnabled,
+
+        [Parameter()]
+        [System.Boolean]
         $AutoDagAutoRedistributeEnabled,
 
         [Parameter()]
@@ -115,7 +119,7 @@ function Get-TargetResource
         $WitnessServer
     )
 
-    Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Name' = $Name } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
@@ -128,6 +132,7 @@ function Get-TargetResource
             Name                                 = [System.String] $Name
             AlternateWitnessDirectory            = [System.String] $dag.AlternateWitnessDirectory
             AlternateWitnessServer               = [System.String] $dag.AlternateWitnessServer
+            AutoDagBitlockerEnabled              = [System.Boolean] $dag.AutoDagBitlockerEnabled
             AutoDagAutoReseedEnabled             = [System.Boolean] $dag.AutoDagAutoReseedEnabled
             AutoDagDatabaseCopiesPerDatabase     = [System.Int32] $dag.AutoDagDatabaseCopiesPerDatabase
             AutoDagDatabaseCopiesPerVolume       = [System.Int32] $dag.AutoDagDatabaseCopiesPerVolume
@@ -189,6 +194,10 @@ function Set-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $AutoDagBitlockerEnabled,
+
+        [Parameter()]
+        [System.Boolean]
         $AutoDagAutoRedistributeEnabled,
 
         [Parameter()]
@@ -276,7 +285,7 @@ function Set-TargetResource
         $WitnessServer
     )
 
-    Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Name' = $Name } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup', 'Set-DatabaseAvailabilityGroup', 'New-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
@@ -311,7 +320,7 @@ function Set-TargetResource
     if ($null -eq $dag)
     {
         # Create a copy of the original parameters
-        $originalPSBoundParameters = @{} + $PSBoundParameters
+        $originalPSBoundParameters = @{ } + $PSBoundParameters
 
         # Remove parameters that don't exist in New-DatabaseAvailabilityGroup
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Name", "DatabaseAvailabilityGroupIpAddresses", "WitnessDirectory", "WitnessServer", "DomainController"
@@ -334,7 +343,7 @@ function Set-TargetResource
     if ($null -ne $dag)
     {
         # convert Name to Identity, and Remove Credential
-        Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = $PSBoundParameters["Name"]}
+        Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = $PSBoundParameters["Name"] }
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Name", "Credential"
 
         # If not all members are in DAG yet, remove params that require them to be
@@ -381,6 +390,10 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $AutoDagBitlockerEnabled,
+
+        [Parameter()]
+        [System.Boolean]
         $AutoDagAutoRedistributeEnabled,
 
         [Parameter()]
@@ -468,7 +481,7 @@ function Test-TargetResource
         $WitnessServer
     )
 
-    Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{'Name' = $Name } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
@@ -513,6 +526,11 @@ function Test-TargetResource
         }
 
         if (!(Test-ExchangeSetting -Name 'AlternateWitnessServer' -Type 'String' -ExpectedValue $AlternateWitnessServer -ActualValue $dag.AlternateWitnessServer -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'AutoDagBitlockerEnabled' -Type 'Boolean' -ExpectedValue $AutoDagBitlockerEnabled -ActualValue $dag.AutoDagBitlockerEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
@@ -658,6 +676,10 @@ function Get-DatabaseAvailabilityGroupInternal
 
         [Parameter()]
         [System.Boolean]
+        $AutoDagBitlockerEnabled,
+
+        [Parameter()]
+        [System.Boolean]
         $AutoDagAutoRedistributeEnabled,
 
         [Parameter()]
@@ -746,7 +768,7 @@ function Get-DatabaseAvailabilityGroupInternal
     )
 
     Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
-        'Identity' = $PSBoundParameters['Name']
+        'Identity'    = $PSBoundParameters['Name']
         'ErrorAction' = 'SilentlyContinue'
     }
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'ErrorAction', 'DomainController'

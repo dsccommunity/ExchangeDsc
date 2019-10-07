@@ -18,6 +18,7 @@ class MSFT_xExchDatabaseAvailabilityGroup : OMI_BaseResource
     [Write] Boolean AutoDagDiskReclaimerEnabled;
     [Write] SInt32 AutoDagTotalNumberOfDatabases;
     [Write] String AutoDagVolumesRootFolderPath;
+    [Write] Boolean AutoDagBitlockerEnabled;
     [Write] String DatabaseAvailabilityGroupIpAddresses[];
     [Write, ValueMap{"Off","DagOnly"}, Values{"Off","DagOnly"}] String DatacenterActivationMode;
     [Write] String DomainController;
