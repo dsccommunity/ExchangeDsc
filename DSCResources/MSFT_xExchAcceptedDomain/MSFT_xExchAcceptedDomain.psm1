@@ -198,10 +198,10 @@ function Test-TargetResource
 
     $targetResourceInCompliance = $true
 
-    $acceptedDomain = Get-TargetResource -Name $DomainName -Credential $Credential
+    $acceptedDomain = Get-TargetResource -DomainName $DomainName -Credential $Credential
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential'
-    $DifferenceObjectHashTable = @{} + $PSBoundParameters
+    $DifferenceObjectHashTable = @{ } + $PSBoundParameters
 
     if ($null -eq $PSBoundParameters['Name'])
     {
@@ -211,6 +211,10 @@ function Test-TargetResource
     if ($acceptedDomain['Ensure'] -eq 'Absent' -and $Ensure -ne 'Absent')
     {
         $targetResourceInCompliance = $false
+    }
+    elseif ($acceptedDomain['Ensure'] -eq 'Absent' -and $Ensure -eq 'Absent')
+    {
+        $targetResourceInCompliance = $true
     }
     else
     {

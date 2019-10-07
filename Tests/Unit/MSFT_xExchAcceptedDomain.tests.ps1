@@ -137,6 +137,7 @@ try
                         Default            = [System.Boolean] $false
                         MatchSubDomains    = [System.Boolean] $false
                         Name               = [System.String] 'MyfakeDomain'
+                        Ensure             = 'Present'
                     }
                 } -Verifiable
 
@@ -148,10 +149,14 @@ try
                     }
                 }
                 Context 'Ensure is set to "Absent"' {
+
                     It 'Should call all functions' {
+                        $setAcceptedDomaindInputEnsure = @{ } + $setAcceptedDomaindInput
+                        $setAcceptedDomaindInputEnsure['Ensure'] = 'Absent'
+
                         Mock -CommandName Remove-AcceptedDomain -ParameterFilter { $Identity -eq 'MyfakeDomain' } -Verifiable
 
-                        Set-TargetResource @setAcceptedDomaindInput
+                        Set-TargetResource @setAcceptedDomaindInputEnsure
                     }
                 }
             }
@@ -159,7 +164,6 @@ try
 
         Describe 'MSFT_xExchAcceptedDomain\Test-TargetResource' -Tag 'Test' {
             BeforeAll {
-                Mock -CommandName Get-RemoteExchangeSession -Verifiable
                 Mock -CommandName Write-FunctionEntry -Verifiable
             }
             AfterEach {
@@ -186,45 +190,54 @@ try
                 Default            = [System.Boolean] $false
                 MatchSubDomains    = [System.Boolean] $false
                 Name               = [System.String] 'MyWrongFakeDomain'
+                Ensure             = 'Present'
             }
 
             Context 'When domain is not present' {
-                It 'Should return false, when Ensure is set to "Present"' {
-                    Mock -CommandName Get-TargetResource -MockWith {
-                        return @{
-                            Ensure = 'Absent'
-                        }
-                    } -Verifiable
+                Context 'Should return false, when Ensure is set to "Present"' {
+                    It 'Should call all functions' {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Ensure = 'Absent'
+                            }
+                        } -Verifiable
 
-                    Test-TargetResource @testAcceptedDomaindInput | Should -Be $false
+                        Test-TargetResource @testAcceptedDomaindInput | Should -Be $false
+                    }
                 }
-                It 'Should return true, when Ensure is set to "Absent"' {
-                    Mock -CommandName Get-TargetResource -MockWith {
-                        return @{
-                            Ensure = 'Absent'
-                        }
-                    } -Verifiables
+                Context 'Should return true, when Ensure is set to "Absent"' {
+                    It 'Should call all functions' {
+                        Mock -CommandName Get-TargetResource -MockWith {
+                            return @{
+                                Ensure = 'Absent'
+                            }
+                        } -Verifiable
 
-                    $testAcceptedDomaindInput['Ensure'] = 'Absent'
+                        $testAcceptedDomaindInputEnsure = @{ } + $testAcceptedDomaindInput
+                        $testAcceptedDomaindInputEnsure['Ensure'] = 'Absent'
 
-                    Test-TargetResource @testAcceptedDomaindInput | Should -Be $true
+                        Test-TargetResource @testAcceptedDomaindInputEnsure | Should -Be $true
+                    }
                 }
             }
 
             Context 'When domain is present' {
-                It 'Should return true when compliant' {
-                    $returnAcceptedDomain = @{ } + $stubAcceptedDomain
-                    $returnAcceptedDomain['Name'] = 'MyFakeDomain'
+                Context 'Should return true when compliant' {
+                    It 'Should call all functions' {
+                        $returnAcceptedDomain = @{ } + $stubAcceptedDomain
+                        $returnAcceptedDomain['Name'] = 'MyFakeDomain'
 
-                    Mock -CommandName Get-TargetResource -MockWith { return $returnAcceptedDomain } -Verifiable
+                        Mock -CommandName Get-TargetResource -MockWith { return $returnAcceptedDomain } -Verifiable
 
-                    Test-TargetResource @testAcceptedDomaindInput | Should -Be $true
+                        Test-TargetResource @testAcceptedDomaindInput | Should -Be $true
+                    }
                 }
-                It 'Should return false when not compliant'
-                {
-                    Mock -CommandName Get-TargetResource -MockWith { return $stubAcceptedDomain } -Verifiable
+                Context 'Should return false when not compliant' {
+                    It 'Should call all functions' {
+                        Mock -CommandName Get-TargetResource -MockWith { return $stubAcceptedDomain } -Verifiable
 
-                    Test-TargetResource @testAcceptedDomaindInput | Should -Be $false
+                        Test-TargetResource @testAcceptedDomaindInput | Should -Be $false
+                    }
                 }
             }
         }
