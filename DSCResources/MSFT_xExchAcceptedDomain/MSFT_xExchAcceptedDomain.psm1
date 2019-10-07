@@ -81,6 +81,7 @@ function Set-TargetResource
         $AddressBookEnabled = $true,
 
         [Parameter()]
+        [ValidateSet('Authoritative', 'ExternalRelay', 'InternalRelay')]
         [string]
         $DomainType,
 
@@ -174,6 +175,7 @@ function Test-TargetResource
         $AddressBookEnabled = $true,
 
         [Parameter()]
+        [ValidateSet('Authoritative', 'ExternalRelay', 'InternalRelay')]
         [string]
         $DomainType,
 
