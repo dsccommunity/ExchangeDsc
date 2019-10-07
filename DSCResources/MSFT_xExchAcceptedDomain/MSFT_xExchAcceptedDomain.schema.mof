@@ -1,5 +1,5 @@
 [ClassVersion("1.0.0.0"), FriendlyName("xExchAcceptedDomain")]
-class xExchAcceptedDomain : OMI_BaseResource
+class MSFT_xExchAcceptedDomain : OMI_BaseResource
 {
     [Key, Description("The name of the address list.")] String DomainName;
     [Required, Description("Credentials used to establish a remote PowerShell session to Exchange."), EmbeddedInstance("MSFT_Credential")] String Credential;

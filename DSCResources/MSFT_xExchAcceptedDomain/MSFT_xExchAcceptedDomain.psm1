@@ -42,7 +42,7 @@ function Get-TargetResource
         }
         foreach ($property in $acceptedDomain.PSObject.Properties.Name)
         {
-            if ($acceptedDomain.$property -and $acceptedDomainProperties -contains $property)
+            if ([string]$acceptedDomain.$property -and $acceptedDomainProperties -contains $property)
             {
                 $returnValue[$property] = $acceptedDomain.$property
             }
@@ -98,7 +98,7 @@ function Set-TargetResource
 
     )
 
-    Write-Verbose -Message 'Setting the Exchange AddresslList settings'
+    Write-Verbose -Message 'Setting the Exchange accepted domain settings'
 
     Write-FunctionEntry -Parameters @{
         'Identity' = $DomainName
@@ -117,21 +117,22 @@ function Set-TargetResource
     {
         if ($Ensure -eq 'Absent')
         {
-            Write-Verbose -Message ('Removing the address list {0}' -f $acceptedDomain.Name)
+            Write-Verbose -Message ('Removing the accepted domain {0}' -f $acceptedDomain.Name)
             Remove-AcceptedDomain -Identity $acceptedDomain.Name -confirm:$false
         }
         else
         {
-            Write-Verbose -Message ('Address list {0} not compliant. Setting the desired attributes.' -f $acceptedDomain.Name)
+            Write-Verbose -Message ('Accepted domain {0} not compliant. Setting the desired attributes.' -f $acceptedDomain.Name)
 
             $PSBoundParameters['Identity'] = $acceptedDomain['Name']
+            $PSBoundParameters.Remove('DomainName')
 
             Set-AcceptedDomain @PSBoundParameters -confirm:$false
         }
     }
     else
     {
-        Write-Verbose -Message ('Address list {0} does not exist. Creating it...' -f $acceptedDomain.Name)
+        Write-Verbose -Message ('Accepted domain {0} does not exist. Creating it...' -f $acceptedDomain.Name)
 
         if ($null -eq $PSBoundParameters['Name'])
         {
@@ -144,6 +145,7 @@ function Set-TargetResource
             $PSBoundParameters['Identity'] = $Name
         }
 
+        $PSBoundParameters.Remove('DomainName')
         Set-AcceptedDomain @PSBoundParameters -confirm:$false
     }
 }
@@ -188,7 +190,7 @@ function Test-TargetResource
         $Name
     )
 
-    Write-Verbose -Message 'Testing the Exchange AddresslList settings'
+    Write-Verbose -Message 'Testing the Exchange accepted domain settings'
 
     Write-FunctionEntry -Parameters @{
         'Identity' = $DomainName
@@ -200,7 +202,7 @@ function Test-TargetResource
 
     $acceptedDomain = Get-TargetResource -DomainName $DomainName -Credential $Credential
 
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'Verbose'
     $DifferenceObjectHashTable = @{ } + $PSBoundParameters
 
     if ($null -eq $PSBoundParameters['Name'])
