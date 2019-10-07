@@ -237,6 +237,19 @@ try
             }
 
             Context 'When domain is present' {
+                Context 'Should return true when compliant and Name was not specified' {
+                    It 'Should call all functions' {
+                        $returnAcceptedDomain = @{ } + $stubAcceptedDomain
+                        $returnAcceptedDomain['Name'] = 'fakedomain.com'
+
+                        $testAcceptedDomaindInputNoName = @{} + $testAcceptedDomaindInput
+                        $testAcceptedDomaindInputNoName.Remove('Name')
+
+                        Mock -CommandName Get-TargetResource -MockWith { return $returnAcceptedDomain } -Verifiable
+
+                        Test-TargetResource @testAcceptedDomaindInputNoName | Should -Be $true
+                    }
+                }
                 Context 'Should return true when compliant' {
                     It 'Should call all functions' {
                         $returnAcceptedDomain = @{ } + $stubAcceptedDomain
