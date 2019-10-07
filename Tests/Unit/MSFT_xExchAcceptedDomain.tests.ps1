@@ -50,6 +50,9 @@ try
         function Get-AcceptedDomain
         {
         }
+        function Remove-AcceptedDomain
+        {
+        }
 
         Describe 'MSFT_xExchAcceptedDomain\Get-TargetResource' -Tag 'Get' {
             AfterEach {
