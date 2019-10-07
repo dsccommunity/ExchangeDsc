@@ -52,12 +52,18 @@ try
         }
         function Remove-AcceptedDomain
         {
+            param (
+                $Identity
+            )
         }
 
         Describe 'MSFT_xExchAcceptedDomain\Get-TargetResource' -Tag 'Get' {
             AfterEach {
                 Assert-VerifiableMock
             }
+
+            Mock -CommandName Write-FunctionEntry -Verifiable
+            Mock -CommandName Get-RemoteExchangeSession -Verifiable
 
             $getTargetResourceParams = @{
                 DomainName = 'fakedomain.com'
@@ -74,11 +80,17 @@ try
             }
 
             Context 'When Get-TargetResource is called' {
-                Mock -CommandName Write-FunctionEntry -Verifiable
-                Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                Mock -CommandName Get-AcceptedDomain -Verifiable -MockWith { return $getAcceptedDomaindOutput }
+                Mock -CommandName Get-AcceptedDomain -Verifiable -MockWith { return [PSCustomObject]$getAcceptedDomaindOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
+            }
+            Context 'When ressource is absent' {
+                It 'Should call all functions' {
+                    Mock -CommandName Get-AcceptedDomain -Verifiable
+
+                    $result = Get-TargetResource @getTargetResourceParams
+                    $result.Ensure | Should -Be 'Absent'
+                }
             }
         }
 
