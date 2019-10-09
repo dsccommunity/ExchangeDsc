@@ -99,95 +99,96 @@ function Set-TargetResource
         [System.String]
         $Ensure = 'Present',
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCompany,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute1,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute2,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute3,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute4,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute5,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute6,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute7,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute8,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute9,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute10,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute11,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute12,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute13,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute14,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute15,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalDepartment,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalStateOrProvince,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]
         $Container,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]
         $DisplayName,
 
-        [Parameter(Mandatory = $false)]
-        [string]
+        [Parameter()]
+        [ValidateSet('MailboxUsers', 'MailContacts', 'MailGroups', 'MailUsers', 'Resources', 'AllRecipients')]
+        [string[]]
         $IncludedRecipients,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]
         $RecipientContainer,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]
         $RecipientFilter
     )
@@ -272,95 +273,96 @@ function Test-TargetResource
         [System.String]
         $Ensure = 'Present',
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCompany,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute1,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute2,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute3,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute4,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute5,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute6,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute7,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute8,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute9,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute10,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute11,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute12,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute13,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute14,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalCustomAttribute15,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalDepartment,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string[]]
         $ConditionalStateOrProvince,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]
         $Container,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]
         $DisplayName,
 
-        [Parameter(Mandatory = $false)]
-        [string]
+        [Parameter()]
+        [ValidateSet('MailboxUsers', 'MailContacts', 'MailGroups', 'MailUsers', 'Resources', 'AllRecipients')]
+        [string[]]
         $IncludedRecipients,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]
         $RecipientContainer,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]
         $RecipientFilter
     )
