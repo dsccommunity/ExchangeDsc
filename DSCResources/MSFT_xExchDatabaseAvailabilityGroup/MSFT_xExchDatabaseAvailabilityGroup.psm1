@@ -324,7 +324,7 @@ function Set-TargetResource
     if ($null -eq $dag)
     {
         # Create a copy of the original parameters
-        $originalPSBoundParameters = @{ } + $PSBoundParameters
+        $originalPSBoundParameters = @{} + $PSBoundParameters
 
         # Remove parameters that don't exist in New-DatabaseAvailabilityGroup
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Name", "DatabaseAvailabilityGroupIpAddresses", "WitnessDirectory", "WitnessServer", "DomainController"
@@ -348,7 +348,7 @@ function Set-TargetResource
     {
         # convert Name to Identity, and Remove Credential
         Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
-            "Identity" = $PSBoundParameters["Name"]
+            'Identity' = $PSBoundParameters['Name']
         }
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Name", "Credential"
 
