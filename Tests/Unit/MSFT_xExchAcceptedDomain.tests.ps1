@@ -58,6 +58,7 @@ try
         }
 
         Describe 'MSFT_xExchAcceptedDomain\Get-TargetResource' -Tag 'Get' {
+
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -74,16 +75,17 @@ try
                 AddressBookEnabled = [System.Boolean] $true
                 DomainName         = [System.String] 'fakedomain.com'
                 DomainType         = [System.String] 'Authoritative'
-                Default            = [System.Boolean] $false
+                MakeDefault        = [System.Boolean] $false
                 MatchSubDomains    = [System.Boolean] $false
                 Name               = [System.String] 'fakedomain.com'
             }
 
             Context 'When Get-TargetResource is called' {
-                Mock -CommandName Get-AcceptedDomain -Verifiable -MockWith { return [PSCustomObject]$getAcceptedDomaindOutput }
+                Mock -CommandName Get-AcceptedDomain -Verifiable -MockWith { return [PSCustomObject] $getAcceptedDomaindOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }
+
             Context 'When ressource is absent' {
                 It 'Should call all functions' {
                     Mock -CommandName Get-AcceptedDomain -Verifiable
@@ -99,6 +101,7 @@ try
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
                 Mock -CommandName Write-FunctionEntry -Verifiable
             }
+
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -110,7 +113,7 @@ try
                 Ensure             = 'Present'
                 DomainName         = [System.String] 'fakedomain.com'
                 DomainType         = [System.String] 'Authoritative'
-                Default            = [System.Boolean] $false
+                MakeDefault        = [System.Boolean] $false
                 MatchSubDomains    = [System.Boolean] $false
                 Credential         = $credential
             }
@@ -130,6 +133,7 @@ try
                         Set-TargetResource @setAcceptedDomaindInput
                     }
                 }
+
                 Context 'Name was specified' {
                     It 'Should call all functions' {
                         $setAcceptedDomaindInputName = @{ } + $setAcceptedDomaindInput
@@ -149,7 +153,7 @@ try
                         AddressBookEnabled = [System.Boolean] $true
                         DomainName         = [System.String] 'fakedomain.com'
                         DomainType         = [System.String] 'Authoritative'
-                        Default            = [System.Boolean] $false
+                        MakeDefault        = [System.Boolean] $false
                         MatchSubDomains    = [System.Boolean] $false
                         Name               = [System.String] 'MyfakeDomain'
                         Ensure             = 'Present'
@@ -163,6 +167,7 @@ try
                         Set-TargetResource @setAcceptedDomaindInput
                     }
                 }
+
                 Context 'Ensure is set to "Absent"' {
 
                     It 'Should call all functions' {
@@ -181,6 +186,7 @@ try
             BeforeAll {
                 Mock -CommandName Write-FunctionEntry -Verifiable
             }
+
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -192,7 +198,7 @@ try
                 Ensure             = 'Present'
                 DomainName         = [System.String] 'fakedomain.com'
                 DomainType         = [System.String] 'Authoritative'
-                Default            = [System.Boolean] $false
+                MakeDefault        = [System.Boolean] $false
                 MatchSubDomains    = [System.Boolean] $false
                 Name               = [System.String] 'MyFakeDomain'
                 Credential         = $credential
@@ -220,6 +226,7 @@ try
                         Test-TargetResource @testAcceptedDomaindInput | Should -Be $false
                     }
                 }
+
                 Context 'Should return true, when Ensure is set to "Absent"' {
                     It 'Should call all functions' {
                         Mock -CommandName Get-TargetResource -MockWith {
@@ -242,7 +249,7 @@ try
                         $returnAcceptedDomain = @{ } + $stubAcceptedDomain
                         $returnAcceptedDomain['Name'] = 'fakedomain.com'
 
-                        $testAcceptedDomaindInputNoName = @{} + $testAcceptedDomaindInput
+                        $testAcceptedDomaindInputNoName = @{ } + $testAcceptedDomaindInput
                         $testAcceptedDomaindInputNoName.Remove('Name')
 
                         Mock -CommandName Get-TargetResource -MockWith { return $returnAcceptedDomain } -Verifiable
@@ -250,6 +257,7 @@ try
                         Test-TargetResource @testAcceptedDomaindInputNoName | Should -Be $true
                     }
                 }
+
                 Context 'Should return true when compliant' {
                     It 'Should call all functions' {
                         $returnAcceptedDomain = @{ } + $stubAcceptedDomain
@@ -260,6 +268,7 @@ try
                         Test-TargetResource @testAcceptedDomaindInput | Should -Be $true
                     }
                 }
+
                 Context 'Should return false when not compliant' {
                     It 'Should call all functions' {
                         Mock -CommandName Get-TargetResource -MockWith { return $stubAcceptedDomain } -Verifiable

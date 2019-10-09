@@ -1,12 +1,29 @@
+<#
+.SYNOPSIS
+    Get the current state of an accepted domain
+.PARAMETER DomainName
+    The domain name of the accepted domain.
+.PARAMETER Credential
+    Credentials used to establish a remote PowerShell session to Exchange.
+.PARAMETER AddressBookEnabled
+    The AddressBookEnabled parameter specifies whether to enable recipient filtering for this accepted domain.
+.PARAMETER DomainType
+    The DomainType parameter specifies the type of accepted domain that you want to configure.
+.PARAMETER Default
+    The MakeDefault parameter specifies whether the accepted domain is the default domain.
+.PARAMETER MatchSubDomains
+    The MatchSubDomains parameter enables mail to be sent by and received from users on any subdomain of this accepted domain.
+.PARAMETER Name
+    The Name parameter specifies a unique name for the accepted domain object.
+#>
 function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
 
     param (
-        # The name of the address book
         [Parameter(Mandatory = $true)]
-        [string]
+        [String]
         $DomainName,
 
         [Parameter(Mandatory = $true)]
@@ -24,7 +41,7 @@ function Get-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-AcceptedDomain' -Verbose:$VerbosePreference
 
-    $acceptedDomain = Get-AcceptedDomain -ErrorAction SilentlyContinue | Where-Object { $_.DomainName -eq $DomainName }
+    $acceptedDomain = Get-AcceptedDomain -ErrorAction SilentlyContinue | Where-Object -FilterScript { $_.DomainName -eq $DomainName }
 
     $acceptedDomainProperties = @(
         'Name'
@@ -40,9 +57,10 @@ function Get-TargetResource
         $returnValue = @{
             Ensure = 'Present'
         }
+
         foreach ($property in $acceptedDomain.PSObject.Properties.Name)
         {
-            if ([string]$acceptedDomain.$property -and $acceptedDomainProperties -contains $property)
+            if ([String] $acceptedDomain.$property -and $acceptedDomainProperties -contains $property)
             {
                 $returnValue[$property] = $acceptedDomain.$property
             }
@@ -57,13 +75,32 @@ function Get-TargetResource
 
     return $returnValue
 }
+
+<#
+.SYNOPSIS
+    Sets the state of an accepted domain.
+.PARAMETER DomainName
+    The domain name of the accepted domain.
+.PARAMETER Credential
+    Credentials used to establish a remote PowerShell session to Exchange.
+.PARAMETER AddressBookEnabled
+    The AddressBookEnabled parameter specifies whether to enable recipient filtering for this accepted domain.
+.PARAMETER DomainType
+    The DomainType parameter specifies the type of accepted domain that you want to configure.
+.PARAMETER Default
+    The MakeDefault parameter specifies whether the accepted domain is the default domain.
+.PARAMETER MatchSubDomains
+    The MatchSubDomains parameter enables mail to be sent by and received from users on any subdomain of this accepted domain.
+.PARAMETER Name
+    The Name parameter specifies a unique name for the accepted domain object.
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
     param (
         # The name of the accepted domain
         [Parameter(Mandatory = $true)]
-        [string]
+        [String]
         $DomainName,
 
         [Parameter(Mandatory = $true)]
@@ -77,24 +114,24 @@ function Set-TargetResource
         $Ensure = 'Present',
 
         [Parameter()]
-        [bool]
+        [Boolean]
         $AddressBookEnabled = $true,
 
         [Parameter()]
         [ValidateSet('Authoritative', 'ExternalRelay', 'InternalRelay')]
-        [string]
+        [String]
         $DomainType,
 
         [Parameter()]
-        [bool]
-        $Default = $false,
+        [Boolean]
+        $MakeDefault = $false,
 
         [Parameter()]
-        [bool]
+        [Boolean]
         $MatchSubDomains = $false,
 
         [Parameter()]
-        [string]
+        [String]
         $Name
 
     )
@@ -110,7 +147,7 @@ function Set-TargetResource
 
     # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
-    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove Credential, Ensure, 'Default'
+    Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove Credential, Ensure
 
     $acceptedDomain = Get-TargetResource -DomainName $DomainName -Credential $Credential
 
@@ -150,6 +187,25 @@ function Set-TargetResource
         Set-AcceptedDomain @PSBoundParameters -confirm:$false
     }
 }
+
+<#
+.SYNOPSIS
+    Tests the state of an accepted domain.
+.PARAMETER DomainName
+    The domain name of the accepted domain.
+.PARAMETER Credential
+    Credentials used to establish a remote PowerShell session to Exchange.
+.PARAMETER AddressBookEnabled
+    The AddressBookEnabled parameter specifies whether to enable recipient filtering for this accepted domain.
+.PARAMETER DomainType
+    The DomainType parameter specifies the type of accepted domain that you want to configure.
+.PARAMETER Default
+    The MakeDefault parameter specifies whether the accepted domain is the default domain.
+.PARAMETER MatchSubDomains
+    The MatchSubDomains parameter enables mail to be sent by and received from users on any subdomain of this accepted domain.
+.PARAMETER Name
+    The Name parameter specifies a unique name for the accepted domain object.
+#>
 function Test-TargetResource
 {
     [CmdletBinding()]
@@ -157,7 +213,7 @@ function Test-TargetResource
     param (
         # The name of the accepted domain
         [Parameter(Mandatory = $true)]
-        [string]
+        [String]
         $DomainName,
 
         [Parameter(Mandatory = $true)]
@@ -171,24 +227,24 @@ function Test-TargetResource
         $Ensure = 'Present',
 
         [Parameter()]
-        [bool]
+        [Boolean]
         $AddressBookEnabled = $true,
 
         [Parameter()]
         [ValidateSet('Authoritative', 'ExternalRelay', 'InternalRelay')]
-        [string]
+        [String]
         $DomainType,
 
         [Parameter()]
-        [bool]
-        $Default = $false,
+        [Boolean]
+        $MakeDefault = $false,
 
         [Parameter()]
-        [bool]
+        [Boolean]
         $MatchSubDomains = $false,
 
         [Parameter()]
-        [string]
+        [String]
         $Name
     )
 
@@ -222,8 +278,10 @@ function Test-TargetResource
     }
     else
     {
-        $referenceObject = [PSCustomObject]$acceptedDomain
-        $differenceObject = [PSCustomObject]$DifferenceObjectHashTable
+        $acceptedDomain['MakeDefault'] = $acceptedDomain['Default']
+        $acceptedDomain.Remove('Default')
+        $referenceObject = [PSCustomObject] $acceptedDomain
+        $differenceObject = [PSCustomObject] $DifferenceObjectHashTable
 
         foreach ($property in $DifferenceObjectHashTable.Keys)
         {
