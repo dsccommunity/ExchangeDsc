@@ -40,6 +40,10 @@ try
 
         function New-AcceptedDomain
         {
+            param (
+                $DomainName,
+                $Name
+            )
         }
         function Set-AcceptedDomain
         {
@@ -86,7 +90,7 @@ try
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }
 
-            Context 'When ressource is absent' {
+            Context 'When resource is absent' {
                 It 'Should call all functions' {
                     Mock -CommandName Get-AcceptedDomain -Verifiable
 
@@ -127,7 +131,7 @@ try
 
                 Context 'No Name was specified' {
                     It 'Should call all functions' {
-                        Mock -CommandName New-AcceptedDomain -ParameterFilter { $DomainName -eq 'fakedomain.com' } -Verifiable
+                        Mock -CommandName New-AcceptedDomain -ParameterFilter { $DomainName -eq 'fakedomain.com' -and $Name -eq 'fakedomain.com' } -Verifiable
                         Mock -CommandName Set-AcceptedDomain -ParameterFilter { $Identity -eq 'fakedomain.com' } -Verifiable
 
                         Set-TargetResource @setAcceptedDomaindInput
@@ -244,6 +248,17 @@ try
             }
 
             Context 'When domain is present' {
+                Context 'When "Ensure" is set to Absent' {
+                    It 'Should return false' {
+                        Mock -CommandName Get-TargetResource -MockWith { return $stubAcceptedDomain } -Verifiable
+
+                        $testAcceptedDomaindInputAbsent = @{ } + $testAcceptedDomaindInput
+                        $testAcceptedDomaindInputAbsent['Ensure'] = 'Absent'
+
+                        Test-TargetResource @testAcceptedDomaindInputAbsent | Should -Be $false
+                    }
+                }
+
                 Context 'Should return true when compliant and Name was not specified' {
                     It 'Should call all functions' {
                         $returnAcceptedDomain = @{ } + $stubAcceptedDomain
@@ -258,8 +273,8 @@ try
                     }
                 }
 
-                Context 'Should return true when compliant' {
-                    It 'Should call all functions' {
+                Context 'When compliant' {
+                    It 'Should return true' {
                         $returnAcceptedDomain = @{ } + $stubAcceptedDomain
                         $returnAcceptedDomain['Name'] = 'MyFakeDomain'
 
@@ -269,8 +284,8 @@ try
                     }
                 }
 
-                Context 'Should return false when not compliant' {
-                    It 'Should call all functions' {
+                Context 'When not compliant' {
+                    It 'Should return false' {
                         Mock -CommandName Get-TargetResource -MockWith { return $stubAcceptedDomain } -Verifiable
 
                         Test-TargetResource @testAcceptedDomaindInput | Should -Be $false

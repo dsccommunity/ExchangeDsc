@@ -1,20 +1,20 @@
 <#
-.SYNOPSIS
-    Get the current state of an accepted domain
-.PARAMETER DomainName
-    The domain name of the accepted domain.
-.PARAMETER Credential
-    Credentials used to establish a remote PowerShell session to Exchange.
-.PARAMETER AddressBookEnabled
-    The AddressBookEnabled parameter specifies whether to enable recipient filtering for this accepted domain.
-.PARAMETER DomainType
-    The DomainType parameter specifies the type of accepted domain that you want to configure.
-.PARAMETER Default
-    The MakeDefault parameter specifies whether the accepted domain is the default domain.
-.PARAMETER MatchSubDomains
-    The MatchSubDomains parameter enables mail to be sent by and received from users on any subdomain of this accepted domain.
-.PARAMETER Name
-    The Name parameter specifies a unique name for the accepted domain object.
+    .SYNOPSIS
+        Get the current state of an accepted domain
+    .PARAMETER DomainName
+        The domain name of the accepted domain.
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+    .PARAMETER AddressBookEnabled
+        The AddressBookEnabled parameter specifies whether to enable recipient filtering for this accepted domain.
+    .PARAMETER DomainType
+        The DomainType parameter specifies the type of accepted domain that you want to configure.
+    .PARAMETER Default
+        The MakeDefault parameter specifies whether the accepted domain is the default domain.
+    .PARAMETER MatchSubDomains
+        The MatchSubDomains parameter enables mail to be sent by and received from users on any subdomain of this accepted domain.
+    .PARAMETER Name
+        The Name parameter specifies a unique name for the accepted domain object.
 #>
 function Get-TargetResource
 {
@@ -77,28 +77,27 @@ function Get-TargetResource
 }
 
 <#
-.SYNOPSIS
-    Sets the state of an accepted domain.
-.PARAMETER DomainName
-    The domain name of the accepted domain.
-.PARAMETER Credential
-    Credentials used to establish a remote PowerShell session to Exchange.
-.PARAMETER AddressBookEnabled
-    The AddressBookEnabled parameter specifies whether to enable recipient filtering for this accepted domain.
-.PARAMETER DomainType
-    The DomainType parameter specifies the type of accepted domain that you want to configure.
-.PARAMETER Default
-    The MakeDefault parameter specifies whether the accepted domain is the default domain.
-.PARAMETER MatchSubDomains
-    The MatchSubDomains parameter enables mail to be sent by and received from users on any subdomain of this accepted domain.
-.PARAMETER Name
-    The Name parameter specifies a unique name for the accepted domain object.
+    .SYNOPSIS
+        Sets the state of an accepted domain.
+    .PARAMETER DomainName
+        The domain name of the accepted domain.
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+    .PARAMETER AddressBookEnabled
+        The AddressBookEnabled parameter specifies whether to enable recipient filtering for this accepted domain.
+    .PARAMETER DomainType
+        The DomainType parameter specifies the type of accepted domain that you want to configure.
+    .PARAMETER Default
+        The MakeDefault parameter specifies whether the accepted domain is the default domain.
+    .PARAMETER MatchSubDomains
+        The MatchSubDomains parameter enables mail to be sent by and received from users on any subdomain of this accepted domain.
+    .PARAMETER Name
+        The Name parameter specifies a unique name for the accepted domain object.
 #>
 function Set-TargetResource
 {
     [CmdletBinding()]
     param (
-        # The name of the accepted domain
         [Parameter(Mandatory = $true)]
         [String]
         $DomainName,
@@ -174,7 +173,7 @@ function Set-TargetResource
 
         if ($null -eq $PSBoundParameters['Name'])
         {
-            New-AcceptedDomain -DomainName $DomainName -confirm:$false
+            New-AcceptedDomain -DomainName $DomainName -Name $DomainName -confirm:$false
             $PSBoundParameters['Identity'] = $DomainName
         }
         else
@@ -189,29 +188,28 @@ function Set-TargetResource
 }
 
 <#
-.SYNOPSIS
-    Tests the state of an accepted domain.
-.PARAMETER DomainName
-    The domain name of the accepted domain.
-.PARAMETER Credential
-    Credentials used to establish a remote PowerShell session to Exchange.
-.PARAMETER AddressBookEnabled
-    The AddressBookEnabled parameter specifies whether to enable recipient filtering for this accepted domain.
-.PARAMETER DomainType
-    The DomainType parameter specifies the type of accepted domain that you want to configure.
-.PARAMETER Default
-    The MakeDefault parameter specifies whether the accepted domain is the default domain.
-.PARAMETER MatchSubDomains
-    The MatchSubDomains parameter enables mail to be sent by and received from users on any subdomain of this accepted domain.
-.PARAMETER Name
-    The Name parameter specifies a unique name for the accepted domain object.
+    .SYNOPSIS
+        Tests the state of an accepted domain.
+    .PARAMETER DomainName
+        The domain name of the accepted domain.
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+    .PARAMETER AddressBookEnabled
+        The AddressBookEnabled parameter specifies whether to enable recipient filtering for this accepted domain.
+    .PARAMETER DomainType
+        The DomainType parameter specifies the type of accepted domain that you want to configure.
+    .PARAMETER Default
+        The MakeDefault parameter specifies whether the accepted domain is the default domain.
+    .PARAMETER MatchSubDomains
+        The MatchSubDomains parameter enables mail to be sent by and received from users on any subdomain of this accepted domain.
+    .PARAMETER Name
+        The Name parameter specifies a unique name for the accepted domain object.
 #>
 function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        # The name of the accepted domain
         [Parameter(Mandatory = $true)]
         [String]
         $DomainName,
@@ -275,6 +273,10 @@ function Test-TargetResource
     elseif ($acceptedDomain['Ensure'] -eq 'Absent' -and $Ensure -eq 'Absent')
     {
         $targetResourceInCompliance = $true
+    }
+    elseif ($acceptedDomain['Ensure'] -eq 'Present' -and $Ensure -eq 'Absent')
+    {
+        $targetResourceInCompliance = $false
     }
     else
     {
