@@ -142,7 +142,9 @@ function Get-TargetResource
         $WorkloadManagementPolicy
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer', 'Set-ExchangeServer' -Verbose:$VerbosePreference
@@ -361,7 +363,9 @@ function Set-TargetResource
         $WorkloadManagementPolicy
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer', 'Set-ExchangeServer' -Verbose:$VerbosePreference
@@ -546,7 +550,9 @@ function Test-TargetResource
         $WorkloadManagementPolicy
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeServer', 'Set-ExchangeServer' -Verbose:$VerbosePreference

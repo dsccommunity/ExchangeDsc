@@ -27,7 +27,10 @@ function Get-TargetResource
         $MinAchievedIOPS = 0
     )
 
-    Write-FunctionEntry -Parameters @{'JetstressPath' = $JetstressPath; 'JetstressParams' = $JetstressParams} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'JetstressPath'   = $JetstressPath
+        'JetstressParams' = $JetstressParams
+    } -Verbose:$VerbosePreference
 
     $returnValue = @{
         Type            = [System.String] $Type
@@ -66,12 +69,15 @@ function Set-TargetResource
         $MinAchievedIOPS = 0
     )
 
-    Write-FunctionEntry -Parameters @{'JetstressPath' = $JetstressPath; 'JetstressParams' = $JetstressParams} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'JetstressPath'   = $JetstressPath
+        'JetstressParams' = $JetstressParams
+    } -Verbose:$VerbosePreference
 
     $jetstressRunning = Test-JetstressRunning
     $jetstressSuccessful = Test-JetstressSuccessful @PSBoundParameters
 
-    if ($jetstressSuccessful -eq $false -and (Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object {$null -ne $_.Name -like "$($Type)*.html"}))
+    if ($jetstressSuccessful -eq $false -and (Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object { $null -ne $_.Name -like "$($Type)*.html" }))
     {
         throw "Jetstress was previously executed and resulted in a failed run. Clean up any $($Type)*.html files in the Jetstress install directory before trying to run this resource again."
     }
@@ -225,7 +231,10 @@ function Test-TargetResource
         $MinAchievedIOPS = 0
     )
 
-    Write-FunctionEntry -Parameters @{'JetstressPath' = $JetstressPath; 'JetstressParams' = $JetstressParams} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'JetstressPath' = $JetstressPath
+        'JetstressParams' = $JetstressParams
+    } -Verbose:$VerbosePreference
 
     $jetstressRunning = Test-JetstressRunning -MaximumWaitSeconds 1
 
@@ -314,7 +323,7 @@ function Test-JetstressSuccessful
     $overallTestSuccessful = $false
     $achievedIOPSTarget = $false
 
-    $outputFiles = Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object {$_.Name -like "$($Type)*.html"}
+    $outputFiles = Get-ChildItem -LiteralPath "$($JetstressPath)" | Where-Object { $_.Name -like "$($Type)*.html" }
 
     if ($null -ne $outputFiles -and $outputFiles.Count -ge 1)
     {

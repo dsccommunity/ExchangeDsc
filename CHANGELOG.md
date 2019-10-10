@@ -4,6 +4,7 @@
 
 - Changes to xExchange
   - Resolved custom Script Analyzer rules that was added to the test framework.
+  - Resolved hashtable styling issues
 
 ## 1.29.0.0
 

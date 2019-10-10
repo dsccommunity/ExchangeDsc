@@ -76,7 +76,10 @@ function Get-TargetResource
         $Subnets
     )
 
-    Write-FunctionEntry -Parameters @{'Name' = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Name'                      = $Name
+        "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroupNetwork' -Verbose:$VerbosePreference
@@ -174,7 +177,10 @@ function Set-TargetResource
         $Subnets
     )
 
-    Write-FunctionEntry -Parameters @{'Name' = $Name; "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Name'                      = $Name
+        "DatabaseAvailabilityGroup" = $DatabaseAvailabilityGroup
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*DatabaseAvailabilityGroup*' -Verbose:$VerbosePreference
@@ -212,7 +218,9 @@ function Set-TargetResource
         }
         else # Set props on the existing network
         {
-            Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $dagId}
+            Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
+                'Identity' = $dagId
+            }
             Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Name', 'DatabaseAvailabilityGroup'
 
             Set-DatabaseAvailabilityGroupNetwork @PSBoundParameters
@@ -299,7 +307,10 @@ function Test-TargetResource
         $Subnets
     )
 
-    Write-FunctionEntry -Parameters @{'Name' = $Name; 'DatabaseAvailabilityGroup' = $DatabaseAvailabilityGroup} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Name'                      = $Name
+        'DatabaseAvailabilityGroup' = $DatabaseAvailabilityGroup
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroupNetwork' -Verbose:$VerbosePreference
@@ -425,7 +436,7 @@ function Get-DatabaseAvailabilityGroupNetworkInternal
     )
 
     Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
-        'Identity' = "$($DatabaseAvailabilityGroup)\$($Name)"
+        'Identity'    = "$($DatabaseAvailabilityGroup)\$($Name)"
         'ErrorAction' = 'SilentlyContinue'
     }
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'ErrorAction', 'DomainController'

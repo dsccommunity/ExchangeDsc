@@ -119,7 +119,9 @@ function Get-TargetResource
         $WitnessServer
     )
 
-    Write-FunctionEntry -Parameters @{'Name' = $Name } -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Name' = $Name
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
@@ -285,7 +287,9 @@ function Set-TargetResource
         $WitnessServer
     )
 
-    Write-FunctionEntry -Parameters @{'Name' = $Name } -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Name' = $Name
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup', 'Set-DatabaseAvailabilityGroup', 'New-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference
@@ -320,7 +324,7 @@ function Set-TargetResource
     if ($null -eq $dag)
     {
         # Create a copy of the original parameters
-        $originalPSBoundParameters = @{ } + $PSBoundParameters
+        $originalPSBoundParameters = @{} + $PSBoundParameters
 
         # Remove parameters that don't exist in New-DatabaseAvailabilityGroup
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep "Name", "DatabaseAvailabilityGroupIpAddresses", "WitnessDirectory", "WitnessServer", "DomainController"
@@ -343,7 +347,9 @@ function Set-TargetResource
     if ($null -ne $dag)
     {
         # convert Name to Identity, and Remove Credential
-        Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{"Identity" = $PSBoundParameters["Name"] }
+        Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
+            'Identity' = $PSBoundParameters['Name']
+        }
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove "Name", "Credential"
 
         # If not all members are in DAG yet, remove params that require them to be
@@ -481,7 +487,9 @@ function Test-TargetResource
         $WitnessServer
     )
 
-    Write-FunctionEntry -Parameters @{'Name' = $Name } -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Name' = $Name
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-DatabaseAvailabilityGroup' -Verbose:$VerbosePreference

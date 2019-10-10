@@ -69,7 +69,9 @@ function Get-TargetResource
         $DomainController
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMService' -SupportedVersions '2013', '2016'
 
@@ -171,7 +173,9 @@ function Set-TargetResource
         $DomainController
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMService' -SupportedVersions '2013', '2016'
 
@@ -254,7 +258,9 @@ function Test-TargetResource
         $DomainController
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     Assert-IsSupportedWithExchangeVersion -ObjectOrOperationName 'xExchUMService' -SupportedVersions '2013', '2016'
 

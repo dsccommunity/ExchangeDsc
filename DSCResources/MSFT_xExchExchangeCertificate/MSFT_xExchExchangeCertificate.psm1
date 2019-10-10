@@ -93,7 +93,9 @@ function Get-TargetResource
         $Services
     )
 
-    Write-FunctionEntry -Parameters @{'Thumbprint' = $Thumbprint} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Thumbprint' = $Thumbprint
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -Verbose:$VerbosePreference
@@ -204,7 +206,9 @@ function Set-TargetResource
         $Services
     )
 
-    Write-FunctionEntry -Parameters @{'Thumbprint' = $Thumbprint} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Thumbprint' = $Thumbprint
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*ExchangeCertificate' -Verbose:$VerbosePreference
@@ -411,7 +415,9 @@ function Test-TargetResource
         $Services
     )
 
-    Write-FunctionEntry -Parameters @{'Thumbprint' = $Thumbprint} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Thumbprint' = $Thumbprint
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ExchangeCertificate' -Verbose:$VerbosePreference
