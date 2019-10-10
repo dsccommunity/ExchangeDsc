@@ -565,39 +565,39 @@ function Get-ServersInDag
             }
         } | Where-Object { $_ -ne $server })
 
-if ($null -ne $dagServers)
-{
-    # Filter out servers who are in the local site, if $ExcludeLocalSite
-    if ($ExcludeLocalSite)
+    if ($null -ne $dagServers)
     {
-        for ($i = $dagServers.Count - 1; $i -ge 0; $i--)
+        # Filter out servers who are in the local site, if $ExcludeLocalSite
+        if ($ExcludeLocalSite)
         {
-            $dagServerProps = $null
-            $dagServerProps = Get-ExchangeServer $dagServers[$i]
-
-            if ($null -ne $dagServerProps -and $dagServerProps.Site -eq $exchangeServer.Site)
+            for ($i = $dagServers.Count - 1; $i -ge 0; $i--)
             {
-                $dagServers = $dagServers | Where-Object { $_ -ne $dagServers[$i] }
+                $dagServerProps = $null
+                $dagServerProps = Get-ExchangeServer $dagServers[$i]
+
+                if ($null -ne $dagServerProps -and $dagServerProps.Site -eq $exchangeServer.Site)
+                {
+                    $dagServers = $dagServers | Where-Object { $_ -ne $dagServers[$i] }
+                }
+            }
+        }
+
+        # Filter out additional exclusions
+        if ($null -ne $AdditionalExclusions)
+        {
+            foreach ($exclusion in $AdditionalExclusions)
+            {
+                $dagServers = $dagServers | Where-Object { $_ -notlike $exclusion }
             }
         }
     }
 
-    # Filter out additional exclusions
-    if ($null -ne $AdditionalExclusions)
+    if (-not $dagServers)
     {
-        foreach ($exclusion in $AdditionalExclusions)
-        {
-            $dagServers = $dagServers | Where-Object { $_ -notlike $exclusion }
-        }
+        Write-Warning -Message 'Could not find servers in the DAG that do not meeting exclusion criteria.'
     }
-}
 
-if (-not $dagServers)
-{
-    Write-Warning -Message 'Could not find servers in the DAG that do not meeting exclusion criteria.'
-}
-
-return $dagServers
+    return $dagServers
 }
 
 # .DESCRIPTION
