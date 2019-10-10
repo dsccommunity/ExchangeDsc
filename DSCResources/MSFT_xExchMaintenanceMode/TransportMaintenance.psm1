@@ -554,46 +554,50 @@ function Get-ServersInDag
 
     Write-Verbose -Message "$server - Retrieving other hub transport servers in the DAG - $dag"
 
-    $dagServers = @((Get-DatabaseAvailabilityGroup $dag).Servers | ForEach-Object { if ($_.Name)
-            { $_.Name
+    $dagServers = @((Get-DatabaseAvailabilityGroup $dag).Servers | ForEach-Object {
+            if ($null -ne $_.Name)
+            {
+                $_.Name
             }
             else
-            { $_
-            } } | Where-Object { $_ -ne $server })
-
-    if ($null -ne $dagServers)
-    {
-        # Filter out servers who are in the local site, if $ExcludeLocalSite
-        if ($ExcludeLocalSite)
-        {
-            for ($i = $dagServers.Count - 1; $i -ge 0; $i--)
             {
-                $dagServerProps = $null
-                $dagServerProps = Get-ExchangeServer $dagServers[$i]
-
-                if ($null -ne $dagServerProps -and $dagServerProps.Site -eq $exchangeServer.Site)
-                {
-                    $dagServers = $dagServers | Where-Object { $_ -ne $dagServers[$i] }
-                }
+                $_
             }
-        }
+        } | Where-Object { $_ -ne $server })
 
-        # Filter out additional exclusions
-        if ($null -ne $AdditionalExclusions)
+if ($null -ne $dagServers)
+{
+    # Filter out servers who are in the local site, if $ExcludeLocalSite
+    if ($ExcludeLocalSite)
+    {
+        for ($i = $dagServers.Count - 1; $i -ge 0; $i--)
         {
-            foreach ($exclusion in $AdditionalExclusions)
+            $dagServerProps = $null
+            $dagServerProps = Get-ExchangeServer $dagServers[$i]
+
+            if ($null -ne $dagServerProps -and $dagServerProps.Site -eq $exchangeServer.Site)
             {
-                $dagServers = $dagServers | Where-Object { $_ -notlike $exclusion }
+                $dagServers = $dagServers | Where-Object { $_ -ne $dagServers[$i] }
             }
         }
     }
 
-    if (-not $dagServers)
+    # Filter out additional exclusions
+    if ($null -ne $AdditionalExclusions)
     {
-        Write-Warning -Message 'Could not find servers in the DAG that do not meeting exclusion criteria.'
+        foreach ($exclusion in $AdditionalExclusions)
+        {
+            $dagServers = $dagServers | Where-Object { $_ -notlike $exclusion }
+        }
     }
+}
 
-    return $dagServers
+if (-not $dagServers)
+{
+    Write-Warning -Message 'Could not find servers in the DAG that do not meeting exclusion criteria.'
+}
+
+return $dagServers
 }
 
 # .DESCRIPTION
@@ -616,14 +620,14 @@ function Get-ActiveServer
     )
 
     $activeServers = $Servers | `
-        Where-Object { (Get-ServerComponentState -Identity $_ -Component HubTransport).State -eq 'Active' } | `
-        ForEach-Object { `
-            $xml = [xml] (Get-ExchangeDiagnosticInfo -Process 'EdgeTransport' -server $_ -erroraction SilentlyContinue)
-        if ($xml -and $xml.Diagnostics.ProcessInfo)
-        {
-            Write-Output $_
+            Where-Object { (Get-ServerComponentState -Identity $_ -Component HubTransport).State -eq 'Active' } | `
+            ForEach-Object { `
+                $xml = [xml] (Get-ExchangeDiagnosticInfo -Process 'EdgeTransport' -server $_ -erroraction SilentlyContinue)
+            if ($xml -and $xml.Diagnostics.ProcessInfo)
+            {
+                Write-Output $_
+            }
         }
-    }
 
     return $activeServers
 }
@@ -734,8 +738,8 @@ function Register-TransportMaintenanceLog
     else
     {
         $newestLog = Get-TransportMaintenanceLogFileList -TransportService $TransportService -LogPath $LogPath | `
-            Sort-Object LastWriteTime -Descending | `
-            Select-Object -First 1
+                Sort-Object LastWriteTime -Descending | `
+                Select-Object -First 1
     }
 
     if (-not $newestLog -or $newestLog.Length -ge $maxFileSize)
@@ -791,8 +795,8 @@ function Remove-TransportMaintenanceLogsOverMaxAge
     [DateTime] $rolloutTime = (Get-Date) - $maxLogAge
 
     Get-TransportMaintenanceLogFileList -TransportService $TransportService -LogPath $LogPath | `
-        Where-Object { $_.LastWriteTime -lt $rolloutTime } | `
-        ForEach-Object { Remove-Item -Path $_.FullName }
+            Where-Object { $_.LastWriteTime -lt $rolloutTime } | `
+            ForEach-Object { Remove-Item -Path $_.FullName }
 }
 
 # .DESCRIPTION
@@ -1220,14 +1224,14 @@ function Write-EventOfEntry
     if ($Reason)
     {
         $Reason.GetEnumerator() |  `
-            Sort-Object Key | ForEach-Object {
-            if ($ReasonStr)
-            {
-                $ReasonStr += '; '
-            }
+                Sort-Object Key | ForEach-Object {
+                if ($ReasonStr)
+                {
+                    $ReasonStr += '; '
+                }
 
-            $ReasonStr += '{0}={1}' -f $_.Name, $_.Value
-        }
+                $ReasonStr += '{0}={1}' -f $_.Name, $_.Value
+            }
     }
 
     $msg = [System.String]::Format('{0},{1},{2},{3},{4},{5:g},{6},{7},{8}', `
@@ -1237,11 +1241,14 @@ function Write-EventOfEntry
             $Event, `
             $Entry.Id, `
             $duration, `
-        $(if ($Entry.Count -ne -1)
-            { $Entry.Count
+        $(
+            if ($Entry.Count -ne -1)
+            {
+                $Entry.Count
             }
             else
-            { ''
+            {
+                ''
             }), `
             $ReasonStr, `
             $Script:ExchangeVersion)
@@ -1790,7 +1797,7 @@ function Wait-EmptyQueuesCompletion
 
         $filter = "{MessageCount -gt 0 -and DeliveryType -ne 'ShadowRedundancy' -and NextHopDomain -ne 'Poison Message'}"
         $queues = get-queue -server $Server -ErrorAction SilentlyContinue -filter $filter | `
-            Where-Object { $null -eq $QueueTypes -or $QueueTypes -contains $_.DeliveryType }
+                Where-Object { $null -eq $QueueTypes -or $QueueTypes -contains $_.DeliveryType }
 
         $entries = $queues | ForEach-Object {
             if ($ActiveMsgOnly)
@@ -1869,21 +1876,21 @@ function Get-DiscardInfo
     $shadowInfo = [xml] (Get-ExchangeDiagnosticInfo -Server $Server -Process edgetransport -Component ShadowRedundancy -argument $argument)
 
     $discardInfo = $shadowInfo.Diagnostics.Components.ShadowRedundancy.ShadowServerCollection.ShadowServer | `
-        Where-Object { $_.ShadowServerInfo.discardEventsCount -gt 0 } |
-    ForEach-Object {
-        $infoProps = `
-        @{
-            Id         = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($_.Context))
-            Count      = $_.ShadowServerInfo.discardEventsCount
-            DiscardIds = @()
-        }
-        if ($Detail)
-        {
-            $infoProps.DiscardIds = $_.ShadowServerInfo.discardEventMessageId
-        }
+            Where-Object { $_.ShadowServerInfo.discardEventsCount -gt 0 } |
+        ForEach-Object {
+            $infoProps = `
+            @{
+                Id         = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($_.Context))
+                Count      = $_.ShadowServerInfo.discardEventsCount
+                DiscardIds = @()
+            }
+            if ($Detail)
+            {
+                $infoProps.DiscardIds = $_.ShadowServerInfo.discardEventMessageId
+            }
 
-        New-Object psobject -Property $infoProps
-    }
+            New-Object psobject -Property $infoProps
+        }
 
     return $discardInfo
 }
