@@ -105,12 +105,14 @@ function Get-TargetResource
         $TruncationLagTime
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential `
-                             -CommandsToLoad 'Get-MailboxDatabase', '*DatabaseCopy*', 'Set-AdServerSettings' `
-                             -Verbose:$VerbosePreference
+        -CommandsToLoad 'Get-MailboxDatabase', '*DatabaseCopy*', 'Set-AdServerSettings' `
+        -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
@@ -289,13 +291,15 @@ function Set-TargetResource
         $TruncationLagTime
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     # Check for non-existent parameters in Exchange 2013
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
-                                    -ParamName 'ReplayLagMaxDelay' `
-                                    -ResourceName 'xExchMailboxDatabaseCopy' `
-                                    -ParamExistsInVersion '2016', '2019'
+        -ParamName 'ReplayLagMaxDelay' `
+        -ResourceName 'xExchMailboxDatabaseCopy' `
+        -ParamExistsInVersion '2016', '2019'
 
     # Don't need to establish remote session, as Get-TargetResource will do it
     $copy = Get-TargetResource @PSBoundParameters
@@ -418,13 +422,15 @@ function Test-TargetResource
         $TruncationLagTime
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     # Check for non-existent parameters in Exchange 2013
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
-                                    -ParamName 'ReplayLagMaxDelay' `
-                                    -ResourceName 'xExchMailboxDatabaseCopy' `
-                                    -ParamExistsInVersion '2016', '2019'
+        -ParamName 'ReplayLagMaxDelay' `
+        -ResourceName 'xExchMailboxDatabaseCopy' `
+        -ParamExistsInVersion '2016', '2019'
 
     # Don't need to establish remote session, as Get-TargetResource will do it
     $copy = Get-TargetResource @PSBoundParameters
@@ -806,7 +812,7 @@ function Add-MailboxDatabaseCopyInternal
     $copyCount++
 
     # Create a copy of the original parameters
-    $originalPSBoundParameters = @{} + $PSBoundParameters
+    $originalPSBoundParameters =@{} + $PSBoundParameters
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters `
         -ParamsToRemove 'Credential', 'AllowServiceRestart', 'AdServerSettingsPreferredServer'
@@ -970,9 +976,11 @@ function Set-MailboxDatabaseCopyInternal
 
     $copyCount = Get-MailboxDatabaseCopyCount @PSBoundParameters
 
-    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = "$($Identity)\$($MailboxServer)"}
+    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
+        'Identity' = "$($Identity)\$($MailboxServer)"
+    }
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters `
-                        -ParamsToRemove 'Credential', 'AllowServiceRestart', 'MailboxServer', 'AdServerSettingsPreferredServer', 'SeedingPostponed'
+        -ParamsToRemove 'Credential', 'AllowServiceRestart', 'MailboxServer', 'AdServerSettingsPreferredServer', 'SeedingPostponed'
 
     if ($PSBoundParameters.ContainsKey('ActivationPreference') -and $ActivationPreference -gt $copyCount)
     {

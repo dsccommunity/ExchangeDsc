@@ -309,7 +309,9 @@ function Get-TargetResource
         $SkipInitialDatabaseMount
     )
 
-    Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Name' = $Name
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-MailboxDatabase', 'Set-AdServerSettings' -Verbose:$VerbosePreference
@@ -684,40 +686,42 @@ function Set-TargetResource
         $SkipInitialDatabaseMount
     )
 
-    Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters  @{
+        'Name' = $Name
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential `
-                             -CommandsToLoad '*MailboxDatabase', 'Move-DatabasePath', 'Mount-Database', 'Set-AdServerSettings'`
-                             -Verbose:$VerbosePreference
+        -CommandsToLoad '*MailboxDatabase', 'Move-DatabasePath', 'Mount-Database', 'Set-AdServerSettings'`
+        -Verbose:$VerbosePreference
 
     # Check for non-existent parameters in Exchange 2013
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
-                                    -ParamName 'IsExcludedFromProvisioningByOperator' `
-                                    -ResourceName 'xExchMailboxDatabase' `
-                                    -ParamExistsInVersion '2016', '2019'
+        -ParamName 'IsExcludedFromProvisioningByOperator' `
+        -ResourceName 'xExchMailboxDatabase' `
+        -ParamExistsInVersion '2016', '2019'
 
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
-                                    -ParamName 'IsExcludedFromProvisioningDueToLogicalCorruption' `
-                                    -ResourceName 'xExchMailboxDatabase' `
-                                    -ParamExistsInVersion '2016', '2019'
+        -ParamName 'IsExcludedFromProvisioningDueToLogicalCorruption' `
+        -ResourceName 'xExchMailboxDatabase' `
+        -ParamExistsInVersion '2016', '2019'
 
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
-                                    -ParamName 'IsExcludedFromProvisioningReason' `
-                                    -ResourceName 'xExchMailboxDatabase' `
-                                    -ParamExistsInVersion '2016', '2019'
+        -ParamName 'IsExcludedFromProvisioningReason' `
+        -ResourceName 'xExchMailboxDatabase' `
+        -ParamExistsInVersion '2016', '2019'
 
     # Check for non-existent parameters in Exchange 2013 or 2016
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
-                                    -ParamName 'MetaCacheDatabaseMaxCapacityInBytes' `
-                                    -ResourceName 'xExchMailboxDatabase' `
-                                    -ParamExistsInVersion '2019'
+        -ParamName 'MetaCacheDatabaseMaxCapacityInBytes' `
+        -ResourceName 'xExchMailboxDatabase' `
+        -ParamExistsInVersion '2019'
 
     # Check for non-existent parameters in Exchange 2019
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
-                                    -ParamName 'IndexEnabled' `
-                                    -ResourceName 'xExchMailboxDatabase' `
-                                    -ParamExistsInVersion '2013', '2016'
+        -ParamName 'IndexEnabled' `
+        -ResourceName 'xExchMailboxDatabase' `
+        -ParamExistsInVersion '2013', '2016'
 
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
@@ -791,16 +795,17 @@ function Set-TargetResource
         }
 
         # setup params
-        Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters `
-                      -ParamsToAdd @{'Identity' = $Name}
+        Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
+            'Name' = $Name
+        }
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters `
-                         -ParamsToRemove 'Name', 'Server', 'DatabaseCopyCount', 'AllowServiceRestart', 'EdbFilePath', 'LogFolderPath', 'Credential', 'AdServerSettingsPreferredServer', 'SkipInitialDatabaseMount'
+            -ParamsToRemove 'Name', 'Server', 'DatabaseCopyCount', 'AllowServiceRestart', 'EdbFilePath', 'LogFolderPath', 'Credential', 'AdServerSettingsPreferredServer', 'SkipInitialDatabaseMount'
 
         # Remove parameters that depend on all copies being added
         if ($db.DatabaseCopies.Count -lt $DatabaseCopyCount)
         {
             Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters `
-                             -ParamsToRemove 'CircularLoggingEnabled', 'DataMoveReplicationConstraint'
+                -ParamsToRemove 'CircularLoggingEnabled', 'DataMoveReplicationConstraint'
         }
 
         Set-MailboxDatabase @PSBoundParameters
@@ -1119,40 +1124,42 @@ function Test-TargetResource
         $SkipInitialDatabaseMount
     )
 
-    Write-FunctionEntry -Parameters @{'Name' = $Name} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters  @{
+        'Name' = $Name
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential `
-                             -CommandsToLoad 'Get-MailboxDatabase', 'Get-Recipient', 'Set-AdServerSettings'`
-                             -Verbose:$VerbosePreference
+        -CommandsToLoad 'Get-MailboxDatabase', 'Get-Recipient', 'Set-AdServerSettings'`
+        -Verbose:$VerbosePreference
 
     # Check for non-existent parameters in Exchange 2013
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
-                                    -ParamName 'IsExcludedFromProvisioningByOperator' `
-                                    -ResourceName 'xExchMailboxDatabase' `
-                                    -ParamExistsInVersion '2016', '2019'
+        -ParamName 'IsExcludedFromProvisioningByOperator' `
+        -ResourceName 'xExchMailboxDatabase' `
+        -ParamExistsInVersion '2016', '2019'
 
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
-                                    -ParamName 'IsExcludedFromProvisioningDueToLogicalCorruption' `
-                                    -ResourceName 'xExchMailboxDatabase' `
-                                    -ParamExistsInVersion '2016', '2019'
+        -ParamName 'IsExcludedFromProvisioningDueToLogicalCorruption' `
+        -ResourceName 'xExchMailboxDatabase' `
+        -ParamExistsInVersion '2016', '2019'
 
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
-                                    -ParamName 'IsExcludedFromProvisioningReason' `
-                                    -ResourceName 'xExchMailboxDatabase' `
-                                    -ParamExistsInVersion '2016', '2019'
+        -ParamName 'IsExcludedFromProvisioningReason' `
+        -ResourceName 'xExchMailboxDatabase' `
+        -ParamExistsInVersion '2016', '2019'
 
     # Check for non-existent parameters in Exchange 2013 or 2016
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
-                                    -ParamName 'MetaCacheDatabaseMaxCapacityInBytes' `
-                                    -ResourceName 'xExchMailboxDatabase' `
-                                    -ParamExistsInVersion '2019'
+        -ParamName 'MetaCacheDatabaseMaxCapacityInBytes' `
+        -ResourceName 'xExchMailboxDatabase' `
+        -ParamExistsInVersion '2019'
 
     # Check for non-existent parameters in Exchange 2019
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
-                                    -ParamName 'IndexEnabled' `
-                                    -ResourceName 'xExchMailboxDatabase' `
-                                    -ParamExistsInVersion '2013', '2016'
+        -ParamName 'IndexEnabled' `
+        -ResourceName 'xExchMailboxDatabase' `
+        -ParamExistsInVersion '2013', '2016'
 
     if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))
     {
@@ -1642,7 +1649,9 @@ function Get-MailboxDatabaseInternal
         $SkipInitialDatabaseMount
     )
 
-    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $Name}
+    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd  @{
+        'Name' = $Name
+    }
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     return (Get-MailboxDatabase @PSBoundParameters -ErrorAction SilentlyContinue)
@@ -1958,7 +1967,9 @@ function Move-DatabaseOrLogPath
         $SkipInitialDatabaseMount
     )
 
-    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $Name}
+    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd  @{
+        'Name' = $Name
+    }
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController', 'EdbFilePath', 'LogFolderPath'
 
     Move-DatabasePath @PSBoundParameters -Confirm:$false -Force
@@ -2273,7 +2284,9 @@ function Mount-DatabaseInternal
         $SkipInitialDatabaseMount
     )
 
-    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $Name}
+    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd  @{
+        'Name' = $Name
+    }
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     $previousError = Get-PreviousError

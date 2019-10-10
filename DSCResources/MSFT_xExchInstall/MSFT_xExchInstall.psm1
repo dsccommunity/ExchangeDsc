@@ -51,7 +51,10 @@ function Set-TargetResource
         $Credential
     )
 
-    Write-FunctionEntry -Parameters @{'Path' = $Path; 'Arguments' = $Arguments} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Path'       = $Path
+        'Arguments' = $Arguments
+    } -Verbose:$VerbosePreference
 
     $installStatus = Get-ExchangeInstallStatus -Path $Path -Arguments $Arguments -Verbose:$VerbosePreference
 
@@ -122,7 +125,10 @@ function Test-TargetResource
         $Credential
     )
 
-    Write-FunctionEntry -Parameters @{'Path' = $Path; 'Arguments' = $Arguments} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Path'      = $Path
+        'Arguments' = $Arguments
+    } -Verbose:$VerbosePreference
 
     $installStatus = Get-ExchangeInstallStatus -Path $Path -Arguments $Arguments -Verbose:$VerbosePreference
 

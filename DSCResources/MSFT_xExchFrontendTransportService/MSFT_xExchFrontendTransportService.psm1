@@ -411,7 +411,9 @@ function Get-TargetResource
         $TransientFailureRetryInterval
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity } -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-FrontendTransportService' -Verbose:$VerbosePreference
@@ -880,7 +882,9 @@ function Set-TargetResource
         $TransientFailureRetryInterval
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity } -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-FrontendTransportService' -Verbose:$VerbosePreference
@@ -1348,7 +1352,9 @@ function Test-TargetResource
         $TransientFailureRetryInterval
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity } -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-FrontendTransportService' -Verbose:$VerbosePreference

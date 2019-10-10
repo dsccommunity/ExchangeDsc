@@ -36,7 +36,9 @@ function Get-TargetResource
         $X509CertificateName
     )
 
-    Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Server' = $Server
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PopSettings' -Verbose:$VerbosePreference
@@ -92,7 +94,9 @@ function Set-TargetResource
         $X509CertificateName
     )
 
-    Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Server' = $Server
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-PopSettings' -Verbose:$VerbosePreference
@@ -151,7 +155,9 @@ function Test-TargetResource
         $X509CertificateName
     )
 
-    Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Server' = $Server
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-PopSettings' -Verbose:$VerbosePreference

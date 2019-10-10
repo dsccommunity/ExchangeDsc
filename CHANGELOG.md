@@ -2,9 +2,9 @@
 
 ## Unreleased
 
-- Changes to xExchange
-  - Resolved custom Script Analyzer rules that was added to the test framework.
+- Resolved custom Script Analyzer rules that was added to the test framework.
 - Added xExchAcceptedDomain resource
+- Resolved hashtable styling issues
 
 ## 1.29.0.0
 
