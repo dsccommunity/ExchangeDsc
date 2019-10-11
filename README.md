@@ -79,6 +79,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 
 ## Resources
 
+* **xExchAcceptedDomain** is used to add accepted domains
 * **xExchActiveSyncVirtualDirectory**
 * **xExchAntiMalwareScanning** is used to enable or disable Exchange
   Anti-malware scanning
@@ -123,6 +124,22 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **xExchWaitForDAG**
 * **xExchWaitForMailboxDatabase**
 * **xExchWebServicesVirtualDirectory**
+
+### xExchAcceptedDomain
+
+* **xExchAcceptedDomain** is used to add accepted domains
+
+* **DomainName** The domain name of the accepted domain
+* **Credential**: Credentials used to establish a remote
+  PowerShell session to Exchange.
+* **Ensure**: Whether the domain should exist or not: { Present | Absent }
+* **AddressBookEnabled** Whether to enable recipient filtering for this domain
+* **DomainType** Type of the the domain:
+  {Authoritative | ExternalRelay | InternalRelay}
+* **Default** Whether the accepted domain is the default domain.
+* **MatchSubDomains** Enables mail to be sent by and received from users on any
+  subdomain
+* **Name** Specifies a unique name
 
 ### xExchActiveSyncVirtualDirectory
 
