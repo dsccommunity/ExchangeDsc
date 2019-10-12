@@ -3,7 +3,7 @@ function Get-TargetResource
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
 
-    param(
+    param (
         # The name of the address book
         [Parameter(Mandatory = $true)]
         [string]
@@ -17,7 +17,9 @@ function Get-TargetResource
 
     Write-Verbose -Message 'Getting the Exchange Remote Domains List'
 
-    Write-FunctionEntry -Parameters @{'Identity' = $DomainName } -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $DomainName
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-RemoteDomain' -Verbose:$VerbosePreference
@@ -39,12 +41,10 @@ function Get-TargetResource
         'ContentType'
         'DeliveryReportEnabled'
         'DisplaySenderName'
-        'DependsOn'
         'IsInternal'
         'MeetingForwardNotificationEnabled'
         'NDREnabled'
         'NonMimeCharacterSet'
-        'PsDscRunAsCredential'
         'UseSimpleDisplayName'
     )
 
@@ -55,7 +55,7 @@ function Get-TargetResource
         }
         foreach ($property in $RemoteDomain.PSObject.Properties.Name)
         {
-            if ([string]$RemoteDomain.$property -and $RemoteDomainProperties -contains $property)
+            if ([String] $RemoteDomain.$property -and $RemoteDomainProperties -contains $property)
             {
                 $returnValue[$property] = $RemoteDomain.$property
             }
@@ -73,7 +73,7 @@ function Get-TargetResource
 function Set-TargetResource
 {
     [CmdletBinding()]
-    param(
+    param (
         # The name of the accepted domain
         [Parameter(Mandatory = $true)]
         [string]
@@ -89,60 +89,62 @@ function Set-TargetResource
         [System.String]
         $Ensure = 'Present',
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [ValidateSet('External', 'ExternalLegacy', 'InternalLegacy', 'None')]
         [string]
         $AllowedOOFType,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $AutoForwardEnabled = $true,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $AutoReplyEnabled = $true,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [ValidateSet('MimeHtml', 'MimeHtmlText', 'MimeText')]
         [string]
         $ContentType,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $DeliveryReportEnabled = $true,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $DisplaySenderName = $true,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $IsInternal = $false,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $MeetingForwardNotificationEnabled = $true,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $NDREnabled = $true,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]
         $Name,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]
         $NonMimeCharacterSet,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $UseSimpleDisplayName = $false
     )
 
     Write-Verbose -Message 'Setting the Exchange Remote Domain settings'
 
-    Write-FunctionEntry -Parameters @{'Identity' = $DomainName } -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $DomainName
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*-RemoteDomain' -Verbose:$VerbosePreference
@@ -163,7 +165,7 @@ function Set-TargetResource
         elseif ($RemoteDomain['DomainName'] -ne $DomainName)
         {
             #domain name changes can only be performed by deleting the existing domain and creating it new
-            if ($null -eq $Name)
+            if ([String]::IsNullOrEmpty($Name))
             {
                 $Name = $DomainName
             }
@@ -186,7 +188,7 @@ function Set-TargetResource
     {
         Write-Verbose -Message ('Remote domain {0} does not exist. Creating it...' -f $RemoteDomain.Name)
 
-        if ($null -eq $Name)
+        if ([String]::IsNullOrEmpty($Name))
         {
             $Name = $DomainName
         }
@@ -200,7 +202,7 @@ function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param(
+    param (
         # The name of the accepted domain
         [Parameter(Mandatory = $true)]
         [string]
@@ -216,60 +218,62 @@ function Test-TargetResource
         [System.String]
         $Ensure = 'Present',
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [ValidateSet('External', 'ExternalLegacy', 'InternalLegacy', 'None')]
         [string]
         $AllowedOOFType,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $AutoForwardEnabled = $true,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $AutoReplyEnabled = $true,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [ValidateSet('MimeHtml', 'MimeHtmlText', 'MimeText')]
         [string]
         $ContentType,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $DeliveryReportEnabled = $true,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $DisplaySenderName = $true,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $IsInternal = $false,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $MeetingForwardNotificationEnabled = $true,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $NDREnabled = $true,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]
         $Name,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [string]
         $NonMimeCharacterSet,
 
-        [Parameter(Mandatory = $false)]
+        [Parameter()]
         [bool]
         $UseSimpleDisplayName = $false
     )
 
     Write-Verbose -Message 'Testing the Exchange Remote Domain settings'
 
-    Write-FunctionEntry -Parameters @{'Identity' = $DomainName } -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $DomainName
+    } -Verbose:$VerbosePreference
 
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
@@ -288,6 +292,11 @@ function Test-TargetResource
     if ($RemoteDomain['Ensure'] -eq 'Absent' -and $Ensure -ne 'Absent')
     {
         Write-Verbose -Message "Domain $DomainName does not exist."
+        $targetResourceInCompliance = $false
+    }
+    elseif ($RemoteDomain['Ensure'] -ne 'Absent' -and $Ensure -eq 'Absent')
+    {
+        Write-Verbose -Message "Domain $DomainName will be deleted."
         $targetResourceInCompliance = $false
     }
     else
