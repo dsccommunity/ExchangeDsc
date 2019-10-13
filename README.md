@@ -1516,8 +1516,9 @@ type and formatting.
 * **DeliveryReportEnabled** The DeliveryReportEnabled parameter specifies whether
 to allow delivery reports from client software in your organization to recipients
 in the remote domain.
-* **DisplaySenderName** The DisplaySenderName parameter specifies whether to show
-the sender
+* **DisplaySenderName**  The DisplaySenderName parameter specifies whether to
+show the sender's Display Name in the From email address for messages sent to
+recipients in the remote domain.
 * **IsInternal** The IsInternal parameter specifies whether the recipients in the
  remote domain are considered to be internal recipients.
 * **MeetingForwardNotificationEnabled** The MeetingForwardNotificationEnabled
