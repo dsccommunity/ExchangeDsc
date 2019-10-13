@@ -380,7 +380,7 @@ function Test-TargetResource
     $RemoteDomain = Get-TargetResource -DomainName $DomainName -Credential $Credential
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'Verbose'
-    $DifferenceObjectHashTable = @{ } + $PSBoundParameters
+    $DifferenceObjectHashTable = @{} + $PSBoundParameters
 
     if ($null -eq $PSBoundParameters['Name'])
     {
