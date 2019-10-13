@@ -6,9 +6,9 @@
     .PARAMETER Credential
         Credentials used to establish a remote PowerShell session to Exchange.
     .PARAMETER AllowedOOFType
-        The AllowedOOFType parameter specifies the type of automatic replies or out
+        The AllowedOOFType parameter specifies the type of automatic replies or out-of-office (also known as OOF) notifications than can be sent to recipients in the remote domain.
     .PARAMETER AutoForwardEnabled
-        The AutoForwardEnabled parameter specifies whether to allow messages that are auto
+        The AutoForwardEnabled parameter specifies whether to allow messages that are auto-forwarded by client email programs in your organization.
     .PARAMETER AutoReplyEnabled
         The AutoReplyEnabled parameter specifies whether to allow messages that are automatic replies from client email programs in your organization
     .PARAMETER ContentType
@@ -111,9 +111,9 @@ function Get-TargetResource
     .PARAMETER Credential
         Credentials used to establish a remote PowerShell session to Exchange.
     .PARAMETER AllowedOOFType
-        The AllowedOOFType parameter specifies the type of automatic replies or out
+        The AllowedOOFType parameter specifies the type of automatic replies or out-of-office (also known as OOF) notifications than can be sent to recipients in the remote domain.
     .PARAMETER AutoForwardEnabled
-        The AutoForwardEnabled parameter specifies whether to allow messages that are auto
+        The AutoForwardEnabled parameter specifies whether to allow messages that are auto-forwarded by client email programs in your organization.
     .PARAMETER AutoReplyEnabled
         The AutoReplyEnabled parameter specifies whether to allow messages that are automatic replies from client email programs in your organization
     .PARAMETER ContentType
@@ -272,9 +272,9 @@ function Set-TargetResource
     .PARAMETER Credential
         Credentials used to establish a remote PowerShell session to Exchange.
     .PARAMETER AllowedOOFType
-        The AllowedOOFType parameter specifies the type of automatic replies or out
+        The AllowedOOFType parameter specifies the type of automatic replies or out-of-office (also known as OOF) notifications than can be sent to recipients in the remote domain.
     .PARAMETER AutoForwardEnabled
-        The AutoForwardEnabled parameter specifies whether to allow messages that are auto
+        The AutoForwardEnabled parameter specifies whether to allow messages that are auto-forwarded by client email programs in your organization.
     .PARAMETER AutoReplyEnabled
         The AutoReplyEnabled parameter specifies whether to allow messages that are automatic replies from client email programs in your organization
     .PARAMETER ContentType

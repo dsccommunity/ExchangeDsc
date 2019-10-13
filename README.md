@@ -1505,16 +1505,17 @@ parameters.
 * **DomainName** The name of the address list.
 * **Credential** Credentials used to establish a remote PowerShell session to Exchange.
 * **AllowedOOFType** The AllowedOOFType parameter specifies the type of automatic
-replies or out
+replies or out-of-office (also known as OOF) notifications than can be sent to
+recipients in the remote domain.
 * **AutoForwardEnabled** The AutoForwardEnabled parameter specifies whether to
-allow messages that are auto
+allow messages that are auto-forwarded by client email programs in your organization.
 * **AutoReplyEnabled** The AutoReplyEnabled parameter specifies whether to allow
-messages that are automatic replies from client email programs in your organization
+messages that are automatic replies from client email programs in your organization.
 * **ContentType** The ContentType parameter specifies the outbound message content
 type and formatting.
 * **DeliveryReportEnabled** The DeliveryReportEnabled parameter specifies whether
 to allow delivery reports from client software in your organization to recipients
- in the remote domain.
+in the remote domain.
 * **DisplaySenderName** The DisplaySenderName parameter specifies whether to show
 the sender
 * **IsInternal** The IsInternal parameter specifies whether the recipients in the
