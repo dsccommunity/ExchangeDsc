@@ -1,3 +1,35 @@
+<#
+    .SYNOPSIS
+        Gets the state of the resource
+    .PARAMETER DomainName
+        The name of the address list.
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+    .PARAMETER AllowedOOFType
+        The AllowedOOFType parameter specifies the type of automatic replies or out
+    .PARAMETER AutoForwardEnabled
+        The AutoForwardEnabled parameter specifies whether to allow messages that are auto
+    .PARAMETER AutoReplyEnabled
+        The AutoReplyEnabled parameter specifies whether to allow messages that are automatic replies from client email programs in your organization
+    .PARAMETER ContentType
+        The ContentType parameter specifies the outbound message content type and formatting.
+    .PARAMETER DeliveryReportEnabled
+        The DeliveryReportEnabled parameter specifies whether to allow delivery reports from client software in your organization to recipients in the remote domain.
+    .PARAMETER DisplaySenderName
+        The DisplaySenderName parameter specifies whether to show the sender
+    .PARAMETER IsInternal
+        The IsInternal parameter specifies whether the recipients in the remote domain are considered to be internal recipients.
+    .PARAMETER MeetingForwardNotificationEnabled
+        The MeetingForwardNotificationEnabled parameter specifies whether to enable meeting forward notifications for recipients in the remote domain.
+    .PARAMETER Name
+        The Name parameter specifies a unique name for the remote domain object.
+    .PARAMETER NDREnabled
+        The NDREnabled parameter specifies whether to allow non
+    .PARAMETER NonMimeCharacterSet
+        The NonMimeCharacterSet parameter specifies a character set for plain text messages without defined character sets that are sent from your organization to recipients in the remote domain.
+    .PARAMETER UseSimpleDisplayName
+        The UseSimpleDisplayName parameter specifies whether the sender
+#>
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -70,6 +102,39 @@ function Get-TargetResource
 
     return $returnValue
 }
+
+<#
+    .SYNOPSIS
+        Sets the state of the resource
+    .PARAMETER DomainName
+        The name of the address list.
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+    .PARAMETER AllowedOOFType
+        The AllowedOOFType parameter specifies the type of automatic replies or out
+    .PARAMETER AutoForwardEnabled
+        The AutoForwardEnabled parameter specifies whether to allow messages that are auto
+    .PARAMETER AutoReplyEnabled
+        The AutoReplyEnabled parameter specifies whether to allow messages that are automatic replies from client email programs in your organization
+    .PARAMETER ContentType
+        The ContentType parameter specifies the outbound message content type and formatting.
+    .PARAMETER DeliveryReportEnabled
+        The DeliveryReportEnabled parameter specifies whether to allow delivery reports from client software in your organization to recipients in the remote domain.
+    .PARAMETER DisplaySenderName
+        The DisplaySenderName parameter specifies whether to show the sender
+    .PARAMETER IsInternal
+        The IsInternal parameter specifies whether the recipients in the remote domain are considered to be internal recipients.
+    .PARAMETER MeetingForwardNotificationEnabled
+        The MeetingForwardNotificationEnabled parameter specifies whether to enable meeting forward notifications for recipients in the remote domain.
+    .PARAMETER Name
+        The Name parameter specifies a unique name for the remote domain object.
+    .PARAMETER NDREnabled
+        The NDREnabled parameter specifies whether to allow non
+    .PARAMETER NonMimeCharacterSet
+        The NonMimeCharacterSet parameter specifies a character set for plain text messages without defined character sets that are sent from your organization to recipients in the remote domain.
+    .PARAMETER UseSimpleDisplayName
+        The UseSimpleDisplayName parameter specifies whether the sender
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
@@ -198,6 +263,39 @@ function Set-TargetResource
         Set-RemoteDomain @PSBoundParameters -Identity $Name -confirm:$false
     }
 }
+
+<#
+    .SYNOPSIS
+        Tests the state of the resource
+    .PARAMETER DomainName
+        The name of the address list.
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+    .PARAMETER AllowedOOFType
+        The AllowedOOFType parameter specifies the type of automatic replies or out
+    .PARAMETER AutoForwardEnabled
+        The AutoForwardEnabled parameter specifies whether to allow messages that are auto
+    .PARAMETER AutoReplyEnabled
+        The AutoReplyEnabled parameter specifies whether to allow messages that are automatic replies from client email programs in your organization
+    .PARAMETER ContentType
+        The ContentType parameter specifies the outbound message content type and formatting.
+    .PARAMETER DeliveryReportEnabled
+        The DeliveryReportEnabled parameter specifies whether to allow delivery reports from client software in your organization to recipients in the remote domain.
+    .PARAMETER DisplaySenderName
+        The DisplaySenderName parameter specifies whether to show the sender
+    .PARAMETER IsInternal
+        The IsInternal parameter specifies whether the recipients in the remote domain are considered to be internal recipients.
+    .PARAMETER MeetingForwardNotificationEnabled
+        The MeetingForwardNotificationEnabled parameter specifies whether to enable meeting forward notifications for recipients in the remote domain.
+    .PARAMETER Name
+        The Name parameter specifies a unique name for the remote domain object.
+    .PARAMETER NDREnabled
+        The NDREnabled parameter specifies whether to allow non
+    .PARAMETER NonMimeCharacterSet
+        The NonMimeCharacterSet parameter specifies a character set for plain text messages without defined character sets that are sent from your organization to recipients in the remote domain.
+    .PARAMETER UseSimpleDisplayName
+        The UseSimpleDisplayName parameter specifies whether the sender
+#>
 function Test-TargetResource
 {
     [CmdletBinding()]
@@ -282,7 +380,7 @@ function Test-TargetResource
     $RemoteDomain = Get-TargetResource -DomainName $DomainName -Credential $Credential
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'Verbose'
-    $DifferenceObjectHashTable = @{ } + $PSBoundParameters
+    $DifferenceObjectHashTable = @{} + $PSBoundParameters
 
     if ($null -eq $PSBoundParameters['Name'])
     {
