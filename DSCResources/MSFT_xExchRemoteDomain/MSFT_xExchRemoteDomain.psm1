@@ -16,7 +16,7 @@
     .PARAMETER DeliveryReportEnabled
         The DeliveryReportEnabled parameter specifies whether to allow delivery reports from client software in your organization to recipients in the remote domain.
     .PARAMETER DisplaySenderName
-        The DisplaySenderName parameter specifies whether to show the sender
+        The DisplaySenderName parameter specifies whether to show the sender's Display Name in the From email address for messages sent to recipients in the remote domain.
     .PARAMETER IsInternal
         The IsInternal parameter specifies whether the recipients in the remote domain are considered to be internal recipients.
     .PARAMETER MeetingForwardNotificationEnabled
@@ -24,11 +24,11 @@
     .PARAMETER Name
         The Name parameter specifies a unique name for the remote domain object.
     .PARAMETER NDREnabled
-        The NDREnabled parameter specifies whether to allow non
+        The NDREnabled parameter specifies whether to allow non-delivery reports.
     .PARAMETER NonMimeCharacterSet
         The NonMimeCharacterSet parameter specifies a character set for plain text messages without defined character sets that are sent from your organization to recipients in the remote domain.
     .PARAMETER UseSimpleDisplayName
-        The UseSimpleDisplayName parameter specifies whether the sender
+        The UseSimpleDisplayName parameter specifies whether the sender's simple display name is used for the From email address in messages sent to recipients in the remote domain.
 #>
 function Get-TargetResource
 {
@@ -121,7 +121,7 @@ function Get-TargetResource
     .PARAMETER DeliveryReportEnabled
         The DeliveryReportEnabled parameter specifies whether to allow delivery reports from client software in your organization to recipients in the remote domain.
     .PARAMETER DisplaySenderName
-        The DisplaySenderName parameter specifies whether to show the sender
+        The DisplaySenderName parameter specifies whether to show the sender's Display Name in the From email address for messages sent to recipients in the remote domain.
     .PARAMETER IsInternal
         The IsInternal parameter specifies whether the recipients in the remote domain are considered to be internal recipients.
     .PARAMETER MeetingForwardNotificationEnabled
@@ -129,11 +129,11 @@ function Get-TargetResource
     .PARAMETER Name
         The Name parameter specifies a unique name for the remote domain object.
     .PARAMETER NDREnabled
-        The NDREnabled parameter specifies whether to allow non
+        The NDREnabled parameter specifies whether to allow non-delivery reports.
     .PARAMETER NonMimeCharacterSet
         The NonMimeCharacterSet parameter specifies a character set for plain text messages without defined character sets that are sent from your organization to recipients in the remote domain.
     .PARAMETER UseSimpleDisplayName
-        The UseSimpleDisplayName parameter specifies whether the sender
+        The UseSimpleDisplayName parameter specifies whether the sender's simple display name is used for the From email address in messages sent to recipients in the remote domain.
 #>
 function Set-TargetResource
 {
@@ -282,7 +282,7 @@ function Set-TargetResource
     .PARAMETER DeliveryReportEnabled
         The DeliveryReportEnabled parameter specifies whether to allow delivery reports from client software in your organization to recipients in the remote domain.
     .PARAMETER DisplaySenderName
-        The DisplaySenderName parameter specifies whether to show the sender
+        The DisplaySenderName parameter specifies whether to show the sender's Display Name in the From email address for messages sent to recipients in the remote domain.
     .PARAMETER IsInternal
         The IsInternal parameter specifies whether the recipients in the remote domain are considered to be internal recipients.
     .PARAMETER MeetingForwardNotificationEnabled
@@ -290,11 +290,11 @@ function Set-TargetResource
     .PARAMETER Name
         The Name parameter specifies a unique name for the remote domain object.
     .PARAMETER NDREnabled
-        The NDREnabled parameter specifies whether to allow non
+        The NDREnabled parameter specifies whether to allow non-delivery reports.
     .PARAMETER NonMimeCharacterSet
         The NonMimeCharacterSet parameter specifies a character set for plain text messages without defined character sets that are sent from your organization to recipients in the remote domain.
     .PARAMETER UseSimpleDisplayName
-        The UseSimpleDisplayName parameter specifies whether the sender
+        The UseSimpleDisplayName parameter specifies whether the sender's simple display name is used for the From email address in messages sent to recipients in the remote domain.
 #>
 function Test-TargetResource
 {
@@ -380,7 +380,7 @@ function Test-TargetResource
     $RemoteDomain = Get-TargetResource -DomainName $DomainName -Credential $Credential
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'Verbose'
-    $DifferenceObjectHashTable = @{} + $PSBoundParameters
+    $DifferenceObjectHashTable = @{ } + $PSBoundParameters
 
     if ($null -eq $PSBoundParameters['Name'])
     {
