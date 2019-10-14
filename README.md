@@ -1502,7 +1502,8 @@ parameters.
 
 **xExchRemoteDomain** adds a remote domain
 
-* **DomainName** The name of the address list.
+* **DomainName** Specifies the SMTP domain that you want to establish as a
+remote domain.
 * **Credential** Credentials used to establish a remote PowerShell session to Exchange.
 * **AllowedOOFType** The AllowedOOFType parameter specifies the type of automatic
 replies or out-of-office (also known as OOF) notifications than can be sent to

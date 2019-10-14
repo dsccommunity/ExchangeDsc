@@ -2,7 +2,7 @@
     .SYNOPSIS
         Gets the state of the resource
     .PARAMETER DomainName
-        The name of the address list.
+        Specifies the SMTP domain that you want to establish as a remote domain.
     .PARAMETER Credential
         Credentials used to establish a remote PowerShell session to Exchange.
     .PARAMETER AllowedOOFType
@@ -36,9 +36,8 @@ function Get-TargetResource
     [OutputType([System.Collections.Hashtable])]
 
     param (
-        # The name of the address book
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $DomainName,
 
         [Parameter(Mandatory = $true)]
@@ -56,15 +55,15 @@ function Get-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-RemoteDomain' -Verbose:$VerbosePreference
 
-    $RemoteDomain = Get-RemoteDomain -ErrorAction SilentlyContinue | Where-Object -FilterScript { $PSItem.DomainName -eq $DomainName }
+    $remoteDomain = Get-RemoteDomain -ErrorAction SilentlyContinue | Where-Object -FilterScript { $PSItem.DomainName -eq $DomainName }
 
-    if ($null -eq $RemoteDomain -and $DomainName -match '^\*\.')
+    if ($null -eq $remoteDomain -and $DomainName -match '^\*\.')
     {
-        #try to match based on name - covering some edge cases
-        $RemoteDomain = Get-RemoteDomain -ErrorAction SilentlyContinue | Where-Object -FilterScript { $PSItem.Name -eq $DomainName.Trim('*.') }
+        # Try to match based on name - covering some edge cases
+        $remoteDomain = Get-RemoteDomain -ErrorAction SilentlyContinue | Where-Object -FilterScript { $PSItem.Name -eq $DomainName.Trim('*.') }
     }
 
-    $RemoteDomainProperties = @(
+    $remoteDomainProperties = @(
         'DomainName'
         'Name'
         'AllowedOOFType'
@@ -80,16 +79,16 @@ function Get-TargetResource
         'UseSimpleDisplayName'
     )
 
-    if ($null -ne $RemoteDomain)
+    if ($null -ne $remoteDomain)
     {
         $returnValue = @{
             Ensure = 'Present'
         }
-        foreach ($property in $RemoteDomain.PSObject.Properties.Name)
+        foreach ($property in $remoteDomain.PSObject.Properties.Name)
         {
-            if ([String] $RemoteDomain.$property -and $RemoteDomainProperties -contains $property)
+            if ([System.String] $remoteDomain.$property -and $remoteDomainProperties -contains $property)
             {
-                $returnValue[$property] = $RemoteDomain.$property
+                $returnValue[$property] = $remoteDomain.$property
             }
         }
     }
@@ -107,7 +106,7 @@ function Get-TargetResource
     .SYNOPSIS
         Sets the state of the resource
     .PARAMETER DomainName
-        The name of the address list.
+        Specifies the SMTP domain that you want to establish as a remote domain.
     .PARAMETER Credential
         Credentials used to establish a remote PowerShell session to Exchange.
     .PARAMETER AllowedOOFType
@@ -139,9 +138,8 @@ function Set-TargetResource
 {
     [CmdletBinding()]
     param (
-        # The name of the accepted domain
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $DomainName,
 
         [Parameter(Mandatory = $true)]
@@ -156,7 +154,7 @@ function Set-TargetResource
 
         [Parameter()]
         [ValidateSet('External', 'ExternalLegacy', 'InternalLegacy', 'None')]
-        [string]
+        [System.String]
         $AllowedOOFType,
 
         [Parameter()]
@@ -169,7 +167,7 @@ function Set-TargetResource
 
         [Parameter()]
         [ValidateSet('MimeHtml', 'MimeHtmlText', 'MimeText')]
-        [string]
+        [System.String]
         $ContentType,
 
         [Parameter()]
@@ -193,11 +191,11 @@ function Set-TargetResource
         $NDREnabled = $true,
 
         [Parameter()]
-        [string]
+        [System.String]
         $Name,
 
         [Parameter()]
-        [string]
+        [System.String]
         $NonMimeCharacterSet,
 
         [Parameter()]
@@ -218,42 +216,42 @@ function Set-TargetResource
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove Credential, Ensure, 'Default'
 
-    $RemoteDomain = Get-TargetResource -DomainName $DomainName -Credential $Credential
+    $remoteDomain = Get-TargetResource -DomainName $DomainName -Credential $Credential
 
-    if ($RemoteDomain['Ensure'] -eq 'Present')
+    if ($remoteDomain['Ensure'] -eq 'Present')
     {
         if ($Ensure -eq 'Absent')
         {
-            Write-Verbose -Message ('Removing the remote domain {0}' -f $RemoteDomain.Name)
-            Remove-RemoteDomain -Identity $RemoteDomain.Name -confirm:$false
+            Write-Verbose -Message ('Removing the remote domain {0}' -f $remoteDomain.Name)
+            Remove-RemoteDomain -Identity $remoteDomain.Name -confirm:$false
         }
-        elseif ($RemoteDomain['DomainName'] -ne $DomainName)
+        elseif ($remoteDomain['DomainName'] -ne $DomainName)
         {
             #domain name changes can only be performed by deleting the existing domain and creating it new
-            if ([String]::IsNullOrEmpty($Name))
+            if ([System.String]::IsNullOrEmpty($Name))
             {
                 $Name = $DomainName
             }
 
-            Write-Verbose -Message ("Remote domain {0} requies a domain name changes. New domain name is: {1}.The domain will be removed and added again." -f $RemoteDomain['Name'], $DomainName )
-            Remove-RemoteDomain -Identity $RemoteDomain.Name -confirm:$false
+            Write-Verbose -Message ("Remote domain {0} requies a domain name changes. New domain name is: {1}.The domain will be removed and added again." -f $remoteDomain['Name'], $DomainName )
+            Remove-RemoteDomain -Identity $remoteDomain.Name -confirm:$false
             New-RemoteDomain -DomainName $DomainName -Name $Name -confirm:$false
             Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove DomainName
             Set-RemoteDomain @PSBoundParameters -Identity $Name -confirm:$false
         }
         else
         {
-            Write-Verbose -Message ('Remote Domain {0} not compliant. Setting the desired attributes.' -f $RemoteDomain.Name)
-            $PSBoundParameters['Identity'] = $RemoteDomain['Name']
+            Write-Verbose -Message ('Remote Domain {0} not compliant. Setting the desired attributes.' -f $remoteDomain.Name)
+            $PSBoundParameters['Identity'] = $remoteDomain['Name']
             Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove DomainName
             Set-RemoteDomain @PSBoundParameters -confirm:$false
         }
     }
     else
     {
-        Write-Verbose -Message ('Remote domain {0} does not exist. Creating it...' -f $RemoteDomain.Name)
+        Write-Verbose -Message ('Remote domain {0} does not exist. Creating it...' -f $remoteDomain.Name)
 
-        if ([String]::IsNullOrEmpty($Name))
+        if ([System.String]::IsNullOrEmpty($Name))
         {
             $Name = $DomainName
         }
@@ -268,7 +266,7 @@ function Set-TargetResource
     .SYNOPSIS
         Tests the state of the resource
     .PARAMETER DomainName
-        The name of the address list.
+        Specifies the SMTP domain that you want to establish as a remote domain.
     .PARAMETER Credential
         Credentials used to establish a remote PowerShell session to Exchange.
     .PARAMETER AllowedOOFType
@@ -301,9 +299,8 @@ function Test-TargetResource
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        # The name of the accepted domain
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $DomainName,
 
         [Parameter(Mandatory = $true)]
@@ -318,7 +315,7 @@ function Test-TargetResource
 
         [Parameter()]
         [ValidateSet('External', 'ExternalLegacy', 'InternalLegacy', 'None')]
-        [string]
+        [System.String]
         $AllowedOOFType,
 
         [Parameter()]
@@ -331,7 +328,7 @@ function Test-TargetResource
 
         [Parameter()]
         [ValidateSet('MimeHtml', 'MimeHtmlText', 'MimeText')]
-        [string]
+        [System.String]
         $ContentType,
 
         [Parameter()]
@@ -355,11 +352,11 @@ function Test-TargetResource
         $NDREnabled = $true,
 
         [Parameter()]
-        [string]
+        [System.String]
         $Name,
 
         [Parameter()]
-        [string]
+        [System.String]
         $NonMimeCharacterSet,
 
         [Parameter()]
@@ -377,36 +374,36 @@ function Test-TargetResource
 
     $targetResourceInCompliance = $true
 
-    $RemoteDomain = Get-TargetResource -DomainName $DomainName -Credential $Credential
+    $remoteDomain = Get-TargetResource -DomainName $DomainName -Credential $Credential
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'Verbose'
-    $DifferenceObjectHashTable = @{} + $PSBoundParameters
+    $differenceObjectHashTable = @{} + $PSBoundParameters
 
     if ($null -eq $PSBoundParameters['Name'])
     {
-        $DifferenceObjectHashTable['Name'] = $DomainName
+        $differenceObjectHashTable['Name'] = $DomainName
     }
 
-    if ($RemoteDomain['Ensure'] -eq 'Absent' -and $Ensure -ne 'Absent')
+    if ($remoteDomain['Ensure'] -eq 'Absent' -and $Ensure -ne 'Absent')
     {
         Write-Verbose -Message "Domain $DomainName does not exist."
         $targetResourceInCompliance = $false
     }
-    elseif ($RemoteDomain['Ensure'] -ne 'Absent' -and $Ensure -eq 'Absent')
+    elseif ($remoteDomain['Ensure'] -ne 'Absent' -and $Ensure -eq 'Absent')
     {
         Write-Verbose -Message "Domain $DomainName will be deleted."
         $targetResourceInCompliance = $false
     }
     else
     {
-        $referenceObject = [PSCustomObject]$RemoteDomain
-        $differenceObject = [PSCustomObject]$DifferenceObjectHashTable
+        $referenceObject = [PSCustomObject] $remoteDomain
+        $differenceObject = [PSCustomObject] $differenceObjectHashTable
 
-        foreach ($property in $DifferenceObjectHashTable.Keys)
+        foreach ($property in $differenceObjectHashTable.Keys)
         {
             if (Compare-Object -ReferenceObject $referenceObject -DifferenceObject $differenceObject -Property $property)
             {
-                Write-Verbose -Message ("Invalid setting '{0}'. Expected value: {1}. Actual value: {2}" -f $property, $DifferenceObjectHashTable[$property], $RemoteDomain[$property])
+                Write-Verbose -Message ("Invalid setting '{0}'. Expected value: {1}. Actual value: {2}" -f $property, $differenceObjectHashTable[$property], $remoteDomain[$property])
                 $targetResourceInCompliance = $false
                 break;
             }
