@@ -34,7 +34,6 @@ function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
-
     param (
         [Parameter(Mandatory = $true)]
         [System.String]
@@ -158,11 +157,11 @@ function Set-TargetResource
         $AllowedOOFType,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $AutoForwardEnabled = $true,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $AutoReplyEnabled = $true,
 
         [Parameter()]
@@ -171,23 +170,23 @@ function Set-TargetResource
         $ContentType,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $DeliveryReportEnabled = $true,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $DisplaySenderName = $true,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $IsInternal = $false,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $MeetingForwardNotificationEnabled = $true,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $NDREnabled = $true,
 
         [Parameter()]
@@ -199,7 +198,7 @@ function Set-TargetResource
         $NonMimeCharacterSet,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $UseSimpleDisplayName = $false
     )
 
@@ -223,7 +222,7 @@ function Set-TargetResource
         if ($Ensure -eq 'Absent')
         {
             Write-Verbose -Message ('Removing the remote domain {0}' -f $remoteDomain.Name)
-            Remove-RemoteDomain -Identity $remoteDomain.Name -confirm:$false
+            Remove-RemoteDomain -Identity $remoteDomain.Name -Confirm:$false
         }
         elseif ($remoteDomain['DomainName'] -ne $DomainName)
         {
@@ -234,17 +233,17 @@ function Set-TargetResource
             }
 
             Write-Verbose -Message ("Remote domain {0} requies a domain name changes. New domain name is: {1}.The domain will be removed and added again." -f $remoteDomain['Name'], $DomainName )
-            Remove-RemoteDomain -Identity $remoteDomain.Name -confirm:$false
-            New-RemoteDomain -DomainName $DomainName -Name $Name -confirm:$false
+            Remove-RemoteDomain -Identity $remoteDomain.Name -Confirm:$false
+            New-RemoteDomain -DomainName $DomainName -Name $Name -Confirm:$false
             Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove DomainName
-            Set-RemoteDomain @PSBoundParameters -Identity $Name -confirm:$false
+            Set-RemoteDomain @PSBoundParameters -Identity $Name -Confirm:$false
         }
         else
         {
             Write-Verbose -Message ('Remote Domain {0} not compliant. Setting the desired attributes.' -f $remoteDomain.Name)
             $PSBoundParameters['Identity'] = $remoteDomain['Name']
             Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove DomainName
-            Set-RemoteDomain @PSBoundParameters -confirm:$false
+            Set-RemoteDomain @PSBoundParameters -Confirm:$false
         }
     }
     else
@@ -256,9 +255,9 @@ function Set-TargetResource
             $Name = $DomainName
         }
 
-        New-RemoteDomain -DomainName $DomainName -Name $Name -confirm:$false
+        New-RemoteDomain -DomainName $DomainName -Name $Name -Confirm:$false
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove DomainName
-        Set-RemoteDomain @PSBoundParameters -Identity $Name -confirm:$false
+        Set-RemoteDomain @PSBoundParameters -Identity $Name -Confirm:$false
     }
 }
 
@@ -319,11 +318,11 @@ function Test-TargetResource
         $AllowedOOFType,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $AutoForwardEnabled = $true,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $AutoReplyEnabled = $true,
 
         [Parameter()]
@@ -332,23 +331,23 @@ function Test-TargetResource
         $ContentType,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $DeliveryReportEnabled = $true,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $DisplaySenderName = $true,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $IsInternal = $false,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $MeetingForwardNotificationEnabled = $true,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $NDREnabled = $true,
 
         [Parameter()]
@@ -360,7 +359,7 @@ function Test-TargetResource
         $NonMimeCharacterSet,
 
         [Parameter()]
-        [bool]
+        [System.Boolean]
         $UseSimpleDisplayName = $false
     )
 

@@ -90,7 +90,7 @@ try
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
 
             Context 'When Get-TargetResource is called and resource is present' {
-                Mock -CommandName Get-RemoteDomain -Verifiable -MockWith { return [PSCustomObject]$getRemoteDomainOutput }
+                Mock -CommandName Get-RemoteDomain -Verifiable -MockWith { return [PSCustomObject] $getRemoteDomainOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }
@@ -153,7 +153,7 @@ try
 
             Context 'When domain is present' {
                 Context 'Domain name change is required and name was specified' {
-                    It 'Shoul call all functions' {
+                    It 'Should call all functions' {
                         $setTargetResourceParams = @{ } + $getRemoteDomainOutput
                         $setTargetResourceParams['DomainName'] = 'newfakeremotedomain.com'
                         $setTargetResourceParams['Credential'] = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
@@ -168,7 +168,7 @@ try
                 }
 
                 Context 'Domain name change is required and name was not specified' {
-                    It 'Shoul call all functions' {
+                    It 'Should call all functions' {
                         $setTargetResourceParams = @{ } + $getRemoteDomainOutput
                         $setTargetResourceParams['DomainName'] = 'newfakeremotedomain.com'
                         $setTargetResourceParams['Credential'] = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
