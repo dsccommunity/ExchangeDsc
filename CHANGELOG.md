@@ -5,6 +5,7 @@
 - Resolved custom Script Analyzer rules that was added to the test framework.
 - Added xExchAcceptedDomain resource
 - Resolved hashtable styling issues
+- Added xExchRemoteDomain resource
 
 ## 1.29.0.0
 
