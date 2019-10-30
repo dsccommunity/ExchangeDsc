@@ -1,6 +1,6 @@
 @{
     # Version number of this module.
-    moduleVersion = '1.29.0.0'
+    moduleVersion = '1.30.0.0'
 
     # ID used to uniquely identify this module
     GUID = '9a908ca3-8a67-485c-a014-66ba37fcc2a4'
@@ -48,8 +48,10 @@
             # IconUri = ''
 
             # ReleaseNotes of this module
-        ReleaseNotes = '- Enable Script Analyzer default rules
-- Fixed keywords in upper case
+        ReleaseNotes = '- Resolved custom Script Analyzer rules that was added to the test framework.
+- Added xExchAcceptedDomain resource
+- Resolved hashtable styling issues
+- Added xExchRemoteDomain resource
 
 '
 
@@ -57,6 +59,7 @@
 
     } # End of PrivateData hashtable
 }
+
 
 
 

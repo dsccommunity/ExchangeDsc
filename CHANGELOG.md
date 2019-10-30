@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.30.0.0
+
 - Resolved custom Script Analyzer rules that was added to the test framework.
 - Added xExchAcceptedDomain resource
 - Resolved hashtable styling issues
