@@ -69,7 +69,9 @@ function Get-TargetResource
         $X509CertificateName
     )
 
-    Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Server' = $Server
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ImapSettings' -Verbose:$VerbosePreference
@@ -158,7 +160,9 @@ function Set-TargetResource
         $X509CertificateName
     )
 
-    Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Server' = $Server
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-ImapSettings' -Verbose:$VerbosePreference
@@ -251,7 +255,9 @@ function Test-TargetResource
         $X509CertificateName
     )
 
-    Write-FunctionEntry -Parameters @{'Server' = $Server} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Server' = $Server
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ImapSettings' -Verbose:$VerbosePreference

@@ -79,6 +79,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 
 ## Resources
 
+* **xExchAcceptedDomain** is used to add accepted domains
 * **xExchActiveSyncVirtualDirectory**
 * **xExchAntiMalwareScanning** is used to enable or disable Exchange
   Anti-malware scanning
@@ -115,6 +116,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **xExchPopSettings** configures POP settings using Set-PopSettings.
 * **xExchPowerShellVirtualDirectory**
 * **xExchReceiveConnector**
+* **xExchRemoteDomain** is used to add remote domains
 * **xExchTransportService**
 * **xExchUMCallRouterSettings** configures the UM Call Router service using Set-UMCallRouterSettings.
 * **xExchUMService** configures a UM server using Set-UMService.
@@ -123,6 +125,22 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **xExchWaitForDAG**
 * **xExchWaitForMailboxDatabase**
 * **xExchWebServicesVirtualDirectory**
+
+### xExchAcceptedDomain
+
+* **xExchAcceptedDomain** is used to add accepted domains
+
+* **DomainName** The domain name of the accepted domain
+* **Credential**: Credentials used to establish a remote
+  PowerShell session to Exchange.
+* **Ensure**: Whether the domain should exist or not: { Present | Absent }
+* **AddressBookEnabled** Whether to enable recipient filtering for this domain
+* **DomainType** Type of the the domain:
+  {Authoritative | ExternalRelay | InternalRelay}
+* **Default** Whether the accepted domain is the default domain.
+* **MatchSubDomains** Enables mail to be sent by and received from users on any
+  subdomain
+* **Name** Specifies a unique name
 
 ### xExchActiveSyncVirtualDirectory
 
@@ -1479,6 +1497,44 @@ parameters.
 * **TlsDomainCapabilities**
 * **TransportRole**
 * **Usage**
+
+### xExchRemoteDomain
+
+**xExchRemoteDomain** adds a remote domain
+
+* **DomainName** Specifies the SMTP domain that you want to establish as a
+remote domain.
+* **Credential** Credentials used to establish a remote PowerShell session to Exchange.
+* **AllowedOOFType** The AllowedOOFType parameter specifies the type of automatic
+replies or out-of-office (also known as OOF) notifications than can be sent to
+recipients in the remote domain.
+* **AutoForwardEnabled** The AutoForwardEnabled parameter specifies whether to
+allow messages that are auto-forwarded by client email programs in your organization.
+* **AutoReplyEnabled** The AutoReplyEnabled parameter specifies whether to allow
+messages that are automatic replies from client email programs in your organization.
+* **ContentType** The ContentType parameter specifies the outbound message content
+type and formatting.
+* **DeliveryReportEnabled** The DeliveryReportEnabled parameter specifies whether
+to allow delivery reports from client software in your organization to recipients
+in the remote domain.
+* **DisplaySenderName**  The DisplaySenderName parameter specifies whether to
+show the sender's Display Name in the From email address for messages sent to
+recipients in the remote domain.
+* **IsInternal** The IsInternal parameter specifies whether the recipients in the
+ remote domain are considered to be internal recipients.
+* **MeetingForwardNotificationEnabled** The MeetingForwardNotificationEnabled
+parameter specifies whether to enable meeting forward notifications for
+recipients in the remote domain.
+* **Name** The Name parameter specifies a unique name for the remote domain object.
+* **NDREnabled** The NDREnabled parameter specifies whether to allow non-delivery
+reports (also known NDRs or bounce messages) from your organization to recipients
+in the remote domain.
+* **NonMimeCharacterSet** The NonMimeCharacterSet parameter specifies a character
+set for plain text messages without defined character sets that are sent from
+your organization to recipients in the remote domain.
+* **UseSimpleDisplayName** The UseSimpleDisplayName parameter specifies whether
+the sender's simple display name is used for the From email address in
+messages sent to recipients in the remote domain.
 
 ### xExchTransportService
 

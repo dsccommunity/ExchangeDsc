@@ -68,7 +68,9 @@ function Get-TargetResource
         $WindowsAuthentication
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-OabVirtualDirectory', 'Set-OabVirtualDirectory', 'Get-OfflineAddressBook', 'Set-OfflineAddressBook' -Verbose:$VerbosePreference
@@ -181,7 +183,9 @@ function Set-TargetResource
         $WindowsAuthentication
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     if ($PSBoundParameters.ContainsKey('OABsToDistribute'))
     {
@@ -291,7 +295,9 @@ function Test-TargetResource
         $WindowsAuthentication
     )
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     $vdir = Get-TargetResource @PSBoundParameters
 
@@ -441,7 +447,9 @@ function Add-OabDistributionPoint
     $vdirIdentity = $Identity
 
     # Setup params for Get-OfflineAddressBook
-    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{'Identity' = $TargetOabName}
+    Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
+        'Identity' = $TargetOabName
+    }
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
     $oab = Get-OfflineAddressBook @PSBoundParameters

@@ -260,7 +260,7 @@ function Set-TargetResource
 
     if ($EnsureExchangeVolumeMountPointIsLast -eq $true)
     {
-        while($true)
+        while ($true)
         {
             $volNum = Get-VolumeNumberWhereMountPointNotLastInList -AutoDagVolumesRootFolderPath $AutoDagVolumesRootFolderPath -DiskInfo $diskInfo
 
@@ -915,7 +915,7 @@ function Get-ExchangeVolumeNumberForMountPoint
         $hasExistingDB = $false # Whether $ExistingDB exists as a mount point on this disk
 
         # Inspect each individual mount point
-        foreach($mountPoint in $mountPoints)
+        foreach ($mountPoint in $mountPoints)
         {
             if ($mountPoint.StartsWith($AutoDagVolumesRootFolderPath))
             {
@@ -1139,7 +1139,7 @@ function Get-FirstAvailableVolumeNumber
         $VolumePrefix
     )
 
-    if((Test-Path -LiteralPath "$($AutoDagVolumesRootFolderPath)") -eq $false) # If the ExVol folder doesn't already exist, then we can start with 1
+    if ((Test-Path -LiteralPath "$($AutoDagVolumesRootFolderPath)") -eq $false) # If the ExVol folder doesn't already exist, then we can start with 1
     {
         return 1
     }

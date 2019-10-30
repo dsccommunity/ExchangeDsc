@@ -132,7 +132,9 @@ function Get-TargetResource
 
     Write-Verbose -Message 'Getting the Exchange ActiveSyncVirtualDirectory settings'
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ActiveSyncVirtualDirectory' -Verbose:$VerbosePreference
@@ -305,7 +307,9 @@ function Set-TargetResource
 
     Write-Verbose -Message 'Setting the Exchange ActiveSyncVirtualDirectory settings'
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Set-ActiveSyncVirtualDirectory' -Verbose:$VerbosePreference
@@ -339,7 +343,7 @@ function Set-TargetResource
             throw 'AutoCertBasedAuthThumbprint must be specified when AutoCertBasedAuth is set to true'
         }
 
-        if($AllowServiceRestart)
+        if ($AllowServiceRestart)
         {
             # Need to restart all of IIS for auth settings to stick
             Write-Verbose -Message 'Restarting IIS'
@@ -355,7 +359,7 @@ function Set-TargetResource
     # Only bounce the app pool if we didn't already restart IIS for CBA
     if (-not $AutoCertBasedAuth)
     {
-        if($AllowServiceRestart)
+        if ($AllowServiceRestart)
         {
             Write-Verbose -Message 'Recycling MSExchangeSyncAppPool'
 
@@ -373,10 +377,13 @@ function Set-TargetResource
         if (-not (Test-ISAPIFilter))
         {
             Add-WebConfigurationProperty -PSPath 'MACHINE/WEBROOT/APPHOST' `
-                                         -Location 'Default Web Site' `
-                                         -Filter 'system.webServer/isapiFilters' `
-                                         -Name '.' `
-                                         -value @{name='Exchange ActiveSync ISAPI Filter';path="$env:ExchangeInstallPath\FrontEnd\HttpProxy\bin\AirFilter.dll"}
+                -Location 'Default Web Site' `
+                -Filter 'system.webServer/isapiFilters' `
+                -Name '.' `
+                -value @{
+                    name = 'Exchange ActiveSync ISAPI Filter'
+                    path = "$env:ExchangeInstallPath\FrontEnd\HttpProxy\bin\AirFilter.dll"
+            }
         }
     }
 }
@@ -515,7 +522,9 @@ function Test-TargetResource
 
     Write-Verbose -Message 'Testing the Exchange ActiveSyncVirtualDirectory settings'
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Identity} -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Identity
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ActiveSyncVirtualDirectory' -Verbose:$VerbosePreference
@@ -652,25 +661,25 @@ function Test-TargetResource
             if ([System.String]::IsNullOrEmpty($AutoCertBasedAuthThumbprint))
             {
                 Write-InvalidSettingVerbose -SettingName 'AutoCertBasedAuthThumbprint' `
-                                 -ExpectedValue 'Not null or empty' `
-                                 -ActualValue '' `
-                                 -Verbose:$VerbosePreference
+                    -ExpectedValue 'Not null or empty' `
+                    -ActualValue '' `
+                    -Verbose:$VerbosePreference
                 $testResults = $false
             }
             elseif ($null -eq $AutoCertBasedAuthHttpsBindings -or $AutoCertBasedAuthHttpsBindings.Count -eq 0)
             {
                 Write-InvalidSettingVerbose -SettingName 'AutoCertBasedAuthHttpsBindings' `
-                                 -ExpectedValue 'Not null or empty' `
-                                 -ActualValue '' `
-                                 -Verbose:$VerbosePreference
+                    -ExpectedValue 'Not null or empty' `
+                    -ActualValue '' `
+                    -Verbose:$VerbosePreference
                 $testResults = $false
             }
             elseif ((Test-CertBasedAuth -AutoCertBasedAuthThumbprint $AutoCertBasedAuthThumbprint -AutoCertBasedAuthHttpsBindings $AutoCertBasedAuthHttpsBindings) -eq $false)
             {
                 Write-InvalidSettingVerbose -SettingName 'TestCertBasedAuth' `
-                                 -ExpectedValue $true `
-                                 -ActualValue $false `
-                                 -Verbose:$VerbosePreference
+                    -ExpectedValue $true `
+                    -ActualValue $false `
+                    -Verbose:$VerbosePreference
                 $testResults = $false
             }
         }
@@ -904,7 +913,7 @@ function Test-CertBasedAuth
         return $false
     }
 
-    $netshOutput = netsh http show sslcert
+    $netshOutput = netsh.exe http show sslcert
 
     foreach ($binding in $AutoCertBasedAuthHttpsBindings)
     {
@@ -966,16 +975,16 @@ function Enable-DSMapperUsage
         $AppId
     )
     # See if a binding already exists, and if so, delete it
-    $bindingOutput = netsh http show sslcert ipport=$($IpPortCombo)
+    $bindingOutput = netsh.exe http show sslcert ipport=$($IpPortCombo)
 
     if (Test-IsSslBinding $bindingOutput)
     {
-        $output = netsh http delete sslcert ipport=$($IpPortCombo)
+        $output = netsh.exe http delete sslcert ipport=$($IpPortCombo)
         Write-Verbose -Message "$output"
     }
 
     # Add the binding back with new settings
-    $output = netsh http add sslcert ipport=$($IpPortCombo) certhash=$($CertThumbprint) appid=$($AppId) dsmapperusage=enable certstorename=MY
+    $output = netsh.exe http add sslcert ipport=$($IpPortCombo) certhash=$($CertThumbprint) appid=$($AppId) dsmapperusage=enable certstorename=MY
     Write-Verbose -Message "$output"
 }
 
@@ -1106,9 +1115,9 @@ function Test-ISAPIFilter
         $ReturnValue = $false
 
         $ISAPIFilters = Get-WebConfigurationProperty -PSPath 'MACHINE/WEBROOT/APPHOST' `
-                                                     -Location $WebSite `
-                                                     -Filter 'system.webServer/isapiFilters' `
-                                                     -Name '.'
+            -Location $WebSite `
+            -Filter 'system.webServer/isapiFilters' `
+            -Name '.'
     }
     process
     {
