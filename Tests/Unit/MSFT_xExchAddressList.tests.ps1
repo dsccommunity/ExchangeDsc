@@ -37,6 +37,19 @@ try
     Invoke-TestSetup
 
     InModuleScope $script:DSCResourceName {
+        function Remove-AddressList
+        {
+            $Identity,
+            [bool]$confirm
+        }
+        function Set-AddressList
+        {
+            $Identity,
+            $DisplayName,
+            $RecipientFilter,
+            $IncludedRecipient
+        }
+
         Describe 'MSFT_xExchAddressList.tests\Get-TargetResource' -Tag 'Get' {
             AfterEach {
                 Assert-VerifiableMock
@@ -113,7 +126,7 @@ try
                         IncludedRecipients = 'MailUsers'
                     }
 
-                    Set-TargetResource @setTargetResourceParams | Should -Throw
+                    { Set-TargetResource @setTargetResourceParams } | Should -Throw
                 }
             }
 
@@ -125,19 +138,9 @@ try
                     }
                 }
 
-                function Set-AddressList
-                {
-                    $Identity,
-                    $DisplayName,
-                    $RecipientFilter,
-                    $IncludedRecipient
-                }
-
                 Context 'When "Absent" is specified' {
-                    function Remove-AddressList
-                    {
-                        $Identity
-                    }
+
+                    Mock -CommandName 'Remove-AddressList' -Verifiable -ParameterFilter { $Identity -eq 'MyCustomAddressList' }
 
                     $setTargetResourceParams = @{
                         Name       = 'MyCustomAddressList'
@@ -146,8 +149,6 @@ try
                     }
 
                     It 'Should call Remove-AddressList' {
-                        Mock -CommandName 'Remove-AddressList' -Verifiable -ParameterFilter { $Identity -eq 'MyCustomAddressList' }
-
                         Set-TargetResource @setTargetResourceParams
                     }
                 }
