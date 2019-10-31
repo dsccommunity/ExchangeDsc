@@ -7,7 +7,7 @@ $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
 {
-    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DscResource.Tests'))
+    & git.exe @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DscResource.Tests'))
 }
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
@@ -39,8 +39,7 @@ try
     InModuleScope $script:DSCResourceName {
         function Remove-AddressList
         {
-            $Identity,
-            [bool]$confirm
+            $Identity
         }
         function Set-AddressList
         {
@@ -139,16 +138,14 @@ try
                 }
 
                 Context 'When "Absent" is specified' {
-
-                    Mock -CommandName 'Remove-AddressList' -Verifiable -ParameterFilter { $Identity -eq 'MyCustomAddressList' }
-
-                    $setTargetResourceParams = @{
-                        Name       = 'MyCustomAddressList'
-                        Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
-                        Ensure     = 'Absent'
-                    }
-
                     It 'Should call Remove-AddressList' {
+                        Mock -CommandName 'Remove-AddressList' -Verifiable -ParameterFilter { $Identity -eq 'MyCustomAddressList' }
+
+                        $setTargetResourceParams = @{
+                            Name       = 'MyCustomAddressList'
+                            Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
+                            Ensure     = 'Absent'
+                        }
                         Set-TargetResource @setTargetResourceParams
                     }
                 }
