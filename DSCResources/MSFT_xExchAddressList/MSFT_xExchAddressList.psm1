@@ -44,9 +44,9 @@
     .PARAMETER Container
         The Container parameter specifies where to create the address list.
     .PARAMETER DisplayName
-        The DisplayName parameter specifies where to create the address list.
+        Specifies the displayname.
     .PARAMETER IncludedRecipients
-        The IncludedRecipients parameter specifies where to create the address list.
+        Specifies a precanned filter that's based on the recipient type.
     .PARAMETER RecipientContainer
         The RecipientContainer parameter specifies a filter that's based on the recipient's location in Active Directory.
     .PARAMETER RecipientFilter
@@ -57,7 +57,7 @@ function Get-TargetResource
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
 
-    param(
+    param (
         # The name of the address book
         [Parameter(Mandatory = $true)]
         [string]
@@ -71,7 +71,9 @@ function Get-TargetResource
 
     Write-Verbose -Message 'Getting the Exchange Address List'
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Name } -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Name
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-AddressList' -Verbose:$VerbosePreference
@@ -180,9 +182,9 @@ function Get-TargetResource
     .PARAMETER Container
         The Container parameter specifies where to create the address list.
     .PARAMETER DisplayName
-        The DisplayName parameter specifies where to create the address list.
+        Specifies the displayname.
     .PARAMETER IncludedRecipients
-        The IncludedRecipients parameter specifies where to create the address list.
+        Specifies a precanned filter that's based on the recipient type.
     .PARAMETER RecipientContainer
         The RecipientContainer parameter specifies a filter that's based on the recipient's location in Active Directory.
     .PARAMETER RecipientFilter
@@ -191,7 +193,7 @@ function Get-TargetResource
 function Set-TargetResource
 {
     [CmdletBinding()]
-    param(
+    param (
         # The name of the address book
         [Parameter(Mandatory = $true)]
         [string]
@@ -303,7 +305,9 @@ function Set-TargetResource
 
     Write-Verbose -Message 'Setting the Exchange AddresslList settings'
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Name } -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Name
+    } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*-AddressList' -Verbose:$VerbosePreference
@@ -407,9 +411,9 @@ function Set-TargetResource
     .PARAMETER Container
         The Container parameter specifies where to create the address list.
     .PARAMETER DisplayName
-        The DisplayName parameter specifies where to create the address list.
+        Specifies the displayname.
     .PARAMETER IncludedRecipients
-        The IncludedRecipients parameter specifies where to create the address list.
+        Specifies a precanned filter that's based on the recipient type.
     .PARAMETER RecipientContainer
         The RecipientContainer parameter specifies a filter that's based on the recipient's location in Active Directory.
     .PARAMETER RecipientFilter
@@ -419,7 +423,7 @@ function Test-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Boolean])]
-    param(
+    param (
         # The name of the address book
         [Parameter(Mandatory = $true)]
         [string]
@@ -531,7 +535,9 @@ function Test-TargetResource
 
     Write-Verbose -Message 'Testing the Exchange AddresslList settings'
 
-    Write-FunctionEntry -Parameters @{'Identity' = $Name } -Verbose:$VerbosePreference
+    Write-FunctionEntry -Parameters @{
+        'Identity' = $Name
+    } -Verbose:$VerbosePreference
 
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
