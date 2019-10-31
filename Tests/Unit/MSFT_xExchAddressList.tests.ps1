@@ -39,14 +39,19 @@ try
     InModuleScope $script:DSCResourceName {
         function Remove-AddressList
         {
-            $Identity
+            param(
+                $Identity
+            )
         }
         function Set-AddressList
         {
-            $Identity,
-            $DisplayName,
-            $RecipientFilter,
-            $IncludedRecipient
+            Param(
+                $Identity,
+                $DisplayName,
+                $RecipientFilter,
+                $IncludedRecipient,
+                $Container
+            )
         }
 
         Describe 'MSFT_xExchAddressList.tests\Get-TargetResource' -Tag 'Get' {
@@ -65,7 +70,7 @@ try
                 Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
             }
 
-            $getAddressListInternalStandardOutput = @{
+            $getAddressPrecannedOutput = @{
                 Name                         = [System.String] 'MyCustomAddressList'
                 IncludedRecipients           = [System.String[]] 'MailboxUsers'
                 ConditionalCompany           = [System.String[]] ''
@@ -94,10 +99,22 @@ try
 
             Context 'When Get-TargetResource is called' {
 
-                Mock -CommandName Get-AddressList -Verifiable -MockWith { return $getAddressListInternalStandardOutput }
+                Mock -CommandName Get-AddressList -Verifiable -MockWith { return [PSCustomObject]$getAddressPrecannedOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }
+
+            Context 'When Get-TargetResource is called and custom filter is specifed' {
+                $getAddressCustomFilterOutput = @{ } + $getAddressPrecannedOutput
+                $getAddressCustomFilterOutput['IncludedRecipients'] = ''
+                $getAddressCustomFilterOutput['RecipientFilter'] = '(RecipientType -eq "UserMailbox")'
+
+                Mock -CommandName Get-AddressList -Verifiable -MockWith { return [PSCustomObject]$getAddressCustomFilterOutput }
+
+                $returnValue = Get-TargetResource @getTargetResourceParams
+                $returnValue['RecipientFilter'] | Should -Be '{(RecipientType -eq "UserMailbox")}'
+            }
+
             Context 'When Addresslist is not present' {
                 It 'Should return "Absent"' {
                     Mock -CommandName Get-AddressList -Verifiable
@@ -109,12 +126,14 @@ try
         }
 
         Describe 'MSFT_xExchAddressList.tests\Set-TargetResource' -Tag 'Set' {
+            BeforeAll {
+                Mock -CommandName Write-FunctionEntry -Verifiable
+                Mock -CommandName Get-RemoteExchangeSession -Verifiable
+            }
+
             AfterEach {
                 Assert-VerifiableMock
             }
-
-            Mock -CommandName Write-FunctionEntry -Verifiable
-            Mock -CommandName Get-RemoteExchangeSession -Verifiable
 
             Context 'Customized filters and precanned filters are used simultaneously' {
                 It 'Should throw' {
@@ -130,10 +149,10 @@ try
             }
 
             Context 'Address list is present' {
-                Mock -CommandName 'Get-TargetResource' -Verifiable -MockWith {
+                Mock -CommandName 'Get-TargetResource' -MockWith {
                     return @{
-                        Ensure = 'Present'
-                        Name   = 'MyCustomAddressList'
+                        Ensure = [System.String] 'Present'
+                        Name   = [System.String] 'MyCustomAddressList'
                     }
                 }
 
@@ -146,6 +165,7 @@ try
                             Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
                             Ensure     = 'Absent'
                         }
+
                         Set-TargetResource @setTargetResourceParams
                     }
                 }
@@ -170,6 +190,7 @@ try
                         DisplayName     = 'MyCustomAddressList'
                         Credential      = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
                         RecipientFilter = "(RecipientType -eq 'UserMailbox')"
+                        Container       = '\'
                     }
 
                     It 'Should call all functions' {
@@ -200,6 +221,93 @@ try
 
                 It 'Should call all functions' {
                     Set-TargetResource @setTargetResourceParams
+                }
+            }
+        }
+
+        Describe 'MSFT_xExchAddressList.tests\Test-TargetResource' -Tag 'Test' {
+            BeforeAll {
+                Mock -CommandName Write-FunctionEntry -Verifiable
+            }
+
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            Context 'When the address list is present' {
+                Mock -CommandName 'Get-TargetResource' -MockWith {
+                    return @{
+                        Name               = [System.String] 'MyCustomAddressList'
+                        IncludedRecipients = [System.String[]] 'MailboxUsers'
+                        DisplayName        = [System.String] 'MyCustomAddressList'
+                        Container          = '\'
+                        Ensure             = 'Present'
+                    }
+                }
+
+                Context 'When Displyname and Container are not specified' {
+                    $testTargetInput = @{
+                        Name               = [System.String] 'MyCustomAddressList'
+                        IncludedRecipients = [System.String[]] 'MailboxUsers'
+                        Credential         = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
+                    }
+                    It 'Should return True when all properties match' {
+                        Test-TargetResource @testTargetInput | Should -Be $true
+                    }
+                    It 'Should return False when prorites do not match' {
+                        $testTargetInput['Name'] = 'MyCustomWrongAddressList'
+
+                        Test-TargetResource @testTargetInput | Should -Be $false
+                    }
+                }
+
+                Context 'When Displyname and Container are specified' {
+                    $testTargetInput = @{
+                        Name               = [System.String] 'MyCustomAddressList'
+                        IncludedRecipients = [System.String[]] 'MailboxUsers'
+                        DisplayName        = [System.String] 'MyCustomAddressList'
+                        Container          = '\'
+                        Credential         = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
+                    }
+
+                    It 'Should return True when all properties match' {
+                        Test-TargetResource @testTargetInput | Should -Be $true
+                    }
+                    It 'Should return False when prorites do not match' {
+                        $testTargetInput['Container'] = '\Wrong'
+
+                        Test-TargetResource @testTargetInput | Should -Be $false
+                    }
+                }
+
+                Context 'When Absent is specified' {
+                    $testTargetInput = @{
+                        Name       = [System.String] 'MyCustomAddressList'
+                        Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
+                        Ensure     = 'Absent'
+                    }
+
+                    It 'Should return True when all properties match' {
+                        Test-TargetResource @testTargetInput | Should -Be $false
+                    }
+                }
+            }
+
+            Context 'When the address list is not present' {
+                Mock -CommandName 'Get-TargetResource' -MockWith {
+                    return @{
+                        Esure = 'Absent'
+                    }
+                }
+
+                It 'Should return false' {
+                    $testTargetInput = @{
+                        Name               = [System.String] 'MyCustomAddressList'
+                        IncludedRecipients = [System.String[]] 'MailboxUsers'
+                        Credential         = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
+                    }
+
+                    Test-TargetResource @testTargetInput | Should -Be $false
                 }
             }
         }
