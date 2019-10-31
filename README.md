@@ -81,6 +81,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 
 * **xExchAcceptedDomain** is used to add accepted domains
 * **xExchActiveSyncVirtualDirectory**
+* **xExchAddressList** is used to add an addess list
 * **xExchAntiMalwareScanning** is used to enable or disable Exchange
   Anti-malware scanning
 * **xExchAutodiscoverVirtualDirectory**
@@ -198,6 +199,73 @@ parameters.
 The parameter Name can be a breaking setting. When you change the name the identity
 changes as well. The switch InstallIsapiFilter by the Cmdlet is doing nothing.
 Therefore Add-WebConfigurationProperty is used to add a missing IsapiFilter.
+
+### xExchAddressList
+
+* **xExchAddressList** is used to add an address list
+
+* **Name** The name of the address list.
+* **Credential** Credentials used to establish a remote PowerShell session to Exchange.
+* **ConditionalCompany** The ConditionalCompany parameter specifies a precanned
+filter that's based on the value of the recipient's Company property.
+* **ConditionalCustomAttribute1** The ConditionalCustomAttribute1 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute1 property.
+* **ConditionalCustomAttribute2** The ConditionalCustomAttribute2 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute2 property.
+* **ConditionalCustomAttribute3** The ConditionalCustomAttribute3 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute3 property.
+* **ConditionalCustomAttribute4** The ConditionalCustomAttribute4 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute4 property.
+* **ConditionalCustomAttribute5** The ConditionalCustomAttribute5 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute5 property.
+* **ConditionalCustomAttribute6** The ConditionalCustomAttribute6 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute6 property.
+* **ConditionalCustomAttribute7** The ConditionalCustomAttribute7 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute7 property.
+* **ConditionalCustomAttribute8** The ConditionalCustomAttribute8 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute8 property.
+* **ConditionalCustomAttribute9** The ConditionalCustomAttribute9 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute9 property.
+* **ConditionalCustomAttribute10** The ConditionalCustomAttribute10 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute10 property.
+* **ConditionalCustomAttribute11** The ConditionalCustomAttribute11 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute11 property.
+* **ConditionalCustomAttribute12** The ConditionalCustomAttribute12 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute12 property.
+* **ConditionalCustomAttribute13** The ConditionalCustomAttribute13 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute13 property.
+* **ConditionalCustomAttribute14** The ConditionalCustomAttribute14 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute14 property.
+* **ConditionalCustomAttribute15** The ConditionalCustomAttribute15 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute15 property.
+* **ConditionalDepartment** The ConditionalDepartment parameter specifies a
+precanned filter that's based on the value of the recipient's Department property.
+* **ConditionalStateOrProvince** The ConditionalStateOrProvince parameter
+specifies a precanned filter that's based on the value of the recipient's
+StateOrProvince  property.
+* **Container** The Container parameter specifies where to create the address list.
+* **DisplayName** Specifies the displayname.
+* **IncludedRecipients** Specifies a precanned filter that's based on the
+recipient type.
+* **RecipientContainer** The RecipientContainer parameter specifies a filter
+that's based on the recipient's location in Active Directory.
+* **RecipientFilter** The RecipientFilter parameter specifies a custom OPath
+filter that's based on the value of any available recipient property.
 
 ### xExchAntiMalwareScanning
 
