@@ -1,3 +1,57 @@
+<#
+    .SYNOPSIS
+        Gets the resource configuration.
+    .PARAMETER Name
+        The name of the address list.
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+    .PARAMETER ConditionalCompany
+        The ConditionalCompany parameter specifies a precanned filter that's based on the value of the recipient's Company property.
+    .PARAMETER ConditionalCustomAttribute1
+        The ConditionalCustomAttribute1 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute1 property.
+    .PARAMETER ConditionalCustomAttribute2
+        The ConditionalCustomAttribute2 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute2 property.
+    .PARAMETER ConditionalCustomAttribute3
+        The ConditionalCustomAttribute3 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute3 property.
+    .PARAMETER ConditionalCustomAttribute4
+        The ConditionalCustomAttribute4 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute4 property.
+    .PARAMETER ConditionalCustomAttribute5
+        The ConditionalCustomAttribute5 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute5 property.
+    .PARAMETER ConditionalCustomAttribute6
+        The ConditionalCustomAttribute6 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute6 property.
+    .PARAMETER ConditionalCustomAttribute7
+        The ConditionalCustomAttribute7 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute7 property.
+    .PARAMETER ConditionalCustomAttribute8
+        The ConditionalCustomAttribute8 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute8 property.
+    .PARAMETER ConditionalCustomAttribute9
+        The ConditionalCustomAttribute9 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute9 property.
+    .PARAMETER ConditionalCustomAttribute10
+        The ConditionalCustomAttribute10 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute10 property.
+    .PARAMETER ConditionalCustomAttribute11
+        The ConditionalCustomAttribute11 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute11 property.
+    .PARAMETER ConditionalCustomAttribute12
+        The ConditionalCustomAttribute12 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute12 property.
+    .PARAMETER ConditionalCustomAttribute13
+        The ConditionalCustomAttribute13 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute13 property.
+    .PARAMETER ConditionalCustomAttribute14
+        The ConditionalCustomAttribute14 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute14 property.
+    .PARAMETER ConditionalCustomAttribute15
+        The ConditionalCustomAttribute15 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute15 property.
+    .PARAMETER ConditionalDepartment
+        The ConditionalDepartment parameter specifies a precanned filter that's based on the value of the recipient's Department property.
+    .PARAMETER ConditionalStateOrProvince
+        The ConditionalStateOrProvince parameter specifies a precanned filter that's based on the value of the recipient's StateOrProvince  property.
+    .PARAMETER Container
+        The Container parameter specifies where to create the address list.
+    .PARAMETER DisplayName
+        The DisplayName parameter specifies where to create the address list.
+    .PARAMETER IncludedRecipients
+        The IncludedRecipients parameter specifies where to create the address list.
+    .PARAMETER RecipientContainer
+        The RecipientContainer parameter specifies a filter that's based on the recipient's location in Active Directory.
+    .PARAMETER RecipientFilter
+        The RecipientFilter parameter specifies a custom OPath filter that's based on the value of any available recipient property.
+#>
 function Get-TargetResource
 {
     [CmdletBinding()]
@@ -80,6 +134,60 @@ function Get-TargetResource
 
     return $returnValue
 }
+<#
+    .SYNOPSIS
+        Sets the resource configuration.
+    .PARAMETER Name
+        The name of the address list.
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+    .PARAMETER ConditionalCompany
+        The ConditionalCompany parameter specifies a precanned filter that's based on the value of the recipient's Company property.
+    .PARAMETER ConditionalCustomAttribute1
+        The ConditionalCustomAttribute1 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute1 property.
+    .PARAMETER ConditionalCustomAttribute2
+        The ConditionalCustomAttribute2 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute2 property.
+    .PARAMETER ConditionalCustomAttribute3
+        The ConditionalCustomAttribute3 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute3 property.
+    .PARAMETER ConditionalCustomAttribute4
+        The ConditionalCustomAttribute4 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute4 property.
+    .PARAMETER ConditionalCustomAttribute5
+        The ConditionalCustomAttribute5 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute5 property.
+    .PARAMETER ConditionalCustomAttribute6
+        The ConditionalCustomAttribute6 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute6 property.
+    .PARAMETER ConditionalCustomAttribute7
+        The ConditionalCustomAttribute7 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute7 property.
+    .PARAMETER ConditionalCustomAttribute8
+        The ConditionalCustomAttribute8 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute8 property.
+    .PARAMETER ConditionalCustomAttribute9
+        The ConditionalCustomAttribute9 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute9 property.
+    .PARAMETER ConditionalCustomAttribute10
+        The ConditionalCustomAttribute10 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute10 property.
+    .PARAMETER ConditionalCustomAttribute11
+        The ConditionalCustomAttribute11 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute11 property.
+    .PARAMETER ConditionalCustomAttribute12
+        The ConditionalCustomAttribute12 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute12 property.
+    .PARAMETER ConditionalCustomAttribute13
+        The ConditionalCustomAttribute13 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute13 property.
+    .PARAMETER ConditionalCustomAttribute14
+        The ConditionalCustomAttribute14 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute14 property.
+    .PARAMETER ConditionalCustomAttribute15
+        The ConditionalCustomAttribute15 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute15 property.
+    .PARAMETER ConditionalDepartment
+        The ConditionalDepartment parameter specifies a precanned filter that's based on the value of the recipient's Department property.
+    .PARAMETER ConditionalStateOrProvince
+        The ConditionalStateOrProvince parameter specifies a precanned filter that's based on the value of the recipient's StateOrProvince  property.
+    .PARAMETER Container
+        The Container parameter specifies where to create the address list.
+    .PARAMETER DisplayName
+        The DisplayName parameter specifies where to create the address list.
+    .PARAMETER IncludedRecipients
+        The IncludedRecipients parameter specifies where to create the address list.
+    .PARAMETER RecipientContainer
+        The RecipientContainer parameter specifies a filter that's based on the recipient's location in Active Directory.
+    .PARAMETER RecipientFilter
+        The RecipientFilter parameter specifies a custom OPath filter that's based on the value of any available recipient property.
+#>
 function Set-TargetResource
 {
     [CmdletBinding()]
@@ -253,6 +361,60 @@ function Set-TargetResource
         New-AddressList @PSBoundParameters -confirm:$false
     }
 }
+<#
+    .SYNOPSIS
+        Tests the resource configuration.
+    .PARAMETER Name
+        The name of the address list.
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+    .PARAMETER ConditionalCompany
+        The ConditionalCompany parameter specifies a precanned filter that's based on the value of the recipient's Company property.
+    .PARAMETER ConditionalCustomAttribute1
+        The ConditionalCustomAttribute1 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute1 property.
+    .PARAMETER ConditionalCustomAttribute2
+        The ConditionalCustomAttribute2 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute2 property.
+    .PARAMETER ConditionalCustomAttribute3
+        The ConditionalCustomAttribute3 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute3 property.
+    .PARAMETER ConditionalCustomAttribute4
+        The ConditionalCustomAttribute4 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute4 property.
+    .PARAMETER ConditionalCustomAttribute5
+        The ConditionalCustomAttribute5 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute5 property.
+    .PARAMETER ConditionalCustomAttribute6
+        The ConditionalCustomAttribute6 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute6 property.
+    .PARAMETER ConditionalCustomAttribute7
+        The ConditionalCustomAttribute7 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute7 property.
+    .PARAMETER ConditionalCustomAttribute8
+        The ConditionalCustomAttribute8 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute8 property.
+    .PARAMETER ConditionalCustomAttribute9
+        The ConditionalCustomAttribute9 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute9 property.
+    .PARAMETER ConditionalCustomAttribute10
+        The ConditionalCustomAttribute10 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute10 property.
+    .PARAMETER ConditionalCustomAttribute11
+        The ConditionalCustomAttribute11 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute11 property.
+    .PARAMETER ConditionalCustomAttribute12
+        The ConditionalCustomAttribute12 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute12 property.
+    .PARAMETER ConditionalCustomAttribute13
+        The ConditionalCustomAttribute13 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute13 property.
+    .PARAMETER ConditionalCustomAttribute14
+        The ConditionalCustomAttribute14 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute14 property.
+    .PARAMETER ConditionalCustomAttribute15
+        The ConditionalCustomAttribute15 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute15 property.
+    .PARAMETER ConditionalDepartment
+        The ConditionalDepartment parameter specifies a precanned filter that's based on the value of the recipient's Department property.
+    .PARAMETER ConditionalStateOrProvince
+        The ConditionalStateOrProvince parameter specifies a precanned filter that's based on the value of the recipient's StateOrProvince  property.
+    .PARAMETER Container
+        The Container parameter specifies where to create the address list.
+    .PARAMETER DisplayName
+        The DisplayName parameter specifies where to create the address list.
+    .PARAMETER IncludedRecipients
+        The IncludedRecipients parameter specifies where to create the address list.
+    .PARAMETER RecipientContainer
+        The RecipientContainer parameter specifies a filter that's based on the recipient's location in Active Directory.
+    .PARAMETER RecipientFilter
+        The RecipientFilter parameter specifies a custom OPath filter that's based on the value of any available recipient property.
+#>
 function Test-TargetResource
 {
     [CmdletBinding()]
