@@ -1,6 +1,7 @@
 # Change log for xExchange
 
 ## Unreleased
+- Remove check for Windows Failover-Clustering role before adding a new DAG member
 
 ## 1.30.0.0
 
