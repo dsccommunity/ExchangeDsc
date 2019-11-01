@@ -620,14 +620,14 @@ function Get-ActiveServer
     )
 
     $activeServers = $Servers | `
-            Where-Object { (Get-ServerComponentState -Identity $_ -Component HubTransport).State -eq 'Active' } | `
-            ForEach-Object { `
-                $xml = [xml] (Get-ExchangeDiagnosticInfo -Process 'EdgeTransport' -server $_ -erroraction SilentlyContinue)
-            if ($xml -and $xml.Diagnostics.ProcessInfo)
-            {
-                Write-Output $_
-            }
+        Where-Object { (Get-ServerComponentState -Identity $_ -Component HubTransport).State -eq 'Active' } | `
+        ForEach-Object { `
+            $xml = [xml] (Get-ExchangeDiagnosticInfo -Process 'EdgeTransport' -server $_ -erroraction SilentlyContinue)
+        if ($xml -and $xml.Diagnostics.ProcessInfo)
+        {
+            Write-Output $_
         }
+    }
 
     return $activeServers
 }
@@ -738,8 +738,8 @@ function Register-TransportMaintenanceLog
     else
     {
         $newestLog = Get-TransportMaintenanceLogFileList -TransportService $TransportService -LogPath $LogPath | `
-                Sort-Object LastWriteTime -Descending | `
-                Select-Object -First 1
+            Sort-Object LastWriteTime -Descending | `
+            Select-Object -First 1
     }
 
     if (-not $newestLog -or $newestLog.Length -ge $maxFileSize)
@@ -795,8 +795,8 @@ function Remove-TransportMaintenanceLogsOverMaxAge
     [DateTime] $rolloutTime = (Get-Date) - $maxLogAge
 
     Get-TransportMaintenanceLogFileList -TransportService $TransportService -LogPath $LogPath | `
-            Where-Object { $_.LastWriteTime -lt $rolloutTime } | `
-            ForEach-Object { Remove-Item -Path $_.FullName }
+        Where-Object { $_.LastWriteTime -lt $rolloutTime } | `
+        ForEach-Object { Remove-Item -Path $_.FullName }
 }
 
 # .DESCRIPTION
@@ -1224,14 +1224,14 @@ function Write-EventOfEntry
     if ($Reason)
     {
         $Reason.GetEnumerator() |  `
-                Sort-Object Key | ForEach-Object {
-                if ($ReasonStr)
-                {
-                    $ReasonStr += '; '
-                }
-
-                $ReasonStr += '{0}={1}' -f $_.Name, $_.Value
+            Sort-Object Key | ForEach-Object {
+            if ($ReasonStr)
+            {
+                $ReasonStr += '; '
             }
+
+            $ReasonStr += '{0}={1}' -f $_.Name, $_.Value
+        }
     }
 
     $msg = [System.String]::Format('{0},{1},{2},{3},{4},{5:g},{6},{7},{8}', `
@@ -1797,7 +1797,7 @@ function Wait-EmptyQueuesCompletion
 
         $filter = "{MessageCount -gt 0 -and DeliveryType -ne 'ShadowRedundancy' -and NextHopDomain -ne 'Poison Message'}"
         $queues = get-queue -server $Server -ErrorAction SilentlyContinue -filter $filter | `
-                Where-Object { $null -eq $QueueTypes -or $QueueTypes -contains $_.DeliveryType }
+            Where-Object { $null -eq $QueueTypes -or $QueueTypes -contains $_.DeliveryType }
 
         $entries = $queues | ForEach-Object {
             if ($ActiveMsgOnly)
@@ -1876,21 +1876,21 @@ function Get-DiscardInfo
     $shadowInfo = [xml] (Get-ExchangeDiagnosticInfo -Server $Server -Process edgetransport -Component ShadowRedundancy -argument $argument)
 
     $discardInfo = $shadowInfo.Diagnostics.Components.ShadowRedundancy.ShadowServerCollection.ShadowServer | `
-            Where-Object { $_.ShadowServerInfo.discardEventsCount -gt 0 } |
-        ForEach-Object {
-            $infoProps = `
-            @{
-                Id         = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($_.Context))
-                Count      = $_.ShadowServerInfo.discardEventsCount
-                DiscardIds = @()
-            }
-            if ($Detail)
-            {
-                $infoProps.DiscardIds = $_.ShadowServerInfo.discardEventMessageId
-            }
-
-            New-Object psobject -Property $infoProps
+        Where-Object { $_.ShadowServerInfo.discardEventsCount -gt 0 } |
+    ForEach-Object {
+        $infoProps = `
+        @{
+            Id         = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($_.Context))
+            Count      = $_.ShadowServerInfo.discardEventsCount
+            DiscardIds = @()
         }
+        if ($Detail)
+        {
+            $infoProps.DiscardIds = $_.ShadowServerInfo.discardEventMessageId
+        }
+
+        New-Object psobject -Property $infoProps
+    }
 
     return $discardInfo
 }
@@ -1959,8 +1959,8 @@ function Wait-EmptyDiscardsCompletion
     $discardInfo | Where-Object { $ActiveServers -notcontains $_.Id.Split('.')[0] } | ForEach-Object {
         Write-SkippedEvent -Source $Server -Stage ShadowDiscardDrain -Id $_.Id `
             -Count $_.Count -Reason @{
-            Reason = $Script:ServerInMM
-        }
+                Reason = $Script:ServerInMM
+            }
     }
 
     # wait for discard events to be drained
