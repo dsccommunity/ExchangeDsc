@@ -205,7 +205,8 @@ Therefore Add-WebConfigurationProperty is used to add a missing IsapiFilter.
 * **xExchAddressList** is used to add an address list
 
 * **Name** The name of the address list.
-* **Credential** Credentials used to establish a remote PowerShell session to Exchange.
+* **Credential** Credentials used to establish a remote PowerShell session to
+Exchange.
 * **ConditionalCompany** The ConditionalCompany parameter specifies a precanned
 filter that's based on the value of the recipient's Company property.
 * **ConditionalCustomAttribute1** The ConditionalCustomAttribute1 parameter

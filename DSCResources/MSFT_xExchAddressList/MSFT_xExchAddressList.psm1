@@ -56,11 +56,9 @@ function Get-TargetResource
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
-
     param (
-        # The name of the address book
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
@@ -136,6 +134,7 @@ function Get-TargetResource
 
     return $returnValue
 }
+
 <#
     .SYNOPSIS
         Sets the resource configuration.
@@ -194,9 +193,8 @@ function Set-TargetResource
 {
     [CmdletBinding()]
     param (
-        # The name of the address book
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
@@ -210,96 +208,96 @@ function Set-TargetResource
         $Ensure = 'Present',
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCompany,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute1,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute2,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute3,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute4,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute5,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute6,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute7,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute8,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute9,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute10,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute11,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute12,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute13,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute14,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute15,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalDepartment,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalStateOrProvince,
 
         [Parameter()]
-        [string]
+        [System.String]
         $Container,
 
         [Parameter()]
-        [string]
+        [System.String]
         $DisplayName,
 
         [Parameter()]
         [ValidateSet('MailboxUsers', 'MailContacts', 'MailGroups', 'MailUsers', 'Resources', 'AllRecipients')]
-        [string[]]
+        [System.String[]]
         $IncludedRecipients,
 
         [Parameter()]
-        [string]
+        [System.String]
         $RecipientContainer,
 
         [Parameter()]
-        [string]
+        [System.String]
         $RecipientFilter
     )
 
@@ -330,7 +328,7 @@ function Set-TargetResource
         if ($Ensure -eq 'Absent')
         {
             Write-Verbose -Message ('Removing the address list {0}' -f $addressList.Name)
-            Remove-AddressList -Identity $addressList.Name -confirm:$false
+            Remove-AddressList -Identity $addressList.Name -Confirm:$false
         }
         else
         {
@@ -350,11 +348,11 @@ function Set-TargetResource
             if ($PSBoundParameters['RecipientFilter'])
             {
                 $PSBoundParameters['RecipientFilter'] = [scriptblock]::Create($PSBoundParameters['RecipientFilter'])
-                Set-AddressList @PSBoundParameters -confirm:$false
+                Set-AddressList @PSBoundParameters -Confirm:$false
             }
             else
             {
-                Set-AddressList @PSBoundParameters -confirm:$false
+                Set-AddressList @PSBoundParameters -Confirm:$false
             }
         }
     }
@@ -362,9 +360,10 @@ function Set-TargetResource
     {
         Write-Verbose -Message ('Address list {0} does not exist. Creating it...' -f $addressList.Name)
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'Ensure'
-        New-AddressList @PSBoundParameters -confirm:$false
+        New-AddressList @PSBoundParameters -Confirm:$false
     }
 }
+
 <#
     .SYNOPSIS
         Tests the resource configuration.
@@ -426,7 +425,7 @@ function Test-TargetResource
     param (
         # The name of the address book
         [Parameter(Mandatory = $true)]
-        [string]
+        [System.String]
         $Name,
 
         [Parameter(Mandatory = $true)]
@@ -440,96 +439,96 @@ function Test-TargetResource
         $Ensure = 'Present',
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCompany,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute1,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute2,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute3,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute4,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute5,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute6,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute7,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute8,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute9,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute10,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute11,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute12,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute13,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute14,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalCustomAttribute15,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalDepartment,
 
         [Parameter()]
-        [string[]]
+        [System.String[]]
         $ConditionalStateOrProvince,
 
         [Parameter()]
-        [string]
+        [System.String]
         $Container,
 
         [Parameter()]
-        [string]
+        [System.String]
         $DisplayName,
 
         [Parameter()]
         [ValidateSet('MailboxUsers', 'MailContacts', 'MailGroups', 'MailUsers', 'Resources', 'AllRecipients')]
-        [string[]]
+        [System.String[]]
         $IncludedRecipients,
 
         [Parameter()]
-        [string]
+        [System.String]
         $RecipientContainer,
 
         [Parameter()]
-        [string]
+        [System.String]
         $RecipientFilter
     )
 
