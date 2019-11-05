@@ -99,7 +99,7 @@ try
 
             Context 'When Get-TargetResource is called' {
 
-                Mock -CommandName Get-AddressList -Verifiable -MockWith { return [PSCustomObject]$getAddressPrecannedOutput }
+                Mock -CommandName Get-AddressList -Verifiable -MockWith { return [PSCustomObject] $getAddressPrecannedOutput }
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }
@@ -109,7 +109,7 @@ try
                 $getAddressCustomFilterOutput['IncludedRecipients'] = ''
                 $getAddressCustomFilterOutput['RecipientFilter'] = '(RecipientType -eq "UserMailbox")'
 
-                Mock -CommandName Get-AddressList -Verifiable -MockWith { return [PSCustomObject]$getAddressCustomFilterOutput }
+                Mock -CommandName Get-AddressList -Verifiable -MockWith { return [PSCustomObject] $getAddressCustomFilterOutput }
 
                 $returnValue = Get-TargetResource @getTargetResourceParams
                 $returnValue['RecipientFilter'] | Should -Be '{(RecipientType -eq "UserMailbox")}'

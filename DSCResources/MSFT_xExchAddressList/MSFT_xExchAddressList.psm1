@@ -347,7 +347,7 @@ function Set-TargetResource
             }
             if ($PSBoundParameters['RecipientFilter'])
             {
-                $PSBoundParameters['RecipientFilter'] = [scriptblock]::Create($PSBoundParameters['RecipientFilter'])
+                $PSBoundParameters['RecipientFilter'] = [ScriptBlock]::Create($PSBoundParameters['RecipientFilter'])
                 Set-AddressList @PSBoundParameters -Confirm:$false
             }
             else
@@ -423,7 +423,6 @@ function Test-TargetResource
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param (
-        # The name of the address book
         [Parameter(Mandatory = $true)]
         [System.String]
         $Name,
@@ -562,8 +561,8 @@ function Test-TargetResource
     }
     else
     {
-        $referenceObject = [PSCustomObject]$addressList
-        $differenceObject = [PSCustomObject]$DifferenceObjectHashTable
+        $referenceObject = [PSCustomObject] $addressList
+        $differenceObject = [PSCustomObject] $DifferenceObjectHashTable
 
         foreach ($property in $DifferenceObjectHashTable.Keys)
         {
