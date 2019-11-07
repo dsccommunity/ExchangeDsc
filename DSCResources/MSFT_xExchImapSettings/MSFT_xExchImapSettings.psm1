@@ -62,6 +62,14 @@
             * Require: Extended Protection for Authentication is required for all IMAP4 connections. If the incoming IMAP4 connection doesn't support it, the connection is rejected.
         Extended Protection for Authentication enhances the protection and handling of credentials by Integrated Windows authentication (also known as NTLM), so we strongly recommend that you use it if it's supported by your clients (default installations of Windows 7 or later and Windows Server 2008 R2 or later support it).
 
+    .PARAMETER ExternalConnectionSettings
+        The ExternalConnectionSettings parameter specifies the host name, port, and encryption method that's used by external IMAP4 clients (IMAP4 connections from outside your corporate network).
+        This parameter uses the syntax <HostName>:<Port>:[<TLS | SSL>]. The encryption method value is optional (blank indicates unencrypted connections).
+        The default value is blank ($null), which means no external IMAP4 connection settings are configured.
+        To enter multiple values and overwrite any existing entries, use the following syntax: <value1>,<value2>,...<valueN>. If the values contain spaces or otherwise require quotation marks, you need to use the following syntax: "<value1>","<value2>",..."<valueN>".
+        To add or remove one or more values without affecting any existing entries, use the following syntax: @{Add="<value1>","<value2>"...; Remove="<value1>","<value2>"...}.
+        The combination of encryption methods and ports that are specified for this parameter need to match the corresponding encryption methods and ports that are specified by the SSLBindings and UnencryptedOrTLSBindings parameters.
+
     .Parameter InternalConnectionSettings
         The InternalConnectionSettings parameter specifies the host name, port, and encryption method that's used by internal IMAP4 clients (IMAP4 connections from inside your corporate network). This setting is also used when a IMAP4 connection is forwarded to another Exchange server that's running the Microsoft Exchange IMAP4 service.
         This parameter uses the syntax <HostName>:<Port>:[<TLS | SSL>]. The encryption method value is optional (blank indicates unencrypted connections).
@@ -142,7 +150,7 @@
         The ShowHiddenFoldersEnabled parameter specifies whether hidden mailbox folders are visible. Valid values are:
             * $true: Hidden folders are visible.
             * $false: Hidden folders aren't visible. This is the default value.
-            
+
     .Parameter SSLBindings
         The SSLBindings parameter specifies the IP address and TCP port that's used for IMAP4 connection that's always encrypted by SSL/TLS. This parameter uses the syntax <IPv4OrIPv6Address>:<Port>.
         The default value is [::]:993,0.0.0.0:993.
@@ -159,14 +167,6 @@
         The default value is [::]:143,0.0.0.0:143.
         To enter multiple values and overwrite any existing entries, use the following syntax: <value1>,<value2>,...<valueN>. If the values contain spaces or otherwise require quotation marks, you need to use the following syntax: "<value1>","<value2>",..."<valueN>".
         To add or remove one or more values without affecting any existing entries, use the following syntax: @{Add="<value1>","<value2>"...; Remove="<value1>","<value2>"...}.
-
-    .PARAMETER ExternalConnectionSettings
-        The ExternalConnectionSettings parameter specifies the host name, port, and encryption method that's used by external IMAP4 clients (IMAP4 connections from outside your corporate network).
-        This parameter uses the syntax <HostName>:<Port>:[<TLS | SSL>]. The encryption method value is optional (blank indicates unencrypted connections).
-        The default value is blank ($null), which means no external IMAP4 connection settings are configured.
-        To enter multiple values and overwrite any existing entries, use the following syntax: <value1>,<value2>,...<valueN>. If the values contain spaces or otherwise require quotation marks, you need to use the following syntax: "<value1>","<value2>",..."<valueN>".
-        To add or remove one or more values without affecting any existing entries, use the following syntax: @{Add="<value1>","<value2>"...; Remove="<value1>","<value2>"...}.
-        The combination of encryption methods and ports that are specified for this parameter need to match the corresponding encryption methods and ports that are specified by the SSLBindings and UnencryptedOrTLSBindings parameters.
 
     .PARAMETER X509CertificateName
         The X509CertificateName parameter specifies the certificate that's used for encrypting IMAP4 client connections.
@@ -422,6 +422,14 @@ function Get-TargetResource
             * Require: Extended Protection for Authentication is required for all IMAP4 connections. If the incoming IMAP4 connection doesn't support it, the connection is rejected.
         Extended Protection for Authentication enhances the protection and handling of credentials by Integrated Windows authentication (also known as NTLM), so we strongly recommend that you use it if it's supported by your clients (default installations of Windows 7 or later and Windows Server 2008 R2 or later support it).
 
+    .PARAMETER ExternalConnectionSettings
+        The ExternalConnectionSettings parameter specifies the host name, port, and encryption method that's used by external IMAP4 clients (IMAP4 connections from outside your corporate network).
+        This parameter uses the syntax <HostName>:<Port>:[<TLS | SSL>]. The encryption method value is optional (blank indicates unencrypted connections).
+        The default value is blank ($null), which means no external IMAP4 connection settings are configured.
+        To enter multiple values and overwrite any existing entries, use the following syntax: <value1>,<value2>,...<valueN>. If the values contain spaces or otherwise require quotation marks, you need to use the following syntax: "<value1>","<value2>",..."<valueN>".
+        To add or remove one or more values without affecting any existing entries, use the following syntax: @{Add="<value1>","<value2>"...; Remove="<value1>","<value2>"...}.
+        The combination of encryption methods and ports that are specified for this parameter need to match the corresponding encryption methods and ports that are specified by the SSLBindings and UnencryptedOrTLSBindings parameters.
+
     .Parameter InternalConnectionSettings
         The InternalConnectionSettings parameter specifies the host name, port, and encryption method that's used by internal IMAP4 clients (IMAP4 connections from inside your corporate network). This setting is also used when a IMAP4 connection is forwarded to another Exchange server that's running the Microsoft Exchange IMAP4 service.
         This parameter uses the syntax <HostName>:<Port>:[<TLS | SSL>]. The encryption method value is optional (blank indicates unencrypted connections).
@@ -519,14 +527,6 @@ function Get-TargetResource
         The default value is [::]:143,0.0.0.0:143.
         To enter multiple values and overwrite any existing entries, use the following syntax: <value1>,<value2>,...<valueN>. If the values contain spaces or otherwise require quotation marks, you need to use the following syntax: "<value1>","<value2>",..."<valueN>".
         To add or remove one or more values without affecting any existing entries, use the following syntax: @{Add="<value1>","<value2>"...; Remove="<value1>","<value2>"...}.
-
-    .PARAMETER ExternalConnectionSettings
-        The ExternalConnectionSettings parameter specifies the host name, port, and encryption method that's used by external IMAP4 clients (IMAP4 connections from outside your corporate network).
-        This parameter uses the syntax <HostName>:<Port>:[<TLS | SSL>]. The encryption method value is optional (blank indicates unencrypted connections).
-        The default value is blank ($null), which means no external IMAP4 connection settings are configured.
-        To enter multiple values and overwrite any existing entries, use the following syntax: <value1>,<value2>,...<valueN>. If the values contain spaces or otherwise require quotation marks, you need to use the following syntax: "<value1>","<value2>",..."<valueN>".
-        To add or remove one or more values without affecting any existing entries, use the following syntax: @{Add="<value1>","<value2>"...; Remove="<value1>","<value2>"...}.
-        The combination of encryption methods and ports that are specified for this parameter need to match the corresponding encryption methods and ports that are specified by the SSLBindings and UnencryptedOrTLSBindings parameters.
 
     .PARAMETER X509CertificateName
         The X509CertificateName parameter specifies the certificate that's used for encrypting IMAP4 client connections.
@@ -757,6 +757,14 @@ function Set-TargetResource
             * Require: Extended Protection for Authentication is required for all IMAP4 connections. If the incoming IMAP4 connection doesn't support it, the connection is rejected.
         Extended Protection for Authentication enhances the protection and handling of credentials by Integrated Windows authentication (also known as NTLM), so we strongly recommend that you use it if it's supported by your clients (default installations of Windows 7 or later and Windows Server 2008 R2 or later support it).
 
+    .PARAMETER ExternalConnectionSettings
+        The ExternalConnectionSettings parameter specifies the host name, port, and encryption method that's used by external IMAP4 clients (IMAP4 connections from outside your corporate network).
+        This parameter uses the syntax <HostName>:<Port>:[<TLS | SSL>]. The encryption method value is optional (blank indicates unencrypted connections).
+        The default value is blank ($null), which means no external IMAP4 connection settings are configured.
+        To enter multiple values and overwrite any existing entries, use the following syntax: <value1>,<value2>,...<valueN>. If the values contain spaces or otherwise require quotation marks, you need to use the following syntax: "<value1>","<value2>",..."<valueN>".
+        To add or remove one or more values without affecting any existing entries, use the following syntax: @{Add="<value1>","<value2>"...; Remove="<value1>","<value2>"...}.
+        The combination of encryption methods and ports that are specified for this parameter need to match the corresponding encryption methods and ports that are specified by the SSLBindings and UnencryptedOrTLSBindings parameters.
+
     .Parameter InternalConnectionSettings
         The InternalConnectionSettings parameter specifies the host name, port, and encryption method that's used by internal IMAP4 clients (IMAP4 connections from inside your corporate network). This setting is also used when a IMAP4 connection is forwarded to another Exchange server that's running the Microsoft Exchange IMAP4 service.
         This parameter uses the syntax <HostName>:<Port>:[<TLS | SSL>]. The encryption method value is optional (blank indicates unencrypted connections).
@@ -854,14 +862,6 @@ function Set-TargetResource
         The default value is [::]:143,0.0.0.0:143.
         To enter multiple values and overwrite any existing entries, use the following syntax: <value1>,<value2>,...<valueN>. If the values contain spaces or otherwise require quotation marks, you need to use the following syntax: "<value1>","<value2>",..."<valueN>".
         To add or remove one or more values without affecting any existing entries, use the following syntax: @{Add="<value1>","<value2>"...; Remove="<value1>","<value2>"...}.
-
-    .PARAMETER ExternalConnectionSettings
-        The ExternalConnectionSettings parameter specifies the host name, port, and encryption method that's used by external IMAP4 clients (IMAP4 connections from outside your corporate network).
-        This parameter uses the syntax <HostName>:<Port>:[<TLS | SSL>]. The encryption method value is optional (blank indicates unencrypted connections).
-        The default value is blank ($null), which means no external IMAP4 connection settings are configured.
-        To enter multiple values and overwrite any existing entries, use the following syntax: <value1>,<value2>,...<valueN>. If the values contain spaces or otherwise require quotation marks, you need to use the following syntax: "<value1>","<value2>",..."<valueN>".
-        To add or remove one or more values without affecting any existing entries, use the following syntax: @{Add="<value1>","<value2>"...; Remove="<value1>","<value2>"...}.
-        The combination of encryption methods and ports that are specified for this parameter need to match the corresponding encryption methods and ports that are specified by the SSLBindings and UnencryptedOrTLSBindings parameters.
 
     .PARAMETER X509CertificateName
         The X509CertificateName parameter specifies the certificate that's used for encrypting IMAP4 client connections.
