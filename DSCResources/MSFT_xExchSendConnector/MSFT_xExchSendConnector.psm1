@@ -223,8 +223,9 @@ function Set-TargetResource
         [System.String]
         $Ensure = 'Present',
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $AuthenticationCredential,
 
         [Parameter()]
@@ -547,8 +548,9 @@ function Test-TargetResource
         [System.String]
         $Ensure,
 
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [System.Management.Automation.PSCredential]
+        [System.Management.Automation.Credential()]
         $AuthenticationCredential,
 
         [Parameter()]
