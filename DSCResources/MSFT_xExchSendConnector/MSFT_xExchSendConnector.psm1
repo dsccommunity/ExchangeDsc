@@ -223,6 +223,10 @@ function Set-TargetResource
         [System.String]
         $Ensure = 'Present',
 
+        [Parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $AuthenticationCredential,
+
         [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
         $ExtendedRightAllowEntries = @(),
@@ -542,6 +546,10 @@ function Test-TargetResource
         [ValidateSet('Present', 'Absent')]
         [System.String]
         $Ensure,
+
+        [Parameter(Mandatory = $true)]
+        [System.Management.Automation.PSCredential]
+        $AuthenticationCredential,
 
         [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
