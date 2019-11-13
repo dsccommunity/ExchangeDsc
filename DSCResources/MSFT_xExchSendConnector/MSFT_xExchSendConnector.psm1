@@ -45,17 +45,17 @@ function Get-TargetResource
 
     if ($null -ne $connector)
     {
-        $ADPermissions = Get-ADPermission -Identity $Name | Where-Object { $_.IsInherited -eq $false -and $null -ne $_.ExtendedRights }
+        $adPermissions = Get-ADPermission -Identity $Name | Where-Object { $_.IsInherited -eq $false -and $null -ne $_.ExtendedRights }
 
-        $userNames = $ADPermissions.User | Select-Object -Property RawIdentity -Unique | ForEach-Object -MemberName RawIdentity
+        $userNames = $adPermissions.User | Select-Object -Property RawIdentity -Unique | ForEach-Object -MemberName RawIdentity
         $ExtendedRightAllowEntries = [System.Collections.Generic.List[Microsoft.Management.Infrastructure.CimInstance]]::new()
         $ExtendedRightDenyEntries = [System.Collections.Generic.List[Microsoft.Management.Infrastructure.CimInstance]]::new()
 
         foreach ($user in $userNames)
         {
-            $allowPermissions = ($ADPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $false } |
+            $allowPermissions = ($adPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $false } |
                 ForEach-Object -MemberName ExtendedRights | ForEach-Object -MemberName RawIdentity) -join ','
-            $denyPermissions = ($ADPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $true } |
+            $denyPermissions = ($adPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $true } |
                 ForEach-Object -MemberName ExtendedRights | ForEach-Object -MemberName RawIdentity) -join ','
 
             if ($allowPermissions)
@@ -417,7 +417,7 @@ function Set-TargetResource
         }
         else
         {
-            Write-Verbose -Message "Send connector $Name not compliant.Setting the properties."
+            Write-Verbose -Message "Send connector $Name not compliant. Setting the properties."
 
             # Usage is not a valid command for Set-SendConnector
             Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Ensure', 'ExtendedRightAllowEntries', 'ExtendedRightDenyEntries' , 'Name'
@@ -425,7 +425,7 @@ function Set-TargetResource
             $PSBoundParameters['Identity'] = $Name
             Set-SendConnector  @PSBoundParameters
 
-            # set AD permissions
+            # Set AD permissions
             if ($ExtendedRightAllowEntries)
             {
                 foreach ($ExtendedRightAllowEntry in $ExtendedRightAllowEntries)
@@ -688,8 +688,6 @@ function Test-TargetResource
         $Usage
     )
 
-    #Assert-IdentityIsValid -Identity $Identity
-
     Write-FunctionEntry -Parameters @{
         'Identity' = $Identity
     } -Verbose:$VerbosePreference
@@ -699,10 +697,10 @@ function Test-TargetResource
 
     $connector = Get-TargetResource -Name $Name -Credential $Credential -AddressSpaces $AddressSpaces
 
-    # get AD permissions if necessary
+    # Get AD permissions if necessary
     if (($ExtendedRightAllowEntries) -or ($ExtendedRightDenyEntries))
     {
-        $ADPermissions = Get-ADPermission -Identity $Name | Where-Object { $_.IsInherited -eq $false }
+        $adPermissions = Get-ADPermission -Identity $Name | Where-Object { $_.IsInherited -eq $false }
     }
 
     $testResults = $true
@@ -874,10 +872,10 @@ function Test-TargetResource
                 $testResults = $false
             }
 
-            if ($ExtendedRightAllowEntries -and $ADPermissions.Deny -contains $false)
+            if ($ExtendedRightAllowEntries -and $adPermissions.Deny -contains $false)
             {
                 $splat = @{
-                    ADPermissions  = $ADPermissions
+                    ADPermissions  = $adPermissions
                     ExtendedRights = $ExtendedRightAllowEntries
                     Deny           = $false
                     Verbose        = $VerbosePreference
@@ -890,14 +888,14 @@ function Test-TargetResource
                     $testResults = $false
                 }
             }
-            if (-not $ExtendedRightAllowEntries -and $ADPermissions -and $ADPermissions.Deny -notcontains $false)
+            if (-not $ExtendedRightAllowEntries -and $adPermissions -and $adPermissions.Deny -notcontains $false)
             {
                 return $false
             }
-            if ($ExtendedRightDenyEntries -and $ADPermissions.Deny -contains $true)
+            if ($ExtendedRightDenyEntries -and $adPermissions.Deny -contains $true)
             {
                 $splat = @{
-                    ADPermissions  = $ADPermissions
+                    ADPermissions  = $adPermissions
                     ExtendedRights = $ExtendedRightDenyEntries
                     Deny           = $true
                     Verbose        = $VerbosePreference
@@ -910,7 +908,7 @@ function Test-TargetResource
                     $testResults = $false
                 }
             }
-            if (-not $ExtendedRightDenyEntries -and $ADPermissions -and $ADPermissions.Deny -contains $true)
+            if (-not $ExtendedRightDenyEntries -and $adPermissions -and $adPermissions.Deny -contains $true)
             {
                 return $false
             }
@@ -920,23 +918,16 @@ function Test-TargetResource
     return $testResults
 }
 
-# Ensure that a connector Identity is in the proper form
-#function Assert-IdentityIsValid
-#{
-#    param
-#    (
-#        [Parameter()]
-#        [System.String]
-#        $Identity
-#    )
-#
-#    if ([System.String]::IsNullOrEmpty($Identity) -or ($Identity.Contains))
-#    {
-#        throw "Identity must be in the format: 'SERVERNAME\Connector Name' (No quotes)"
-#    }
-#}
-
-# check a connector for specific extended rights
+<#
+    .SYNOPSIS
+        Checks if Extended rights on a send connector are correct.
+    .PARAMETER ADPermissions
+        The current permissions set on a send connector.
+    .PARAMETER ExtendedRights
+        The expected permissions to be present.
+    .PARAMETER Deny
+        Specifies if the permissions being checked have 'Deny' option set.
+#>
 function Test-ExtendedRightsPresent
 {
     [cmdletbinding()]

@@ -46,7 +46,7 @@ try
                 $Identity,
                 $User,
                 $ExtendedRights,
-                [switch]
+                [Switch]
                 $Deny
             )
         }
@@ -139,49 +139,49 @@ try
 
                 Context 'Extended rights are present' {
                     $ADPermissions = @()
-                    $permission += [PSCustomObject]@{
+                    $permission += [PSCustomObject] @{
                         IsInherited    = $false
-                        User           = [PSCustomObject]@{
+                        User           = [PSCustomObject] @{
                             RawIdentity = 'User1Allow'
                         }
                         Deny           = $false
-                        ExtendedRights = [PSCustomObject]@{
+                        ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Recipient'
                         }
                     }
                     $ADPermissions += $permission
 
-                    $permission = [PSCustomObject]@{
+                    $permission = [PSCustomObject] @{
                         IsInherited    = $false
-                        User           = [PSCustomObject]@{
+                        User           = [PSCustomObject] @{
                             RawIdentity = 'User1Allow'
                         }
                         Deny           = $false
-                        ExtendedRights = [PSCustomObject]@{
+                        ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Sender'
                         }
                     }
                     $ADPermissions += $permission
 
-                    $permission = [PSCustomObject]@{
+                    $permission = [PSCustomObject] @{
                         IsInherited    = $false
-                        User           = [PSCustomObject]@{
+                        User           = [PSCustomObject] @{
                             RawIdentity = 'User2Deny'
                         }
                         Deny           = $true
-                        ExtendedRights = [PSCustomObject]@{
+                        ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Recipient'
                         }
                     }
                     $ADPermissions += $permission
 
-                    $permission = [PSCustomObject]@{
+                    $permission = [PSCustomObject] @{
                         IsInherited    = $false
-                        User           = [PSCustomObject]@{
+                        User           = [PSCustomObject] @{
                             RawIdentity = 'User2Deny'
                         }
                         Deny           = $true
-                        ExtendedRights = [PSCustomObject]@{
+                        ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Sender'
                         }
                     }
@@ -359,49 +359,49 @@ try
                 Context 'When extended permissions are specified' {
 
                     $ADPermissions = @()
-                    $permission += [PSCustomObject]@{
+                    $permission += [PSCustomObject] @{
                         IsInherited    = $false
-                        User           = [PSCustomObject]@{
+                        User           = [PSCustomObject] @{
                             RawIdentity = 'User1Allow'
                         }
                         Deny           = $false
-                        ExtendedRights = [PSCustomObject]@{
+                        ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Recipient'
                         }
                     }
                     $ADPermissions += $permission
 
-                    $permission = [PSCustomObject]@{
+                    $permission = [PSCustomObject] @{
                         IsInherited    = $false
-                        User           = [PSCustomObject]@{
+                        User           = [PSCustomObject] @{
                             RawIdentity = 'User1Allow'
                         }
                         Deny           = $false
-                        ExtendedRights = [PSCustomObject]@{
+                        ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Sender'
                         }
                     }
                     $ADPermissions += $permission
 
-                    $permission = [PSCustomObject]@{
+                    $permission = [PSCustomObject] @{
                         IsInherited    = $false
-                        User           = [PSCustomObject]@{
+                        User           = [PSCustomObject] @{
                             RawIdentity = 'User2Deny'
                         }
                         Deny           = $true
-                        ExtendedRights = [PSCustomObject]@{
+                        ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Recipient'
                         }
                     }
                     $ADPermissions += $permission
 
-                    $permission = [PSCustomObject]@{
+                    $permission = [PSCustomObject] @{
                         IsInherited    = $false
-                        User           = [PSCustomObject]@{
+                        User           = [PSCustomObject] @{
                             RawIdentity = 'User2Deny'
                         }
                         Deny           = $true
-                        ExtendedRights = [PSCustomObject]@{
+                        ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Sender'
                         }
                     }
