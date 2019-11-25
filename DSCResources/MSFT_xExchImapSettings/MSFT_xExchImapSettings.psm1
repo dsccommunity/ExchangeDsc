@@ -99,7 +99,7 @@ function Get-TargetResource
     .PARAMETER Credential
         Credentials used to establish a remote PowerShell session to Exchange.
     .PARAMETER AllowServiceRestart
-        Whether it is OK to restart the IMAP services after making changes. Defaults to
+        Whether it is OK to restart the IMAP services after making changes. Defaults to $false.
     .PARAMETER AuthenticatedConnectionTimeout
         The AuthenticatedConnectionTimeout parameter specifies the period of time to wait before closing an idle authenticated connection.
     .PARAMETER Banner
@@ -115,9 +115,9 @@ function Get-TargetResource
     .PARAMETER ExtendedProtectionPolicy
         The ExtendedProtectionPolicy parameter specifies how Extended Protection for Authentication is used.
     .PARAMETER ExternalConnectionSettings
-        The ExternalConnectionSettings parameter specifies the host name
+        ExternalConnectionSettings parameter specifies the host name, port, and encryption method that's used by external IMAP4 clients.
     .PARAMETER InternalConnectionSettings
-        The InternalConnectionSettings parameter specifies the host name
+        ExternalConnectionSettings parameter specifies the host name, port, and encryption method that's used by internal IMAP4 clients.
     .PARAMETER LogFileRollOverSettings
         The LogFileRollOverSettings parameter specifies how frequently IMAP4 protocol logging creates a new log file.
     .PARAMETER LoginType
@@ -137,7 +137,7 @@ function Get-TargetResource
     .PARAMETER ProxyTargetPort
         The ProxyTargetPort parameter specifies the port on the Microsoft Exchange IMAP4 Backend service that listens for client connections that are proxied from the Microsoft Exchange IMAP4 service.
     .PARAMETER SSLBindings
-        The SSLBindings parameter specifies the IP address and TCP port that's used for IMAP4 connection that's always encrypted by SSL
+        The SSLBindings parameter specifies the IP address and TCP port that's used for IMAP4 connection that's always encrypted by SSL/TLS.
     .PARAMETER UnencryptedOrTLSBindings
         The UnencryptedOrTLSBindings parameter specifies the IP address and TCP port that's used for unencrypted IMAP4 connections.
     .PARAMETER X509CertificateName
@@ -288,7 +288,7 @@ function Set-TargetResource
     .PARAMETER Credential
         Credentials used to establish a remote PowerShell session to Exchange.
     .PARAMETER AllowServiceRestart
-        Whether it is OK to restart the IMAP services after making changes. Defaults to
+        Whether it is OK to restart the IMAP services after making changes. Defaults to $false.
     .PARAMETER AuthenticatedConnectionTimeout
         The AuthenticatedConnectionTimeout parameter specifies the period of time to wait before closing an idle authenticated connection.
     .PARAMETER Banner
@@ -304,10 +304,10 @@ function Set-TargetResource
     .PARAMETER ExtendedProtectionPolicy
         The ExtendedProtectionPolicy parameter specifies how Extended Protection for Authentication is used.
     .PARAMETER ExternalConnectionSettings
-        The ExternalConnectionSettings parameter specifies the host name
+        ExternalConnectionSettings parameter specifies the host name, port, and encryption method that's used by external IMAP4 clients.
     .PARAMETER InternalConnectionSettings
-        The InternalConnectionSettings parameter specifies the host name
-    .PARAMETER LogFileRollOverSettings
+        ExternalConnectionSettings parameter specifies the host name, port, and encryption method that's used by internal IMAP4 clients.
+       .PARAMETER LogFileRollOverSettings
         The LogFileRollOverSettings parameter specifies how frequently IMAP4 protocol logging creates a new log file.
     .PARAMETER LoginType
         The LoginType parameter specifies the authentication method for IMAP4 connections.
@@ -421,11 +421,7 @@ function Test-TargetResource
         $MaxConnectionsPerUser,
 
         [Parameter()]
-        <<<<<<< HEAD
-        [String]
-        = = = = = = =
         [System.String]
-        >>>>>>> 5b8f9ac... moving from Timespan to String
         $PreAuthenticatedConnectionTimeout,
 
         [Parameter()]
