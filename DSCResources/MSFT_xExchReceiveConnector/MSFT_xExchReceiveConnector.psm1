@@ -1,3 +1,13 @@
+<#
+    .SYNOPSIS
+        Gets the ressource
+    .PARAMETER Name
+        Identity of the Receive Connector. Needs to be in format SERVERNAME
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+    .PARAMETER Ensure
+        Whether the connector should be present or not.
+#>
 function Get-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -17,217 +27,7 @@ function Get-TargetResource
         [Parameter(Mandatory = $true)]
         [ValidateSet('Present', 'Absent')]
         [System.String]
-        $Ensure,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightAllowEntries = @(),
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightDenyEntries = @(),
-
-        [Parameter()]
-        [System.Boolean]
-        $AdvertiseClientSettings,
-
-        [Parameter()]
-        [System.String[]]
-        $AuthMechanism,
-
-        [Parameter()]
-        [System.String]
-        $Banner,
-
-        [Parameter()]
-        [System.Boolean]
-        $BareLinefeedRejectionEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $BinaryMimeEnabled,
-
-        [Parameter()]
-        [System.String[]]
-        $Bindings,
-
-        [Parameter()]
-        [System.Boolean]
-        $ChunkingEnabled,
-
-        [Parameter()]
-        [System.String]
-        $Comment,
-
-        [Parameter()]
-        [System.String]
-        $ConnectionInactivityTimeout,
-
-        [Parameter()]
-        [System.String]
-        $ConnectionTimeout,
-
-        [Parameter()]
-        [System.String]
-        $DefaultDomain,
-
-        [Parameter()]
-        [System.String]
-        $DomainController,
-
-        [Parameter()]
-        [System.Boolean]
-        $DeliveryStatusNotificationEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $DomainSecureEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $EightBitMimeEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $EnableAuthGSSAPI,
-
-        [Parameter()]
-        [System.Boolean]
-        $Enabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $EnhancedStatusCodesEnabled,
-
-        [Parameter()]
-        [ValidateSet('None', 'Allow', 'Require')]
-        [System.String]
-        $ExtendedProtectionPolicy,
-
-        [Parameter()]
-        [System.String]
-        $Fqdn,
-
-        [Parameter()]
-        [System.Boolean]
-        $LongAddressesEnabled,
-
-        [Parameter()]
-        [System.String]
-        $MaxAcknowledgementDelay,
-
-        [Parameter()]
-        [System.String]
-        $MaxHeaderSize,
-
-        [Parameter()]
-        [System.Int32]
-        $MaxHopCount,
-
-        [Parameter()]
-        [System.String]
-        $MaxInboundConnection,
-
-        [Parameter()]
-        [System.Int32]
-        $MaxInboundConnectionPercentagePerSource,
-
-        [Parameter()]
-        [System.String]
-        $MaxInboundConnectionPerSource,
-
-        [Parameter()]
-        [System.Int32]
-        $MaxLocalHopCount,
-
-        [Parameter()]
-        [System.Int32]
-        $MaxLogonFailures,
-
-        [Parameter()]
-        [System.String]
-        $MaxMessageSize,
-
-        [Parameter()]
-        [System.String]
-        $MaxProtocolErrors,
-
-        [Parameter()]
-        [System.Int32]
-        $MaxRecipientsPerMessage,
-
-        [Parameter()]
-        [System.String]
-        $MessageRateLimit,
-
-        [Parameter()]
-        [ValidateSet('None', 'IPAddress', 'User', 'All')]
-        [System.String]
-        $MessageRateSource,
-
-        [Parameter()]
-        [System.Boolean]
-        $OrarEnabled,
-
-        [Parameter()]
-        [System.String[]]
-        $PermissionGroups,
-
-        [Parameter()]
-        [System.Boolean]
-        $PipeliningEnabled,
-
-        [Parameter()]
-        [ValidateSet('None', 'Verbose')]
-        [System.String]
-        $ProtocolLoggingLevel,
-
-        [Parameter()]
-        [System.String[]]
-        $RemoteIPRanges,
-
-        [Parameter()]
-        [System.Boolean]
-        $RequireEHLODomain,
-
-        [Parameter()]
-        [System.Boolean]
-        $RequireTLS,
-
-        [Parameter()]
-        [System.String]
-        $ServiceDiscoveryFqdn,
-
-        [Parameter()]
-        [ValidateSet('Enabled', 'Disabled', 'EnabledWithoutValue')]
-        [System.String]
-        $SizeEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $SuppressXAnonymousTls,
-
-        [Parameter()]
-        [System.String]
-        $TarpitInterval,
-
-        [Parameter()]
-        [System.String]
-        $TlsCertificateName,
-
-        [Parameter()]
-        [System.String[]]
-        $TlsDomainCapabilities,
-
-        [Parameter()]
-        [ValidateSet('FrontendTransport', 'HubTransport')]
-        [System.String]
-        $TransportRole,
-
-        [Parameter()]
-        [ValidateSet('Client', 'Internal', 'Internet', 'Partner', 'Custom')]
-        [System.String]
-        $Usage
+        $Ensure
     )
 
     Assert-IdentityIsValid -Identity $Identity
@@ -239,7 +39,7 @@ function Get-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ReceiveConnector' -Verbose:$VerbosePreference
 
-    $connector = Get-ReceiveConnectorInternal @PSBoundParameters
+    $connector = Get-ReceiveConnector | Where-Object -FilterScript { $_.Identity -eq $Identity }
 
     if ($null -ne $connector)
     {
@@ -294,12 +94,132 @@ function Get-TargetResource
             TlsCertificateName                      = [System.String] $connector.TlsCertificateName
             TlsDomainCapabilities                   = [System.String[]] $connector.TlsDomainCapabilities
             TransportRole                           = [System.String] $connector.TransportRole
+            Usage                                   = [System.String[]] $connector.Usage
+            Ensure                                  = 'Present'
+        }
+    }
+    else
+    {
+        $returnValue = @{
+            Ensure = 'Absent'
         }
     }
 
     $returnValue
 }
 
+<#
+    .SYNOPSIS
+        Sets the ressource
+    .PARAMETER Name
+        Identity of the Receive Connector. Needs to be in format SERVERNAME
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+    .PARAMETER Ensure
+        Whether the connector should be present or not.
+    .PARAMETER AdvertiseClientSettings
+        Specifies whether the SMTP server name
+    .PARAMETER AuthMechanism
+        Specifies the advertised and accepted authentication mechanisms for the Receive connector.
+    .PARAMETER AuthTarpitInterval
+        Specifies the period of time to delay responses to failed authentication attempts from remote servers.
+    .PARAMETER Banner
+        Specifies a custom SMTP 220 banner that's displayed to remote messaging servers.
+    .PARAMETER BareLinefeedRejectionEnabled
+        Specifies whether this Receive connector rejects messages that contain line feed
+    .PARAMETER BinaryMimeEnabled
+        Specifies whether the BINARYMIME Extended SMTP extension is enabled or disabled.
+    .PARAMETER Bindings
+        Specifies the local IP address and TCP port number that's used by the Receive connector.
+    .PARAMETER ChunkingEnabled
+        Specifies whether the CHUNKING Extended SMTP extension is enabled or disabled.
+    .PARAMETER Comment
+        Specifies an optional comment.
+    .PARAMETER ConnectionInactivityTimeout
+        Specifies the maximum amount of idle time before a connection to the Receive connector is closed.
+    .PARAMETER ConnectionTimeout
+        Specifies the maximum time that the connection to the Receive connector can remain open
+    .PARAMETER DefaultDomain
+        Specifies the default accepted domain to use for the Exchange organization.
+    .PARAMETER DeliveryStatusNotificationEnabled
+        Specifies whether the DSN
+    .PARAMETER DomainController
+        Specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory.
+    .PARAMETER DomainSecureEnabled
+        Specifies whether to enable or disable mutual Transport Layer Security
+    .PARAMETER EightBitMimeEnabled
+        Specifies whether the 8BITMIME Extended SMTP extension is enabled or disabled.
+    .PARAMETER EnableAuthGSSAPI
+        enables or disables Kerberos when Integrated Windows authentication is available on the Receive connector.
+    .PARAMETER Enabled
+        Specifies whether to enable or disable the Receive connector.
+    .PARAMETER EnhancedStatusCodesEnabled
+        Specifies whether the ENHANCEDSTATUSCODES Extended SMTP extension is enabled or disabled.
+    .PARAMETER ExtendedRightAllowEntries
+        Additional allow permissions.
+    .PARAMETER ExtendedRightDenyEntries
+        Additional denz permissions.
+    .PARAMETER ExtendedProtectionPolicy
+        Specifies how you want to use Extended Protection for Authentication on the Receive connector.
+    .PARAMETER Fqdn
+        Specifies the destination FQDN that's shown to connected messaging servers.
+    .PARAMETER LongAddressesEnabled
+        Specifies whether the Receive connector accepts long X.400 email addresses.
+    .PARAMETER MaxAcknowledgementDelay
+        Specifies the period the transport server delays acknowledgement when receiving messages from a host that doesn't support shadow redundancy.
+    .PARAMETER MaxHeaderSize
+        Specifies the maximum size of the SMTP message header before the Receive connector closes the connection.
+    .PARAMETER MaxHopCount
+        Specifies the maximum number of hops that a message can take before the message is rejected by the Receive connector.
+    .PARAMETER MaxInboundConnection
+        Specifies the maximum number of inbound connections that this Receive connector serves at the same time.
+    .PARAMETER MaxInboundConnectionPercentagePerSource
+        Specifies the maximum number of connections that this Receive connector serves at the same time from a single IP address.
+    .PARAMETER MaxInboundConnectionPerSource
+        Specifies the maximum number of connections that a Receive connector serves at the same time from a single IP address
+    .PARAMETER MaxLocalHopCount
+        Specifies the maximum number of local hops that a message can take before the message is rejected by the Receive connector.
+    .PARAMETER MaxLogonFailures
+        pecifies the number of logon failures that the Receive connector retries before it closes the connection.
+    .PARAMETER MaxMessageSize
+        Specifies the maximum size of a message that's allowed through the Receive connector.
+    .PARAMETER MaxProtocolErrors
+        Specifies the maximum number of SMTP protocol errors that the Receive connector accepts before closing the connection.
+    .PARAMETER MaxRecipientsPerMessage
+        Specifies the maximum number of recipients per message that the Receive connector accepts before closing the connection.
+    .PARAMETER MessageRateLimit
+        Specifies the maximum number of messages that can be sent by a single client IP address per minute.
+    .PARAMETER MessageRateSource
+        Specifies how the message submission rate is calculated.
+    .PARAMETER OrarEnabled
+        enables or disables Originator Requested Alternate Recipient
+    .PARAMETER PermissionGroups
+        Specifies the well
+    .PARAMETER PipeliningEnabled
+        Specifies whether the PIPELINING Extended SMTP extension is enabled or disabled.
+    .PARAMETER ProtocolLoggingLevel
+        pecifies whether to enable or disable protocol logging.
+    .PARAMETER RemoteIPRanges
+        Specifies the remote IP addresses that the Receive connector accepts messages from.
+    .PARAMETER RequireEHLODomain
+        Specifies whether the client must provide a domain name in the EHLO handshake after the SMTP connection is established.
+    .PARAMETER RequireTLS
+        Specifies whether to require TLS transmission for inbound messages.
+    .PARAMETER SizeEnabled
+        Specifies how the SIZE Extended SMTP extension is used on the Receive connector.
+    .PARAMETER SuppressXAnonymousTls
+        Specifies whether the X
+    .PARAMETER TarpitInterval
+        Specifies the period of time to delay an SMTP response to a remote server that may be abusing the connection.
+    .PARAMETER TlsCertificateName
+        Specifies the X.509 certificate to use for TLS encryption.
+    .PARAMETER TlsDomainCapabilities
+        Specifies the capabilities that the Receive connector makes available to specific hosts outside of the organization.
+    .PARAMETER TransportRole
+        Specifies the transport service on the Mailbox server where the Receive connector is created.
+    .PARAMETER Usage
+        Specifies the default permission groups and authentication methods that are assigned to the Receive connector.
+#>
 function Set-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -333,7 +253,12 @@ function Set-TargetResource
         $AdvertiseClientSettings,
 
         [Parameter()]
+        [System.String]
+        $AuthTarpitInterval,
+
+        [Parameter()]
         [System.String[]]
+        [ValidateSet('None', 'Tls', 'Integrated', 'BasicAuth', 'BasicAuthRequireTLS', 'ExchangeServer', 'ExternalAuthoritative')]
         $AuthMechanism,
 
         [Parameter()]
@@ -471,6 +396,7 @@ function Set-TargetResource
         $OrarEnabled,
 
         [Parameter()]
+        [ValidateSet('None', 'AnonymousUsers', 'ExchangeUsers', 'ExchangeServers', 'ExchangeLegacyServers', 'Partners', 'Custom')]
         [System.String[]]
         $PermissionGroups,
 
@@ -540,11 +466,11 @@ function Set-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*ReceiveConnector', '*ADPermission' -Verbose:$VerbosePreference
 
-    $connector = Get-ReceiveConnectorInternal @PSBoundParameters
+    $connector = Get-TargetResource -Identity $Identity -Credential $Credential -Ensure $Ensure
 
     if ($Ensure -eq 'Absent')
     {
-        if ($null -ne $connector)
+        if ($connector['Ensure'] -eq 'Present')
         {
             Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
@@ -559,76 +485,178 @@ function Set-TargetResource
         Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
         # We need to create the new connector
-        if ($null -eq $connector)
+        if ($connector['Ensure'] -eq 'Absent')
         {
             # Create a copy of the original parameters
-            $originalPSBoundParameters = @{} + $PSBoundParameters
+            $originalPSBoundParameters = @{ } + $PSBoundParameters
 
             # The following aren't valid for New-ReceiveConnector
             Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Identity', 'BareLinefeedRejectionEnabled', 'ExtendedRightAllowEntries', 'ExtendedRightDenyEntries'
 
             # Parse out the server name and connector name from the given Identity
-            $serverName = $Identity.Substring(0, $Identity.IndexOf('\'))
-            $connectorName = $Identity.Substring($Identity.IndexOf('\') + 1)
+            $serverName, $connectorName = $Identity.Split('\')
 
             # Add in server and name parameters
             Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
                 'Server' = $serverName
-                'Name' = $connectorName
+                'Name'   = $connectorName
             }
 
             # Create the connector
-            $connector = New-ReceiveConnector @PSBoundParameters
+            New-ReceiveConnector @PSBoundParameters
 
-            # Ensure the connector exists, and if so, set us up so we can run Set-ReceiveConnector next
-            if ($null -ne $connector)
-            {
-                # Remove the two props we added
-                Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server', 'Name'
+            # Remove the two props we added
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server', 'Name'
 
-                # Add original props back
-                Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
-            }
-            else
-            {
-                throw 'Failed to create new Receive Connector.'
-            }
+            # Add original props back
+            Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
+
+            Set-ReceiveConnector @PSBoundParameters
         }
-
-        # The connector already exists, so use Set-ReceiveConnector
-        if ($null -ne $connector)
+        else
         {
             # Usage is not a valid command for Set-ReceiveConnector
             Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Usage', 'ExtendedRightAllowEntries', 'ExtendedRightDenyEntries'
 
             Set-ReceiveConnector @PSBoundParameters
-
-            # set AD permissions
-            if ($ExtendedRightAllowEntries)
+        }
+        # set AD permissions
+        if ($ExtendedRightAllowEntries)
+        {
+            foreach ($ExtendedRightAllowEntry in $ExtendedRightAllowEntries)
             {
-                foreach ($ExtendedRightAllowEntry in $ExtendedRightAllowEntries)
+                foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(',')))
                 {
-                    foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(',')))
-                    {
-                        $connector | Add-ADPermission -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
-                    }
+                    Add-ADPermission -Identity $Identity -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
                 }
             }
+        }
 
-            if ($ExtendedRightDenyEntries)
+        if ($ExtendedRightDenyEntries)
+        {
+            foreach ($ExtendedRightDenyEntry in $ExtendedRightDenyEntries)
             {
-                foreach ($ExtendedRightDenyEntry in $ExtendedRightDenyEntries)
+                foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(',')))
                 {
-                    foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(',')))
-                    {
-                        $connector | Remove-ADPermission -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Confirm:$false
-                    }
+                    Add-ADPermission -Identity $Identity -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false
                 }
             }
         }
     }
 }
 
+<#
+    .SYNOPSIS
+        Tests the ressource
+    .PARAMETER Name
+        Identity of the Receive Connector. Needs to be in format SERVERNAME
+    .PARAMETER Credential
+        Credentials used to establish a remote PowerShell session to Exchange.
+    .PARAMETER Ensure
+        Whether the connector should be present or not.
+    .PARAMETER AdvertiseClientSettings
+        Specifies whether the SMTP server name
+    .PARAMETER AuthMechanism
+        Specifies the advertised and accepted authentication mechanisms for the Receive connector.
+    .PARAMETER AuthTarpitInterval
+        Specifies the period of time to delay responses to failed authentication attempts from remote servers.
+    .PARAMETER Banner
+        Specifies a custom SMTP 220 banner that's displayed to remote messaging servers.
+    .PARAMETER BareLinefeedRejectionEnabled
+        Specifies whether this Receive connector rejects messages that contain line feed
+    .PARAMETER BinaryMimeEnabled
+        Specifies whether the BINARYMIME Extended SMTP extension is enabled or disabled.
+    .PARAMETER Bindings
+        Specifies the local IP address and TCP port number that's used by the Receive connector.
+    .PARAMETER ChunkingEnabled
+        Specifies whether the CHUNKING Extended SMTP extension is enabled or disabled.
+    .PARAMETER Comment
+        Specifies an optional comment.
+    .PARAMETER ConnectionInactivityTimeout
+        Specifies the maximum amount of idle time before a connection to the Receive connector is closed.
+    .PARAMETER ConnectionTimeout
+        Specifies the maximum time that the connection to the Receive connector can remain open
+    .PARAMETER DefaultDomain
+        Specifies the default accepted domain to use for the Exchange organization.
+    .PARAMETER DeliveryStatusNotificationEnabled
+        Specifies whether the DSN
+    .PARAMETER DomainController
+        Specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory.
+    .PARAMETER DomainSecureEnabled
+        Specifies whether to enable or disable mutual Transport Layer Security
+    .PARAMETER EightBitMimeEnabled
+        Specifies whether the 8BITMIME Extended SMTP extension is enabled or disabled.
+    .PARAMETER EnableAuthGSSAPI
+        enables or disables Kerberos when Integrated Windows authentication is available on the Receive connector.
+    .PARAMETER Enabled
+        Specifies whether to enable or disable the Receive connector.
+    .PARAMETER EnhancedStatusCodesEnabled
+        Specifies whether the ENHANCEDSTATUSCODES Extended SMTP extension is enabled or disabled.
+    .PARAMETER ExtendedRightAllowEntries
+        Additional allow permissions.
+    .PARAMETER ExtendedRightDenyEntries
+        Additional denz permissions.
+    .PARAMETER ExtendedProtectionPolicy
+        Specifies how you want to use Extended Protection for Authentication on the Receive connector.
+    .PARAMETER Fqdn
+        Specifies the destination FQDN that's shown to connected messaging servers.
+    .PARAMETER LongAddressesEnabled
+        Specifies whether the Receive connector accepts long X.400 email addresses.
+    .PARAMETER MaxAcknowledgementDelay
+        Specifies the period the transport server delays acknowledgement when receiving messages from a host that doesn't support shadow redundancy.
+    .PARAMETER MaxHeaderSize
+        Specifies the maximum size of the SMTP message header before the Receive connector closes the connection.
+    .PARAMETER MaxHopCount
+        Specifies the maximum number of hops that a message can take before the message is rejected by the Receive connector.
+    .PARAMETER MaxInboundConnection
+        Specifies the maximum number of inbound connections that this Receive connector serves at the same time.
+    .PARAMETER MaxInboundConnectionPercentagePerSource
+        Specifies the maximum number of connections that this Receive connector serves at the same time from a single IP address.
+    .PARAMETER MaxInboundConnectionPerSource
+        Specifies the maximum number of connections that a Receive connector serves at the same time from a single IP address
+    .PARAMETER MaxLocalHopCount
+        Specifies the maximum number of local hops that a message can take before the message is rejected by the Receive connector.
+    .PARAMETER MaxLogonFailures
+        pecifies the number of logon failures that the Receive connector retries before it closes the connection.
+    .PARAMETER MaxMessageSize
+        Specifies the maximum size of a message that's allowed through the Receive connector.
+    .PARAMETER MaxProtocolErrors
+        Specifies the maximum number of SMTP protocol errors that the Receive connector accepts before closing the connection.
+    .PARAMETER MaxRecipientsPerMessage
+        Specifies the maximum number of recipients per message that the Receive connector accepts before closing the connection.
+    .PARAMETER MessageRateLimit
+        Specifies the maximum number of messages that can be sent by a single client IP address per minute.
+    .PARAMETER MessageRateSource
+        Specifies how the message submission rate is calculated.
+    .PARAMETER OrarEnabled
+        enables or disables Originator Requested Alternate Recipient
+    .PARAMETER PermissionGroups
+        Specifies the well
+    .PARAMETER PipeliningEnabled
+        Specifies whether the PIPELINING Extended SMTP extension is enabled or disabled.
+    .PARAMETER ProtocolLoggingLevel
+        pecifies whether to enable or disable protocol logging.
+    .PARAMETER RemoteIPRanges
+        Specifies the remote IP addresses that the Receive connector accepts messages from.
+    .PARAMETER RequireEHLODomain
+        Specifies whether the client must provide a domain name in the EHLO handshake after the SMTP connection is established.
+    .PARAMETER RequireTLS
+        Specifies whether to require TLS transmission for inbound messages.
+    .PARAMETER SizeEnabled
+        Specifies how the SIZE Extended SMTP extension is used on the Receive connector.
+    .PARAMETER SuppressXAnonymousTls
+        Specifies whether the X
+    .PARAMETER TarpitInterval
+        Specifies the period of time to delay an SMTP response to a remote server that may be abusing the connection.
+    .PARAMETER TlsCertificateName
+        Specifies the X.509 certificate to use for TLS encryption.
+    .PARAMETER TlsDomainCapabilities
+        Specifies the capabilities that the Receive connector makes available to specific hosts outside of the organization.
+    .PARAMETER TransportRole
+        Specifies the transport service on the Mailbox server where the Receive connector is created.
+    .PARAMETER Usage
+        Specifies the default permission groups and authentication methods that are assigned to the Receive connector.
+#>
 function Test-TargetResource
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSDSCUseVerboseMessageInDSCResource", "")]
@@ -663,7 +691,12 @@ function Test-TargetResource
         $AdvertiseClientSettings,
 
         [Parameter()]
+        [System.String]
+        $AuthTarpitInterval,
+
+        [Parameter()]
         [System.String[]]
+        [ValidateSet('None', 'Tls', 'Integrated', 'BasicAuth', 'BasicAuthRequireTLS', 'ExchangeServer', 'ExternalAuthoritative')]
         $AuthMechanism,
 
         [Parameter()]
@@ -801,6 +834,7 @@ function Test-TargetResource
         $OrarEnabled,
 
         [Parameter()]
+        [ValidateSet('None', 'AnonymousUsers', 'ExchangeUsers', 'ExchangeServers', 'ExchangeLegacyServers', 'Partners', 'Custom')]
         [System.String[]]
         $PermissionGroups,
 
@@ -870,17 +904,17 @@ function Test-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ReceiveConnector', 'Get-ADPermission' -Verbose:$VerbosePreference
 
-    $connector = Get-ReceiveConnectorInternal @PSBoundParameters
+    $connector = Get-TargetResource -Identity $Identity -Credential $Credential -Ensure $Ensure
 
-    # get AD permissions if necessary
+    # Get AD permissions if necessary
     if (($ExtendedRightAllowEntries) -or ($ExtendedRightDenyEntries))
     {
-        $ADPermissions = $connector | Get-ADPermission | Where-Object {$_.IsInherited -eq $false}
+        $adPermissions = Get-ADPermission -Identity $Identity | Where-Object { $_.IsInherited -eq $false }
     }
 
     $testResults = $true
 
-    if ($null -eq $connector)
+    if ($connector['Ensure'] -eq 'Absent')
     {
         if ($Ensure -eq 'Present')
         {
@@ -906,6 +940,11 @@ function Test-TargetResource
             }
 
             if (!(Test-ExchangeSetting -Name 'AuthMechanism' -Type 'Array' -ExpectedValue $AuthMechanism -ActualValue (Convert-StringToArray -StringIn "$($connector.AuthMechanism)" -Separator ',') -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+            {
+                $testResults = $false
+            }
+
+            if (!(Test-ExchangeSetting -Name 'AuthTarpitInterval' -Type 'Timespan' -ExpectedValue $AuthTarpitInterval -ActualValue $connector.AuthTarpitInterval -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
                 $testResults = $false
             }
@@ -1135,270 +1174,55 @@ function Test-TargetResource
                 $testResults = $false
             }
 
-            # check AD permissions if necessary
-            if ($ExtendedRightAllowEntries)
+            if (!(Test-ExchangeSetting -Name 'Usage' -Type 'Array' -ExpectedValue $Usage -ActualValue $connector.Usage -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
-                if (!(Test-ExtendedRightsPresent -ADPermissions $ADPermissions -ExtendedRights $ExtendedRightAllowEntries -ShouldbeTrue:$True -Verbose:$VerbosePreference))
+                $testResults = $false
+            }
+
+            if ($ExtendedRightAllowEntries -and $adPermissions.Deny -contains $false)
+            {
+                $splat = @{
+                    ADPermissions  = $adPermissions
+                    ExtendedRights = $ExtendedRightAllowEntries
+                    Deny           = $false
+                    Verbose        = $VerbosePreference
+                }
+
+                $permissionsPresent = Test-ExtendedRightsPresent @splat
+
+                if ($permissionsPresent -eq $false)
                 {
                     $testResults = $false
                 }
             }
-
-            if ($ExtendedRightDenyEntries)
+            if (-not $ExtendedRightAllowEntries -and $adPermissions -and $adPermissions.Deny -notcontains $false)
             {
-                if (Test-ExtendedRightsPresent -ADPermissions $ADPermissions -ExtendedRights $ExtendedRightDenyEntries -ShouldbeTrue:$false -Verbose:$VerbosePreference)
+                return $false
+            }
+            if ($ExtendedRightDenyEntries -and $adPermissions.Deny -contains $true)
+            {
+                $splat = @{
+                    ADPermissions  = $adPermissions
+                    ExtendedRights = $ExtendedRightDenyEntries
+                    Deny           = $true
+                    Verbose        = $VerbosePreference
+                }
+
+                $permissionsPresent = Test-ExtendedRightsPresent @splat
+
+                if ($permissionsPresent -eq $false)
                 {
                     $testResults = $false
                 }
+            }
+            if (-not $ExtendedRightDenyEntries -and $adPermissions -and $adPermissions.Deny -contains $true)
+            {
+                return $false
             }
         }
     }
 
     return $testResults
-}
-
-# Runs Get-ReceiveConnector, only specifying Identity, ErrorAction, and optionally DomainController
-function Get-ReceiveConnectorInternal
-{
-    [CmdletBinding()]
-    param
-    (
-        [Parameter(Mandatory = $true)]
-        [System.String]
-        $Identity,
-
-        [Parameter(Mandatory = $true)]
-        [System.Management.Automation.PSCredential]
-        [System.Management.Automation.Credential()]
-        $Credential,
-
-        [Parameter(Mandatory = $true)]
-        [ValidateSet('Present', 'Absent')]
-        [System.String]
-        $Ensure,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightAllowEntries,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRightDenyEntries,
-
-        [Parameter()]
-        [System.Boolean]
-        $AdvertiseClientSettings,
-
-        [Parameter()]
-        [System.String[]]
-        $AuthMechanism,
-
-        [Parameter()]
-        [System.String]
-        $Banner,
-
-        [Parameter()]
-        [System.Boolean]
-        $BareLinefeedRejectionEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $BinaryMimeEnabled,
-
-        [Parameter()]
-        [System.String[]]
-        $Bindings,
-
-        [Parameter()]
-        [System.Boolean]
-        $ChunkingEnabled,
-
-        [Parameter()]
-        [System.String]
-        $Comment,
-
-        [Parameter()]
-        [System.String]
-        $ConnectionInactivityTimeout,
-
-        [Parameter()]
-        [System.String]
-        $ConnectionTimeout,
-
-        [Parameter()]
-        [System.String]
-        $DefaultDomain,
-
-        [Parameter()]
-        [System.String]
-        $DomainController,
-
-        [Parameter()]
-        [System.Boolean]
-        $DeliveryStatusNotificationEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $DomainSecureEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $EightBitMimeEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $EnableAuthGSSAPI,
-
-        [Parameter()]
-        [System.Boolean]
-        $Enabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $EnhancedStatusCodesEnabled,
-
-        [Parameter()]
-        [ValidateSet('None', 'Allow', 'Require')]
-        [System.String]
-        $ExtendedProtectionPolicy,
-
-        [Parameter()]
-        [System.String]
-        $Fqdn,
-
-        [Parameter()]
-        [System.Boolean]
-        $LongAddressesEnabled,
-
-        [Parameter()]
-        [System.String]
-        $MaxAcknowledgementDelay,
-
-        [Parameter()]
-        [System.String]
-        $MaxHeaderSize,
-
-        [Parameter()]
-        [System.Int32]
-        $MaxHopCount,
-
-        [Parameter()]
-        [System.String]
-        $MaxInboundConnection,
-
-        [Parameter()]
-        [System.Int32]
-        $MaxInboundConnectionPercentagePerSource,
-
-        [Parameter()]
-        [System.String]
-        $MaxInboundConnectionPerSource,
-
-        [Parameter()]
-        [System.Int32]
-        $MaxLocalHopCount,
-
-        [Parameter()]
-        [System.Int32]
-        $MaxLogonFailures,
-
-        [Parameter()]
-        [System.String]
-        $MaxMessageSize,
-
-        [Parameter()]
-        [System.String]
-        $MaxProtocolErrors,
-
-        [Parameter()]
-        [System.Int32]
-        $MaxRecipientsPerMessage,
-
-        [Parameter()]
-        [System.String]
-        $MessageRateLimit,
-
-        [Parameter()]
-        [ValidateSet('None', 'IPAddress', 'User', 'All')]
-        [System.String]
-        $MessageRateSource,
-
-        [Parameter()]
-        [System.Boolean]
-        $OrarEnabled,
-
-        [Parameter()]
-        [System.String[]]
-        $PermissionGroups,
-
-        [Parameter()]
-        [System.Boolean]
-        $PipeliningEnabled,
-
-        [Parameter()]
-        [ValidateSet('None', 'Verbose')]
-        [System.String]
-        $ProtocolLoggingLevel,
-
-        [Parameter()]
-        [System.String[]]
-        $RemoteIPRanges,
-
-        [Parameter()]
-        [System.Boolean]
-        $RequireEHLODomain,
-
-        [Parameter()]
-        [System.Boolean]
-        $RequireTLS,
-
-        [Parameter()]
-        [System.String]
-        $ServiceDiscoveryFqdn,
-
-        [Parameter()]
-        [ValidateSet('Enabled', 'Disabled', 'EnabledWithoutValue')]
-        [System.String]
-        $SizeEnabled,
-
-        [Parameter()]
-        [System.Boolean]
-        $SuppressXAnonymousTls,
-
-        [Parameter()]
-        [System.String]
-        $TarpitInterval,
-
-        [Parameter()]
-        [System.String]
-        $TlsCertificateName,
-
-        [Parameter()]
-        [System.String[]]
-        $TlsDomainCapabilities,
-
-        [Parameter()]
-        [ValidateSet('FrontendTransport', 'HubTransport')]
-        [System.String]
-        $TransportRole,
-
-        [Parameter()]
-        [ValidateSet('Client', 'Internal', 'Internet', 'Partner', 'Custom')]
-        [System.String]
-        $Usage
-    )
-
-    $getParams = @{
-        Server      = $env:COMPUTERNAME
-        ErrorAction = 'SilentlyContinue'
-    }
-
-    if ($PSBoundParameters.ContainsKey('DomainController') -and ![String]::IsNullOrEmpty($PSBoundParameters['DomainController']))
-    {
-        $getParams.Add('DomainController', $PSBoundParameters['DomainController'])
-    }
-
-    return (Get-ReceiveConnector @getParams | Where-Object -FilterScript {$_.Identity -like $PSBoundParameters['Identity']})
 }
 
 # Ensure that a connector Identity is in the proper form
@@ -1433,42 +1257,34 @@ function Test-ExtendedRightsPresent
 
         [Parameter()]
         [System.Boolean]
-        $ShouldbeTrue
+        $Deny
     )
-
-    $returnvalue = $false
 
     foreach ($Right in $ExtendedRights)
     {
         foreach ($Value in $($Right.Value.Split(',')))
         {
-            if ($null -ne ($ADPermissions | Where-Object {($_.User.RawIdentity -eq $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value)}))
+            $permissionsFound = $ADPermissions | Where-Object { ($_.User.RawIdentity -eq $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value) }
+            if ($null -ne $permissionsFound)
             {
-                $returnvalue = $true
-
-                if (!($ShouldbeTrue))
+                if ($Deny -eq $true -and $permissionsFound.Deny -eq $false -or
+                    $Deny -eq $false -and $permissionsFound.Deny -eq $true)
                 {
-                    Write-Verbose -Message 'Should report exist!'
                     Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue 'Present' -Verbose:$VerbosePreference
-                    return $returnvalue
-                    exit
+                    return $false
+                }
+                else
+                {
+                    return $true
                 }
             }
             else
             {
-                $returnvalue = $false
-
-                if ($ShouldbeTrue)
-                {
-                    Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue 'Absent' -Verbose:$VerbosePreference
-                    return $returnvalue
-                    exit
-                }
+                Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue 'Absent' -Verbose:$VerbosePreference
+                return $false
             }
         }
     }
-
-    return $returnvalue
 }
 
 Export-ModuleMember -Function *-TargetResource

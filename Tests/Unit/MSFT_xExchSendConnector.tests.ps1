@@ -259,7 +259,7 @@ try
                             $Identity -eq 'MySendConnector' -and
                             $User -eq 'User1Allow' -and
                             ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
-                                $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient')
+                                $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Sender')
                         }
 
                         Set-TargetResource @setTargetResourcePermissions
@@ -277,7 +277,7 @@ try
                             $Identity -eq 'MySendConnector' -and
                             $User -eq 'User2Deny' -and
                             ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
-                                $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient')
+                                $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Sender')
                         }
 
                         Set-TargetResource @setTargetResourcePermissions }
