@@ -39,13 +39,14 @@ function Get-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ReceiveConnector' -Verbose:$VerbosePreference
 
-    $connector = Get-ReceiveConnector | Where-Object -FilterScript { $_.Identity -eq $Identity }
+    $connector = Get-ReceiveConnector -Identity $Identity
 
     if ($null -ne $connector)
     {
         $returnValue = @{
             Identity                                = [System.String] $Identity
             AdvertiseClientSettings                 = [System.Boolean] $connector.AdvertiseClientSettings
+            AuthTarpitInterval                      = [System.String] $connector.AuthTarpitInterval
             AuthMechanism                           = [System.String[]] $connector.AuthMechanism.ToString().Split(',').Trim()
             Banner                                  = [System.String] $connector.Banner
             BareLinefeedRejectionEnabled            = [System.Boolean] $connector.BareLinefeedRejectionEnabled
@@ -527,7 +528,7 @@ function Set-TargetResource
             {
                 foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(',')))
                 {
-                    Add-ADPermission -Identity $Identity -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
+                    Add-ADPermission -Identity $Identity.Split('\')[1] -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
                 }
             }
         }
@@ -538,7 +539,7 @@ function Set-TargetResource
             {
                 foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(',')))
                 {
-                    Add-ADPermission -Identity $Identity -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false
+                    Add-ADPermission -Identity $Identity.Split('\')[1] -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false
                 }
             }
         }
@@ -906,12 +907,6 @@ function Test-TargetResource
 
     $connector = Get-TargetResource -Identity $Identity -Credential $Credential -Ensure $Ensure
 
-    # Get AD permissions if necessary
-    if (($ExtendedRightAllowEntries) -or ($ExtendedRightDenyEntries))
-    {
-        $adPermissions = Get-ADPermission -Identity $Identity | Where-Object { $_.IsInherited -eq $false }
-    }
-
     $testResults = $true
 
     if ($connector['Ensure'] -eq 'Absent')
@@ -931,6 +926,12 @@ function Test-TargetResource
         }
         else
         {
+            # Get AD permissions if necessary
+            if (($ExtendedRightAllowEntries) -or ($ExtendedRightDenyEntries))
+            {
+                $adPermissions = Get-ADPermission -Identity $Identity.Split('\')[1] | Where-Object { $_.IsInherited -eq $false }
+            }
+
             # remove "Custom" from PermissionGroups
             $connector.PermissionGroups = ($connector.PermissionGroups -split ',' ) -notmatch 'Custom' -join ','
 
@@ -939,7 +940,7 @@ function Test-TargetResource
                 $testResults = $false
             }
 
-            if (!(Test-ExchangeSetting -Name 'AuthMechanism' -Type 'Array' -ExpectedValue $AuthMechanism -ActualValue (Convert-StringToArray -StringIn "$($connector.AuthMechanism)" -Separator ',') -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+            if (!(Test-ExchangeSetting -Name 'AuthMechanism' -Type 'Array' -ExpectedValue $AuthMechanism -ActualValue (Convert-StringToArray -StringIn "$($connector.AuthMechanism)" -Verbose:$VerbosePreference) -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
                 $testResults = $false
             }
@@ -1264,18 +1265,14 @@ function Test-ExtendedRightsPresent
     {
         foreach ($Value in $($Right.Value.Split(',')))
         {
-            $permissionsFound = $ADPermissions | Where-Object { ($_.User.RawIdentity -eq $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value) }
+            $permissionsFound = $ADPermissions | Where-Object { ($_.User.RawIdentity -match $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value) }
             if ($null -ne $permissionsFound)
             {
                 if ($Deny -eq $true -and $permissionsFound.Deny -eq $false -or
                     $Deny -eq $false -and $permissionsFound.Deny -eq $true)
                 {
-                    Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue 'Present' -Verbose:$VerbosePreference
+                    Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue "Deny: $($permissionsFound.Deny)" -Verbose:$VerbosePreference
                     return $false
-                }
-                else
-                {
-                    return $true
                 }
             }
             else
@@ -1285,6 +1282,8 @@ function Test-ExtendedRightsPresent
             }
         }
     }
+
+    return $true
 }
 
 Export-ModuleMember -Function *-TargetResource
