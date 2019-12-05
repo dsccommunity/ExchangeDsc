@@ -209,7 +209,7 @@ try
                     } -ClientOnly
 
                     Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
-                        $Identity -eq 'Server1\ReceiveConnector' -and
+                        $Identity -eq 'ReceiveConnector' -and
                         $User -eq 'User1Allow' -and
                         ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
                             $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Sender')
@@ -225,7 +225,7 @@ try
                     } -ClientOnly
 
                     Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
-                        $Identity -eq 'Server1\ReceiveConnector' -and
+                        $Identity -eq 'ReceiveConnector' -and
                         $User -eq 'User2Deny' -and
                         $Deny -eq $true -and
                         ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
@@ -260,7 +260,7 @@ try
                         } -ClientOnly
 
                         Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
-                            $Identity -eq 'Server1\ReceiveConnector' -and
+                            $Identity -eq 'ReceiveConnector' -and
                             $User -eq 'User1Allow' -and
                             ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
                                 $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Sender')
@@ -276,7 +276,7 @@ try
                         } -ClientOnly
 
                         Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
-                            $Identity -eq 'Server1\ReceiveConnector' -and
+                            $Identity -eq 'ReceiveConnector' -and
                             $User -eq 'User2Deny' -and
                             $Deny -eq $true -and
                             ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
