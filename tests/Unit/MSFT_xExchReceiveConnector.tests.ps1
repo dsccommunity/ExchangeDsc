@@ -371,7 +371,7 @@ try
                         User           = [PSCustomObject] @{
                             RawIdentity = 'User1Allow'
                         }
-                        Deny           = $false
+                        Deny           = [System.Management.Automation.SwitchParameter]::new($false)
                         ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Recipient'
                         }
@@ -383,7 +383,7 @@ try
                         User           = [PSCustomObject] @{
                             RawIdentity = 'User1Allow'
                         }
-                        Deny           = $false
+                        Deny           = [System.Management.Automation.SwitchParameter]::new($false)
                         ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Sender'
                         }
@@ -395,7 +395,7 @@ try
                         User           = [PSCustomObject] @{
                             RawIdentity = 'User2Deny'
                         }
-                        Deny           = $true
+                        Deny           = [System.Management.Automation.SwitchParameter]::new($true)
                         ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Recipient'
                         }
@@ -407,7 +407,7 @@ try
                         User           = [PSCustomObject] @{
                             RawIdentity = 'User2Deny'
                         }
-                        Deny           = $true
+                        Deny           = [System.Management.Automation.SwitchParameter]::new($true)
                         ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Sender'
                         }
@@ -416,8 +416,19 @@ try
 
                     Mock -CommandName 'Get-ADPermission' -MockWith { return $ADPermissions }
 
-                    Context 'When permissions do not match' {
-                        It 'Should return $false' {
+                    Context 'When permissions are not compliant' {
+                        It 'Should return $false when extended permissions do not match' {
+                            $TestTargetResourceParamsFalse = @{ } + $TestTargetResourceParams
+                            $TestTargetResourceParamsFalse['ExtendedRightAllowEntries'] = (
+                                New-CimInstance -ClassName 'MSFT_KeyValuePair' -Property @{
+                                    key   = 'User1Allow'
+                                    value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Authoritative-Domain-Sender'
+                                } -ClientOnly
+                            )
+
+                            Test-TargetResource @TestTargetResourceParamsFalse | Should -Be $false
+                        }
+                        It 'Should return $false when permissions are not present' {
                             $TestTargetResourceParamsFalse = @{ } + $TestTargetResourceParams
                             $TestTargetResourceParamsFalse['ExtendedRightAllowEntries'] = (
                                 New-CimInstance -ClassName 'MSFT_KeyValuePair' -Property @{
@@ -426,6 +437,7 @@ try
                                 } -ClientOnly
                             )
 
+                            Mock -CommandName 'Get-ADPermission' -MockWith { return ($ADPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq 'User2Deny' }) }
                             Test-TargetResource @TestTargetResourceParamsFalse | Should -Be $false
                         }
                     }
