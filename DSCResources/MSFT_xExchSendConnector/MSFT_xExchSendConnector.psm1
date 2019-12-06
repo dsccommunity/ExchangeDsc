@@ -872,7 +872,7 @@ function Test-TargetResource
                 $testResults = $false
             }
 
-            if ($ExtendedRightAllowEntries -and $adPermissions.Deny -contains $false)
+            if ($ExtendedRightAllowEntries)
             {
                 $splat = @{
                     ADPermissions  = $adPermissions
@@ -888,11 +888,7 @@ function Test-TargetResource
                     $testResults = $false
                 }
             }
-            if (-not $ExtendedRightAllowEntries -and $adPermissions -and $adPermissions.Deny -notcontains $false)
-            {
-                return $false
-            }
-            if ($ExtendedRightDenyEntries -and $adPermissions.Deny -contains $true)
+            if ($ExtendedRightDenyEntries)
             {
                 $splat = @{
                     ADPermissions  = $adPermissions
@@ -907,10 +903,6 @@ function Test-TargetResource
                 {
                     $testResults = $false
                 }
-            }
-            if (-not $ExtendedRightDenyEntries -and $adPermissions -and $adPermissions.Deny -contains $true)
-            {
-                return $false
             }
         }
     }
@@ -953,15 +945,11 @@ function Test-ExtendedRightsPresent
             $permissionsFound = $ADPermissions | Where-Object { ($_.User.RawIdentity -eq $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value) }
             if ($null -ne $permissionsFound)
             {
-                if ($Deny -eq $true -and $permissionsFound.Deny -eq $false -or
-                    $Deny -eq $false -and $permissionsFound.Deny -eq $true)
+                if ($Deny -eq $true -and $permissionsFound.Deny.ToBool() -eq $false -or
+                    $Deny -eq $false -and $permissionsFound.Deny.ToBool() -eq $true)
                 {
                     Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue 'Present' -Verbose:$VerbosePreference
                     return $false
-                }
-                else
-                {
-                    return $true
                 }
             }
             else

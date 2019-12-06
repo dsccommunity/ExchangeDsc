@@ -364,7 +364,7 @@ try
                         User           = [PSCustomObject] @{
                             RawIdentity = 'User1Allow'
                         }
-                        Deny           = $false
+                        Deny           = [System.Management.Automation.SwitchParameter]::new($false)
                         ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Recipient'
                         }
@@ -376,7 +376,7 @@ try
                         User           = [PSCustomObject] @{
                             RawIdentity = 'User1Allow'
                         }
-                        Deny           = $false
+                        Deny           = [System.Management.Automation.SwitchParameter]::new($false)
                         ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Sender'
                         }
@@ -388,7 +388,7 @@ try
                         User           = [PSCustomObject] @{
                             RawIdentity = 'User2Deny'
                         }
-                        Deny           = $true
+                        Deny           = [System.Management.Automation.SwitchParameter]::new($true)
                         ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Recipient'
                         }
@@ -400,7 +400,7 @@ try
                         User           = [PSCustomObject] @{
                             RawIdentity = 'User2Deny'
                         }
-                        Deny           = $true
+                        Deny           = [System.Management.Automation.SwitchParameter]::new($true)
                         ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Sender'
                         }
@@ -416,7 +416,7 @@ try
                             $TestTargetResourceParamsFalse['ExtendedRightAllowEntries'] = (
                                 New-CimInstance -ClassName 'MSFT_KeyValuePair' -Property @{
                                     key   = 'User1Allow'
-                                    value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
+                                    value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Authoritative-Domain-Sender'
                                 } -ClientOnly
                             )
 
