@@ -7,6 +7,7 @@
 - Added additional parameters to the MSFT_xExchImapSettings resource
 - Fixed unit test it statement for MSFT_xExchAutodiscoverVirtualDirectory\Test-TargetResource
 - Fixing xExchSendConnectorExtendedRight functionality
+- Fixing xExchSendConnector ExtendedRight functionality
 
 ## 1.30.0.0
 
