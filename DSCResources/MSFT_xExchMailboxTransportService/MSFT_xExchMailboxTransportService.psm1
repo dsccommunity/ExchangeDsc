@@ -339,7 +339,7 @@ function Get-TargetResource
         [System.String]
         $DomainController,
 
-        [parameter()]
+        [Parameter()]
         [System.Boolean]
         $MailboxDeliveryAgentLogEnabled,
 
@@ -367,11 +367,11 @@ function Get-TargetResource
         [System.String]
         $MailboxDeliveryConnectorProtocolLoggingLevel,
 
-        [parameter()]
+        [Parameter()]
         [System.Boolean]
         $MailboxDeliveryConnectorSMTPUtf8Enabled,
 
-        [parameter()]
+        [Parameter()]
         [System.Boolean]
         $MailboxDeliveryThrottlingLogEnabled,
 
@@ -391,7 +391,7 @@ function Get-TargetResource
         [System.String]
         $MailboxDeliveryThrottlingLogPath,
 
-        [parameter()]
+        [Parameter()]
         [System.Boolean]
         $MailboxSubmissionAgentLogEnabled,
 
@@ -874,7 +874,7 @@ function Set-TargetResource
         [System.String]
         $DomainController,
 
-        [parameter()]
+        [Parameter()]
         [System.Boolean]
         $MailboxDeliveryAgentLogEnabled,
 
@@ -902,11 +902,11 @@ function Set-TargetResource
         [System.String]
         $MailboxDeliveryConnectorProtocolLoggingLevel,
 
-        [parameter()]
+        [Parameter()]
         [System.Boolean]
         $MailboxDeliveryConnectorSMTPUtf8Enabled,
 
-        [parameter()]
+        [Parameter()]
         [System.Boolean]
         $MailboxDeliveryThrottlingLogEnabled,
 
@@ -926,7 +926,7 @@ function Set-TargetResource
         [System.String]
         $MailboxDeliveryThrottlingLogPath,
 
-        [parameter()]
+        [Parameter()]
         [System.Boolean]
         $MailboxSubmissionAgentLogEnabled,
 
@@ -1380,7 +1380,7 @@ function Test-TargetResource
         [System.String]
         $DomainController,
 
-        [parameter()]
+        [Parameter()]
         [System.Boolean]
         $MailboxDeliveryAgentLogEnabled,
 
@@ -1408,11 +1408,11 @@ function Test-TargetResource
         [System.String]
         $MailboxDeliveryConnectorProtocolLoggingLevel,
 
-        [parameter()]
+        [Parameter()]
         [System.Boolean]
         $MailboxDeliveryConnectorSMTPUtf8Enabled,
 
-        [parameter()]
+        [Parameter()]
         [System.Boolean]
         $MailboxDeliveryThrottlingLogEnabled,
 
@@ -1432,7 +1432,7 @@ function Test-TargetResource
         [System.String]
         $MailboxDeliveryThrottlingLogPath,
 
-        [parameter()]
+        [Parameter()]
         [System.Boolean]
         $MailboxSubmissionAgentLogEnabled,
 
