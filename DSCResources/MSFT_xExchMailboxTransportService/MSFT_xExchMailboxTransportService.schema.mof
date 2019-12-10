@@ -10,6 +10,7 @@ class MSFT_xExchMailboxTransportService : OMI_BaseResource
     [Write, Description("The ConnectivityLogMaxFileSize parameter specifies the maximum size of each connectivity log file.")] String ConnectivityLogMaxFileSize;
     [Write, Description("The ConnectivityLogPath parameter specifies the default connectivity log directory location.")] String ConnectivityLogPath;
     [Write, Description("The ContentConversionTracingEnabled parameter specifies whether content conversion tracing is enabled.")] Boolean ContentConversionTracingEnabled;
+    [Write, Description("The DomainController parameter specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory.")] String DomainController;
     [Write, Description("The MailboxDeliveryAgentLogEnabled parameter specifies whether the agent log for the Mailbox Transport Delivery service is enabled.")] Boolean MailboxDeliveryAgentLogEnabled;
     [Write, Description("The MailboxDeliveryAgentLogMaxAge parameter specifies the maximum age for the agent log file of the Mailbox Transport Delivery service.")] String MailboxDeliveryAgentLogMaxAge;
     [Write, Description("The MailboxDeliveryAgentLogMaxDirectorySize parameter specifies the maximum size of all Mailbox Transport Delivery service agent logs in the agent log directory.")] String MailboxDeliveryAgentLogMaxDirectorySize;
