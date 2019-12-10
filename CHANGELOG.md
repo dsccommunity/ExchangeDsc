@@ -5,6 +5,7 @@
 - Added xExchAddressList ressource
 - Added xExchSendConnector resource
 - Added additional parameters to the MSFT_xExchImapSettings resource
+- Added additional parameters to the xExchMailboxTransportService resource
 
 ## 1.30.0.0
 
