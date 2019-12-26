@@ -39,10 +39,54 @@ function Get-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ReceiveConnector' -Verbose:$VerbosePreference
 
-    $connector = Get-ReceiveConnector -Identity $Identity
+    $connector = Get-ReceiveConnector -Identity $Identity -ErrorAction SilentlyContinue
 
     if ($null -ne $connector)
     {
+        if ($adObject = $Identity.Split('\')[1])
+        {
+            $adPermissions = Get-ADPermission -Identity $adObject | Where-Object { $_.IsInherited -eq $false -and $null -ne $_.ExtendedRights }
+        }
+        else
+        {
+            $adPermissions = Get-ADPermission -Identity $Identity | Where-Object { $_.IsInherited -eq $false -and $null -ne $_.ExtendedRights }
+        }
+
+        $userNames = $adPermissions.User | Select-Object -Property RawIdentity -Unique | ForEach-Object -MemberName RawIdentity
+        $ExtendedRightAllowEntries = [System.Collections.Generic.List[Microsoft.Management.Infrastructure.CimInstance]]::new()
+        $ExtendedRightDenyEntries = [System.Collections.Generic.List[Microsoft.Management.Infrastructure.CimInstance]]::new()
+
+        foreach ($user in $userNames)
+        {
+            $allowPermissions = ($adPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $false } |
+                ForEach-Object -MemberName ExtendedRights | ForEach-Object -MemberName RawIdentity) -join ','
+            $denyPermissions = ($adPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $true } |
+                ForEach-Object -MemberName ExtendedRights | ForEach-Object -MemberName RawIdentity) -join ','
+
+            if ($allowPermissions)
+            {
+                $ExtendedRightAllowEntries.Add(
+                    (
+                        New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                            key   = $user
+                            value = $allowPermissions
+                        } -ClientOnly
+                    )
+                )
+            }
+            if ($denyPermissions)
+            {
+                $ExtendedRightDenyEntries.Add(
+                    (
+                        New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                            key   = $user
+                            value = $denyPermissions
+                        } -ClientOnly
+                    )
+                )
+            }
+        }
+
         $returnValue = @{
             Identity                                = [System.String] $Identity
             AdvertiseClientSettings                 = [System.Boolean] $connector.AdvertiseClientSettings
@@ -474,6 +518,7 @@ function Set-TargetResource
         if ($connector['Ensure'] -eq 'Present')
         {
             Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
+            Write-Verbose -Message 'Removing the receive connector.'
 
             Remove-ReceiveConnector @PSBoundParameters -Confirm:$false
         }
@@ -481,7 +526,7 @@ function Set-TargetResource
     else
     {
         # Remove Credential and Ensure so we don't pass it into the next command
-        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'Ensure'
+        Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Credential', 'Ensure', 'ExtendedRightAllowEntries', 'ExtendedRightDenyEntries'
 
         Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
@@ -492,7 +537,7 @@ function Set-TargetResource
             $originalPSBoundParameters = @{ } + $PSBoundParameters
 
             # The following aren't valid for New-ReceiveConnector
-            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Identity', 'BareLinefeedRejectionEnabled', 'ExtendedRightAllowEntries', 'ExtendedRightDenyEntries'
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Identity', 'BareLinefeedRejectionEnabled'
 
             # Parse out the server name and connector name from the given Identity
             $serverName, $connectorName = $Identity.Split('\')
@@ -503,14 +548,18 @@ function Set-TargetResource
                 'Name'   = $connectorName
             }
 
+            Write-Verbose -Message 'Creating the receive connector.'
+
             # Create the connector
             New-ReceiveConnector @PSBoundParameters
 
-            # Remove the two props we added
-            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server', 'Name'
-
             # Add original props back
             Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd $originalPSBoundParameters
+
+            # Remove the two props we added
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Server', 'Name', 'Usage'
+
+            Write-Verbose -Message 'Setting the receive connector properties.'
 
             Set-ReceiveConnector @PSBoundParameters
         }
@@ -1175,11 +1224,6 @@ function Test-TargetResource
                 $testResults = $false
             }
 
-            if (!(Test-ExchangeSetting -Name 'Usage' -Type 'Array' -ExpectedValue $Usage -ActualValue $connector.Usage -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
-            {
-                $testResults = $false
-            }
-
             if ($ExtendedRightAllowEntries)
             {
                 $splat = @{
@@ -1257,7 +1301,7 @@ function Test-ExtendedRightsPresent
     {
         foreach ($Value in $($Right.Value.Split(',')))
         {
-            $permissionsFound = $ADPermissions | Where-Object { ($_.User.RawIdentity -match $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value) }
+            $permissionsFound = $ADPermissions | Where-Object { ($_.User.RawIdentity -eq $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value) }
             if ($null -ne $permissionsFound)
             {
                 if (($Deny -eq $true -and $permissionsFound.Deny.ToBool() -eq $false) -or

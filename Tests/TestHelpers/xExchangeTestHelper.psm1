@@ -28,6 +28,10 @@ function Test-TargetResourceFunctionality
         $Params,
 
         [Parameter()]
+        [System.Collections.Hashtable]
+        $GetParams,
+
+        [Parameter()]
         [System.String]
         $ContextLabel,
 
@@ -43,10 +47,14 @@ function Test-TargetResourceFunctionality
     Context $ContextLabel {
         $addedVerbose = $false
 
-        if ($null -eq ($Params.Keys | Where-Object -FilterScript {$_ -like 'Verbose'}))
+        if ($null -eq ($Params.Keys | Where-Object -FilterScript { $_ -like 'Verbose' }))
         {
             $Params.Add('Verbose', $true)
             $addedVerbose = $true
+        }
+        if ($null -eq $GetParams)
+        {
+            $GetParams = $Params
         }
 
         [System.Boolean] $testResult = Test-TargetResource @Params
@@ -55,7 +63,7 @@ function Test-TargetResourceFunctionality
 
         Set-TargetResource @Params
 
-        [System.Collections.Hashtable] $getResult = Get-TargetResource @Params
+        [System.Collections.Hashtable] $getResult = Get-TargetResource @GetParams
         [System.Boolean] $testResult = Test-TargetResource @Params
 
         # The ExpectedGetResults are $null, so let's check that what we got back is $null
@@ -82,7 +90,7 @@ function Test-TargetResourceFunctionality
                 {
                     if ($getResult.ContainsKey($key))
                     {
-                        switch ((Get-Command Get-TargetResource).Parameters[$key].ParameterType)
+                        switch ((Get-Command Set-TargetResource).Parameters[$key].ParameterType)
                         {
                             ([System.String[]])
                             {
@@ -91,6 +99,10 @@ function Test-TargetResourceFunctionality
                             ([System.Management.Automation.PSCredential])
                             {
                                 $getValueMatchesForKey = $getResult[$key].UserName -like $ExpectedGetResults[$key].UserName
+                            }
+                            ([Microsoft.Management.Infrastructure.CimInstance[]])
+                            {
+                                $getValueMatchesForKey = Test-CimArrayContainsSubArray -Array $getResult[$key] -SubArray $ExpectedGetResults[$key]
                             }
                             default
                             {
@@ -173,7 +185,7 @@ function Test-CommonGetTargetResourceFunctionality
 
     if ($getTargetResourceCommand.Count -eq 1)
     {
-        foreach ($getTargetResourceParam in $getTargetResourceCommand.Parameters.Keys | Where-Object -FilterScript {$GetResult.ContainsKey($_)})
+        foreach ($getTargetResourceParam in $getTargetResourceCommand.Parameters.Keys | Where-Object -FilterScript { $GetResult.ContainsKey($_) })
         {
             $getResultMemberType = '$null'
 
@@ -316,11 +328,11 @@ function Initialize-TestForDAG
 
     Write-Verbose -Message 'Cleaning up test DAG and related resources'
 
-    Get-RemoteExchangeSession -Credential $ShellCredentials -CommandsToLoad '*-MailboxDatabase',`
-                                                                                  '*-DatabaseAvailabilityGroup',`
-                                                                                  'Remove-DatabaseAvailabilityGroupServer',`
-                                                                                  'Get-MailboxDatabaseCopyStatus',`
-                                                                                  'Remove-MailboxDatabaseCopy'
+    Get-RemoteExchangeSession -Credential $ShellCredentials -CommandsToLoad '*-MailboxDatabase', `
+        '*-DatabaseAvailabilityGroup', `
+        'Remove-DatabaseAvailabilityGroupServer', `
+        'Get-MailboxDatabaseCopyStatus', `
+        'Remove-MailboxDatabaseCopy'
 
     $existingDB = Get-MailboxDatabase -Identity "$($DatabaseName)" -Status -ErrorAction SilentlyContinue
 
@@ -423,7 +435,7 @@ function Remove-TestDatabase
     foreach ($server in $ServerName)
     {
         Get-ChildItem -LiteralPath "\\$($server)\c`$\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($DatabaseName)" `
-                      -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
+            -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
     }
 }
 
@@ -510,7 +522,7 @@ function Get-DSCTestMailbox
 
         if ($dbsOnServer.Count -gt 0)
         {
-            $newMailboxParams.Add('Database',$dbsOnServer[0].Name)
+            $newMailboxParams.Add('Database', $dbsOnServer[0].Name)
         }
 
         $testMailbox = New-Mailbox @newMailboxParams
@@ -532,11 +544,11 @@ function Get-DSCTestMailbox
     }
 
     # Add the secondary SMTP if necessary
-    if (($testMailbox.EmailAddresses | Where-Object {$_.AddressString -like $secondarySMTP}).Count -eq 0)
+    if (($testMailbox.EmailAddresses | Where-Object { $_.AddressString -like $secondarySMTP }).Count -eq 0)
     {
         Write-Verbose -Message "Adding secondary SMTP on test mailbox: $testMailboxName"
 
-        $testMailbox | Set-Mailbox -EmailAddresses @{add=$secondarySMTP}
+        $testMailbox | Set-Mailbox -EmailAddresses @{add = $secondarySMTP }
 
         $changedMailbox = $true
     }
@@ -681,6 +693,46 @@ function Get-TestDomainController
     }
 
     return $dcToTestAgainst
+}
+
+function Test-CimArrayContainsSubArray
+{
+    param (
+        [Parameter(Mandatory = $true)]
+        [System.Object[]]
+        $Array,
+
+        [Parameter(Mandatory = $true)]
+        [System.Object[]]
+        $SubArray
+    )
+
+    foreach ($subItem in $SubArray)
+    {
+        $equalFound = $false
+        foreach ($item in $Array)
+        {
+            if (-not (Compare-Object -DifferenceObject $subItem -ReferenceObject $item -Property Key, Value))
+            {
+                #found a match, skip to next $subItem
+                $equalFound = $true
+                break
+            }
+            if (Test-ArrayElementsInSecondArray -Array1 $subItem.value.Split(',') -Array2 $item.Value.Split(',') -IgnoreCase)
+            {
+                #found a match, skip to next $subItem
+                $equalFound = $true
+                break
+            }
+        }
+
+        if ($equalFound -eq $false)
+        {
+            return $false
+        }
+    }
+
+    return $true
 }
 
 Export-ModuleMember -Function *
