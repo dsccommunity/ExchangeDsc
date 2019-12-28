@@ -36,12 +36,7 @@ function Get-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-SendConnector' -Verbose:$VerbosePreference
 
-    if (-not ($connector = Get-SendConnector -Identity $Name -ErrorAction SilentlyContinue))
-    {
-        $connector = Get-SendConnector | Where-Object -FilterScript {
-            Test-ExchangeSetting -Name 'AddressSpaces' -Type 'Array' -ExpectedValue $AddressSpaces -ActualValue $_.AddressSpaces -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference
-        }
-    }
+    $connector = Get-SendConnector -Identity $Name -ErrorAction SilentlyContinue
 
     if ($null -ne $connector)
     {
@@ -399,7 +394,7 @@ function Set-TargetResource
                 {
                     foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(',')))
                     {
-                        Add-ADPermission -Identity $Name -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
+                        Add-ADPermission -Identity $Name -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value -DomainController $DomainController
                     }
                 }
             }
@@ -410,7 +405,7 @@ function Set-TargetResource
                 {
                     foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(',')))
                     {
-                        Add-ADPermission -Identity $Name -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false
+                        Add-ADPermission -Identity $Name -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false -DomainController $DomainController
                     }
                 }
             }
@@ -420,7 +415,7 @@ function Set-TargetResource
             Write-Verbose -Message "Send connector $Name not compliant. Setting the properties."
 
             # Usage is not a valid command for Set-SendConnector
-            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Ensure', 'ExtendedRightAllowEntries', 'ExtendedRightDenyEntries' , 'Name'
+            Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Ensure', 'ExtendedRightAllowEntries', 'ExtendedRightDenyEntries' , 'Name', 'Usage'
 
             $PSBoundParameters['Identity'] = $Name
             Set-SendConnector  @PSBoundParameters
@@ -432,7 +427,7 @@ function Set-TargetResource
                 {
                     foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(',')))
                     {
-                        Add-ADPermission -Identity $Name -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
+                        Add-ADPermission -Identity $Name -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value -DomainController $DomainController
                     }
                 }
             }
@@ -443,7 +438,7 @@ function Set-TargetResource
                 {
                     foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(',')))
                     {
-                        Add-ADPermission -Identity $Name -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false
+                        Add-ADPermission -Identity $Name -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false -DomainController $DomainController
                     }
                 }
             }
@@ -697,12 +692,6 @@ function Test-TargetResource
 
     $connector = Get-TargetResource -Name $Name -Credential $Credential -AddressSpaces $AddressSpaces
 
-    # Get AD permissions if necessary
-    if (($ExtendedRightAllowEntries) -or ($ExtendedRightDenyEntries))
-    {
-        $adPermissions = Get-ADPermission -Identity $Name | Where-Object { $_.IsInherited -eq $false }
-    }
-
     $testResults = $true
 
     if ($connector['Ensure'] -eq 'Absent')
@@ -722,6 +711,12 @@ function Test-TargetResource
         }
         else
         {
+            # Get AD permissions if necessary
+            if (($ExtendedRightAllowEntries) -or ($ExtendedRightDenyEntries))
+            {
+                $adPermissions = Get-ADPermission -Identity $Name | Where-Object { $_.IsInherited -eq $false }
+            }
+
             if (!(Test-ExchangeSetting -Name 'AddressSpaces' -Type 'Array' -ExpectedValue $AddressSpaces -ActualValue $connector.AddressSpaces -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
             {
                 $testResults = $false
@@ -872,7 +867,7 @@ function Test-TargetResource
                 $testResults = $false
             }
 
-            if ($ExtendedRightAllowEntries)
+            if ($ExtendedRightAllowEntries -and $adPermissions.Deny -contains $false)
             {
                 $splat = @{
                     ADPermissions  = $adPermissions
@@ -888,7 +883,11 @@ function Test-TargetResource
                     $testResults = $false
                 }
             }
-            if ($ExtendedRightDenyEntries)
+            if (-not $ExtendedRightAllowEntries -and $adPermissions -and $adPermissions.Deny -notcontains $false)
+            {
+                return $false
+            }
+            if ($ExtendedRightDenyEntries -and $adPermissions.Deny -contains $true)
             {
                 $splat = @{
                     ADPermissions  = $adPermissions
@@ -903,6 +902,10 @@ function Test-TargetResource
                 {
                     $testResults = $false
                 }
+            }
+            if (-not $ExtendedRightDenyEntries -and $adPermissions -and $adPermissions.Deny -contains $true)
+            {
+                return $false
             }
         }
     }
@@ -945,8 +948,8 @@ function Test-ExtendedRightsPresent
             $permissionsFound = $ADPermissions | Where-Object { ($_.User.RawIdentity -eq $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value) }
             if ($null -ne $permissionsFound)
             {
-                if ($Deny -eq $true -and $permissionsFound.Deny.ToBool() -eq $false -or
-                    $Deny -eq $false -and $permissionsFound.Deny.ToBool() -eq $true)
+                if ($Deny -eq $true -and $permissionsFound.Deny -eq $false -or
+                    $Deny -eq $false -and $permissionsFound.Deny -eq $true)
                 {
                     Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue 'Present' -Verbose:$VerbosePreference
                     return $false
