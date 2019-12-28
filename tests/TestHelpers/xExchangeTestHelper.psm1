@@ -28,6 +28,10 @@ function Test-TargetResourceFunctionality
         $Params,
 
         [Parameter()]
+        [System.Collections.Hashtable]
+        $GetParams,
+
+        [Parameter()]
         [System.String]
         $ContextLabel,
 
@@ -48,6 +52,10 @@ function Test-TargetResourceFunctionality
             $Params.Add('Verbose', $true)
             $addedVerbose = $true
         }
+        if ($null -eq $GetParams)
+        {
+            $GetParams = $Params
+        }
 
         [System.Boolean] $testResult = Test-TargetResource @Params
 
@@ -55,7 +63,7 @@ function Test-TargetResourceFunctionality
 
         Set-TargetResource @Params
 
-        [System.Collections.Hashtable] $getResult = Get-TargetResource @Params
+        [System.Collections.Hashtable] $getResult = Get-TargetResource @GetParams
         [System.Boolean] $testResult = Test-TargetResource @Params
 
         # The ExpectedGetResults are $null, so let's check that what we got back is $null
@@ -82,7 +90,7 @@ function Test-TargetResourceFunctionality
                 {
                     if ($getResult.ContainsKey($key))
                     {
-                        switch ((Get-Command Get-TargetResource).Parameters[$key].ParameterType)
+                        switch ((Get-Command Set-TargetResource).Parameters[$key].ParameterType)
                         {
                             ([System.String[]])
                             {
@@ -91,6 +99,10 @@ function Test-TargetResourceFunctionality
                             ([System.Management.Automation.PSCredential])
                             {
                                 $getValueMatchesForKey = $getResult[$key].UserName -like $ExpectedGetResults[$key].UserName
+                            }
+                            ([Microsoft.Management.Infrastructure.CimInstance[]])
+                            {
+                                $getValueMatchesForKey = Test-CimArrayContainsSubArray -Array $getResult[$key] -SubArray $ExpectedGetResults[$key]
                             }
                             default
                             {
@@ -387,7 +399,7 @@ function Remove-CopiesOfTestDatabase
         Get-MailboxDatabaseCopyStatus -Identity "$($DatabaseName)" | Where-Object -FilterScript {
             $_.Status -notlike 'Mounted'
         } | Remove-MailboxDatabaseCopy -Confirm:$false
-    }
+}
 }
 
 <#
@@ -419,12 +431,12 @@ function Remove-TestDatabase
         $_.Name -like "$($DatabaseName)"
     } | Remove-MailboxDatabase -Confirm:$false
 
-    # Remove the files
-    foreach ($server in $ServerName)
-    {
-        Get-ChildItem -LiteralPath "\\$($server)\c`$\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($DatabaseName)" `
-            -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
-    }
+# Remove the files
+foreach ($server in $ServerName)
+{
+    Get-ChildItem -LiteralPath "\\$($server)\c`$\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($DatabaseName)" `
+        -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
+}
 }
 
 <#
