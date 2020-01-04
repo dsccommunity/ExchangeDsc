@@ -6,6 +6,7 @@
 - Added xExchSendConnector resource
 - Added additional parameters to the MSFT_xExchImapSettings resource
 - Added additional parameters to the xExchMailboxTransportService resource
+- Fixed unit test it statement for MSFT_xExchAutodiscoverVirtualDirectory\Test-TargetResource
 
 ## 1.30.0.0
 

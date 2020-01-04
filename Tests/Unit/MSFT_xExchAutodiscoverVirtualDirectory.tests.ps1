@@ -109,7 +109,7 @@ try
 
             Context 'When Test-TargetResource is called' {
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
-                It 'Should return False when Get-UMCallRouterSettings returns null' {
+                It 'Should return False when Get-AutodiscoverVirtualDirectoryInternal returns null' {
                     Mock -CommandName Get-AutodiscoverVirtualDirectoryInternal -Verifiable
 
                     Test-TargetResource @commonTargetResourceParams -ErrorAction SilentlyContinue | Should -Be $false
