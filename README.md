@@ -1,37 +1,30 @@
 # xExchange
 
+[![Build Status](https://dev.azure.com/dsccommunity/xExchange/_apis/build/status/dsccommunity.xExchange?branchName=master)](https://dev.azure.com/dsccommunity/xExchange/_build/latest?definitionId={definitionId}&branchName=master)
+![Azure DevOps coverage (branch)](https://img.shields.io/azure-devops/coverage/dsccommunity/xExchange/{definitionId}/master)
+[![Azure DevOps tests](https://img.shields.io/azure-devops/tests/dsccommunity/xExchange/{definitionId}/master)](https://dsccommunity.visualstudio.com/xExchange/_test/analytics?definitionId={definitionId}&contextType=build)
+[![PowerShell Gallery (with prereleases)](https://img.shields.io/powershellgallery/vpre/xExchange?label=xExchange%20Preview)](https://www.powershellgallery.com/packages/xExchange/)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/xExchange?label=xExchange)](https://www.powershellgallery.com/packages/xExchange/)
+
 The **xExchange** module contains many DSC resources for configuring and
 managing Exchange 2013, 2016, and 2019 servers including individual
 server properties, databases, mount points, and Database Availability Groups.
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+This project has adopted this [Code of Conduct](CODE_OF_CONDUCT.md).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/)
 or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional
 questions or comments.
 
-## Branches
+## Releases
 
-### master
-
-[![Build status](https://ci.appveyor.com/api/projects/status/k9oq77p9xn6bo2j6/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xexchange/branch/master)
-[![codecov](https://codecov.io/gh/PowerShell/xexchange/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/xexchange/branch/master)
-
-This is the branch containing the latest release -
-no contributions should be made directly to this branch.
-
-### dev
-
-[![Build status](https://ci.appveyor.com/api/projects/status/k9oq77p9xn6bo2j6/branch/dev?svg=true)](https://ci.appveyor.com/project/PowerShell/xexchange/branch/dev)
-[![codecov](https://codecov.io/gh/PowerShell/xexchange/branch/dev/graph/badge.svg)](https://codecov.io/gh/PowerShell/xexchange/branch/dev)
-
-This is the development branch
-to which contributions should be proposed by contributors as pull requests.
-This development branch will periodically be merged to the master branch,
-and be released to [PowerShell Gallery](https://www.powershellgallery.com/).
+For each merge to the branch `master` a preview release will be
+deployed to [PowerShell Gallery](https://www.powershellgallery.com/).
+Periodically a release version tag will be pushed which will deploy a
+full release to [PowerShell Gallery](https://www.powershellgallery.com/).
 
 ## Contributing
 
-Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
+Please check out common DSC Community [contributing guidelines](https://dsccommunity.org/guidelines/contributing).
 
 ## Installation
 
@@ -70,7 +63,7 @@ for more information.
 
 ## Examples
 
-You can review the [Examples](/Examples) directory in the xExchange module
+You can review the [Examples](/source/Examples) directory in the xExchange module
 for some general use scenarios for all of the resources that are in the module.
 
 ## Change log
