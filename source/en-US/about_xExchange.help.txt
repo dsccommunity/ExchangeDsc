@@ -1,0 +1,24 @@
+TOPIC
+    about_xExchange
+
+SHORT DESCRIPTION
+    Module with DSC Resources for deployment and configuration of Microsoft Exchange Server.
+
+LONG DESCRIPTION
+    This module contains DSC resources for deployment and configuration of Microsoft Exchange Server.
+
+EXAMPLES
+    PS C:\> Get-DscResource -Module {RepositoryName}
+
+NOTE:
+    Thank you to all those who contributed to this module, by writing code, sharing opinions, and provided feedback.
+
+TROUBLESHOOTING NOTE:
+    Look out on the Github repository for issues and new releases.
+
+SEE ALSO
+  - https://github.com/dsccommunity/xExchange
+
+KEYWORDS
+      DSC, DscResource, Exchange
+
