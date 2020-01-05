@@ -1,4 +1,4 @@
-Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Modules\xExchangeDiskPart.psm1" -Force
+Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Modules\xExchangeDiskPart\xExchangeDiskPart.psd1" -Force
 
 <#
     .SYNOPSIS

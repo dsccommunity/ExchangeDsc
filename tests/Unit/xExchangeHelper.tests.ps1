@@ -8,7 +8,7 @@ $script:DSCHelperName = "xExchangeHelper"
 # Unit Test Template Version: 1.2.2
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper\xExchangeHelper.psd1')) -Force
 
 #endregion HEADER
 
@@ -3091,7 +3091,7 @@ try
 
                     # Store the previous $global:DSCMachineStatus value
                     $prevDSCMachineStatus = $global:DSCMachineStatus
-                    
+
                     # Set and test for the new value
                     Set-DSCMachineStatus -NewDSCMachineStatus $newValue
                     $global:DSCMachineStatus | Should -Be $newValue

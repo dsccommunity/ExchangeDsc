@@ -5,7 +5,7 @@ $script:DSCHelperName = "xExchangeCalculatorHelper"
 # Unit Test Template Version: 1.2.2
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeCalculatorHelper.psm1')) -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeCalculatorHelper\xExchangeCalculatorHelper.psd1')) -Force
 
 #endregion HEADER
 

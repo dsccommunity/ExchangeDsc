@@ -2555,5 +2555,3 @@ function Set-DSCMachineStatus
 
     $global:DSCMachineStatus = $NewDSCMachineStatus
 }
-
-Export-ModuleMember -Function *

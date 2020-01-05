@@ -1,4 +1,4 @@
-Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Modules\xExchangeDiskPart.psm1" -Force
+Import-Module "$((Get-Item -LiteralPath "$($PSScriptRoot)").Parent.Parent.FullName)\Modules\xExchangeDiskPart\xExchangeDiskPart.psd1" -Force
 
 function Get-TargetResource
 {
@@ -107,7 +107,7 @@ function Set-TargetResource
 
     # Now delete the specified directories
     # Variable Only used if $DeleteAssociatedMountPoints is $true
-    [Hashtable] $ParentFoldersToRemove = @{}
+    [Hashtable] $ParentFoldersToRemove = @{ }
 
     foreach ($path in $FoldersToRemove)
     {
