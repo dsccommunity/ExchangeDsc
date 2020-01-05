@@ -1,17 +1,41 @@
 #region HEADER
-$script:DSCModuleName = 'xExchange'
-$script:DSCHelperName = "xExchangeCalculatorHelper"
+$script:projectPath = "$PSScriptRoot\..\.." | Convert-Path
+$script:projectName = (Get-ChildItem -Path "$script:projectPath\*\*.psd1" | Where-Object -FilterScript {
+        ($_.Directory.Name -match 'source|src' -or $_.Directory.Name -eq $_.BaseName) -and
+        $(try
+            { Test-ModuleManifest -Path $_.FullName -ErrorAction Stop
+            }
+            catch
+            { $false
+            })
+    }).BaseName
 
-# Unit Test Template Version: 1.2.2
-$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+$script:parentModule = Get-Module -Name $script:projectName -ListAvailable | Select-Object -First 1
+$script:subModulesFolder = Join-Path -Path $script:parentModule.ModuleBase -ChildPath 'Modules'
+Remove-Module -Name $script:parentModule -Force -ErrorAction 'SilentlyContinue'
 
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeCalculatorHelper\xExchangeCalculatorHelper.psd1')) -Force
+$script:subModuleName = (Split-Path -Path $PSCommandPath -Leaf) -replace '\.Tests.ps1'
+$script:subModuleFile = Join-Path -Path $script:subModulesFolder -ChildPath "$($script:subModuleName)"
 
+Import-Module $script:subModuleFile -Force -ErrorAction Stop
 #endregion HEADER
 
 function Invoke-TestSetup
 {
+    try
+    {
+        Import-Module -Name DscResource.Test -Force
+    }
+    catch [System.IO.FileNotFoundException]
+    {
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+    }
 
+    $script:testEnvironment = Initialize-TestEnvironment `
+        -DSCModuleName $script:dscModuleName `
+        -DSCResourceName $script:dscResourceName `
+        -ResourceType 'Mof' `
+        -TestType 'Unit'
 }
 
 function Invoke-TestCleanup
@@ -19,11 +43,11 @@ function Invoke-TestCleanup
 
 }
 
+Invoke-TestSetup
+
 # Begin Testing
 try
 {
-    Invoke-TestSetup
-
     InModuleScope $script:DSCHelperName {
         $validServerName = 'srv-nn-01'
         $invalidServerName = 'srv-nn-05'
@@ -82,9 +106,9 @@ try
                     Mock -CommandName Test-Path -Verifiable -MockWith { return $true }
                     Mock -CommandName Import-Csv -Verifiable -MockWith {
                         return (New-Object -TypeName PSObject -Property @{
-                            ServerName  = 'srv-nn-01'
-                            DbPerVolume = 0
-                        })
+                                ServerName  = 'srv-nn-01'
+                                DbPerVolume = 0
+                            })
                     }
 
                     { Get-DBMapFromServersCsv -ServersCsvPath $serversLatestCsvPath -ServerNameInCsv $validServerName } | `
@@ -97,10 +121,10 @@ try
                     Mock -CommandName Test-Path -Verifiable -MockWith { return $true }
                     Mock -CommandName Import-Csv -Verifiable -MockWith {
                         return (New-Object -TypeName PSObject -Property @{
-                            ServerName  = $validServerName
-                            DbPerVolume = 4
-                            DbMap       = ''
-                        })
+                                ServerName  = $validServerName
+                                DbPerVolume = 4
+                                DbMap       = ''
+                            })
                     }
 
                     { Get-DBMapFromServersCsv -ServersCsvPath $serversLatestCsvPath -ServerNameInCsv $validServerName } | `
@@ -226,9 +250,9 @@ try
             }
 
             $noModificationStrings = @(
-                @{StringIn = 'aBc'},
-                @{StringIn = ''},
-                @{StringIn = 'a b c'}
+                @{StringIn = 'aBc' },
+                @{StringIn = '' },
+                @{StringIn = 'a b c' }
             )
 
             Context 'When Replacements is either not specified or is empty' {

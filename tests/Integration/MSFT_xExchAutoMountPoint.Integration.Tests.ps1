@@ -10,7 +10,7 @@
 [System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'source' -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1"))))
 
 #endregion HEADER
 
@@ -294,7 +294,9 @@ if ($existingExMountPoints.Count -gt 0)
     return
 }
 
-# Begin testing
+Invoke-TestSetup
+
+# Begin Testing
 Describe 'Test xExchAutoMountPoint Scenarios' {
     # Run through initial testing using 1 DB disk with 4 DB mount points, 1 spare, REFS file system, and GPT partitioning
     $testParams = @{

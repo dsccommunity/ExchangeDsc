@@ -1,41 +1,31 @@
-#region HEADER
-$script:DSCModuleName = 'xExchange'
-$script:DSCResourceName = "MSFT_xExchInstall"
-
-# Unit Test Template Version: 1.2.2
-$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
-{
-    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))
-}
-
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Global -Force
-
-$TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
-    -ResourceType 'Mof' `
-    -TestType Unit
-
-#endregion HEADER
-
 function Invoke-TestSetup
 {
+    try
+    {
+        Import-Module -Name DscResource.Test -Force
+    }
+    catch [System.IO.FileNotFoundException]
+    {
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+    }
 
+    $script:testEnvironment = Initialize-TestEnvironment `
+        -DSCModuleName $script:dscModuleName `
+        -DSCResourceName $script:dscResourceName `
+        -ResourceType 'Mof' `
+        -TestType 'Unit'
 }
 
 function Invoke-TestCleanup
 {
-    Restore-TestEnvironment -TestEnvironment $TestEnvironment
+    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
+
+Invoke-TestSetup
 
 # Begin Testing
 try
 {
-    Invoke-TestSetup
-
     InModuleScope $script:DSCResourceName {
 
         $targetResourceParams = @{
@@ -46,7 +36,7 @@ try
 
         Describe 'MSFT_xExchInstall\Get-TargetResource' -Tag 'Get' {
             Context 'When Get-TargetResource is called' {
-            Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $targetResourceParams
+                Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $targetResourceParams
 
                 It 'Should return the input Path and Arguments' {
 
@@ -70,8 +60,8 @@ try
                             ShouldStartInstall = $true
                         }
                     }
-                    Mock -CommandName Set-WSManConfigStatus -Verifiable -MockWith {return $true}
-                    Mock -CommandName Write-Warning -Verifiable -ParameterFilter {$Message -like 'Server needs a reboot before the installation of Exchange can begin.'}
+                    Mock -CommandName Set-WSManConfigStatus -Verifiable -MockWith { return $true }
+                    Mock -CommandName Write-Warning -Verifiable -ParameterFilter { $Message -like 'Server needs a reboot before the installation of Exchange can begin.' }
 
                     Set-TargetResource @targetResourceParams
                 }
@@ -84,9 +74,9 @@ try
                             ShouldStartInstall = $true
                         }
                     }
-                    Mock -CommandName Set-WSManConfigStatus -Verifiable -MockWith {return $false}
+                    Mock -CommandName Set-WSManConfigStatus -Verifiable -MockWith { return $false }
                     Mock -CommandName Start-ExchangeScheduledTask -Verifiable
-                    Mock -CommandName Wait-ForProcessStart -Verifiable -MockWith {return $true}
+                    Mock -CommandName Wait-ForProcessStart -Verifiable -MockWith { return $true }
                     Mock -CommandName Wait-ForProcessStop -Verifiable
                     Mock -CommandName Assert-ExchangeSetupArgumentsComplete -Verifiable
 
@@ -101,9 +91,9 @@ try
                             ShouldStartInstall = $true
                         }
                     }
-                    Mock -CommandName Set-WSManConfigStatus -Verifiable -MockWith {return $false}
+                    Mock -CommandName Set-WSManConfigStatus -Verifiable -MockWith { return $false }
                     Mock -CommandName Start-ExchangeScheduledTask -Verifiable
-                    Mock -CommandName Wait-ForProcessStart -Verifiable -MockWith {return $false}
+                    Mock -CommandName Wait-ForProcessStart -Verifiable -MockWith { return $false }
 
                     { Set-TargetResource @targetResourceParams } | Should -Throw -ExpectedMessage 'Waited 60 seconds, but was unable to detect that ExSetup.exe was started'
                 }
