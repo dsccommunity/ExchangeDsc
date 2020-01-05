@@ -1,42 +1,32 @@
-#region HEADER
-$script:DSCModuleName = 'xExchange'
-$script:DSCResourceName = 'MSFT_xExchAutodiscoverVirtualDirectory'
-
-# Unit Test Template Version: 1.2.4
-$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
-{
-    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DscResource.Tests'))
-}
-
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Global -Force
-
-$TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
-    -ResourceType 'Mof' `
-    -TestType Unit
-
-#endregion HEADER
-
 function Invoke-TestSetup
 {
+    try
+    {
+        Import-Module -Name DscResource.Test -Force
+    }
+    catch [System.IO.FileNotFoundException]
+    {
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+    }
 
+    $script:testEnvironment = Initialize-TestEnvironment `
+        -DSCModuleName $script:dscModuleName `
+        -DSCResourceName $script:dscResourceName `
+        -ResourceType 'Mof' `
+        -TestType 'Unit'
 }
 
 function Invoke-TestCleanup
 {
-    Restore-TestEnvironment -TestEnvironment $TestEnvironment
+    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
+
+Invoke-TestSetup
 
 # Begin Testing
 try
 {
-    Invoke-TestSetup
-
-    InModuleScope $script:DSCResourceName {
+        InModuleScope $script:DSCResourceName {
         Mock -CommandName Write-FunctionEntry -Verifiable
 
         $commonTargetResourceParams = @{
@@ -74,12 +64,14 @@ try
             }
 
             Context 'When Set-TargetResource is called' {
-                function Set-AutodiscoverVirtualDirectory { }
+                function Set-AutodiscoverVirtualDirectory
+                {
+                }
 
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
                 It 'Should warn about restarting the MSExchangeAutodiscoverAppPool' {
                     Mock -CommandName Set-AutodiscoverVirtualDirectory -Verifiable
-                    Mock -CommandName Write-Warning -ParameterFilter {$Message -eq 'The configuration will not take effect until MSExchangeAutodiscoverAppPool is manually recycled.'}
+                    Mock -CommandName Write-Warning -ParameterFilter { $Message -eq 'The configuration will not take effect until MSExchangeAutodiscoverAppPool is manually recycled.' }
 
                     Set-TargetResource @commonTargetResourceParams
                 }
@@ -138,7 +130,9 @@ try
 
             Context 'When Get-AutodiscoverVirtualDirectoryInternal is called' {
                 It 'Should call the expected functions' {
-                    function Get-AutodiscoverVirtualDirectory { }
+                    function Get-AutodiscoverVirtualDirectory
+                    {
+                    }
                     Mock -CommandName Get-AutodiscoverVirtualDirectory -Verifiable -MockWith { return $commonAutodiscoverVirtualDirectoryInternalStandardOutput }
 
                     Get-AutodiscoverVirtualDirectoryInternal @commonTargetResourceParams

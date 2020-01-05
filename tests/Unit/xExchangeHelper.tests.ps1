@@ -2,19 +2,38 @@
 param()
 
 #region HEADER
-$script:DSCModuleName = 'xExchange'
-$script:DSCHelperName = "xExchangeHelper"
+$script:projectPath = "$PSScriptRoot\..\.." | Convert-Path
+$script:projectName = (Get-ChildItem -Path "$script:projectPath\*\*.psd1" | Where-Object -FilterScript {
+        ($_.Directory.Name -match 'source|src' -or $_.Directory.Name -eq $_.BaseName) -and
+        $(try { Test-ModuleManifest -Path $_.FullName -ErrorAction Stop } catch { $false })
+    }).BaseName
 
-# Unit Test Template Version: 1.2.2
-$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+$script:parentModule = Get-Module -Name $script:projectName -ListAvailable | Select-Object -First 1
+$script:subModulesFolder = Join-Path -Path $script:parentModule.ModuleBase -ChildPath 'Modules'
+Remove-Module -Name $script:parentModule -Force -ErrorAction 'SilentlyContinue'
 
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper\xExchangeHelper.psd1')) -Force
+$script:subModuleName = (Split-Path -Path $PSCommandPath -Leaf) -replace '\.Tests.ps1'
+$script:subModuleFile = Join-Path -Path $script:subModulesFolder -ChildPath "$($script:subModuleName)"
 
+Import-Module $script:subModuleFile -Force -ErrorAction Stop
 #endregion HEADER
 
 function Invoke-TestSetup
 {
+    try
+    {
+        Import-Module -Name DscResource.Test -Force
+    }
+    catch [System.IO.FileNotFoundException]
+    {
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+    }
 
+    $script:testEnvironment = Initialize-TestEnvironment `
+        -DSCModuleName $script:dscModuleName `
+        -DSCResourceName $script:dscResourceName `
+        -ResourceType 'Mof' `
+        -TestType 'Unit'
 }
 
 function Invoke-TestCleanup
@@ -22,12 +41,12 @@ function Invoke-TestCleanup
 
 }
 
+Invoke-TestSetup
+
 # Begin Testing
 try
 {
-    Invoke-TestSetup
-
-    InModuleScope $script:DSCHelperName {
+        InModuleScope $script:DSCHelperName {
         # Get a unique Guid that doesn't resolve to a local path
         # Use System.Guid, as New-Guid isn't available in PS4 and below
         do

@@ -1,35 +1,27 @@
-#region HEADER
-$script:DSCModuleName = 'xExchange'
-$script:DSCResourceName = 'MSFT_xExchMailboxTransportService'
-
-# Unit Test Template Version: 1.2.4
-$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-     (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
-{
-    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DscResource.Tests'))
-}
-
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Global -Force
-
-$TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
-    -ResourceType 'Mof' `
-    -TestType Unit
-
-#endregion HEADER
-
 function Invoke-TestSetup
 {
+    try
+    {
+        Import-Module -Name DscResource.Test -Force
+    }
+    catch [System.IO.FileNotFoundException]
+    {
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+    }
 
+    $script:testEnvironment = Initialize-TestEnvironment `
+        -DSCModuleName $script:dscModuleName `
+        -DSCResourceName $script:dscResourceName `
+        -ResourceType 'Mof' `
+        -TestType 'Unit'
 }
 
 function Invoke-TestCleanup
 {
-    Restore-TestEnvironment -TestEnvironment $TestEnvironment
+    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
+
+Invoke-TestSetup
 
 # Begin Testing
 try
@@ -87,7 +79,9 @@ try
 
         Describe 'MSFT_xExchMailboxTransportService\Get-TargetResource' -Tag 'Get' {
             # Override Exchange cmdlets
-            function Get-MailboxTransportService {}
+            function Get-MailboxTransportService
+            {
+            }
 
             AfterEach {
                 Assert-VerifiableMock
@@ -107,12 +101,14 @@ try
             }
 
             Context 'When Set-TargetResource is called' {
-                function Set-MailboxTransportService { }
+                function Set-MailboxTransportService
+                { 
+                }
 
                 #Mock -CommandName Get-RemoteExchangeSession -Verifiable
                 It 'Should warn about restarting the MSExchangeDelivery and/or MSExchangeSubmission services' {
                     Mock -CommandName Set-MailboxTransportService -Verifiable
-                    Mock -CommandName Write-Warning -ParameterFilter {$Message -eq 'The configuration will not take effect until the MSExchangeDelivery and/or MSExchangeSubmission services are manually restarted.'}
+                    Mock -CommandName Write-Warning -ParameterFilter { $Message -eq 'The configuration will not take effect until the MSExchangeDelivery and/or MSExchangeSubmission services are manually restarted.' }
 
                     Set-TargetResource @commonTargetResourceParams
                 }
@@ -134,7 +130,9 @@ try
                 Assert-VerifiableMock
             }
 
-            function Get-MailboxTransportService {}
+            function Get-MailboxTransportService
+            {
+            }
 
             Context 'When Test-TargetResource is called' {
                 It 'Should return False when Get-MailboxTransportService returns null' {
