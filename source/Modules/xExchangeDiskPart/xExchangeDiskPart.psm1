@@ -57,9 +57,9 @@ function Get-DiskInfo
     param()
 
     [System.Collections.Hashtable] $diskInfo = @{
-        DiskToVolumeMap = @{}
-        VolumeToMountPointMap = @{}
-        DiskSizeMap = @{}
+        DiskToVolumeMap       = @{ }
+        VolumeToMountPointMap = @{ }
+        DiskSizeMap           = @{ }
     }
 
     [int[]] $diskNums = @()
@@ -307,5 +307,3 @@ function Get-MountPointVolumeNumber
 
     return -1
 }
-
-Export-ModuleMember -Function *

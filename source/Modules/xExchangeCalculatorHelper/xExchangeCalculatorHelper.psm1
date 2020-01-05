@@ -25,17 +25,17 @@ function Get-DBMapFromServersCsv
     [OutputType([System.String[]])]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ServersCsvPath,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ServerNameInCsv,
 
         [Parameter()]
         [System.Collections.Hashtable]
-        $DbNameReplacements = @{}
+        $DbNameReplacements = @{ }
     )
 
     if (!(Test-Path -Path $ServersCsvPath))
@@ -43,7 +43,7 @@ function Get-DBMapFromServersCsv
         throw 'Unable to access file specified in ServersCsvPath'
     }
 
-    [System.Object[]] $serverData = Import-Csv -Path $ServersCsvPath | Where-Object -FilterScript {$_.ServerName -like $ServerNameInCsv}
+    [System.Object[]] $serverData = Import-Csv -Path $ServersCsvPath | Where-Object -FilterScript { $_.ServerName -like $ServerNameInCsv }
 
     if ($serverData.Count -ne 1)
     {
@@ -127,17 +127,17 @@ function Get-DBListFromMailboxDatabasesCsv
     [OutputType([System.Management.Automation.PSObject[]])]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $MailboxDatabasesCsvPath,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ServerNameInCsv,
 
         [Parameter()]
         [System.Collections.Hashtable]
-        $DbNameReplacements = @{}
+        $DbNameReplacements = @{ }
     )
 
     if (!(Test-Path -Path $MailboxDatabasesCsvPath))
@@ -145,7 +145,7 @@ function Get-DBListFromMailboxDatabasesCsv
         throw 'Unable to access file specified in MailboxDatabasesCsvPath'
     }
 
-    [System.Object[]] $relevantDBs = Import-Csv -Path $MailboxDatabasesCsvPath | Where-Object -FilterScript {$_.Server -like $ServerNameInCsv}
+    [System.Object[]] $relevantDBs = Import-Csv -Path $MailboxDatabasesCsvPath | Where-Object -FilterScript { $_.Server -like $ServerNameInCsv }
 
     # Create the output variable
     [System.Management.Automation.PSObject[]] $dbList = New-Object -TypeName 'System.Management.Automation.PSObject[]' -ArgumentList $relevantDBs.Count
@@ -230,17 +230,17 @@ function Get-DBListFromMailboxDatabaseCopiesCsv
     [OutputType([System.Management.Automation.PSObject[]])]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $MailboxDatabaseCopiesCsvPath,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $ServerNameInCsv,
 
         [Parameter()]
         [System.Collections.Hashtable]
-        $DbNameReplacements = @{}
+        $DbNameReplacements = @{ }
     )
 
     if (!(Test-Path -Path $MailboxDatabaseCopiesCsvPath))
@@ -248,7 +248,7 @@ function Get-DBListFromMailboxDatabaseCopiesCsv
         throw 'Unable to access file specified in MailboxDatabaseCopiesCsvPath'
     }
 
-    [System.Object[]] $relevantDBs = Import-Csv -Path $MailboxDatabaseCopiesCsvPath | Where-Object -FilterScript {$_.Server -like $ServerNameInCsv}
+    [System.Object[]] $relevantDBs = Import-Csv -Path $MailboxDatabaseCopiesCsvPath | Where-Object -FilterScript { $_.Server -like $ServerNameInCsv }
 
     # Create the output variable
     [System.Management.Automation.PSObject[]] $dbList = New-Object -TypeName 'System.Management.Automation.PSObject[]' -ArgumentList $relevantDBs.Count
@@ -304,7 +304,7 @@ function Update-StringContent
 
         [Parameter()]
         [System.Collections.Hashtable]
-        $Replacements = @{}
+        $Replacements = @{ }
     )
 
     if ($Replacements.Count -gt 0)
@@ -317,5 +317,3 @@ function Update-StringContent
 
     return $StringIn
 }
-
-Export-ModuleMember -Function *

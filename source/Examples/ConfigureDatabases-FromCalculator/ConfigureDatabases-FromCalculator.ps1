@@ -34,7 +34,7 @@ Configuration Example
 
     Import-DscResource -Module xExchange
 
-    Import-Module -Name (Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath 'Modules\xExchangeCalculatorHelper.psm1')
+    Import-Module -Name (Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath 'Modules\xExchangeCalculatorHelper\xExchangeCalculatorHelper.psd1')
 
     Node $AllNodes.NodeName
     {

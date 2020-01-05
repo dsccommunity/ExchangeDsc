@@ -21,7 +21,7 @@
     PowerShellVersion = '4.0'
 
     # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-    NestedModules     = @("Modules\xExchangeHelper.psm1")
+    NestedModules     = @("Modules\xExchangeHelper\xExchangeHelper.psd1")
 
     # Functions to export from this module
     FunctionsToExport = @()
