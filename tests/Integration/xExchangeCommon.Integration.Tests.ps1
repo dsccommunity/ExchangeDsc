@@ -4,10 +4,9 @@
         This test module requires use of credentials.
         The first run through of the tests will prompt for credentials from the logged on user.
 #>
-
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper\xExchangeHelper.psd1')) -Force
 
 <#
@@ -116,7 +115,7 @@ if ($exchangeInstalled)
             throw 'Failed to retrieve ADObjectID for test mailbox'
         }
 
-        $testMailboxSecondaryAddress = ($testMailbox.EmailAddresses | Where-Object {$_.IsPrimaryAddress -eq $false -and $_.Prefix -like 'SMTP'} | Select-Object -First 1).AddressString
+        $testMailboxSecondaryAddress = ($testMailbox.EmailAddresses | Where-Object { $_.IsPrimaryAddress -eq $false -and $_.Prefix -like 'SMTP' } | Select-Object -First 1).AddressString
 
         if ([String]::IsNullOrEmpty($testMailboxSecondaryAddress))
         {
