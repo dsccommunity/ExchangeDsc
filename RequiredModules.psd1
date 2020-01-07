@@ -1,12 +1,13 @@
 @{
     # Set up a mini virtual environment...
-    PSDependOptions      = @{
+    PSDependOptions             = @{
         AddToPath  = $True
         Target     = 'output\RequiredModules'
         Parameters = @{
         }
     }
 
+    Sampler                     = 'latest'
     invokeBuild                 = 'latest'
     PSScriptAnalyzer            = 'latest'
     pester                      = 'latest'
