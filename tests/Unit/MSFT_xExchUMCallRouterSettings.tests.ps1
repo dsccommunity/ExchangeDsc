@@ -1,6 +1,12 @@
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
 param()
 
+$script:DSCModuleName = 'xExchange'
+$script:DSCResourceName = 'MSFT_xExchUMCallRouterSettings'
+$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Global -Force
+
 function Invoke-TestSetup
 {
     try
@@ -29,7 +35,7 @@ Invoke-TestSetup
 # Begin Testing
 try
 {
-        InModuleScope $script:DSCResourceName {
+    InModuleScope $script:DSCResourceName {
 
         $commonTargetResourceParams = @{
             Server        = 'UMServer'
@@ -50,7 +56,9 @@ try
 
         Describe 'MSFT_xExchUMCallRouterSettings\Get-TargetResource' -Tag 'Get' {
             # Override Exchange cmdlets
-            function Get-UMCallRouterSettings {}
+            function Get-UMCallRouterSettings
+            {
+            }
 
             AfterEach {
                 Assert-VerifiableMock
@@ -68,7 +76,9 @@ try
 
         Describe 'MSFT_xExchUMCallRouterSettings\Set-TargetResource' -Tag 'Set' {
             # Override Exchange cmdlets
-            function Set-UMCallRouterSettings {}
+            function Set-UMCallRouterSettings
+            {
+            }
 
             AfterEach {
                 Assert-VerifiableMock
@@ -88,8 +98,12 @@ try
 
         Describe 'MSFT_xExchUMCallRouterSettings\Test-TargetResource' -Tag 'Test' {
             # Override Exchange cmdlets
-            function Get-UMCallRouterSettings {}
-            function Test-ExchangeSetting{}
+            function Get-UMCallRouterSettings
+            {
+            }
+            function Test-ExchangeSetting
+            {
+            }
 
             AfterEach {
                 Assert-VerifiableMock

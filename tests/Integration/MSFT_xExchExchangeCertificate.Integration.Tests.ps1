@@ -15,7 +15,7 @@ Param()
 [System.String] $script:DSCResourceFriendlyName = 'xExchExchangeCertificate'
 [System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper\xExchangeHelper.psd1')) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'source' -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1"))))
 
@@ -35,8 +35,8 @@ if ($exchangeInstalled)
 
     [System.String] $testCertThumbprint1 = '766358855A7361C6D99D4FB58903AB0833296B2A'
     [System.String] $testCertThumbprint2 = '4C14890860F4126A18560779B8AF8B818B900F5A'
-    [System.String] $testCertPath1 = Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'Data' -ChildPath 'TestCert1.pfx'))
-    [System.String] $testCertPath2 = Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'Data' -ChildPath 'TestCert2.pfx'))
+    [System.String] $testCertPath1 = Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'Data' -ChildPath 'TestCert1.pfx'))
+    [System.String] $testCertPath2 = Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'Data' -ChildPath 'TestCert2.pfx'))
 
     Describe 'Test Installing, Enabling, and Removing Exchange Certificates' {
         # Test installing and enabling test cert 1
