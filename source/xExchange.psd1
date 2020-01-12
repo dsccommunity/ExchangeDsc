@@ -24,7 +24,61 @@
     NestedModules     = @("Modules\xExchangeHelper\xExchangeHelper.psd1")
 
     # Functions to export from this module
-    FunctionsToExport = @()
+    FunctionsToExport = @(
+        'Get-ExistingRemoteExchangeSession',
+        'Get-RemoteExchangeSession',
+        'New-RemoteExchangeSession',
+        'Import-RemoteExchangeSession',
+        'Remove-RemoteExchangeSession',
+        'Test-ExchangePresent',
+        'Get-ExchangeVersionYear',
+        'Get-ExchangeUninstallKey'
+        'Get-DetailedInstalledVersion', 'Test-ExchangeSetupComplete',
+        'Test-ExchangeSetupPartiallyCompleted',
+        'Get-SetupExeVersion',
+        'Test-ShouldUpgradeExchange',
+        'Get-ExchangeInstallStatus',
+        'Set-WSManConfigStatus',
+        'Test-ShouldInstallUMLanguagePack',
+        'Test-ExchangeSetupRunning',
+        'Compare-StringToString',
+        'Compare-BoolToBool',
+        'Compare-TimespanToString',
+        'Compare-ByteQuantifiedSizeToString',
+        'Compare-UnlimitedToString',
+        'Compare-ADObjectIdToSmtpAddressString',
+        'Convert-StringToArray',
+        'Convert-StringArrayToLowerCase',
+        'Compare-ArrayContent',
+        'Test-ArrayElementsInSecondArray',
+        'Add-ToPSBoundParametersFromHashtable',
+        'Remove-FromPSBoundParametersUsingHashtable',
+        'Remove-NotApplicableParamsForVersion',
+        'Set-EmptyStringParamsToNull',
+        'Test-ExchangeSetting',
+        'Write-InvalidSettingVerbose',
+        'Write-FunctionEntry',
+        'Start-ExchangeScheduledTask',
+        'Test-CmdletHasParameter',
+        'Get-PreviousError',
+        'Assert-NoNewError',
+        'Restart-ExistingAppPool',
+        'Test-UMLanguagePackInstalled',
+        'Compare-IPAddressToString',
+        'Compare-SmtpAddressToString',
+        'Compare-IPAddressesToArray',
+        'Compare-PSCredential',
+        'Test-ExtendedProtectionSPNList',
+        'Assert-IsSupportedWithExchangeVersion',
+        'Invoke-DotSourcedScript',
+        'Remove-HelperSnapin',
+        'Wait-ForProcessStart',
+        'Wait-ForProcessStop',
+        'Assert-ExchangeSetupArgumentsComplete',
+        'Get-StringFromHashtable',
+        'Get-DomainDNFromFQDN',
+        'Set-DSCMachineStatus'
+    )
 
     # Cmdlets to export from this module
     CmdletsToExport   = @()
@@ -56,13 +110,3 @@
 
     } # End of PrivateData hashtable
 }
-
-
-
-
-
-
-
-
-
-
