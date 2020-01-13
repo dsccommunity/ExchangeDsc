@@ -44,9 +44,11 @@ Pester:
 DscTest:
   ExcludeTag:
     - "Common Tests - New Error-Level Script Analyzer Rules"
+    - "Common Tests - Validate Localization"
   Tag:
   ExcludeSourceFile:
     - output
+    - Examples
   ExcludeModuleFile:
 
 Resolve-Dependency:
