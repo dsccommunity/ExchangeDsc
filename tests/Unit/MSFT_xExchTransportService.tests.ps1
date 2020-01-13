@@ -1,4 +1,4 @@
-$script:DSCModuleName = 'xExchange'
+$script:DSCModuleName = 'MSFT_xExchTransportService'
 $script:DSCResourceName = 'MSFT_xExchTransportService'
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
@@ -32,7 +32,7 @@ Invoke-TestSetup
 # Begin Testing
 try
 {
-        InModuleScope $script:DSCResourceName {
+    InModuleScope $script:DSCResourceName {
 
         $commonTargetResourceParams = @{
             Identity   = 'TransportService'
@@ -40,100 +40,102 @@ try
         }
 
         $commonTransportServiceStandardOutput = @{
-            ActiveUserStatisticsLogMaxAge                  = [System.String] ''
-            ActiveUserStatisticsLogMaxDirectorySize        = [System.String] ''
-            ActiveUserStatisticsLogMaxFileSize             = [System.String] ''
-            ActiveUserStatisticsLogPath                    = [System.String] ''
-            AgentLogEnabled                                = [System.Boolean] $false
-            AgentLogMaxAge                                 = [System.String] ''
-            AgentLogMaxDirectorySize                       = [System.String] ''
-            AgentLogMaxFileSize                            = [System.String] ''
-            AgentLogPath                                   = [System.String] ''
-            AntispamAgentsEnabled                          = [System.Boolean] $false
-            ConnectivityLogEnabled                         = [System.Boolean] $false
-            ConnectivityLogMaxAge                          = [System.String] ''
-            ConnectivityLogMaxDirectorySize                = [System.String] ''
-            ConnectivityLogMaxFileSize                     = [System.String] ''
-            ConnectivityLogPath                            = [System.String] ''
-            ContentConversionTracingEnabled                = [System.Boolean] $false
-            DelayNotificationTimeout                       = [System.String] ''
-            DnsLogEnabled                                  = [System.Boolean] $false
-            DnsLogMaxAge                                   = [System.String] ''
-            DnsLogMaxDirectorySize                         = [System.String] ''
-            DnsLogMaxFileSize                              = [System.String] ''
-            DnsLogPath                                     = [System.String] ''
-            ExternalDNSAdapterEnabled                      = [System.Boolean] $false
-            ExternalDNSAdapterGuid                         = [System.String] ''
-            ExternalDNSProtocolOption                      = [System.String] ''
-            ExternalDNSServers                             = [System.String[]] @('externaldns.contoso.com')
-            ExternalIPAddress                              = [System.String] '1.2.3.4'
-            InternalDNSAdapterEnabled                      = [System.Boolean] $false
-            InternalDNSAdapterGuid                         = [System.String] ''
-            InternalDNSProtocolOption                      = [System.String] ''
-            InternalDNSServers                             = [System.String[]] @('internaldns.contoso.com')
-            IntraOrgConnectorProtocolLoggingLevel          = [System.String] ''
-            IntraOrgConnectorSmtpMaxMessagesPerConnection  = [System.Int32] 1
-            IrmLogEnabled                                  = [System.Boolean] $false
-            IrmLogMaxAge                                   = [System.String] ''
-            IrmLogMaxDirectorySize                         = [System.String] ''
-            IrmLogMaxFileSize                              = [System.String] ''
-            IrmLogPath                                     = [System.String] ''
-            MaxConcurrentMailboxDeliveries                 = [System.Int32] 1
-            MaxConcurrentMailboxSubmissions                = [System.Int32] 1
-            MaxConnectionRatePerMinute                     = [System.Int32] 1
-            MaxOutboundConnections                         = [System.String] ''
-            MaxPerDomainOutboundConnections                = [System.String] ''
-            MessageExpirationTimeout                       = [System.String] ''
-            MessageRetryInterval                           = [System.String] ''
-            MessageTrackingLogEnabled                      = [System.Boolean] $false
-            MessageTrackingLogMaxAge                       = [System.String] ''
-            MessageTrackingLogMaxDirectorySize             = [System.String] ''
-            MessageTrackingLogMaxFileSize                  = [System.String] ''
-            MessageTrackingLogPath                         = [System.String] ''
-            MessageTrackingLogSubjectLoggingEnabled        = [System.Boolean] $false
-            OutboundConnectionFailureRetryInterval         = [System.String] ''
-            PickupDirectoryMaxHeaderSize                   = [System.String] ''
-            PickupDirectoryMaxMessagesPerMinute            = [System.Int32] 1
-            PickupDirectoryMaxRecipientsPerMessage         = [System.Int32] 1
-            PickupDirectoryPath                            = [System.String] ''
-            PipelineTracingEnabled                         = [System.Boolean] $false
-            PipelineTracingPath                            = [System.String] ''
-            PipelineTracingSenderAddress                   = [System.String] 'pipeline@contoso.com'
-            PoisonMessageDetectionEnabled                  = [System.Boolean] $false
-            PoisonThreshold                                = [System.Int32] 1
-            QueueLogMaxAge                                 = [System.String] ''
-            QueueLogMaxDirectorySize                       = [System.String] ''
-            QueueLogMaxFileSize                            = [System.String] ''
-            QueueLogPath                                   = [System.String] ''
-            QueueMaxIdleTime                               = [System.String] ''
-            ReceiveProtocolLogMaxAge                       = [System.String] ''
-            ReceiveProtocolLogMaxDirectorySize             = [System.String] ''
-            ReceiveProtocolLogMaxFileSize                  = [System.String] ''
-            ReceiveProtocolLogPath                         = [System.String] ''
-            RecipientValidationCacheEnabled                = [System.Boolean] $false
-            ReplayDirectoryPath                            = [System.String] ''
-            RootDropDirectoryPath                          = [System.String] ''
-            RoutingTableLogMaxAge                          = [System.String] ''
-            RoutingTableLogMaxDirectorySize                = [System.String] ''
-            RoutingTableLogPath                            = [System.String] ''
-            SendProtocolLogMaxAge                          = [System.String] ''
-            SendProtocolLogMaxDirectorySize                = [System.String] ''
-            SendProtocolLogMaxFileSize                     = [System.String] ''
-            SendProtocolLogPath                            = [System.String] ''
-            ServerStatisticsLogMaxAge                      = [System.String] ''
-            ServerStatisticsLogMaxDirectorySize            = [System.String] ''
-            ServerStatisticsLogMaxFileSize                 = [System.String] ''
-            ServerStatisticsLogPath                        = [System.String] ''
-            TransientFailureRetryCount                     = [System.Int32] 1
-            TransientFailureRetryInterval                  = [System.String] ''
-            UseDowngradedExchangeServerAuth                = [System.Boolean] $false
+            ActiveUserStatisticsLogMaxAge                 = [System.String] ''
+            ActiveUserStatisticsLogMaxDirectorySize       = [System.String] ''
+            ActiveUserStatisticsLogMaxFileSize            = [System.String] ''
+            ActiveUserStatisticsLogPath                   = [System.String] ''
+            AgentLogEnabled                               = [System.Boolean] $false
+            AgentLogMaxAge                                = [System.String] ''
+            AgentLogMaxDirectorySize                      = [System.String] ''
+            AgentLogMaxFileSize                           = [System.String] ''
+            AgentLogPath                                  = [System.String] ''
+            AntispamAgentsEnabled                         = [System.Boolean] $false
+            ConnectivityLogEnabled                        = [System.Boolean] $false
+            ConnectivityLogMaxAge                         = [System.String] ''
+            ConnectivityLogMaxDirectorySize               = [System.String] ''
+            ConnectivityLogMaxFileSize                    = [System.String] ''
+            ConnectivityLogPath                           = [System.String] ''
+            ContentConversionTracingEnabled               = [System.Boolean] $false
+            DelayNotificationTimeout                      = [System.String] ''
+            DnsLogEnabled                                 = [System.Boolean] $false
+            DnsLogMaxAge                                  = [System.String] ''
+            DnsLogMaxDirectorySize                        = [System.String] ''
+            DnsLogMaxFileSize                             = [System.String] ''
+            DnsLogPath                                    = [System.String] ''
+            ExternalDNSAdapterEnabled                     = [System.Boolean] $false
+            ExternalDNSAdapterGuid                        = [System.String] ''
+            ExternalDNSProtocolOption                     = [System.String] ''
+            ExternalDNSServers                            = [System.String[]] @('externaldns.contoso.com')
+            ExternalIPAddress                             = [System.String] '1.2.3.4'
+            InternalDNSAdapterEnabled                     = [System.Boolean] $false
+            InternalDNSAdapterGuid                        = [System.String] ''
+            InternalDNSProtocolOption                     = [System.String] ''
+            InternalDNSServers                            = [System.String[]] @('internaldns.contoso.com')
+            IntraOrgConnectorProtocolLoggingLevel         = [System.String] ''
+            IntraOrgConnectorSmtpMaxMessagesPerConnection = [System.Int32] 1
+            IrmLogEnabled                                 = [System.Boolean] $false
+            IrmLogMaxAge                                  = [System.String] ''
+            IrmLogMaxDirectorySize                        = [System.String] ''
+            IrmLogMaxFileSize                             = [System.String] ''
+            IrmLogPath                                    = [System.String] ''
+            MaxConcurrentMailboxDeliveries                = [System.Int32] 1
+            MaxConcurrentMailboxSubmissions               = [System.Int32] 1
+            MaxConnectionRatePerMinute                    = [System.Int32] 1
+            MaxOutboundConnections                        = [System.String] ''
+            MaxPerDomainOutboundConnections               = [System.String] ''
+            MessageExpirationTimeout                      = [System.String] ''
+            MessageRetryInterval                          = [System.String] ''
+            MessageTrackingLogEnabled                     = [System.Boolean] $false
+            MessageTrackingLogMaxAge                      = [System.String] ''
+            MessageTrackingLogMaxDirectorySize            = [System.String] ''
+            MessageTrackingLogMaxFileSize                 = [System.String] ''
+            MessageTrackingLogPath                        = [System.String] ''
+            MessageTrackingLogSubjectLoggingEnabled       = [System.Boolean] $false
+            OutboundConnectionFailureRetryInterval        = [System.String] ''
+            PickupDirectoryMaxHeaderSize                  = [System.String] ''
+            PickupDirectoryMaxMessagesPerMinute           = [System.Int32] 1
+            PickupDirectoryMaxRecipientsPerMessage        = [System.Int32] 1
+            PickupDirectoryPath                           = [System.String] ''
+            PipelineTracingEnabled                        = [System.Boolean] $false
+            PipelineTracingPath                           = [System.String] ''
+            PipelineTracingSenderAddress                  = [System.String] 'pipeline@contoso.com'
+            PoisonMessageDetectionEnabled                 = [System.Boolean] $false
+            PoisonThreshold                               = [System.Int32] 1
+            QueueLogMaxAge                                = [System.String] ''
+            QueueLogMaxDirectorySize                      = [System.String] ''
+            QueueLogMaxFileSize                           = [System.String] ''
+            QueueLogPath                                  = [System.String] ''
+            QueueMaxIdleTime                              = [System.String] ''
+            ReceiveProtocolLogMaxAge                      = [System.String] ''
+            ReceiveProtocolLogMaxDirectorySize            = [System.String] ''
+            ReceiveProtocolLogMaxFileSize                 = [System.String] ''
+            ReceiveProtocolLogPath                        = [System.String] ''
+            RecipientValidationCacheEnabled               = [System.Boolean] $false
+            ReplayDirectoryPath                           = [System.String] ''
+            RootDropDirectoryPath                         = [System.String] ''
+            RoutingTableLogMaxAge                         = [System.String] ''
+            RoutingTableLogMaxDirectorySize               = [System.String] ''
+            RoutingTableLogPath                           = [System.String] ''
+            SendProtocolLogMaxAge                         = [System.String] ''
+            SendProtocolLogMaxDirectorySize               = [System.String] ''
+            SendProtocolLogMaxFileSize                    = [System.String] ''
+            SendProtocolLogPath                           = [System.String] ''
+            ServerStatisticsLogMaxAge                     = [System.String] ''
+            ServerStatisticsLogMaxDirectorySize           = [System.String] ''
+            ServerStatisticsLogMaxFileSize                = [System.String] ''
+            ServerStatisticsLogPath                       = [System.String] ''
+            TransientFailureRetryCount                    = [System.Int32] 1
+            TransientFailureRetryInterval                 = [System.String] ''
+            UseDowngradedExchangeServerAuth               = [System.Boolean] $false
         }
 
         Mock -CommandName Write-FunctionEntry -Verifiable
 
         Describe 'MSFT_xExchTransportService\Get-TargetResource' -Tag 'Get' {
             # Override Exchange cmdlets
-            function Get-TransportService {}
+            function Get-TransportService
+            {
+            }
 
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
             Mock -CommandName Get-TransportService -Verifiable -MockWith { return $commonTransportServiceStandardOutput }
@@ -149,7 +151,9 @@ try
         Describe 'MSFT_xExchTransportService\Set-TargetResource' -Tag 'Set' {
             # Override Exchange cmdlets
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
-            function Set-TransportService {}
+            function Set-TransportService
+            {
+            }
 
             AfterEach {
                 Assert-VerifiableMock
@@ -213,7 +217,7 @@ try
                     $AllowServiceRestart = $setTargetResourceParams.AllowServiceRestart
                     $setTargetResourceParams.AllowServiceRestart = $false
                     Mock -CommandName Set-TransportService -Verifiable
-                    Mock -CommandName Write-Warning -Verifiable -ParameterFilter {$Message -eq 'The configuration will not take effect until the MSExchangeTransport service is manually restarted.'}
+                    Mock -CommandName Write-Warning -Verifiable -ParameterFilter { $Message -eq 'The configuration will not take effect until the MSExchangeTransport service is manually restarted.' }
 
                     Set-TargetResource @setTargetResourceParams
                     $setTargetResourceParams.AllowServiceRestart = $AllowServiceRestart
@@ -225,7 +229,9 @@ try
             # Override Exchange cmdlets
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
 
-            function Get-TransportService {}
+            function Get-TransportService
+            {
+            }
 
             AfterEach {
                 Assert-VerifiableMock
