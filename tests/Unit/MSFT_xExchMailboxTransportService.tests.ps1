@@ -1,3 +1,6 @@
+$script:DSCModuleName = 'xExchange'
+$script:DSCResourceName = 'MSFT_xExchMailboxTransportService'
+$script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 function Invoke-TestSetup
 {
     try
@@ -102,7 +105,7 @@ try
 
             Context 'When Set-TargetResource is called' {
                 function Set-MailboxTransportService
-                { 
+                {
                 }
 
                 #Mock -CommandName Get-RemoteExchangeSession -Verifiable

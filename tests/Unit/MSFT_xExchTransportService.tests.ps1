@@ -1,4 +1,4 @@
-$script:DSCModuleName = 'MSFT_xExchTransportService'
+$script:DSCModuleName = 'xExchange'
 $script:DSCResourceName = 'MSFT_xExchTransportService'
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
