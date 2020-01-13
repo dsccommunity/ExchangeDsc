@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added additional parameters to the MSFT_xExchImapSettings resource
 - Added additional parameters to the xExchMailboxTransportService resource
 - Fixed unit test it statement for MSFT_xExchAutodiscoverVirtualDirectory\Test-TargetResource
+- Migrated to Azure DevOps Release model
 
 ### Deprecated
 
