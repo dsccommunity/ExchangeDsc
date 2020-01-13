@@ -258,7 +258,7 @@ function Get-ExchangeVersionYear
     $installedVersionDetails = Get-DetailedInstalledVersion
 
     if ($null -ne $installedVersionDetails)
-    { # If Exchange is installed
+    {
         switch ($installedVersionDetails.VersionMajor)
         {
             15
@@ -498,7 +498,6 @@ function Get-SetupExeVersion
 #>
 function Test-ShouldUpgradeExchange
 {
-
     [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
@@ -1957,7 +1956,7 @@ function Compare-SmtpAddressToString
         }
         else
         {
-            return($SmtpAddress.Equals([Microsoft.Exchange.Data.SmtpAddress]::Parse($string)))
+            return ($SmtpAddress.Equals([Microsoft.Exchange.Data.SmtpAddress]::Parse($string)))
         }
     }
     else
