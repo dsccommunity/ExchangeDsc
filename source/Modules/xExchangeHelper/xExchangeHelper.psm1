@@ -143,10 +143,10 @@ function New-RemoteExchangeSession
     }
 
     $returnValues = Invoke-DotSourcedScript `
-                        -ScriptPath $remoteExchange `
-                        -CommandsToExecuteInScope $commandToExecuteAfterDotSourcing `
-                        -ParamsForCommandsToExecuteInScope $commandParamsToExecuteAfterDotSourcing `
-                        -Verbose:$VerbosePreference
+        -ScriptPath $remoteExchange `
+        -CommandsToExecuteInScope $commandToExecuteAfterDotSourcing `
+        -ParamsForCommandsToExecuteInScope $commandParamsToExecuteAfterDotSourcing `
+        -Verbose:$VerbosePreference
 
     if ($null -ne $returnValues -and $returnValues.ContainsKey('_NewExchangeRunspace'))
     {
@@ -301,7 +301,7 @@ function Get-ExchangeUninstallKey
 {
     [CmdletBinding()]
     [OutputType([Microsoft.Win32.RegistryKey])]
-    param()
+    param ()
 
     # First try to get the Exchange 2016 / 2019 uninstall key.
     $uninstallKey = Get-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}' -ErrorAction SilentlyContinue
@@ -326,7 +326,7 @@ function Get-DetailedInstalledVersion
 {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSCustomObject])]
-    param()
+    param ()
 
     $installedVersionDetails = $null
 
@@ -460,7 +460,7 @@ function Get-SetupExeVersion
     [OutputType([System.Management.Automation.PSCustomObject])]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Path
     )
@@ -503,11 +503,11 @@ function Test-ShouldUpgradeExchange
     [OutputType([System.Boolean])]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Path,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Arguments
     )
@@ -523,25 +523,25 @@ function Test-ShouldUpgradeExchange
 
     $setupExeVersion = Get-SetupExeVersion -Path $Path
 
-    if($null -ne $setupExeVersion`
-        -and $null -ne $setupExeVersion.VersionMajor`
-        -and $null -ne $setupExeVersion.VersionMinor`
-        -and $null -ne $setupExeVersion.VersionBuild)
+    if ($null -ne $setupExeVersion`
+            -and $null -ne $setupExeVersion.VersionMajor`
+            -and $null -ne $setupExeVersion.VersionMinor`
+            -and $null -ne $setupExeVersion.VersionBuild)
     {
         Write-Verbose -Message "Setup.exe version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $setupExeVersion.VersionMajor,$setupexeVersion.VersionMinor, $setupexeVersion.VersionBuild)'"
 
         $exchangeDisplayVersion = Get-DetailedInstalledVersion
 
-        if($null -ne $exchangeDisplayVersion`
-            -and $null -ne $exchangeDisplayVersion.VersionMajor`
-            -and $null -ne $exchangeDisplayVersion.VersionMinor`
-            -and $null -ne $exchangeDisplayVersion.VersionBuild)
+        if ($null -ne $exchangeDisplayVersion`
+                -and $null -ne $exchangeDisplayVersion.VersionMajor`
+                -and $null -ne $exchangeDisplayVersion.VersionMinor`
+                -and $null -ne $exchangeDisplayVersion.VersionBuild)
         { # If we have an exchange installed
             Write-Verbose -Message "Exchange version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $exchangeDisplayVersion.VersionMajor,$exchangeDisplayVersion.VersionMinor, $exchangeDisplayVersion.VersionBuild)'"
 
-            if(($exchangeDisplayVersion.VersionMajor -eq $setupExeVersion.VersionMajor)`
-                -and ($exchangeDisplayVersion.VersionMinor -eq $setupExeVersion.VersionMinor)`
-                -and ($exchangeDisplayVersion.VersionBuild -lt $setupExeVersion.VersionBuild) )
+            if (($exchangeDisplayVersion.VersionMajor -eq $setupExeVersion.VersionMajor)`
+                    -and ($exchangeDisplayVersion.VersionMinor -eq $setupExeVersion.VersionMinor)`
+                    -and ($exchangeDisplayVersion.VersionBuild -lt $setupExeVersion.VersionBuild) )
             { # If server has lower version of CU installed
                 Write-Verbose -Message 'Version upgrade is requested.'
                 # Executing with the upgrade.
@@ -604,7 +604,7 @@ function Get-ExchangeInstallStatus
 
     if ($setupRunning -or $setupComplete)
     {
-        if (($shouldInstallLanguagePack -or $shouldUpgrade)  -and $setupComplete)
+        if (($shouldInstallLanguagePack -or $shouldUpgrade) -and $setupComplete)
         {
             $shouldStartInstall = $true
         }
@@ -622,11 +622,11 @@ function Get-ExchangeInstallStatus
 
     $returnValue = @{
         ShouldInstallLanguagePack = $shouldInstallLanguagePack
-        SetupRunning = $setupRunning
-        SetupComplete = $setupComplete
-        ExchangePresent = $exchangePresent
-        ShouldUpgrade = $shouldUpgrade
-        ShouldStartInstall = $shouldStartInstall
+        SetupRunning              = $setupRunning
+        SetupComplete             = $setupComplete
+        ExchangePresent           = $exchangePresent
+        ShouldUpgrade             = $shouldUpgrade
+        ShouldStartInstall        = $shouldStartInstall
     }
 
     $returnValue
@@ -692,15 +692,15 @@ function Test-ShouldInstallUMLanguagePack
         $Arguments
     )
 
-    if($Arguments -match '(?<=/AddUMLanguagePack:)(([a-z]{2}-[A-Z]{2},?)+)(?=\s)')
+    if ($Arguments -match '(?<=/AddUMLanguagePack:)(([a-z]{2}-[A-Z]{2},?)+)(?=\s)')
     {
         $Cultures = $Matches[0]
         Write-Verbose -Message "AddUMLanguagePack parameters detected: $Cultures"
         $Cultures = $Cultures -split ','
 
-        foreach($Culture in $Cultures)
+        foreach ($Culture in $Cultures)
         {
-            if((Test-UMLanguagePackInstalled -Culture $Culture) -eq $false)
+            if ((Test-UMLanguagePackInstalled -Culture $Culture) -eq $false)
             {
                 Write-Verbose -Message "UM Language Pack: $Culture is not installed"
                 return $true
@@ -998,7 +998,7 @@ function Compare-ADObjectIdToSmtpAddressString
             throw "Failed to Get-Recipient for ADObjectID with distinguishedName: $($ADObjectId.DistinguishedName)"
         }
 
-        return ($null -ne ($recipient.EmailAddresses | Where-Object {$_.AddressString -like $AddressString}))
+        return ($null -ne ($recipient.EmailAddresses | Where-Object { $_.AddressString -like $AddressString }))
     }
     else
     {
@@ -1171,7 +1171,8 @@ function Test-ArrayElementsInSecondArray
     $hasContents = $true
 
     if ($Array1.Count -eq 0) # Do nothing, as Array2 at a minimum contains nothing
-    {}
+    {
+    }
     elseif ($Array2.Count -eq 0) # Array2 is empty and Array1 is not. Return false
     {
         $hasContents = $false
@@ -1992,7 +1993,7 @@ function Compare-IPAddressesToArray
         $IPAddressStrings
     )
 
-    [System.String[]] $validIPStrings = $IPAddressStrings | Where-Object -FilterScript {![String]::IsNullOrEmpty($_)}
+    [System.String[]] $validIPStrings = $IPAddressStrings | Where-Object -FilterScript { ![String]::IsNullOrEmpty($_) }
 
     if ($IPAddressObjects.Count -ne $validIPStrings.Count)
     {
@@ -2160,9 +2161,9 @@ function Test-ExtendedProtectionSPNList
     process
     {
         # Check if AllowDotless is set in Flags
-        if($IsDotless)
+        if ($IsDotless)
         {
-            if(!$flagsLower.Contains('allowdotlessspn'))
+            if (!$flagsLower.Contains('allowdotlessspn'))
             {
                 Write-Verbose -Message 'Dotless SPN found, but ExtendedProtectionFlags does not contain AllowDotlessSPN!'
                 $returnValue = $false
@@ -2236,7 +2237,7 @@ function Invoke-DotSourcedScript
 
         [Parameter()]
         [System.Collections.Hashtable]
-        $ScriptParams = @{},
+        $ScriptParams = @{ },
 
         [Parameter()]
         [System.String[]]
@@ -2251,7 +2252,7 @@ function Invoke-DotSourcedScript
         $ParamsForCommandsToExecuteInScope
     )
 
-    [System.Collections.Hashtable] $returnValues = @{}
+    [System.Collections.Hashtable] $returnValues = @{ }
 
     . $ScriptPath @ScriptParams
 
@@ -2259,7 +2260,7 @@ function Invoke-DotSourcedScript
     {
         [System.String] $commandToExecute = $CommandsToExecuteInScope[$i]
 
-        [System.Collections.Hashtable] $commandParams = @{}
+        [System.Collections.Hashtable] $commandParams = @{ }
 
         if ($ParamsForCommandsToExecuteInScope.ContainsKey($commandToExecute))
         {
@@ -2437,11 +2438,11 @@ function Assert-ExchangeSetupArgumentsComplete
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Path,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.String]
         $Arguments
     )
@@ -2480,7 +2481,7 @@ function Get-StringFromHashtable
     [OutputType([System.String])]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.Collections.Hashtable]
         $Hashtable,
 
@@ -2520,7 +2521,7 @@ function Get-DomainDNFromFQDN
     [OutputType([System.String])]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullorEmpty()]
         [System.String]
         $Fqdn
@@ -2548,7 +2549,7 @@ function Set-DSCMachineStatus
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory = $true)]
         [System.Int32]
         $NewDSCMachineStatus
     )

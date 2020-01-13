@@ -20,5 +20,6 @@
     xDscResourceDesigner        = 'latest'
     # PSPKI                       = 'latest'
     'DscResource.Common'        = 'latest'
-
+    'xPendingReboot'            = 'latest'
+    'xWebAdministration'        = 'latest'
 }
