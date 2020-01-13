@@ -54,7 +54,7 @@ function Get-DiskInfo
 {
     [CmdletBinding()]
     [OutputType([System.Collections.Hashtable])]
-    param()
+    param ()
 
     [System.Collections.Hashtable] $diskInfo = @{
         DiskToVolumeMap       = @{ }
