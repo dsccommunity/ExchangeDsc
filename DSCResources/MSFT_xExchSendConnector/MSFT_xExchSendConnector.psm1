@@ -36,7 +36,7 @@ function Get-TargetResource
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-SendConnector' -Verbose:$VerbosePreference
 
-    $connector = Get-SendConnector -Identity $Name -ErrorAction SilentlyContinue
+    $connector = Get-SendConnector -ErrorAction SilentlyContinue | Where-Object -Property 'Identity' -eq $Name
 
     if ($null -ne $connector)
     {
@@ -715,6 +715,13 @@ function Test-TargetResource
             if (($ExtendedRightAllowEntries) -or ($ExtendedRightDenyEntries))
             {
                 $adPermissions = Get-ADPermission -Identity $Name | Where-Object { $_.IsInherited -eq $false }
+                $splat = @{
+                    ExtendedRightAllowEntries = $ExtendedRightAllowEntries
+                    ExtendedRightDenyEntries  = $ExtendedRightDenyEntries
+                    ADPermissions             = $adPermissions
+                }
+
+                $testResults = Test-ExtendedRights @splat
             }
 
             if (!(Test-ExchangeSetting -Name 'AddressSpaces' -Type 'Array' -ExpectedValue $AddressSpaces -ActualValue $connector.AddressSpaces -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
@@ -866,101 +873,8 @@ function Test-TargetResource
             {
                 $testResults = $false
             }
-
-            if ($ExtendedRightAllowEntries -and $adPermissions.Deny -contains $false)
-            {
-                $splat = @{
-                    ADPermissions  = $adPermissions
-                    ExtendedRights = $ExtendedRightAllowEntries
-                    Deny           = $false
-                    Verbose        = $VerbosePreference
-                }
-
-                $permissionsPresent = Test-ExtendedRightsPresent @splat
-
-                if ($permissionsPresent -eq $false)
-                {
-                    $testResults = $false
-                }
-            }
-            if (-not $ExtendedRightAllowEntries -and $adPermissions -and $adPermissions.Deny -notcontains $false)
-            {
-                return $false
-            }
-            if ($ExtendedRightDenyEntries -and $adPermissions.Deny -contains $true)
-            {
-                $splat = @{
-                    ADPermissions  = $adPermissions
-                    ExtendedRights = $ExtendedRightDenyEntries
-                    Deny           = $true
-                    Verbose        = $VerbosePreference
-                }
-
-                $permissionsPresent = Test-ExtendedRightsPresent @splat
-
-                if ($permissionsPresent -eq $false)
-                {
-                    $testResults = $false
-                }
-            }
-            if (-not $ExtendedRightDenyEntries -and $adPermissions -and $adPermissions.Deny -contains $true)
-            {
-                return $false
-            }
         }
     }
 
     return $testResults
 }
-
-<#
-    .SYNOPSIS
-        Checks if Extended rights on a send connector are correct.
-    .PARAMETER ADPermissions
-        The current permissions set on a send connector.
-    .PARAMETER ExtendedRights
-        The expected permissions to be present.
-    .PARAMETER Deny
-        Specifies if the permissions being checked have 'Deny' option set.
-#>
-function Test-ExtendedRightsPresent
-{
-    [cmdletbinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter()]
-        $ADPermissions,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRights,
-
-        [Parameter()]
-        [System.Boolean]
-        $Deny
-    )
-
-    foreach ($Right in $ExtendedRights)
-    {
-        foreach ($Value in $($Right.Value.Split(',')))
-        {
-            $permissionsFound = $ADPermissions | Where-Object { ($_.User.RawIdentity -eq $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value) }
-            if ($null -ne $permissionsFound)
-            {
-                if ($Deny -eq $true -and $permissionsFound.Deny -eq $false -or
-                    $Deny -eq $false -and $permissionsFound.Deny -eq $true)
-                {
-                    Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue 'Present' -Verbose:$VerbosePreference
-                    return $false
-                }
-            }
-            else
-            {
-                Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue 'Absent' -Verbose:$VerbosePreference
-                return $false
-            }
-        }
-    }
-}
-
