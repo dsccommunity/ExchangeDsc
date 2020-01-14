@@ -380,6 +380,10 @@ function Set-TargetResource
 
         Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
+        if ($null -eq $DomainController)
+        {
+            $PSBoundParameters['DomainController'] = Get-DomainController | Select-Object -First 1 | ForEach-Object -MemberName 'DnsHostName'
+        }
         # We need to create the new connector
         if ($connector['Ensure'] -eq 'Absent')
         {
@@ -394,7 +398,7 @@ function Set-TargetResource
                 {
                     foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(',')))
                     {
-                        Add-ADPermission -Identity $Name -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value -DomainController $DomainController
+                        Add-ADPermission -Identity $Name -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value -DomainController $PSBoundParameters['DomainController']
                     }
                 }
             }
@@ -405,7 +409,7 @@ function Set-TargetResource
                 {
                     foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(',')))
                     {
-                        Add-ADPermission -Identity $Name -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false -DomainController $DomainController
+                        Add-ADPermission -Identity $Name -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false -DomainController $PSBoundParameters['DomainController']
                     }
                 }
             }

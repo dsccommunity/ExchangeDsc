@@ -6,8 +6,9 @@
 - Added xExchSendConnector resource
 - Added additional parameters to the MSFT_xExchImapSettings resource
 - Fixed unit test it statement for MSFT_xExchAutodiscoverVirtualDirectory\Test-TargetResource
-- Fixing xExchSendConnectorExtendedRight functionality
-- Fixing xExchSendConnector ExtendedRight functionality
+- Fixing xExchSendConnector ExtendedRight functionality by moving the test function
+to the helper module and setting explicit Deny permissions, instead of removing
+the marked as 'Deny' entries.
 
 ## 1.30.0.0
 

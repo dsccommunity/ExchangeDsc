@@ -86,6 +86,7 @@ function Get-RemoteExchangeSession
     }
     else # Import the session globally
     {
+        $CommandsToLoad.Add('Get-DomainController')
         Import-RemoteExchangeSession -Session $session -CommandsToLoad $CommandsToLoad -Verbose:([System.Management.Automation.ActionPreference]::SilentlyContinue)
     }
 }
