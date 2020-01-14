@@ -22,7 +22,7 @@ Import-Module -Name (Join-Path -Path $script:projectPath -ChildPath (Join-Path -
 # Begin Testing
 try
 {
-        InModuleScope $script:subModuleName {
+    InModuleScope $script:subModuleName {
         # Get a unique Guid that doesn't resolve to a local path
         # Use System.Guid, as New-Guid isn't available in PS4 and below
         do

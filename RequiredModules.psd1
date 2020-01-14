@@ -18,8 +18,7 @@
     'DscResource.Test'          = 'latest'
     'DscResource.AnalyzerRules' = 'latest'
     xDscResourceDesigner        = 'latest'
-    # PSPKI                       = 'latest'
     'DscResource.Common'        = 'latest'
-    'xPendingReboot'            = 'latest'
-    'xWebAdministration'        = 'latest'
+    'xPendingReboot'            = '0.4.0'
+    'xWebAdministration'        = '3.1.1'
 }

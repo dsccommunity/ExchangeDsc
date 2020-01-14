@@ -32,7 +32,7 @@ Invoke-TestSetup
 # Begin Testing
 try
 {
-        InModuleScope $script:DSCResourceName {
+    InModuleScope $script:DSCResourceName {
         Describe 'MSFT_xExchWaitForADPrep\Get-TargetResource' -Tag 'Get' {
             # Override Active Directory cmdlets
             function Get-ADRootDSE {}

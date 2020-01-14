@@ -32,7 +32,7 @@ Invoke-TestSetup
 # Begin Testing
 try
 {
-        InModuleScope $script:DSCResourceName {
+    InModuleScope $script:DSCResourceName {
         Describe 'MSFT_xExchMaintenanceMode\Get-TargetResource' -Tag 'Get' {
             AfterEach {
                 Assert-VerifiableMock

@@ -12,7 +12,7 @@
 [System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper\xExchangeHelper.psd1')) -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'source' -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper\xExchangeHelper.psd1'))) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'source' -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1"))))
 
 # Check if Exchange is installed on this machine. If not, we can't run tests
@@ -57,98 +57,98 @@ if ($exchangeInstalled)
 
     Describe 'Test Setting Properties with xExchActiveSyncVirtualDirectory' {
         $testParams = @{
-            Identity =  "$($env:COMPUTERNAME)\Microsoft-Server-ActiveSync (Default Web Site)"
-            Credential = $shellCredentials
-            AutoCertBasedAuth = $false
-            AutoCertBasedAuthThumbprint = ''
-            BadItemReportingEnabled = $false
-            BasicAuthEnabled = $true
-            ClientCertAuth = 'Ignore'
-            CompressionEnabled = $true
-            ExtendedProtectionFlags = @('AllowDotlessspn', 'NoServicenameCheck')
-            ExtendedProtectionSPNList = @('http/mail.fabrikam.com', 'http/mail.fabrikam.local', 'http/wxweqc')
-            ExtendedProtectionTokenChecking = 'Allow'
-            ExternalAuthenticationMethods = @('Basic', 'Kerberos')
-            ExternalUrl = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
-            InstallIsapiFilter = $true
-            InternalAuthenticationMethods = @('Basic', 'Kerberos')
-            InternalUrl = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
-            MobileClientCertificateAuthorityURL = 'http://whatever.com/CA'
+            Identity                                   = "$($env:COMPUTERNAME)\Microsoft-Server-ActiveSync (Default Web Site)"
+            Credential                                 = $shellCredentials
+            AutoCertBasedAuth                          = $false
+            AutoCertBasedAuthThumbprint                = ''
+            BadItemReportingEnabled                    = $false
+            BasicAuthEnabled                           = $true
+            ClientCertAuth                             = 'Ignore'
+            CompressionEnabled                         = $true
+            ExtendedProtectionFlags                    = @('AllowDotlessspn', 'NoServicenameCheck')
+            ExtendedProtectionSPNList                  = @('http/mail.fabrikam.com', 'http/mail.fabrikam.local', 'http/wxweqc')
+            ExtendedProtectionTokenChecking            = 'Allow'
+            ExternalAuthenticationMethods              = @('Basic', 'Kerberos')
+            ExternalUrl                                = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
+            InstallIsapiFilter                         = $true
+            InternalAuthenticationMethods              = @('Basic', 'Kerberos')
+            InternalUrl                                = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
+            MobileClientCertificateAuthorityURL        = 'http://whatever.com/CA'
             MobileClientCertificateProvisioningEnabled = $true
-            MobileClientCertTemplateName = 'MyTemplateforEAS'
+            MobileClientCertTemplateName               = 'MyTemplateforEAS'
             # Name = "$($Node.NodeName) EAS Site"
-            RemoteDocumentsActionForUnknownServers = 'Block'
-            RemoteDocumentsAllowedServers = @('AllowedA', 'AllowedB')
-            RemoteDocumentsBlockedServers = @('BlockedA', 'BlockedB')
-            RemoteDocumentsInternalDomainSuffixList = @('InternalA', 'InternalB')
-            SendWatsonReport = $false
-            WindowsAuthEnabled = $false
+            RemoteDocumentsActionForUnknownServers     = 'Block'
+            RemoteDocumentsAllowedServers              = @('AllowedA', 'AllowedB')
+            RemoteDocumentsBlockedServers              = @('BlockedA', 'BlockedB')
+            RemoteDocumentsInternalDomainSuffixList    = @('InternalA', 'InternalB')
+            SendWatsonReport                           = $false
+            WindowsAuthEnabled                         = $false
         }
 
         $expectedGetResults = @{
-            Identity =  "$($env:COMPUTERNAME)\Microsoft-Server-ActiveSync (Default Web Site)"
-            BadItemReportingEnabled = $false
-            BasicAuthEnabled = $true
-            ClientCertAuth = 'Ignore'
-            CompressionEnabled = $true
-            ExtendedProtectionTokenChecking = 'Allow'
-            ExternalUrl = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
-            InternalAuthenticationMethods = @('Basic', 'Kerberos')
-            InternalUrl = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
-            MobileClientCertificateAuthorityURL = 'http://whatever.com/CA'
+            Identity                                   = "$($env:COMPUTERNAME)\Microsoft-Server-ActiveSync (Default Web Site)"
+            BadItemReportingEnabled                    = $false
+            BasicAuthEnabled                           = $true
+            ClientCertAuth                             = 'Ignore'
+            CompressionEnabled                         = $true
+            ExtendedProtectionTokenChecking            = 'Allow'
+            ExternalUrl                                = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
+            InternalAuthenticationMethods              = @('Basic', 'Kerberos')
+            InternalUrl                                = "https://$($serverFqdn)/Microsoft-Server-ActiveSync"
+            MobileClientCertificateAuthorityURL        = 'http://whatever.com/CA'
             MobileClientCertificateProvisioningEnabled = $true
-            MobileClientCertTemplateName = 'MyTemplateforEAS'
+            MobileClientCertTemplateName               = 'MyTemplateforEAS'
             # Name = "$($Node.NodeName) EAS Site"
-            RemoteDocumentsActionForUnknownServers = 'Block'
-            SendWatsonReport = $false
-            WindowsAuthEnabled = $false
+            RemoteDocumentsActionForUnknownServers     = 'Block'
+            SendWatsonReport                           = $false
+            WindowsAuthEnabled                         = $false
         }
 
         Test-TargetResourceFunctionality -Params $testParams `
-                                         -ContextLabel 'Set standard parameters' `
-                                         -ExpectedGetResults $expectedGetResults
+            -ContextLabel 'Set standard parameters' `
+            -ExpectedGetResults $expectedGetResults
 
         Test-ArrayContentsEqual -TestParams $testParams `
-                                -DesiredArrayContents $testParams.ExtendedProtectionFlags `
-                                -GetResultParameterName 'ExtendedProtectionFlags' `
-                                -ContextLabel 'Verify ExtendedProtectionFlags' `
-                                -ItLabel 'ExtendedProtectionSPNList should contain three values'
+            -DesiredArrayContents $testParams.ExtendedProtectionFlags `
+            -GetResultParameterName 'ExtendedProtectionFlags' `
+            -ContextLabel 'Verify ExtendedProtectionFlags' `
+            -ItLabel 'ExtendedProtectionSPNList should contain three values'
 
         Test-ArrayContentsEqual -TestParams $testParams `
-                                -DesiredArrayContents $testParams.ExtendedProtectionSPNList `
-                                -GetResultParameterName 'ExtendedProtectionSPNList' `
-                                -ContextLabel 'Verify ExtendedProtectionSPNList' `
-                                -ItLabel 'ExtendedProtectionSPNList should contain three values'
+            -DesiredArrayContents $testParams.ExtendedProtectionSPNList `
+            -GetResultParameterName 'ExtendedProtectionSPNList' `
+            -ContextLabel 'Verify ExtendedProtectionSPNList' `
+            -ItLabel 'ExtendedProtectionSPNList should contain three values'
 
         Test-ArrayContentsEqual -TestParams $testParams `
-                                -DesiredArrayContents $testParams.ExternalAuthenticationMethods `
-                                -GetResultParameterName 'ExternalAuthenticationMethods' `
-                                -ContextLabel 'Verify ExternalAuthenticationMethods' `
-                                -ItLabel 'ExternalAuthenticationMethods should contain two values'
+            -DesiredArrayContents $testParams.ExternalAuthenticationMethods `
+            -GetResultParameterName 'ExternalAuthenticationMethods' `
+            -ContextLabel 'Verify ExternalAuthenticationMethods' `
+            -ItLabel 'ExternalAuthenticationMethods should contain two values'
 
         Test-ArrayContentsEqual -TestParams $testParams `
-                                -DesiredArrayContents $testParams.InternalAuthenticationMethods `
-                                -GetResultParameterName 'InternalAuthenticationMethods' `
-                                -ContextLabel 'Verify InternalAuthenticationMethods' `
-                                -ItLabel 'InternalAuthenticationMethods should contain two values'
+            -DesiredArrayContents $testParams.InternalAuthenticationMethods `
+            -GetResultParameterName 'InternalAuthenticationMethods' `
+            -ContextLabel 'Verify InternalAuthenticationMethods' `
+            -ItLabel 'InternalAuthenticationMethods should contain two values'
 
         Test-ArrayContentsEqual -TestParams $testParams `
-                                -DesiredArrayContents $testParams.RemoteDocumentsAllowedServers `
-                                -GetResultParameterName 'RemoteDocumentsAllowedServers' `
-                                -ContextLabel 'Verify RemoteDocumentsAllowedServers' `
-                                -ItLabel 'RemoteDocumentsAllowedServers should contain two values'
+            -DesiredArrayContents $testParams.RemoteDocumentsAllowedServers `
+            -GetResultParameterName 'RemoteDocumentsAllowedServers' `
+            -ContextLabel 'Verify RemoteDocumentsAllowedServers' `
+            -ItLabel 'RemoteDocumentsAllowedServers should contain two values'
 
         Test-ArrayContentsEqual -TestParams $testParams `
-                                -DesiredArrayContents $testParams.RemoteDocumentsBlockedServers `
-                                -GetResultParameterName 'RemoteDocumentsBlockedServers' `
-                                -ContextLabel 'Verify RemoteDocumentsBlockedServers' `
-                                -ItLabel 'RemoteDocumentsBlockedServers should contain two values'
+            -DesiredArrayContents $testParams.RemoteDocumentsBlockedServers `
+            -GetResultParameterName 'RemoteDocumentsBlockedServers' `
+            -ContextLabel 'Verify RemoteDocumentsBlockedServers' `
+            -ItLabel 'RemoteDocumentsBlockedServers should contain two values'
 
         Test-ArrayContentsEqual -TestParams $testParams `
-                                -DesiredArrayContents $testParams.RemoteDocumentsInternalDomainSuffixList `
-                                -GetResultParameterName 'RemoteDocumentsInternalDomainSuffixList' `
-                                -ContextLabel 'Verify RemoteDocumentsInternalDomainSuffixList' `
-                                -ItLabel 'RemoteDocumentsInternalDomainSuffixList should contain two values'
+            -DesiredArrayContents $testParams.RemoteDocumentsInternalDomainSuffixList `
+            -GetResultParameterName 'RemoteDocumentsInternalDomainSuffixList' `
+            -ContextLabel 'Verify RemoteDocumentsInternalDomainSuffixList' `
+            -ItLabel 'RemoteDocumentsInternalDomainSuffixList should contain two values'
 
         $testParams.ExternalUrl = ''
         $testParams.InternalUrl = ''
@@ -156,8 +156,8 @@ if ($exchangeInstalled)
         $expectedGetResults.InternalUrl = ''
 
         Test-TargetResourceFunctionality -Params $testParams `
-                                         -ContextLabel 'Try with empty URLs' `
-                                         -ExpectedGetResults $expectedGetResults
+            -ContextLabel 'Try with empty URLs' `
+            -ExpectedGetResults $expectedGetResults
 
         if ($webCertAuthInstalled -eq $true)
         {
@@ -167,8 +167,8 @@ if ($exchangeInstalled)
             $expectedGetResults.ClientCertAuth = 'Required'
 
             Test-TargetResourceFunctionality -Params $testParams `
-                                             -ContextLabel 'Try enabling certificate based authentication' `
-                                             -ExpectedGetResults $expectedGetResults
+                -ContextLabel 'Try enabling certificate based authentication' `
+                -ExpectedGetResults $expectedGetResults
         }
 
         Context 'Test missing ExtendedProtectionFlags for ExtendedProtectionSPNList' {
@@ -207,58 +207,58 @@ if ($exchangeInstalled)
         $expectedGetResults.ExternalUrl = "https://eas.$($env:USERDNSDOMAIN)/Microsoft-Server-ActiveSync"
 
         Test-TargetResourceFunctionality -Params $testParams `
-                                         -ContextLabel 'Try by setting External URL via ActiveSyncServer' `
-                                         -ExpectedGetResults $expectedGetResults
+            -ContextLabel 'Try by setting External URL via ActiveSyncServer' `
+            -ExpectedGetResults $expectedGetResults
 
         # Set values back to default
         $testParams = @{
-            Identity =  "$($env:COMPUTERNAME)\Microsoft-Server-ActiveSync (Default Web Site)"
-            Credential = $shellCredentials
-            BadItemReportingEnabled = $true
-            BasicAuthEnabled = $false
-            ClientCertAuth = 'Ignore'
-            CompressionEnabled = $false
-            ExtendedProtectionFlags = 'None'
-            ExtendedProtectionSPNList = $null
-            ExtendedProtectionTokenChecking = 'None'
-            ExternalAuthenticationMethods = $null
-            InternalAuthenticationMethods = $null
-            MobileClientCertificateAuthorityURL = $null
+            Identity                                   = "$($env:COMPUTERNAME)\Microsoft-Server-ActiveSync (Default Web Site)"
+            Credential                                 = $shellCredentials
+            BadItemReportingEnabled                    = $true
+            BasicAuthEnabled                           = $false
+            ClientCertAuth                             = 'Ignore'
+            CompressionEnabled                         = $false
+            ExtendedProtectionFlags                    = 'None'
+            ExtendedProtectionSPNList                  = $null
+            ExtendedProtectionTokenChecking            = 'None'
+            ExternalAuthenticationMethods              = $null
+            InternalAuthenticationMethods              = $null
+            MobileClientCertificateAuthorityURL        = $null
             MobileClientCertificateProvisioningEnabled = $false
-            MobileClientCertTemplateName = $null
-            RemoteDocumentsActionForUnknownServers = 'Allow'
-            RemoteDocumentsAllowedServers = $null
-            RemoteDocumentsBlockedServers = $null
-            RemoteDocumentsInternalDomainSuffixList = $null
-            SendWatsonReport = $true
-            WindowsAuthEnabled = $true
+            MobileClientCertTemplateName               = $null
+            RemoteDocumentsActionForUnknownServers     = 'Allow'
+            RemoteDocumentsAllowedServers              = $null
+            RemoteDocumentsBlockedServers              = $null
+            RemoteDocumentsInternalDomainSuffixList    = $null
+            SendWatsonReport                           = $true
+            WindowsAuthEnabled                         = $true
         }
 
         $expectedGetResults = @{
-            Identity =  "$($env:COMPUTERNAME)\Microsoft-Server-ActiveSync (Default Web Site)"
-            BadItemReportingEnabled = $true
-            BasicAuthEnabled = $false
-            ClientCertAuth = 'Ignore'
-            CompressionEnabled = $false
-            ExtendedProtectionTokenChecking = 'None'
-            ExtendedProtectionFlags = [System.String[]] @()
-            ExtendedProtectionSPNList = [System.String[]] @()
-            ExternalAuthenticationMethods = [System.String[]] @()
-            InternalAuthenticationMethods = [System.String[]] @()
-            MobileClientCertificateAuthorityURL = ''
+            Identity                                   = "$($env:COMPUTERNAME)\Microsoft-Server-ActiveSync (Default Web Site)"
+            BadItemReportingEnabled                    = $true
+            BasicAuthEnabled                           = $false
+            ClientCertAuth                             = 'Ignore'
+            CompressionEnabled                         = $false
+            ExtendedProtectionTokenChecking            = 'None'
+            ExtendedProtectionFlags                    = [System.String[]] @()
+            ExtendedProtectionSPNList                  = [System.String[]] @()
+            ExternalAuthenticationMethods              = [System.String[]] @()
+            InternalAuthenticationMethods              = [System.String[]] @()
+            MobileClientCertificateAuthorityURL        = ''
             MobileClientCertificateProvisioningEnabled = $false
-            MobileClientCertTemplateName = ''
-            RemoteDocumentsActionForUnknownServers = 'Allow'
-            RemoteDocumentsAllowedServers = $null
-            RemoteDocumentsBlockedServers = $null
-            RemoteDocumentsInternalDomainSuffixList = $null
-            SendWatsonReport = $true
-            WindowsAuthEnabled = $true
+            MobileClientCertTemplateName               = ''
+            RemoteDocumentsActionForUnknownServers     = 'Allow'
+            RemoteDocumentsAllowedServers              = $null
+            RemoteDocumentsBlockedServers              = $null
+            RemoteDocumentsInternalDomainSuffixList    = $null
+            SendWatsonReport                           = $true
+            WindowsAuthEnabled                         = $true
         }
 
         Test-TargetResourceFunctionality -Params $testParams `
-                                         -ContextLabel 'Reset values to default' `
-                                         -ExpectedGetResults $expectedGetResults
+            -ContextLabel 'Reset values to default' `
+            -ExpectedGetResults $expectedGetResults
     }
 }
 else
