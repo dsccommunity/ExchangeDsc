@@ -32,7 +32,7 @@ Invoke-TestSetup
 # Begin Testing
 try
 {
-        InModuleScope $script:DSCResourceName {
+    InModuleScope $script:DSCResourceName {
         Describe 'MSFT_xExchPowershellVirtualDirectory\Get-TargetResource' -Tag 'Get' {
             AfterEach {
                 Assert-VerifiableMock

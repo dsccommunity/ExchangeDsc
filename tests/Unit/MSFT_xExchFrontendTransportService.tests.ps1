@@ -32,7 +32,7 @@ Invoke-TestSetup
 # Begin Testing
 try
 {
-        InModuleScope $script:DSCResourceName {
+    InModuleScope $script:DSCResourceName {
 
         $commonTargetResourceParams = @{
             Identity   = 'FrontendTransportService'
@@ -40,53 +40,55 @@ try
         }
 
         $commonFrontendTransportServiceStandardOutput = @{
-            AgentLogEnabled                                = [System.Boolean] $false
-            AgentLogMaxAge                                 = [System.String] ''
-            AgentLogMaxDirectorySize                       = [System.String] ''
-            AgentLogMaxFileSize                            = [System.String] ''
-            AgentLogPath                                   = [System.String] ''
-            AntispamAgentsEnabled                          = [System.Boolean] $false
-            ConnectivityLogEnabled                         = [System.Boolean] $false
-            ConnectivityLogMaxAge                          = [System.String] ''
-            ConnectivityLogMaxDirectorySize                = [System.String] ''
-            ConnectivityLogMaxFileSize                     = [System.String] ''
-            ConnectivityLogPath                            = [System.String] ''
-            DnsLogEnabled                                  = [System.Boolean] $false
-            DnsLogMaxAge                                   = [System.String] ''
-            DnsLogMaxDirectorySize                         = [System.String] ''
-            DnsLogMaxFileSize                              = [System.String] ''
-            DnsLogPath                                     = [System.String] ''
-            ExternalDNSAdapterEnabled                      = [System.Boolean] $false
-            ExternalDNSAdapterGuid                         = [System.String] ''
-            ExternalDNSProtocolOption                      = [System.String] ''
-            ExternalDNSServers                             = [System.String[]] @('externaldns.contoso.com')
-            ExternalIPAddress                              = [System.String] '1.2.3.4'
-            InternalDNSAdapterEnabled                      = [System.Boolean] $false
-            InternalDNSAdapterGuid                         = [System.String] ''
-            InternalDNSProtocolOption                      = [System.String] ''
-            InternalDNSServers                             = [System.String[]] @('internaldns.contoso.com')
-            IntraOrgConnectorProtocolLoggingLevel          = [System.String] ''
-            MaxConnectionRatePerMinute                     = [System.Int32] 1
-            ReceiveProtocolLogMaxAge                       = [System.String] ''
-            ReceiveProtocolLogMaxDirectorySize             = [System.String] ''
-            ReceiveProtocolLogMaxFileSize                  = [System.String] ''
-            ReceiveProtocolLogPath                         = [System.String] ''
-            RoutingTableLogMaxAge                          = [System.String] ''
-            RoutingTableLogMaxDirectorySize                = [System.String] ''
-            RoutingTableLogPath                            = [System.String] ''
-            SendProtocolLogMaxAge                          = [System.String] ''
-            SendProtocolLogMaxDirectorySize                = [System.String] ''
-            SendProtocolLogMaxFileSize                     = [System.String] ''
-            SendProtocolLogPath                            = [System.String] ''
-            TransientFailureRetryCount                     = [System.Int32] 1
-            TransientFailureRetryInterval                  = [System.String] ''
+            AgentLogEnabled                       = [System.Boolean] $false
+            AgentLogMaxAge                        = [System.String] ''
+            AgentLogMaxDirectorySize              = [System.String] ''
+            AgentLogMaxFileSize                   = [System.String] ''
+            AgentLogPath                          = [System.String] ''
+            AntispamAgentsEnabled                 = [System.Boolean] $false
+            ConnectivityLogEnabled                = [System.Boolean] $false
+            ConnectivityLogMaxAge                 = [System.String] ''
+            ConnectivityLogMaxDirectorySize       = [System.String] ''
+            ConnectivityLogMaxFileSize            = [System.String] ''
+            ConnectivityLogPath                   = [System.String] ''
+            DnsLogEnabled                         = [System.Boolean] $false
+            DnsLogMaxAge                          = [System.String] ''
+            DnsLogMaxDirectorySize                = [System.String] ''
+            DnsLogMaxFileSize                     = [System.String] ''
+            DnsLogPath                            = [System.String] ''
+            ExternalDNSAdapterEnabled             = [System.Boolean] $false
+            ExternalDNSAdapterGuid                = [System.String] ''
+            ExternalDNSProtocolOption             = [System.String] ''
+            ExternalDNSServers                    = [System.String[]] @('externaldns.contoso.com')
+            ExternalIPAddress                     = [System.String] '1.2.3.4'
+            InternalDNSAdapterEnabled             = [System.Boolean] $false
+            InternalDNSAdapterGuid                = [System.String] ''
+            InternalDNSProtocolOption             = [System.String] ''
+            InternalDNSServers                    = [System.String[]] @('internaldns.contoso.com')
+            IntraOrgConnectorProtocolLoggingLevel = [System.String] ''
+            MaxConnectionRatePerMinute            = [System.Int32] 1
+            ReceiveProtocolLogMaxAge              = [System.String] ''
+            ReceiveProtocolLogMaxDirectorySize    = [System.String] ''
+            ReceiveProtocolLogMaxFileSize         = [System.String] ''
+            ReceiveProtocolLogPath                = [System.String] ''
+            RoutingTableLogMaxAge                 = [System.String] ''
+            RoutingTableLogMaxDirectorySize       = [System.String] ''
+            RoutingTableLogPath                   = [System.String] ''
+            SendProtocolLogMaxAge                 = [System.String] ''
+            SendProtocolLogMaxDirectorySize       = [System.String] ''
+            SendProtocolLogMaxFileSize            = [System.String] ''
+            SendProtocolLogPath                   = [System.String] ''
+            TransientFailureRetryCount            = [System.Int32] 1
+            TransientFailureRetryInterval         = [System.String] ''
         }
 
         Mock -CommandName Write-FunctionEntry -Verifiable
 
         Describe 'MSFT_xExchFrontendTransportService\Get-TargetResource' -Tag 'Get' {
             # Override Exchange cmdlets
-            function Get-FrontendTransportService {}
+            function Get-FrontendTransportService
+            {
+            }
 
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
             Mock -CommandName Get-FrontendTransportService -Verifiable -MockWith { return $commonFrontendTransportServiceStandardOutput }
@@ -102,7 +104,9 @@ try
         Describe 'MSFT_xExchFrontendTransportService\Set-TargetResource' -Tag 'Set' {
             # Override Exchange cmdlets
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
-            function Set-FrontendTransportService {}
+            function Set-FrontendTransportService
+            {
+            }
 
             AfterEach {
                 Assert-VerifiableMock
@@ -156,7 +160,7 @@ try
                     $AllowServiceRestart = $setTargetResourceParams.AllowServiceRestart
                     $setTargetResourceParams.AllowServiceRestart = $false
                     Mock -CommandName Set-FrontendTransportService -Verifiable
-                    Mock -CommandName Write-Warning -Verifiable -ParameterFilter {$Message -eq 'The configuration will not take effect until the MSExchangeFrontEndTransport service is manually restarted.'}
+                    Mock -CommandName Write-Warning -Verifiable -ParameterFilter { $Message -eq 'The configuration will not take effect until the MSExchangeFrontEndTransport service is manually restarted.' }
 
                     Set-TargetResource @setTargetResourceParams
                     $setTargetResourceParams.AllowServiceRestart = $AllowServiceRestart
@@ -168,7 +172,9 @@ try
             # Override Exchange cmdlets
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
 
-            function Get-FrontendTransportService {}
+            function Get-FrontendTransportService
+            {
+            }
 
             AfterEach {
                 Assert-VerifiableMock

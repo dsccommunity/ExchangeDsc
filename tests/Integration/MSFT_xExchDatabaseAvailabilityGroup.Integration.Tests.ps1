@@ -15,9 +15,9 @@
 [System.String] $script:DSCResourceFriendlyName = 'xExchDatabaseAvailabilityGroup'
 [System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper\xExchangeHelper.psd1')) -Force
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'source' -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1"))))
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
 # Check if Exchange is installed on this machine. If not, we can't run tests
 [System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
@@ -67,7 +67,7 @@ if ($null -ne $adModule)
             if ($null -eq $fcNode1 -or !$fcNode1.Installed)
             {
                 Write-Error -Message ('The Failover-Clustering role must be fully installed on' + $($serverFqdn) + `
-                                      'before the server can be added to the cluster. Skipping all DAG tests.')
+                        'before the server can be added to the cluster. Skipping all DAG tests.')
                 return
             }
 
@@ -78,7 +78,7 @@ if ($null -ne $adModule)
                 if ($null -eq $fcNode2 -or !$fcNode2.Installed)
                 {
                     Write-Error -Message ('The Failover-Clustering role must be fully installed on' + $($secondDAGMember) + `
-                                          'before the server can be added to the cluster. Skipping tests that would utilize this DAG member.')
+                            'before the server can be added to the cluster. Skipping tests that would utilize this DAG member.')
 
                     $secondDAGMember = ''
                 }
@@ -111,10 +111,10 @@ if ($null -ne $adModule)
             }
 
             # Remove the existing DAG
-            Initialize-TestForDAG -ServerName @($env:COMPUTERNAME,$secondDAGMember) `
-                                  -DAGName $dagName `
-                                  -DatabaseName $testDBName `
-                                  -ShellCredentials $shellCredentials
+            Initialize-TestForDAG -ServerName @($env:COMPUTERNAME, $secondDAGMember) `
+                -DAGName $dagName `
+                -DatabaseName $testDBName `
+                -ShellCredentials $shellCredentials
 
             Describe 'Test Creating and Modifying a DAG, adding DAG members, creating a DAG database, and adding database copies' {
                 # Create a new DAG
@@ -181,14 +181,14 @@ if ($null -ne $adModule)
                 }
 
                 Test-TargetResourceFunctionality -Params $dagTestParams `
-                                                 -ContextLabel 'Create the test DAG' `
-                                                 -ExpectedGetResults $dagExpectedGetResults
+                    -ContextLabel 'Create the test DAG' `
+                    -ExpectedGetResults $dagExpectedGetResults
 
                 Test-ArrayContentsEqual -TestParams $dagTestParams `
-                                        -DesiredArrayContents $dagTestParams.DatabaseAvailabilityGroupIpAddresses `
-                                        -GetResultParameterName 'DatabaseAvailabilityGroupIpAddresses' `
-                                        -ContextLabel 'Verify DatabaseAvailabilityGroupIpAddresses' `
-                                        -ItLabel 'DatabaseAvailabilityGroupIpAddresses should contain two values'
+                    -DesiredArrayContents $dagTestParams.DatabaseAvailabilityGroupIpAddresses `
+                    -GetResultParameterName 'DatabaseAvailabilityGroupIpAddresses' `
+                    -ContextLabel 'Verify DatabaseAvailabilityGroupIpAddresses' `
+                    -ItLabel 'DatabaseAvailabilityGroupIpAddresses should contain two values'
 
                 # Add this server as a DAG member
                 Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
@@ -208,8 +208,8 @@ if ($null -ne $adModule)
                 }
 
                 Test-TargetResourceFunctionality -Params $dagMemberTestParams `
-                                                 -ContextLabel 'Add first member to the test DAG' `
-                                                 -ExpectedGetResults $dagMemberExpectedGetResults
+                    -ContextLabel 'Add first member to the test DAG' `
+                    -ExpectedGetResults $dagMemberExpectedGetResults
 
                 # Do second DAG member tests if a second member was specified
                 if (([System.String]::IsNullOrEmpty($secondDAGMember)) -eq $false)
@@ -229,24 +229,24 @@ if ($null -ne $adModule)
                     }
 
                     Test-TargetResourceFunctionality -Params $dagMemberTestParams `
-                                                     -ContextLabel 'Add second member to the test DAG' `
-                                                     -ExpectedGetResults $dagMemberExpectedGetResults
+                        -ContextLabel 'Add second member to the test DAG' `
+                        -ExpectedGetResults $dagMemberExpectedGetResults
 
                     # Test the DAG again, with props that only take effect once there are members
                     Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
-                    Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'source' -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1"))))
+                    Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
 
                     $dagExpectedGetResults.DatacenterActivationMode = 'DagOnly'
 
                     Test-TargetResourceFunctionality -Params $dagTestParams `
-                                                     -ContextLabel 'Set remaining props on the test DAG' `
-                                                     -ExpectedGetResults $dagExpectedGetResults
+                        -ContextLabel 'Set remaining props on the test DAG' `
+                        -ExpectedGetResults $dagExpectedGetResults
 
                     Test-ArrayContentsEqual -TestParams $dagTestParams `
-                                            -DesiredArrayContents $dagTestParams.DatabaseAvailabilityGroupIpAddresses `
-                                            -GetResultParameterName 'DatabaseAvailabilityGroupIpAddresses' `
-                                            -ContextLabel 'Verify DatabaseAvailabilityGroupIpAddresses' `
-                                            -ItLabel 'DatabaseAvailabilityGroupIpAddresses should contain two values'
+                        -DesiredArrayContents $dagTestParams.DatabaseAvailabilityGroupIpAddresses `
+                        -GetResultParameterName 'DatabaseAvailabilityGroupIpAddresses' `
+                        -ContextLabel 'Verify DatabaseAvailabilityGroupIpAddresses' `
+                        -ItLabel 'DatabaseAvailabilityGroupIpAddresses should contain two values'
 
                     # Create a new DAG database
                     Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
@@ -271,8 +271,8 @@ if ($null -ne $adModule)
                     }
 
                     Test-TargetResourceFunctionality -Params $dagDBTestParams `
-                                                     -ContextLabel 'Create test database' `
-                                                     -ExpectedGetResults $dagDBExpectedGetResults
+                        -ContextLabel 'Create test database' `
+                        -ExpectedGetResults $dagDBExpectedGetResults
 
                     # Add DB Copy
                     Get-Module MSFT_xExch* | Remove-Module -ErrorAction SilentlyContinue
@@ -307,8 +307,8 @@ if ($null -ne $adModule)
                     }
 
                     Test-TargetResourceFunctionality -Params $dagDBCopyTestParams `
-                                                     -ContextLabel 'Add a database copy' `
-                                                     -ExpectedGetResults $dagDBCopyExpectedGetResults
+                        -ContextLabel 'Add a database copy' `
+                        -ExpectedGetResults $dagDBCopyExpectedGetResults
 
                     $dagDBCopyTestParams = @{
                         Identity                        = $testDBName
@@ -336,8 +336,8 @@ if ($null -ne $adModule)
                     }
 
                     Test-TargetResourceFunctionality -Params $dagDBCopyTestParams `
-                                                     -ContextLabel 'Change database copy settings' `
-                                                     -ExpectedGetResults $dagDBCopyExpectedGetResults
+                        -ContextLabel 'Change database copy settings' `
+                        -ExpectedGetResults $dagDBCopyExpectedGetResults
 
 
                     #Remove test database before doing other add copy tests.
@@ -348,9 +348,9 @@ if ($null -ne $adModule)
                     $dagDBCopyExpectedGetResults.ActivationPreference = 2
 
                     Test-TargetResourceFunctionality -Params $dagDBCopyTestParams `
-                                                     -ContextLabel 'Add a database copy with ActivationPreference higher than future copy count' `
-                                                     -ExpectedGetResults $dagDBCopyExpectedGetResults `
-                                                     -ExpectedTestResult $false
+                        -ContextLabel 'Add a database copy with ActivationPreference higher than future copy count' `
+                        -ExpectedGetResults $dagDBCopyExpectedGetResults `
+                        -ExpectedTestResult $false
 
                     #Remove test database before doing other add copy tests.
                     Remove-CopiesOfTestDatabase -DatabaseName $testDBName
@@ -361,9 +361,9 @@ if ($null -ne $adModule)
                     $dagDBCopyExpectedGetResults.ActivationPreference = 2
 
                     Test-TargetResourceFunctionality -Params $dagDBCopyTestParams `
-                                                     -ContextLabel 'Add a database copy with SeedingPostponed' `
-                                                     -ExpectedGetResults $dagDBCopyExpectedGetResults `
-                                                     -ExpectedTestResult $true
+                        -ContextLabel 'Add a database copy with SeedingPostponed' `
+                        -ExpectedGetResults $dagDBCopyExpectedGetResults `
+                        -ExpectedTestResult $true
                 }
             }
         }

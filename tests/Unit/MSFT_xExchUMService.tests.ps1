@@ -32,7 +32,7 @@ Invoke-TestSetup
 # Begin Testing
 try
 {
-        InModuleScope $script:DSCResourceName {
+    InModuleScope $script:DSCResourceName {
         Describe 'MSFT_xExchUMService\Get-TargetResource' -Tag 'Get' {
             # Override Exchange cmdlets
             function Get-UMService {}

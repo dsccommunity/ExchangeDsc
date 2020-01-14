@@ -12,8 +12,9 @@
 [System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper\xExchangeHelper.psd1')) -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'source' -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper\xExchangeHelper.psd1'))) -Force
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'source' -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1"))))
+
 
 # Check if Exchange is installed on this machine. If not, we can't run tests
 [System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
@@ -32,43 +33,43 @@ if ($exchangeInstalled)
 
     Describe 'Test Setting Properties with xExchAutodiscoverVirtualDirectory' {
         $testParams = @{
-            Identity =  "$($env:COMPUTERNAME)\Autodiscover (Default Web Site)"
-            Credential = $shellCredentials
-            BasicAuthentication = $true
-            DigestAuthentication = $false
-            ExtendedProtectionFlags = @('AllowDotlessspn', 'NoServicenameCheck')
-            ExtendedProtectionSPNList = @('http/mail.fabrikam.com', 'http/mail.fabrikam.local', 'http/wxweqc')
+            Identity                        = "$($env:COMPUTERNAME)\Autodiscover (Default Web Site)"
+            Credential                      = $shellCredentials
+            BasicAuthentication             = $true
+            DigestAuthentication            = $false
+            ExtendedProtectionFlags         = @('AllowDotlessspn', 'NoServicenameCheck')
+            ExtendedProtectionSPNList       = @('http/mail.fabrikam.com', 'http/mail.fabrikam.local', 'http/wxweqc')
             ExtendedProtectionTokenChecking = 'Allow'
-            OAuthAuthentication = $true
-            WindowsAuthentication = $true
-            WSSecurityAuthentication = $true
+            OAuthAuthentication             = $true
+            WindowsAuthentication           = $true
+            WSSecurityAuthentication        = $true
         }
 
         $expectedGetResults = @{
-            Identity =  "$($env:COMPUTERNAME)\Autodiscover (Default Web Site)"
-            BasicAuthentication = $true
-            DigestAuthentication = $false
+            Identity                        = "$($env:COMPUTERNAME)\Autodiscover (Default Web Site)"
+            BasicAuthentication             = $true
+            DigestAuthentication            = $false
             ExtendedProtectionTokenChecking = 'Allow'
-            OAuthAuthentication = $true
-            WindowsAuthentication = $true
-            WSSecurityAuthentication = $true
+            OAuthAuthentication             = $true
+            WindowsAuthentication           = $true
+            WSSecurityAuthentication        = $true
         }
 
         Test-TargetResourceFunctionality -Params $testParams `
-                                         -ContextLabel 'Set standard parameters' `
-                                         -ExpectedGetResults $expectedGetResults
+            -ContextLabel 'Set standard parameters' `
+            -ExpectedGetResults $expectedGetResults
 
         Test-ArrayContentsEqual -TestParams $testParams `
-                                -DesiredArrayContents $testParams.ExtendedProtectionFlags `
-                                -GetResultParameterName 'ExtendedProtectionFlags' `
-                                -ContextLabel 'Verify ExtendedProtectionFlags' `
-                                -ItLabel 'ExtendedProtectionSPNList should contain three values'
+            -DesiredArrayContents $testParams.ExtendedProtectionFlags `
+            -GetResultParameterName 'ExtendedProtectionFlags' `
+            -ContextLabel 'Verify ExtendedProtectionFlags' `
+            -ItLabel 'ExtendedProtectionSPNList should contain three values'
 
         Test-ArrayContentsEqual -TestParams $testParams `
-                                -DesiredArrayContents $testParams.ExtendedProtectionSPNList `
-                                -GetResultParameterName 'ExtendedProtectionSPNList' `
-                                -ContextLabel 'Verify ExtendedProtectionSPNList' `
-                                -ItLabel 'ExtendedProtectionSPNList should contain three values'
+            -DesiredArrayContents $testParams.ExtendedProtectionSPNList `
+            -GetResultParameterName 'ExtendedProtectionSPNList' `
+            -ContextLabel 'Verify ExtendedProtectionSPNList' `
+            -ItLabel 'ExtendedProtectionSPNList should contain three values'
 
         Context 'Test missing ExtendedProtectionFlags for ExtendedProtectionSPNList' {
             $testParams.ExtendedProtectionFlags = @('NoServicenameCheck')
@@ -118,8 +119,8 @@ if ($exchangeInstalled)
         $expectedGetResults.WSSecurityAuthentication = $true
 
         Test-TargetResourceFunctionality -Params $testParams `
-                                         -ContextLabel 'Change some parameters' `
-                                         -ExpectedGetResults $expectedGetResults
+            -ContextLabel 'Change some parameters' `
+            -ExpectedGetResults $expectedGetResults
     }
 }
 else
