@@ -1,42 +1,38 @@
-#region HEADER
 $script:DSCModuleName = 'xExchange'
 $script:DSCResourceName = 'MSFT_xExchExchangeServer'
-
-# Unit Test Template Version: 1.2.4
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-if ( (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests'))) -or `
-    (-not (Test-Path -Path (Join-Path -Path $script:moduleRoot -ChildPath 'DSCResource.Tests\TestHelper.psm1'))) )
-{
-    & git @('clone', 'https://github.com/PowerShell/DscResource.Tests.git', (Join-Path -Path $script:moduleRoot -ChildPath 'DscResource.Tests'))
-}
 
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResource.Tests' -ChildPath 'TestHelper.psm1')) -Force
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Global -Force
-
-$TestEnvironment = Initialize-TestEnvironment `
-    -DSCModuleName $script:DSCModuleName `
-    -DSCResourceName $script:DSCResourceName `
-    -ResourceType 'Mof' `
-    -TestType Unit
-
-#endregion HEADER
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Global -Force
 
 function Invoke-TestSetup
 {
+    try
+    {
+        Import-Module -Name DscResource.Test -Force
+    }
+    catch [System.IO.FileNotFoundException]
+    {
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+    }
 
+    $script:testEnvironment = Initialize-TestEnvironment `
+        -DSCModuleName $script:dscModuleName `
+        -DSCResourceName $script:dscResourceName `
+        -ResourceType 'Mof' `
+        -TestType 'Unit'
 }
 
 function Invoke-TestCleanup
 {
-    Restore-TestEnvironment -TestEnvironment $TestEnvironment
+    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
+
+Invoke-TestSetup
 
 # Begin Testing
 try
 {
-    Invoke-TestSetup
-
-    InModuleScope $script:DSCResourceName {
+        InModuleScope $script:DSCResourceName {
         $commonTargetResourceParams = @{
             Identity            = 'ActiveSyncVirtualDirectory'
             Credential          = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
@@ -116,16 +112,14 @@ try
 
         Describe 'MSFT_xExchExchangeServer\Set-TargetResource' -Tag 'Set' {
             # Override Exchange cmdlets
-            function Set-ExchangeServer
-            {
-            }
+            function Set-ExchangeServer {}
 
             AfterEach {
                 Assert-VerifiableMock
             }
 
             Mock -CommandName Remove-NotApplicableParamsForCurrentState -Verifiable
-            Mock -CommandName Remove-FromPSBoundParametersUsingHashtable -Verifiable -ParameterFilter { $ParamsToRemove.Contains('AllowServiceRestart') }
+            Mock -CommandName Remove-FromPSBoundParametersUsingHashtable -Verifiable -ParameterFilter {$ParamsToRemove.Contains('AllowServiceRestart')}
             Mock -CommandName Get-ExchangeServerInternal -Verifiable -MockWith { return $getExchangeServerStandardOutput }
             Mock -CommandName Set-EmptyStringParamsToNull -Verifiable
             Mock -CommandName Set-ExchangeServer -Verifiable
@@ -143,7 +137,7 @@ try
 
             Context 'When the server needs to be licensed, and allow restart is false' {
                 It 'Should warn that a Information Store restart is required' {
-                    Mock -CommandName Write-Warning -Verifiable -ParameterFilter { $Message -eq 'The configuration will not take effect until MSExchangeIS is manually restarted.' }
+                    Mock -CommandName Write-Warning -Verifiable -ParameterFilter {$Message -eq 'The configuration will not take effect until MSExchangeIS is manually restarted.'}
 
                     Set-TargetResource @commonTargetResourceParams
                 }
@@ -210,7 +204,7 @@ try
             Context 'When InternetWebProxy is not empty, Compare-StringToString returns false, and the returned InternetWebProxy matches the input InternetWebProxy' {
                 It 'Should return true' {
                     Mock -CommandName Get-ExchangeServerInternal -MockWith { return $getExchangeServerStandardOutput }
-                    Mock -CommandName Compare-StringToString -MockWith { return $false }
+                    Mock -CommandName Compare-StringToString -MockWith { return $false}
 
                     Test-TargetResource @commonTargetResourceParams | Should -Be $true
                 }
@@ -221,7 +215,7 @@ try
                     $getExchangeServerStandardOutput.InternetWebProxy.AbsoluteUri = 'someotherproxy.local'
 
                     Mock -CommandName Get-ExchangeServerInternal -MockWith { return $getExchangeServerStandardOutput }
-                    Mock -CommandName Compare-StringToString -MockWith { return $false }
+                    Mock -CommandName Compare-StringToString -MockWith { return $false}
                     Mock -CommandName Write-InvalidSettingVerbose
 
                     Test-TargetResource @commonTargetResourceParams | Should -Be $false
@@ -252,9 +246,7 @@ try
 
         Describe 'MSFT_xExchExchangeServer\Get-ExchangeServerInternal' -Tag 'Helper' {
             # Override Exchange cmdlets
-            function Get-ExchangeServer
-            {
-            }
+            function Get-ExchangeServer {}
 
             AfterEach {
                 Assert-VerifiableMock
@@ -323,3 +315,4 @@ finally
 {
     Invoke-TestCleanup
 }
+
