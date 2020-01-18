@@ -1,35 +1,16 @@
 $script:DSCModuleName = 'xExchange'
 $script:DSCResourceName = 'MSFT_xExchMailboxTransportService'
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-function Invoke-TestSetup
-{
-    try
-    {
-        Import-Module -Name DscResource.Test -Force
-    }
-    catch [System.IO.FileNotFoundException]
-    {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
-    }
-
-    $script:testEnvironment = Initialize-TestEnvironment `
-        -DSCModuleName $script:dscModuleName `
-        -DSCResourceName $script:dscResourceName `
-        -ResourceType 'Mof' `
-        -TestType 'Unit'
-}
+$script:testEnvironment = Invoke-TestSetup -DSCModuleName $script:dscModuleName -DSCResourceName $script:dscResourceName
 
 function Invoke-TestCleanup
 {
     Restore-TestEnvironment -TestEnvironment $script:testEnvironment
 }
 
-Invoke-TestSetup
-
 # Begin Testing
 try
 {
-    Invoke-TestSetup
 
     InModuleScope $script:DSCResourceName {
 

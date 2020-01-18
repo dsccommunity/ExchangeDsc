@@ -43,7 +43,7 @@ function Test-TargetResourceFunctionality
     Context $ContextLabel {
         $addedVerbose = $false
 
-        if ($null -eq ($Params.Keys | Where-Object -FilterScript {$_ -like 'Verbose'}))
+        if ($null -eq ($Params.Keys | Where-Object -FilterScript { $_ -like 'Verbose' }))
         {
             $Params.Add('Verbose', $true)
             $addedVerbose = $true
@@ -173,7 +173,7 @@ function Test-CommonGetTargetResourceFunctionality
 
     if ($getTargetResourceCommand.Count -eq 1)
     {
-        foreach ($getTargetResourceParam in $getTargetResourceCommand.Parameters.Keys | Where-Object -FilterScript {$GetResult.ContainsKey($_)})
+        foreach ($getTargetResourceParam in $getTargetResourceCommand.Parameters.Keys | Where-Object -FilterScript { $GetResult.ContainsKey($_) })
         {
             $getResultMemberType = '$null'
 
@@ -316,11 +316,11 @@ function Initialize-TestForDAG
 
     Write-Verbose -Message 'Cleaning up test DAG and related resources'
 
-    Get-RemoteExchangeSession -Credential $ShellCredentials -CommandsToLoad '*-MailboxDatabase',`
-                                                                                  '*-DatabaseAvailabilityGroup',`
-                                                                                  'Remove-DatabaseAvailabilityGroupServer',`
-                                                                                  'Get-MailboxDatabaseCopyStatus',`
-                                                                                  'Remove-MailboxDatabaseCopy'
+    Get-RemoteExchangeSession -Credential $ShellCredentials -CommandsToLoad '*-MailboxDatabase', `
+        '*-DatabaseAvailabilityGroup', `
+        'Remove-DatabaseAvailabilityGroupServer', `
+        'Get-MailboxDatabaseCopyStatus', `
+        'Remove-MailboxDatabaseCopy'
 
     $existingDB = Get-MailboxDatabase -Identity "$($DatabaseName)" -Status -ErrorAction SilentlyContinue
 
@@ -423,7 +423,7 @@ function Remove-TestDatabase
     foreach ($server in $ServerName)
     {
         Get-ChildItem -LiteralPath "\\$($server)\c`$\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($DatabaseName)" `
-                      -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
+            -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
     }
 }
 
@@ -510,7 +510,7 @@ function Get-DSCTestMailbox
 
         if ($dbsOnServer.Count -gt 0)
         {
-            $newMailboxParams.Add('Database',$dbsOnServer[0].Name)
+            $newMailboxParams.Add('Database', $dbsOnServer[0].Name)
         }
 
         $testMailbox = New-Mailbox @newMailboxParams
@@ -532,11 +532,11 @@ function Get-DSCTestMailbox
     }
 
     # Add the secondary SMTP if necessary
-    if (($testMailbox.EmailAddresses | Where-Object {$_.AddressString -like $secondarySMTP}).Count -eq 0)
+    if (($testMailbox.EmailAddresses | Where-Object { $_.AddressString -like $secondarySMTP }).Count -eq 0)
     {
         Write-Verbose -Message "Adding secondary SMTP on test mailbox: $testMailboxName"
 
-        $testMailbox | Set-Mailbox -EmailAddresses @{add=$secondarySMTP}
+        $testMailbox | Set-Mailbox -EmailAddresses @{add = $secondarySMTP }
 
         $changedMailbox = $true
     }
@@ -683,4 +683,36 @@ function Get-TestDomainController
     return $dcToTestAgainst
 }
 
+function Invoke-TestSetup
+{
+    [CmdletBinding()]
+    param (
+        [Parameter()]
+        [System.String]
+        $DSCModuleName,
+
+        [Parameter()]
+        [System.String]
+        $DSCResourceName
+    )
+    try
+    {
+        Import-Module -Name DscResource.Test -Force
+    }
+    catch [System.IO.FileNotFoundException]
+    {
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
+    }
+
+    $splat = @{
+        DSCModuleName = $DSCModuleName
+        DscResource   = $DSCResourceName
+        ResourceType  = 'Mof'
+        TestType      = 'Unit'
+    }
+
+    Initialize-TestEnvironment @splat
+}
+
 Export-ModuleMember -Function *
+
