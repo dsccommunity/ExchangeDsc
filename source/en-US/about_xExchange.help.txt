@@ -8,7 +8,7 @@ LONG DESCRIPTION
     This module contains DSC resources for deployment and configuration of Microsoft Exchange Server.
 
 EXAMPLES
-    PS C:\> Get-DscResource -Module {xExchange}
+    PS C:\> Get-DscResource -Module xExchange
 
 NOTE:
     Thank you to all those who contributed to this module, by writing code, sharing opinions, and provided feedback.
