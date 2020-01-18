@@ -296,7 +296,6 @@ if ($existingExMountPoints.Count -gt 0)
     Write-Verbose -Message "$($existingExMountPoints.Count) mount points already exist in the Exchange Databases or Exchange Volumes folder. Clean these up before running tests."
     return
 }
-
 # Begin Testing
 Describe 'Test xExchAutoMountPoint Scenarios' {
     # Run through initial testing using 1 DB disk with 4 DB mount points, 1 spare, REFS file system, and GPT partitioning

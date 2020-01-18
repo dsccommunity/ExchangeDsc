@@ -1,38 +1,20 @@
+#region HEADER
 $script:DSCModuleName = 'xExchange'
 $script:DSCResourceName = 'MSFT_xExchImapSettings'
+
+# Unit Test Template Version: 1.2.4
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
-
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Global -Force
-
-function Invoke-TestSetup
-{
-    try
-    {
-        Import-Module -Name DscResource.Test -Force
-    }
-    catch [System.IO.FileNotFoundException]
-    {
-        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -Tasks build" first.'
-    }
-
-    $script:testEnvironment = Initialize-TestEnvironment `
-        -DSCModuleName $script:dscModuleName `
-        -DSCResourceName $script:dscResourceName `
-        -ResourceType 'Mof' `
-        -TestType 'Unit'
-}
+$script:testEnvironment = Invoke-TestSetup -DSCModuleName $script:dscModuleName -DSCResourceName $script:dscResourceName
 
 function Invoke-TestCleanup
 {
-    Restore-TestEnvironment -TestEnvironment $script:testEnvironment
+    Restore-TestEnvironment -TestEnvironment $TestEnvironment
 }
-
-Invoke-TestSetup
 
 # Begin Testing
 try
 {
-        InModuleScope $script:DSCResourceName {
+    InModuleScope $script:DSCResourceName {
 
         Mock -CommandName Write-FunctionEntry -Verifiable
 
@@ -89,7 +71,9 @@ try
         Describe 'MSFT_xExchImapSettings\Set-TargetResource' -Tag 'Set' {
             # Override Exchange cmdlets
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
-            function Set-ImapSettings {}
+            function Set-ImapSettings
+            {
+            }
 
             AfterEach {
                 Assert-VerifiableMock
@@ -108,7 +92,7 @@ try
                     $AllowServiceRestart = $commonTargetResourceParams.AllowServiceRestart
                     $commonTargetResourceParams.AllowServiceRestart = $false
                     Mock -CommandName Set-ImapSettings -Verifiable
-                    Mock -CommandName Write-Warning -Verifiable -ParameterFilter {$Message -eq 'The configuration will not take effect until MSExchangeIMAP4 services are manually restarted.'}
+                    Mock -CommandName Write-Warning -Verifiable -ParameterFilter { $Message -eq 'The configuration will not take effect until MSExchangeIMAP4 services are manually restarted.' }
 
                     Set-TargetResource @commonTargetResourceParams
                     $commonTargetResourceParams.AllowServiceRestart = $AllowServiceRestart
@@ -149,9 +133,12 @@ try
 
         Describe 'MSFT_xExchImapSettings\Get-ImapSettingsInternal' -Tag 'Helper' {
             # Override Exchange cmdlets
-            function Get-ImapSettings { }
+            function Get-ImapSettings
+            {
+            }
 
-            AfterEach {
+            A
+            f         terEach {
                 Assert-VerifiableMock
             }
 
@@ -166,9 +153,12 @@ try
 
         Describe 'MSFT_xExchImapSettings\Get-ImapSettingsInternal' -Tag 'Helper' {
             # Override Exchange cmdlets
-            function Get-ImapSettings { }
+            function Get-ImapSettings
+            {
+            }
 
             AfterEach {
+
                 Assert-VerifiableMock
             }
 
@@ -186,4 +176,3 @@ finally
 {
     Invoke-TestCleanup
 }
-

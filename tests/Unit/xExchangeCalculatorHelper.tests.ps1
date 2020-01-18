@@ -20,7 +20,6 @@ $script:subModuleFile = Join-Path -Path $script:subModulesFolder -ChildPath "$($
 Import-Module $script:subModuleFile -Force -ErrorAction Stop
 Import-Module -Name (Join-Path -Path $script:projectPath -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Global -Force
 #endregion HEADER
-
 # Begin Testing
 try
 {
