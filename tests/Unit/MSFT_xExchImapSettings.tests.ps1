@@ -137,8 +137,7 @@ try
             {
             }
 
-            A
-            f         terEach {
+            AfterEach {
                 Assert-VerifiableMock
             }
 
