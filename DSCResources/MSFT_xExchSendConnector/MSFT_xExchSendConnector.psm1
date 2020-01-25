@@ -40,42 +40,8 @@ function Get-TargetResource
 
     if ($null -ne $connector)
     {
-        $adPermissions = Get-ADPermission -Identity $Name | Where-Object { $_.IsInherited -eq $false -and $null -ne $_.ExtendedRights }
 
-        $userNames = $adPermissions.User | Select-Object -Property RawIdentity -Unique | ForEach-Object -MemberName RawIdentity
-        $ExtendedRightAllowEntries = [System.Collections.Generic.List[Microsoft.Management.Infrastructure.CimInstance]]::new()
-        $ExtendedRightDenyEntries = [System.Collections.Generic.List[Microsoft.Management.Infrastructure.CimInstance]]::new()
-
-        foreach ($user in $userNames)
-        {
-            $allowPermissions = ($adPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $false } |
-                ForEach-Object -MemberName ExtendedRights | ForEach-Object -MemberName RawIdentity) -join ','
-            $denyPermissions = ($adPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $true } |
-                ForEach-Object -MemberName ExtendedRights | ForEach-Object -MemberName RawIdentity) -join ','
-
-            if ($allowPermissions)
-            {
-                $ExtendedRightAllowEntries.Add(
-                    (
-                        New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
-                            key   = $user
-                            value = $allowPermissions
-                        } -ClientOnly
-                    )
-                )
-            }
-            if ($denyPermissions)
-            {
-                $ExtendedRightDenyEntries.Add(
-                    (
-                        New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
-                            key   = $user
-                            value = $denyPermissions
-                        } -ClientOnly
-                    )
-                )
-            }
-        }
+        $adPermissions = Get-ADExtendedPermissions -Identity $Name
 
         $returnValue = @{
             Name                         = [System.String] $connector.Name
@@ -88,8 +54,8 @@ function Get-TargetResource
             Enabled                      = [System.Boolean] $connector.Enabled
             ErrorPolicies                = [System.String] $connector.ErrorPolicies
             ExtendedProtectionPolicy     = [System.String] $connector.ExtendedProtectionPolicy
-            ExtendedRightAllowEntries    = [Microsoft.Management.Infrastructure.CimInstance[]] $ExtendedRightAllowEntries
-            ExtendedRightDenyEntries     = [Microsoft.Management.Infrastructure.CimInstance[]] $ExtendedRightDenyEntries
+            ExtendedRightAllowEntries    = [Microsoft.Management.Infrastructure.CimInstance[]] $adPermissions['ExtendedRightAllowEntries']
+            ExtendedRightDenyEntries     = [Microsoft.Management.Infrastructure.CimInstance[]] $adPermissions['ExtendedRightDenyEntries']
             ForceHELO                    = [System.Boolean] $connector.ForceHELO
             FrontendProxyEnabled         = [System.Boolean] $connector.FrontendProxyEnabled
             Fqdn                         = [System.String] $connector.Fqdn
@@ -367,11 +333,16 @@ function Set-TargetResource
 
     $connector = Get-TargetResource -Name $Name -Credential $Credential -AddressSpaces $AddressSpaces
 
+    if (-not $DomainController)
+    {
+        $PSBoundParameters['DomainController'] = Get-DomainController | Select-Object -First 1 | ForEach-Object -MemberName 'DnsHostName'
+    }
+
     if ($Ensure -eq 'Absent')
     {
         Write-Verbose -Message "Removing send connector $Name."
 
-        Remove-SendConnector -Identity $Name -Confirm:$false
+        Remove-SendConnector -Identity $Name -DomainController $PSBoundParameters['DomainController'] -Confirm:$false
     }
     else
     {
@@ -380,10 +351,6 @@ function Set-TargetResource
 
         Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
 
-        if ($null -eq $DomainController)
-        {
-            $PSBoundParameters['DomainController'] = Get-DomainController | Select-Object -First 1 | ForEach-Object -MemberName 'DnsHostName'
-        }
         # We need to create the new connector
         if ($connector['Ensure'] -eq 'Absent')
         {
@@ -431,7 +398,7 @@ function Set-TargetResource
                 {
                     foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(',')))
                     {
-                        Add-ADPermission -Identity $Name -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value -DomainController $DomainController
+                        Add-ADPermission -Identity $Name -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value -DomainController $PSBoundParameters['DomainController']
                     }
                 }
             }
@@ -442,7 +409,7 @@ function Set-TargetResource
                 {
                     foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(',')))
                     {
-                        Add-ADPermission -Identity $Name -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false -DomainController $DomainController
+                        Add-ADPermission -Identity $Name -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false -DomainController $PSBoundParameters['DomainController']
                     }
                 }
             }
@@ -718,7 +685,15 @@ function Test-TargetResource
             # Get AD permissions if necessary
             if (($ExtendedRightAllowEntries) -or ($ExtendedRightDenyEntries))
             {
-                $adPermissions = Get-ADPermission -Identity $Name | Where-Object { $_.IsInherited -eq $false }
+                if ($PSBoundParameters.ContainsKey('DomainController'))
+                {
+                    $adPermissions = Get-ADPermission -Identity $Name -DomainController $DomainController | Where-Object { $_.IsInherited -eq $false }
+                }
+                else
+                {
+                    $adPermissions = Get-ADPermission -Identity $Name | Where-Object { $_.IsInherited -eq $false }
+                }
+
                 $splat = @{
                     ExtendedRightAllowEntries = $ExtendedRightAllowEntries
                     ExtendedRightDenyEntries  = $ExtendedRightDenyEntries
