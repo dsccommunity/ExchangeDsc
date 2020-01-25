@@ -39,7 +39,7 @@ if ($exchangeInstalled)
             Credential    = $shellCredentials
             AddressSpaces = 'SMTP:test.com;1'
         }
-        $testParams = @{
+        $testParamsNoDC = @{
             Name                         = "DCSTestSendConnector"
             Credential                   = $shellCredentials
             Ensure                       = 'Present'
@@ -48,7 +48,7 @@ if ($exchangeInstalled)
             Comment                      = 'Connector for integration testing'
             ConnectionInactivityTimeout  = '00:05:00'
             ConnectorType                = 'Default'
-            #DomainController             = ''
+            DomainController             = ''
             DNSRoutingEnabled            = $true
             DomainSecureEnabled          = $true
             Enabled                      = $true

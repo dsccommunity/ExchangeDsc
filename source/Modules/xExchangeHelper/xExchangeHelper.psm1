@@ -86,7 +86,7 @@ function Get-RemoteExchangeSession
     }
     else # Import the session globally
     {
-        $CommandsToLoad.Add('Get-DomainController')
+        $CommandsToLoad += 'Get-DomainController'
         Import-RemoteExchangeSession -Session $session -CommandsToLoad $CommandsToLoad -Verbose:([System.Management.Automation.ActionPreference]::SilentlyContinue)
     }
 }
@@ -2682,6 +2682,67 @@ function Test-ExtendedRights
     }
 
     return $true
+}
+
+<#
+    .SYNOPSIS
+        This functions returns the extended permissions for an Exchnage object.
+    .DESCRIPTION
+        All non-inherited allow and deny permissions are chcked and returned in the
+        form of CimInstance list.
+    .OUTPUTS
+        System.Hashtable
+#>
+function Get-ADExtendedPermissions
+{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Identity
+    )
+
+    $adPermissions = Get-ADPermission -Identity $Identity | Where-Object { $_.IsInherited -eq $false -and $null -ne $_.ExtendedRights }
+
+    $userNames = $ADPermissions.User | Select-Object -Property RawIdentity -Unique | ForEach-Object -MemberName RawIdentity
+    $ExtendedRightAllowEntries = [System.Collections.Generic.List[Microsoft.Management.Infrastructure.CimInstance]]::new()
+    $ExtendedRightDenyEntries = [System.Collections.Generic.List[Microsoft.Management.Infrastructure.CimInstance]]::new()
+
+    foreach ($user in $userNames)
+    {
+        $allowPermissions = ($ADPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $false } |
+            ForEach-Object -MemberName ExtendedRights | ForEach-Object -MemberName RawIdentity) -join ','
+        $denyPermissions = ($ADPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $true } |
+            ForEach-Object -MemberName ExtendedRights | ForEach-Object -MemberName RawIdentity) -join ','
+
+        if ($allowPermissions)
+        {
+            $ExtendedRightAllowEntries.Add(
+                (
+                    New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                        key   = $user
+                        value = $allowPermissions
+                    } -ClientOnly
+                )
+            )
+        }
+        if ($denyPermissions)
+        {
+            $ExtendedRightDenyEntries.Add(
+                (
+                    New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                        key   = $user
+                        value = $denyPermissions
+                    } -ClientOnly
+                )
+            )
+        }
+    }
+
+    return @{
+        ExtendedRightAllowEntries = $ExtendedRightAllowEntries
+        ExtendedRightDenyEntries  = $ExtendedRightDenyEntries
+    }
 }
 
 Export-ModuleMember -Function *
