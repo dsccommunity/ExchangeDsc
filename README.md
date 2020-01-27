@@ -1,37 +1,30 @@
 # xExchange
 
+[![Build Status](https://dev.azure.com/dsccommunity/xExchange/_apis/build/status/dsccommunity.xExchange?branchName=master)](https://dev.azure.com/dsccommunity/xExchange/_build/latest?definitionId=15&branchName=master)
+![Azure DevOps coverage (branch)](https://img.shields.io/azure-devops/coverage/dsccommunity/xExchange/15/master)
+[![Azure DevOps tests](https://img.shields.io/azure-devops/tests/dsccommunity/xExchange/15/master)](https://dsccommunity.visualstudio.com/xExchange/_test/analytics?definitionId=15&contextType=build)
+[![PowerShell Gallery (with prereleases)](https://img.shields.io/powershellgallery/vpre/xExchange?label=xExchange%20Preview)](https://www.powershellgallery.com/packages/xExchange/)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/xExchange?label=xExchange)](https://www.powershellgallery.com/packages/xExchange/)
+
 The **xExchange** module contains many DSC resources for configuring and
 managing Exchange 2013, 2016, and 2019 servers including individual
 server properties, databases, mount points, and Database Availability Groups.
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
+This project has adopted this [Code of Conduct](CODE_OF_CONDUCT.md).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/)
 or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional
 questions or comments.
 
-## Branches
+## Releases
 
-### master
-
-[![Build status](https://ci.appveyor.com/api/projects/status/k9oq77p9xn6bo2j6/branch/master?svg=true)](https://ci.appveyor.com/project/PowerShell/xexchange/branch/master)
-[![codecov](https://codecov.io/gh/PowerShell/xexchange/branch/master/graph/badge.svg)](https://codecov.io/gh/PowerShell/xexchange/branch/master)
-
-This is the branch containing the latest release -
-no contributions should be made directly to this branch.
-
-### dev
-
-[![Build status](https://ci.appveyor.com/api/projects/status/k9oq77p9xn6bo2j6/branch/dev?svg=true)](https://ci.appveyor.com/project/PowerShell/xexchange/branch/dev)
-[![codecov](https://codecov.io/gh/PowerShell/xexchange/branch/dev/graph/badge.svg)](https://codecov.io/gh/PowerShell/xexchange/branch/dev)
-
-This is the development branch
-to which contributions should be proposed by contributors as pull requests.
-This development branch will periodically be merged to the master branch,
-and be released to [PowerShell Gallery](https://www.powershellgallery.com/).
+For each merge to the branch `master` a preview release will be
+deployed to [PowerShell Gallery](https://www.powershellgallery.com/).
+Periodically a release version tag will be pushed which will deploy a
+full release to [PowerShell Gallery](https://www.powershellgallery.com/).
 
 ## Contributing
 
-Please check out common DSC Resources [contributing guidelines](https://github.com/PowerShell/DscResource.Kit/blob/master/CONTRIBUTING.md).
+Please check out common DSC Community [contributing guidelines](https://dsccommunity.org/guidelines/contributing).
 
 ## Installation
 
@@ -70,7 +63,7 @@ for more information.
 
 ## Examples
 
-You can review the [Examples](/Examples) directory in the xExchange module
+You can review the [Examples](/source/Examples) directory in the xExchange module
 for some general use scenarios for all of the resources that are in the module.
 
 ## Change log
@@ -81,6 +74,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 
 * **xExchAcceptedDomain** is used to add accepted domains
 * **xExchActiveSyncVirtualDirectory**
+* **xExchAddressList** is used to add an addess list
 * **xExchAntiMalwareScanning** is used to enable or disable Exchange
   Anti-malware scanning
 * **xExchAutodiscoverVirtualDirectory**
@@ -117,6 +111,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 * **xExchPowerShellVirtualDirectory**
 * **xExchReceiveConnector**
 * **xExchRemoteDomain** is used to add remote domains
+* **xExchSendConnector** is used to add a send connector
 * **xExchTransportService**
 * **xExchUMCallRouterSettings** configures the UM Call Router service using Set-UMCallRouterSettings.
 * **xExchUMService** configures a UM server using Set-UMService.
@@ -199,6 +194,74 @@ The parameter Name can be a breaking setting. When you change the name the ident
 changes as well. The switch InstallIsapiFilter by the Cmdlet is doing nothing.
 Therefore Add-WebConfigurationProperty is used to add a missing IsapiFilter.
 
+### xExchAddressList
+
+* **xExchAddressList** is used to add an address list
+
+* **Name** The name of the address list.
+* **Credential** Credentials used to establish a remote PowerShell session to
+Exchange.
+* **ConditionalCompany** The ConditionalCompany parameter specifies a precanned
+filter that's based on the value of the recipient's Company property.
+* **ConditionalCustomAttribute1** The ConditionalCustomAttribute1 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute1 property.
+* **ConditionalCustomAttribute2** The ConditionalCustomAttribute2 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute2 property.
+* **ConditionalCustomAttribute3** The ConditionalCustomAttribute3 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute3 property.
+* **ConditionalCustomAttribute4** The ConditionalCustomAttribute4 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute4 property.
+* **ConditionalCustomAttribute5** The ConditionalCustomAttribute5 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute5 property.
+* **ConditionalCustomAttribute6** The ConditionalCustomAttribute6 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute6 property.
+* **ConditionalCustomAttribute7** The ConditionalCustomAttribute7 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute7 property.
+* **ConditionalCustomAttribute8** The ConditionalCustomAttribute8 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute8 property.
+* **ConditionalCustomAttribute9** The ConditionalCustomAttribute9 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute9 property.
+* **ConditionalCustomAttribute10** The ConditionalCustomAttribute10 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute10 property.
+* **ConditionalCustomAttribute11** The ConditionalCustomAttribute11 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute11 property.
+* **ConditionalCustomAttribute12** The ConditionalCustomAttribute12 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute12 property.
+* **ConditionalCustomAttribute13** The ConditionalCustomAttribute13 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute13 property.
+* **ConditionalCustomAttribute14** The ConditionalCustomAttribute14 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute14 property.
+* **ConditionalCustomAttribute15** The ConditionalCustomAttribute15 parameter
+specifies a precanned filter that's based on the value of the recipient's
+ConditionalCustomAttribute15 property.
+* **ConditionalDepartment** The ConditionalDepartment parameter specifies a
+precanned filter that's based on the value of the recipient's Department property.
+* **ConditionalStateOrProvince** The ConditionalStateOrProvince parameter
+specifies a precanned filter that's based on the value of the recipient's
+StateOrProvince  property.
+* **Container** The Container parameter specifies where to create the address list.
+* **DisplayName** Specifies the displayname.
+* **IncludedRecipients** Specifies a precanned filter that's based on the
+recipient type.
+* **RecipientContainer** The RecipientContainer parameter specifies a filter
+that's based on the recipient's location in Active Directory.
+* **RecipientFilter** The RecipientFilter parameter specifies a custom OPath
+filter that's based on the value of any available recipient property.
+
 ### xExchAntiMalwareScanning
 
 **xExchAntiMalwareScanning** is used to enable or disable Exchange Anti-malware scanning.
@@ -208,7 +271,7 @@ Therefore Add-WebConfigurationProperty is used to add a missing IsapiFilter.
 * **AllowServiceRestart**: Whether the Transport services should be
   automatically restarted after a status change.
 
-## xExchAutodiscoverVirtualDirectory
+### xExchAutodiscoverVirtualDirectory
 
 **xExchAutodiscoverVirtualDirectory** is used to configure properties on an
 AutoDiscover Virtual Directory.
@@ -688,6 +751,69 @@ parameters.
   for IMAP4 connections.
 * **X509CertificateName**: The X509CertificateName parameter specifies the
   certificate that's used for encrypting IMAP4 client connections.
+* **AuthenticatedConnectionTimeout**: The AuthenticatedConnectionTimeout
+ parameter specifies the period of time to wait before closing an idle
+ authenticated connection.")] String AuthenticatedConnectionTimeout.
+* **Banner**: The Banner parameter specifies the text string that's displayed to
+ connecting IMAP4 clients.
+* **CalendarItemRetrievalOption**: The CalendarItemRetrievalOption parameter
+ specifies how calendar items are presented to IMAP4 clients.
+ {iCalendar | IntranetUrl | InternetUrl | Custom}
+* **EnableExactRFC822Size**: The EnableExactRFC822Size parameter specifies how
+ message sizes are presented to IMAP4 clients.
+* **EnableGSSAPIAndNTLMAuth**: The EnableGSSAPIAndNTLMAuth parameter specifies
+ whether connections can use Integrated Windows authentication (NTLM) using the
+ Generic Security Services application programming interface (GSSAPI). This
+ setting applies to connections where Transport Layer Security (TLS) is disabled.
+* **EnforceCertificateErrors**: The EnforceCertificateErrors parameter specifies
+ whether to enforce valid Secure Sockets Layer (SSL) certificate validation failures.
+* **ExtendedProtectionPolicy**: The ExtendedProtectionPolicy parameter specifies
+ how Extended Protection for Authentication is used. {None | Allow | Required}
+* **InternalConnectionSettings**: The InternalConnectionSettings parameter
+ specifies the host name, port, and encryption method that's used by internal
+ IMAP4 clients (IMAP4 connections from inside your corporate network).
+* **LogFileLocation**: The LogFileLocation parameter specifies the location for
+ the IMAP4 protocol log files.
+* **LogFileRollOverSettings**: The LogFileRollOverSettings parameter specifies
+ how frequently IMAP4 protocol logging creates a new log file.
+ {Hourly | Daily | Weekly | Monthly}
+* **LogPerFileSizeQuota**: The LogPerFileSizeQuota parameter specifies the
+ maximum size of a IMAP4 protocol log file.
+* **MaxCommandSize**: The MaxCommandSize parameter specifies the maximum size in
+ bytes of a single IMAP4 command.
+* **MaxConnectionFromSingleIP**: The MaxConnectionFromSingleIP parameter
+ specifies the maximum number of IMAP4 connections that are accepted by the
+ Exchange server from a single IP address.
+* **MaxConnections**: The MaxConnections parameter specifies the maximum number
+ of IMAP4 connections that are accepted by the Exchange server.
+* **MaxConnectionsPerUser**: The MaxConnectionsPerUser parameter specifies the
+ maximum number of IMAP4 connections that are allowed for each user.
+* **MessageRetrievalMimeFormat**: The MessageRetrievalMimeFormat parameter
+ specifies the MIME encoding of messages.
+{TextOnly | HtmlOnly | HtmlAndTextAlternative |
+ TextEnrichedOnly  | TextEnrichedAndTextAlternative | BestBodyFormat | Tnef}
+* **OwaServerUrl**: The OwaServerUrl parameter specifies the URL that's used to
+ retrieve calendar information for instances of custom Outlook on the web
+ calendar items.
+* **PreAuthenticatedConnectionTimeout**: The PreAuthenticatedConnectionTimeout
+ parameter specifies the period of time to wait before closing an idle IMAP4
+ connection that isn't authenticated.
+* **ProtocolLogEnabled**: The ProtocolLogEnabled parameter specifies whether to
+ enable protocol logging for IMAP4.
+* **ProxyTargetPort**: The ProxyTargetPort parameter specifies the port on the
+ Microsoft Exchange IMAP4 Backend service that listens for client connections
+ that are proxied from the Microsoft Exchange IMAP4 service.
+* **ShowHiddenFoldersEnabled**: The ShowHiddenFoldersEnabled parameter specifies
+ whether hidden mailbox folders are visible.
+* **SSLBindings**: The SSLBindings parameter specifies the IP address and TCP
+ port that's used for IMAP4 connection that's always encrypted by SSL/TLS. This
+ parameter uses the syntax {IPv4OrIPv6Address}:{Port}.
+* **SuppressReadReceipt**: The SuppressReadReceipt parameter specifies whether
+ to stop duplicate read receipts from being sent to IMAP4 clients that have the
+ Send read receipts for messages I send setting configured in their IMAP4 email
+ program.
+* **UnencryptedOrTLSBindings**: The X509CertificateName parameter specifies the
+ certificate that's used for encrypting IMAP4 client connections.
 
 ### xExchInstall
 
@@ -1535,6 +1661,64 @@ your organization to recipients in the remote domain.
 * **UseSimpleDisplayName** The UseSimpleDisplayName parameter specifies whether
 the sender's simple display name is used for the From email address in
 messages sent to recipients in the remote domain.
+
+### xExchSendConnector
+
+* **Name** Specifies a descriptive name for the connector.
+* **Credential** Credentials used to establish a remote PowerShell session to Exchange.
+* **Ensure** Whether the connector should be present or not.
+* **AddressSpaces** Specifies the domain names to which the Send connector routes
+mail.
+* **AuthenticationCredential** Specifies the username and password that's
+required to use the connector.
+* **Comment** Specifies an optional comment.
+* **ConnectionInactivityTimeout** Specifies the maximum time an idle connection
+can remain open.
+* **ConnectorType** Specifies whether the connector is used in hybrid deployments
+to send messages to Office 365.
+* **DNSRoutingEnabled** Specifies whether the Send connector uses Domain Name System
+* **DomainController** Specifies the domain controller that's used by this cmdlet
+to read data from or write data to ActivDirectory.
+* **DomainSecureEnabled** Enables mutual Transport Layer Security
+* **Enabled** Specifies whether to enable the Send connector to process email messages.
+* **ErrorPolicies** Specifies how communication errors are treated.
+* **ExtendedRightAllowEntries** Additional allow permissions.
+* **ExtendedRightDenyEntries** Additional deny permissions.
+* **ForceHELO** Specifies whether HELO is sent instead of the default EHLO.
+* **FrontendProxyEnabled** Routes outbound messages through the CAS server
+* **Fqdn** Specifies the FQDN used as the source server.
+* **IgnoreSTARTTLS** Specifies whether to ignore the StartTLS option offered by
+a remote sending server.
+* **IsCoexistenceConnector** Specifies whether this Send connector is used for
+secure mail flow between your on
+* **IsScopedConnector** Specifies the availability of the connector to other
+Mailbox servers with the Transport service.
+* **LinkedReceiveConnector** Specifies whether to force all messages received
+by the specified Receive connector out through thi Send connector.
+* **MaxMessageSize** Specifies the maximum size of a message that can pass
+through a connector.
+* **Port** Specifies the port number for smart host forwarding.
+* **ProtocolLoggingLevel** Specifies whether to enable protocol logging.
+* **RequireTLS** Specifies whether all messages sent through this connector must
+be transmitted using TLS.
+* **SmartHostAuthMechanism** Specifies the smart host authentication mechanism
+to use for authentication.
+* **SmartHosts** Specifies the smart hosts the Send connector uses to route mail.
+* **SmtpMaxMessagesPerConnection** Specifies the maximum number of messages the
+server can send per connection.
+* **SourceIPAddress** Specifies the local IP address to use as the endpoint for
+an SMTP connection.
+* **SourceTransportServers** Specifies the names of the Mailbox servers that can
+use this Send connector.
+* **TlsAuthLevel** Specifies the TLS authentication level that is used for
+outbound TLS connections.
+* **TlsDomain** Specifies the domain name that the Send connector uses to verify
+the FQDN of the target certificate.
+* **UseExternalDNSServersEnabled** Specifies whether the connector uses the
+DNS list specified by the ExternalDNSServerparameter of the Set
+* **TlsCertificateName** Specifies the X.509 certificate to use for TLS encryption.
+* **Usage** Specifies the default permissions and authentication methods
+assigned to the Send connector.
 
 ### xExchTransportService
 
