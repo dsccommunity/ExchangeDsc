@@ -8,7 +8,6 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 ## [Unreleased]
 
 ## [1.31.0] - 2020-01-27
-## [Unreleased]
 
 ### Added
 
