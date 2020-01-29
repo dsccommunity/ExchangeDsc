@@ -1,4 +1,8 @@
 ---
+####################################################
+#          ModuleBuilder Configuration             #
+####################################################
+
 CopyDirectories:
   - en-US
   - DSCResources
@@ -6,8 +10,11 @@ CopyDirectories:
 Encoding: UTF8
 VersionedOutputDirectory: true
 
+####################################################
+#       xExchange Pipeline Configuration           #
+####################################################
 BuildWorkflow:
-  ".":
+  '.':
     - build
     - test
 
@@ -32,6 +39,10 @@ BuildWorkflow:
     - Publish_release_to_GitHub
     - publish_module_to_gallery
 
+####################################################
+#       PESTER  Configuration                      #
+####################################################
+
 Pester:
   OutputFormat: NUnitXML
   ExcludeFromCodeCoverage:
@@ -53,13 +64,13 @@ DscTest:
   ExcludeModuleFile:
 
 Resolve-Dependency:
-  Gallery: "PSGallery"
+  Gallery: 'PSGallery'
   AllowPrerelease: false
   Verbose: false
 
 ModuleBuildTasks:
   Sampler:
-    - "*.build.Sampler.ib.tasks"
+    - '*.build.Sampler.ib.tasks'
 
 TaskHeader: |
   param($Path)
@@ -74,7 +85,7 @@ TaskHeader: |
 
 GitHubConfig:
   GitHubFilesToAdd:
-    - "CHANGELOG.md"
+    - 'CHANGELOG.md'
   GitHubConfigUserName: dscbot
   GitHubConfigUserEmail: dsccommunity@outlook.com
   UpdateChangelogOnPrerelease: false
