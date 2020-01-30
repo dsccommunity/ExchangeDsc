@@ -7,6 +7,11 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ## [Unreleased]
 
+### Changed
+
+- xExchange
+  - Update CI pipeline files.
+
 ## [1.31.0] - 2020-01-27
 
 ### Added
