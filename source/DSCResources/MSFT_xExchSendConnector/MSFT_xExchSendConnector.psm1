@@ -40,7 +40,6 @@ function Get-TargetResource
 
     if ($null -ne $connector)
     {
-
         $adPermissions = Get-ADExtendedPermissions -Identity $Name
 
         $returnValue = @{
