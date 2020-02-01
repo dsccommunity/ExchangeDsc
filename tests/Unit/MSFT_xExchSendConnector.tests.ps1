@@ -19,6 +19,10 @@ try
         {
 
         }
+        function Get-DomainController
+        {
+
+        }
         function Add-ADPermission
         {
             param(

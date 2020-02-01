@@ -77,7 +77,10 @@
         'Assert-ExchangeSetupArgumentsComplete',
         'Get-StringFromHashtable',
         'Get-DomainDNFromFQDN',
-        'Set-DSCMachineStatus'
+        'Set-DSCMachineStatus',
+        'Test-ExtendedRightsPresent',
+        'Test-ExtendedRights',
+        'Get-ADExtendedPermissions'
     )
 
     # Cmdlets to export from this module
