@@ -402,6 +402,7 @@ try
                             $TestTargetResourceParamsFalse['ExtendedRightAllowEntries'] = (
                                 New-CimInstance -ClassName 'MSFT_KeyValuePair' -Property @{
                                     key   = 'User1Allow'
+                                    # Picking 2 random permissions to test with
                                     value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Authoritative-Domain-Sender'
                                 } -ClientOnly
                             )

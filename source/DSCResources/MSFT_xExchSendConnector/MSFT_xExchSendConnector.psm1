@@ -332,11 +332,6 @@ function Set-TargetResource
 
     $connector = Get-TargetResource -Name $Name -Credential $Credential -AddressSpaces $AddressSpaces
 
-    if (-not $DomainController)
-    {
-        $PSBoundParameters['DomainController'] = Get-DomainController | Select-Object -First 1 | ForEach-Object -MemberName 'DnsHostName'
-    }
-
     if ($Ensure -eq 'Absent')
     {
         Write-Verbose -Message "Removing send connector $Name."
@@ -357,6 +352,12 @@ function Set-TargetResource
             Write-Verbose -Message "Creating send connector $Name."
 
             New-SendConnector @PSBoundParameters
+
+            if ($ExtendedRightAllowEntries -or $ExtendedRightDenyEntries)
+            {
+                # Setting some sleep period to allow intra-site replication
+                Start-Sleep -Seconds 180
+            }
 
             if ($ExtendedRightAllowEntries)
             {

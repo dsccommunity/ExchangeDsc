@@ -12,8 +12,8 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 - xExchange
   - Update CI pipeline files.
   - Fixing xExchSendConnector ExtendedRight functionality by moving the test function
-to the helper module and setting explicit Deny permissions, instead of removing
-the marked as 'Deny' entries.
+  to the helper module and setting explicit Deny permissions, instead of removing
+  the marked as 'Deny' entries.
 
 ## [1.31.0] - 2020-01-27
 
