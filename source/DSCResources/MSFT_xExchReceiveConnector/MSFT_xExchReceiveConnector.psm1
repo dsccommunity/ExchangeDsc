@@ -1,8 +1,8 @@
 <#
     .SYNOPSIS
-        Gets the ressource
-    .PARAMETER Name
-        Identity of the Receive Connector. Needs to be in format SERVERNAME
+        Gets the resource
+    .PARAMETER Identity
+        Identity of the Receive Connector. Needs to be in format SERVERNAME\CONNECTORNAME (no quotes)
     .PARAMETER Credential
         Credentials used to establish a remote PowerShell session to Exchange.
     .PARAMETER Ensure
@@ -59,111 +59,112 @@ function Get-TargetResource
         foreach ($user in $userNames)
         {
             $allowPermissions = ($adPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $false } |
-                ForEach-Object -MemberName ExtendedRights | ForEach-Object -MemberName RawIdentity) -join ','
-            $denyPermissions = ($adPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $true } |
-                ForEach-Object -MemberName ExtendedRights | ForEach-Object -MemberName RawIdentity) -join ','
+                    ForEach-Object -MemberName ExtendedRights | ForEach-Object -MemberName RawIdentity) -join ','
+    $denyPermissions = ($adPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $true } |
+            ForEach-Object -MemberName ExtendedRights | ForEach-Object -MemberName RawIdentity) -join ','
 
-            if ($allowPermissions)
-            {
-                $ExtendedRightAllowEntries.Add(
-                    (
-                        New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
-                            key   = $user
-                            value = $allowPermissions
-                        } -ClientOnly
-                    )
-                )
-            }
-            if ($denyPermissions)
-            {
-                $ExtendedRightDenyEntries.Add(
-                    (
-                        New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
-                            key   = $user
-                            value = $denyPermissions
-                        } -ClientOnly
-                    )
-                )
-            }
-        }
+if ($allowPermissions)
+{
+    $ExtendedRightAllowEntries.Add(
+        (
+            New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                key   = $user
+                value = $allowPermissions
+            } -ClientOnly
+        )
+    )
+}
+if ($denyPermissions)
+{
+    $ExtendedRightDenyEntries.Add(
+        (
+            New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                key   = $user
+                value = $denyPermissions
+            } -ClientOnly
+        )
+    )
+}
+}
 
-        $returnValue = @{
-            Identity                                = [System.String] $Identity
-            AdvertiseClientSettings                 = [System.Boolean] $connector.AdvertiseClientSettings
-            AuthTarpitInterval                      = [System.String] $connector.AuthTarpitInterval
-            AuthMechanism                           = [System.String[]] $connector.AuthMechanism.ToString().Split(',').Trim()
-            Banner                                  = [System.String] $connector.Banner
-            BareLinefeedRejectionEnabled            = [System.Boolean] $connector.BareLinefeedRejectionEnabled
-            BinaryMimeEnabled                       = [System.Boolean] $connector.BinaryMimeEnabled
-            Bindings                                = [System.String[]] $connector.Bindings
-            ChunkingEnabled                         = [System.Boolean] $connector.ChunkingEnabled
-            Comment                                 = [System.String] $connector.Comment
-            ConnectionInactivityTimeout             = [System.String] $connector.ConnectionInactivityTimeout
-            ConnectionTimeout                       = [System.String] $connector.ConnectionTimeout
-            DefaultDomain                           = [System.String] $connector.DefaultDomain
-            DeliveryStatusNotificationEnabled       = [System.Boolean] $connector.DeliveryStatusNotificationEnabled
-            DomainSecureEnabled                     = [System.Boolean] $connector.DomainSecureEnabled
-            EightBitMimeEnabled                     = [System.Boolean] $connector.EightBitMimeEnabled
-            EnableAuthGSSAPI                        = [System.Boolean] $connector.EnableAuthGSSAPI
-            Enabled                                 = [System.Boolean] $connector.Enabled
-            EnhancedStatusCodesEnabled              = [System.Boolean] $connector.EnhancedStatusCodesEnabled
-            ExtendedProtectionPolicy                = [System.String] $connector.ExtendedProtectionPolicy
-            ExtendedRightAllowEntries               = [Microsoft.Management.Infrastructure.CimInstance[]] $ExtendedRightAllowEntries
-            ExtendedRightDenyEntries                = [Microsoft.Management.Infrastructure.CimInstance[]] $ExtendedRightDenyEntries
-            Fqdn                                    = [System.String] $connector.Fqdn
-            LongAddressesEnabled                    = [System.Boolean] $connector.LongAddressesEnabled
-            MaxAcknowledgementDelay                 = [System.String] $connector.MaxAcknowledgementDelay
-            MaxHeaderSize                           = [System.String] $connector.MaxHeaderSize
-            MaxHopCount                             = [System.Int32] $connector.MaxHopCount
-            MaxInboundConnection                    = [System.String] $connector.MaxInboundConnection
-            MaxInboundConnectionPercentagePerSource = [System.Int32] $connector.MaxInboundConnectionPercentagePerSource
-            MaxInboundConnectionPerSource           = [System.String] $connector.MaxInboundConnectionPerSource
-            MaxLocalHopCount                        = [System.Int32] $connector.MaxLocalHopCount
-            MaxLogonFailures                        = [System.Int32] $connector.MaxLogonFailures
-            MaxMessageSize                          = [System.String] $connector.MaxMessageSize
-            MaxProtocolErrors                       = [System.String] $connector.MaxProtocolErrors
-            MaxRecipientsPerMessage                 = [System.Int32] $connector.MaxRecipientsPerMessage
-            MessageRateLimit                        = [System.String] $connector.MessageRateLimit
-            MessageRateSource                       = [System.String] $connector.MessageRateSource
-            OrarEnabled                             = [System.Boolean] $connector.OrarEnabled
-            PermissionGroups                        = [System.String[]] $connector.PermissionGroups.ToString().Split(',').Trim()
-            PipeliningEnabled                       = [System.Boolean] $connector.PipeliningEnabled
-            ProtocolLoggingLevel                    = [System.String] $connector.ProtocolLoggingLevel
-            RemoteIPRanges                          = [System.String[]] $connector.RemoteIPRanges
-            RequireEHLODomain                       = [System.Boolean] $connector.RequireEHLODomain
-            RequireTLS                              = [System.Boolean] $connector.RequireTLS
-            ServiceDiscoveryFqdn                    = [System.String] $connector.ServiceDiscoveryFqdn
-            SizeEnabled                             = [System.String] $connector.SizeEnabled
-            SuppressXAnonymousTls                   = [System.Boolean] $connector.SuppressXAnonymousTls
-            TarpitInterval                          = [System.String] $connector.TarpitInterval
-            TlsCertificateName                      = [System.String] $connector.TlsCertificateName
-            TlsDomainCapabilities                   = [System.String[]] $connector.TlsDomainCapabilities
-            TransportRole                           = [System.String] $connector.TransportRole
-            Usage                                   = [System.String[]] $connector.Usage
-            Ensure                                  = 'Present'
-        }
+$returnValue = @{
+    Identity                                = [System.String] $Identity
+    AdvertiseClientSettings                 = [System.Boolean] $connector.AdvertiseClientSettings
+    AuthTarpitInterval                      = [System.String] $connector.AuthTarpitInterval
+    AuthMechanism                           = [System.String[]] $connector.AuthMechanism.ToString().Split(',').Trim()
+    Banner                                  = [System.String] $connector.Banner
+    BareLinefeedRejectionEnabled            = [System.Boolean] $connector.BareLinefeedRejectionEnabled
+    BinaryMimeEnabled                       = [System.Boolean] $connector.BinaryMimeEnabled
+    Bindings                                = [System.String[]] $connector.Bindings
+    ChunkingEnabled                         = [System.Boolean] $connector.ChunkingEnabled
+    Comment                                 = [System.String] $connector.Comment
+    ConnectionInactivityTimeout             = [System.String] $connector.ConnectionInactivityTimeout
+    ConnectionTimeout                       = [System.String] $connector.ConnectionTimeout
+    DefaultDomain                           = [System.String] $connector.DefaultDomain
+    DeliveryStatusNotificationEnabled       = [System.Boolean] $connector.DeliveryStatusNotificationEnabled
+    DomainSecureEnabled                     = [System.Boolean] $connector.DomainSecureEnabled
+    EightBitMimeEnabled                     = [System.Boolean] $connector.EightBitMimeEnabled
+    EnableAuthGSSAPI                        = [System.Boolean] $connector.EnableAuthGSSAPI
+    Enabled                                 = [System.Boolean] $connector.Enabled
+    EnhancedStatusCodesEnabled              = [System.Boolean] $connector.EnhancedStatusCodesEnabled
+    ExtendedProtectionPolicy                = [System.String] $connector.ExtendedProtectionPolicy
+    ExtendedRightAllowEntries               = [Microsoft.Management.Infrastructure.CimInstance[]] $ExtendedRightAllowEntries
+    ExtendedRightDenyEntries                = [Microsoft.Management.Infrastructure.CimInstance[]] $ExtendedRightDenyEntries
+    Fqdn                                    = [System.String] $connector.Fqdn
+    LongAddressesEnabled                    = [System.Boolean] $connector.LongAddressesEnabled
+    MaxAcknowledgementDelay                 = [System.String] $connector.MaxAcknowledgementDelay
+    MaxHeaderSize                           = [System.String] $connector.MaxHeaderSize
+    MaxHopCount                             = [System.Int32] $connector.MaxHopCount
+    MaxInboundConnection                    = [System.String] $connector.MaxInboundConnection
+    MaxInboundConnectionPercentagePerSource = [System.Int32] $connector.MaxInboundConnectionPercentagePerSource
+    MaxInboundConnectionPerSource           = [System.String] $connector.MaxInboundConnectionPerSource
+    MaxLocalHopCount                        = [System.Int32] $connector.MaxLocalHopCount
+    MaxLogonFailures                        = [System.Int32] $connector.MaxLogonFailures
+    MaxMessageSize                          = [System.String] $connector.MaxMessageSize
+    MaxProtocolErrors                       = [System.String] $connector.MaxProtocolErrors
+    MaxRecipientsPerMessage                 = [System.Int32] $connector.MaxRecipientsPerMessage
+    MessageRateLimit                        = [System.String] $connector.MessageRateLimit
+    MessageRateSource                       = [System.String] $connector.MessageRateSource
+    OrarEnabled                             = [System.Boolean] $connector.OrarEnabled
+    PermissionGroups                        = [System.String[]] $connector.PermissionGroups.ToString().Split(',').Trim()
+    PipeliningEnabled                       = [System.Boolean] $connector.PipeliningEnabled
+    ProtocolLoggingLevel                    = [System.String] $connector.ProtocolLoggingLevel
+    RemoteIPRanges                          = [System.String[]] $connector.RemoteIPRanges
+    RequireEHLODomain                       = [System.Boolean] $connector.RequireEHLODomain
+    RequireTLS                              = [System.Boolean] $connector.RequireTLS
+    ServiceDiscoveryFqdn                    = [System.String] $connector.ServiceDiscoveryFqdn
+    SizeEnabled                             = [System.String] $connector.SizeEnabled
+    SuppressXAnonymousTls                   = [System.Boolean] $connector.SuppressXAnonymousTls
+    TarpitInterval                          = [System.String] $connector.TarpitInterval
+    TlsCertificateName                      = [System.String] $connector.TlsCertificateName
+    TlsDomainCapabilities                   = [System.String[]] $connector.TlsDomainCapabilities
+    TransportRole                           = [System.String] $connector.TransportRole
+    Usage                                   = [System.String[]] $connector.Usage
+    Ensure                                  = 'Present'
+}
+}
+else
+{
+    $returnValue = @{
+        Ensure = 'Absent'
     }
-    else
-    {
-        $returnValue = @{
-            Ensure = 'Absent'
-        }
-    }
+}
 
-    $returnValue
+$returnValue
 }
 
 <#
     .SYNOPSIS
-        Sets the ressource
-    .PARAMETER Name
-        Identity of the Receive Connector. Needs to be in format SERVERNAME
+        Sets the resource
+    .PARAMETER Identity
+        Identity of the Receive Connector. Needs to be in format SERVERNAME\CONNECTORNAME (no quotes)
     .PARAMETER Credential
         Credentials used to establish a remote PowerShell session to Exchange.
     .PARAMETER Ensure
         Whether the connector should be present or not.
     .PARAMETER AdvertiseClientSettings
-        Specifies whether the SMTP server name
+        Specifies whether the SMTP server name,port number, and authentication settings for the Receive connector
+        are displayed to users in the options of Outlook on the web.
     .PARAMETER AuthMechanism
         Specifies the advertised and accepted authentication mechanisms for the Receive connector.
     .PARAMETER AuthTarpitInterval
@@ -597,15 +598,16 @@ function Set-TargetResource
 
 <#
     .SYNOPSIS
-        Tests the ressource
-    .PARAMETER Name
-        Identity of the Receive Connector. Needs to be in format SERVERNAME
+        Tests the resource
+    .PARAMETER Identity
+        Identity of the Receive Connector. Needs to be in format SERVERNAME\CONNECTORNAME (no quotes)
     .PARAMETER Credential
         Credentials used to establish a remote PowerShell session to Exchange.
     .PARAMETER Ensure
         Whether the connector should be present or not.
     .PARAMETER AdvertiseClientSettings
-        Specifies whether the SMTP server name
+        Specifies whether the SMTP server name,port number, and authentication settings for the Receive connector
+        are displayed to users in the options of Outlook on the web.
     .PARAMETER AuthMechanism
         Specifies the advertised and accepted authentication mechanisms for the Receive connector.
     .PARAMETER AuthTarpitInterval
