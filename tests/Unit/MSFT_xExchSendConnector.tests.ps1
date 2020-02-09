@@ -17,7 +17,9 @@ try
     InModuleScope $script:DSCResourceName {
         function Get-ADPermission
         {
-
+            param(
+                $Identity
+            )
         }
         function Get-DomainController
         {
@@ -267,6 +269,121 @@ try
                         }
 
                         Set-TargetResource @setTargetResourcePermissions }
+                }
+            }
+            Context 'When resource is not present' {
+                $getSendConnectorOutput = @{
+                    Ensure = 'Absent'
+                }
+
+                Mock -CommandName Get-TargetResource -MockWith { return $getSendConnectorOutput }
+
+                It 'Should call New-SendConnector' {
+                    Mock -CommandName New-SendConnector -ParameterFilter { $Name -eq 'MySendConnector' } -Verifiable
+
+                    Set-TargetResource @setTargetResourceParams
+                }
+
+                Context 'When extended allow permissions are specified and no DC is specified' {
+                    $setTargetResourcePermissions = @{ } + $setTargetResourceParams
+                    $setTargetResourcePermissions['ExtendedRightAllowEntries'] = New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                        key   = 'User1Allow'
+                        value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
+                    } -ClientOnly
+
+                    It 'Should call the Add-ADPermission' {
+                        Mock -CommandName 'New-SendConnector' -ParameterFilter { $Name -eq 'MySendConnector' } -Verifiable
+                        Mock -CommandName 'Get-ADPermission' -ParameterFilter { $Identity -eq 'MySendConnector' } -Verifiable -MockWith {
+                            return $setTargetResourcePermissions['ExtendedRightAllowEntries']
+                        }
+                        Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
+                            $Identity -eq 'MySendConnector' -and
+                            $User -eq 'User1Allow' -and
+                            ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
+                                $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient')
+                        }
+
+                        Set-TargetResource @setTargetResourcePermissions
+                    }
+                    It 'Should throw if the connector was not found after 2 minutes' {
+                        Mock -CommandName 'New-SendConnector' -ParameterFilter { $Name -eq 'MySendConnector' } -Verifiable
+                        Mock -CommandName 'Get-ADPermission' -ParameterFilter { $Identity -eq 'MySendConnector' } -Verifiable
+
+                        { Set-TargetResource @setTargetResourcePermissions } | Should -Throw 'The new send connector was not found after 2 minutes of wait time. Please check AD replication!'
+                    }
+                }
+
+                Context 'When extended allow permissions are specified and DC is specified' {
+                    $setTargetResourcePermissions = @{ } + $setTargetResourceParams
+                    $setTargetResourcePermissions['ExtendedRightAllowEntries'] = New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                        key   = 'User1Allow'
+                        value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
+                    } -ClientOnly
+                    $setTargetResourcePermissions['DomainController'] = 'dc.contoso.com'
+
+                    It 'Should call the Add-ADPermission' {
+                        Mock -CommandName 'New-SendConnector' -ParameterFilter { $Name -eq 'MySendConnector' } -Verifiable
+                        Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
+                            $Identity -eq 'MySendConnector' -and
+                            $User -eq 'User1Allow' -and
+                            ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
+                                $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient') -and
+                            $DomainController -eq 'dc.contoso.com'
+                        }
+
+                        Set-TargetResource @setTargetResourcePermissions
+                    }
+                }
+
+                Context 'When extended deny permissions are specified and no DC is specified' {
+                    $setTargetResourcePermissions = @{ } + $setTargetResourceParams
+                    $setTargetResourcePermissions['ExtendedRightDenyEntries'] = New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                        key   = 'User2Deny'
+                        value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
+                    } -ClientOnly
+
+                    It 'Should call the Add-ADPermission' {
+                        Mock -CommandName 'New-SendConnector' -ParameterFilter { $Name -eq 'MySendConnector' } -Verifiable
+                        Mock -CommandName 'Get-ADPermission' -ParameterFilter { $Identity -eq 'MySendConnector' } -Verifiable -MockWith {
+                            return $setTargetResourcePermissions['ExtendedRightDenyEntries']
+                        }
+                        Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
+                            $Identity -eq 'MySendConnector' -and
+                            $User -eq 'User2Deny' -and
+                            ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
+                                $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Sender')
+                        }
+
+                        Set-TargetResource @setTargetResourcePermissions
+                    }
+                    It 'Should throw if the connector was not found after 2 minutes' {
+                        Mock -CommandName 'New-SendConnector' -ParameterFilter { $Name -eq 'MySendConnector' } -Verifiable
+                        Mock -CommandName 'Get-ADPermission' -ParameterFilter { $Identity -eq 'MySendConnector' } -Verifiable
+
+                        { Set-TargetResource @setTargetResourcePermissions } | Should -Throw 'The new send connector was not found after 2 minutes of wait time. Please check AD replication!'
+                    }
+                }
+
+                Context 'When extended deny permissions are specified and DC is specified' {
+                    $setTargetResourcePermissions = @{ } + $setTargetResourceParams
+                    $setTargetResourcePermissions['ExtendedRightDenyEntries'] = New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                        key   = 'User2Deny'
+                        value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
+                    } -ClientOnly
+                    $setTargetResourcePermissions['DomainController'] = 'dc.contoso.com'
+
+                    It 'Should call the Add-ADPermission' {
+                        Mock -CommandName 'New-SendConnector' -ParameterFilter { $Name -eq 'MySendConnector' } -Verifiable
+                        Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
+                            $Identity -eq 'MySendConnector' -and
+                            $User -eq 'User2Deny' -and
+                            ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
+                                $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient') -and
+                            $DomainController -eq 'dc.contoso.com'
+                        }
+
+                        Set-TargetResource @setTargetResourcePermissions
+                    }
                 }
             }
         }

@@ -11,9 +11,9 @@
 [System.String] $script:DSCResourceFriendlyName = 'xExchSendConnector'
 [System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper.psm1')) -Force
-Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1")))
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'xExchangeTestHelper.psm1'))) -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'source' -ChildPath (Join-Path -Path 'Modules' -ChildPath 'xExchangeHelper\xExchangeHelper.psd1'))) -Force
+Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'source' -ChildPath (Join-Path -Path 'DSCResources' -ChildPath (Join-Path -Path "$($script:DSCResourceName)" -ChildPath "$($script:DSCResourceName).psm1"))))
 
 # Check if Exchange is installed on this machine. If not, we can't run tests
 [System.Boolean] $exchangeInstalled = Test-ExchangeSetupComplete
@@ -39,7 +39,7 @@ if ($exchangeInstalled)
             Credential    = $shellCredentials
             AddressSpaces = 'SMTP:test.com;1'
         }
-        $testParamsNoDC = @{
+        $testParams = @{
             Name                         = "DCSTestSendConnector"
             Credential                   = $shellCredentials
             Ensure                       = 'Present'
@@ -48,7 +48,6 @@ if ($exchangeInstalled)
             Comment                      = 'Connector for integration testing'
             ConnectionInactivityTimeout  = '00:05:00'
             ConnectorType                = 'Default'
-            DomainController             = ''
             DNSRoutingEnabled            = $true
             DomainSecureEnabled          = $true
             Enabled                      = $true
@@ -93,7 +92,7 @@ if ($exchangeInstalled)
             UseExternalDNSServersEnabled = $false
         }
 
-        Test-TargetResourceFunctionality -GetParams $getParams -Params $testParams -ContextLabel 'Create Send Connector' -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -GetParams $getParams -Params $testParams -ContextLabel 'Create Send Connector' -ExpectedGetResults $expectedGetResults -Sleep 30
 
         # Modify configuration
         $extendedRightDenyEntries = $(New-CimInstance -ClassName MSFT_KeyValuePair -Namespace root/microsoft/Windows/DesiredStateConfiguration `
@@ -110,7 +109,7 @@ if ($exchangeInstalled)
             Ensure = 'Absent'
         }
 
-        Test-TargetResourceFunctionality -GetParams $getParams -Params $testParams -ContextLabel 'Remove Send Connector' -ExpectedGetResults $expectedGetResults
+        Test-TargetResourceFunctionality -GetParams $getParams -Params $testParams -ContextLabel 'Remove Send Connector' -ExpectedGetResults $expectedGetResults -Sleep 30
 
         # Try to remove the same Send connector again. This should not cause any errors.
         $testStartTime = [DateTime]::Now
@@ -120,8 +119,8 @@ if ($exchangeInstalled)
         Context 'When Get-SendConnector is called and the connector is absent' {
             It 'Should not cause an error to be logged in the event log' {
                 Get-EventLog -LogName 'MSExchange Management' -After $testStartTime -ErrorAction SilentlyContinue | `
-                    Where-Object -FilterScript { $_.Message -like '*Cmdlet failed. Cmdlet Get-SendConnector, parameters -Identity*' } |`
-                    Should -Be $null
+                        Where-Object -FilterScript { $_.Message -like '*Cmdlet failed. Cmdlet Get-SendConnector, parameters -Identity*' } |`
+                            Should -Be $null
             }
         }
     }

@@ -17,6 +17,9 @@
 
     .PARAMETER ExpectedTestResult
         The expected return value from Test-TargetResource.
+
+    .PARAMETER Sleep
+        Specifies sleep time in seconds between calling Set-TargetResource and Test-TargetResource functions.
 #>
 function Test-TargetResourceFunctionality
 {
@@ -41,7 +44,11 @@ function Test-TargetResourceFunctionality
 
         [Parameter()]
         [System.Boolean]
-        $ExpectedTestResult = $true
+        $ExpectedTestResult = $true,
+
+        [Parameter()]
+        [System.Int32]
+        $Sleep
     )
 
     Context $ContextLabel {
@@ -62,6 +69,11 @@ function Test-TargetResourceFunctionality
         Write-Verbose -Message "Test-TargetResource results before running Set-TargetResource: $testResult"
 
         Set-TargetResource @Params
+
+        if ($Sleep)
+        {
+            Start-Sleep -Seconds $Sleep
+        }
 
         [System.Collections.Hashtable] $getResult = Get-TargetResource @GetParams
         [System.Boolean] $testResult = Test-TargetResource @Params
@@ -726,5 +738,44 @@ function Invoke-TestSetup
     Initialize-TestEnvironment @splat
 }
 
+function Test-CimArrayContainsSubArray
+{
+    param (
+        [Parameter(Mandatory = $true)]
+        [System.Object[]]
+        $Array,
+
+        [Parameter(Mandatory = $true)]
+        [System.Object[]]
+        $SubArray
+    )
+
+    foreach ($subItem in $SubArray)
+    {
+        $equalFound = $false
+        foreach ($item in $Array)
+        {
+            if (-not (Compare-Object -DifferenceObject $subItem -ReferenceObject $item -Property Key, Value))
+            {
+                #found a match, skip to next $subItem
+                $equalFound = $true
+                break
+            }
+            if (Test-ArrayElementsInSecondArray -Array1 $subItem.value.Split(',') -Array2 $item.Value.Split(',') -IgnoreCase)
+            {
+                #found a match, skip to next $subItem
+                $equalFound = $true
+                break
+            }
+        }
+
+        if ($equalFound -eq $false)
+        {
+            return $false
+        }
+    }
+
+    return $true
+}
 Export-ModuleMember -Function *
 

@@ -353,30 +353,53 @@ function Set-TargetResource
 
             New-SendConnector @PSBoundParameters
 
-            if ($ExtendedRightAllowEntries -or $ExtendedRightDenyEntries)
+            if (($ExtendedRightAllowEntries -or $ExtendedRightDenyEntries) -and $null -eq $PSBoundParameters['DomainController'])
             {
-                # Setting some sleep period to allow intra-site replication
-                Start-Sleep -Seconds 180
-            }
+                $sendConnectorFound = Get-ADPermission -Identity $Name -ErrorAction SilentlyContinue
+                $itt = 0
 
+                while ($null -eq $sendConnectorFound -and $itt -le 3)
+                {
+                    Write-Verbose -Message 'Extended AD permissions were specified and the new connector is still not found in AD. Sleeping for 30 seconds.'
+                    Start-Sleep -Seconds 30
+                    $itt++
+                    $sendConnectorFound = Get-ADPermission -Identity $Name -ErrorAction SilentlyContinue
+                }
+
+                if ($null -eq $sendConnectorFound)
+                {
+                    throw 'The new send connector was not found after 2 minutes of wait time. Please check AD replication!'
+                }
+            }
+            if ($null -ne $PSBoundParameters['DomainController'])
+            {
+                Write-Verbose -Message 'Setting domain controller as default parameter.'
+                $PSDefaultParameterValues = @{
+                    'Add-ADPermission:DomainController' = $DomainController
+                }
+            }
             if ($ExtendedRightAllowEntries)
             {
+                Write-Verbose -Message "Setting ExtendedRightAllowEntries for send connector: $Name."
+
                 foreach ($ExtendedRightAllowEntry in $ExtendedRightAllowEntries)
                 {
                     foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(',')))
                     {
-                        Add-ADPermission -Identity $Name -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value -DomainController $PSBoundParameters['DomainController']
+                        Add-ADPermission -Identity $Name -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
                     }
                 }
             }
 
             if ($ExtendedRightDenyEntries)
             {
+                Write-Verbose -Message "Setting ExtendedRightDenyEntries for send connector: $Name."
+
                 foreach ($ExtendedRightDenyEntry in $ExtendedRightDenyEntries)
                 {
                     foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(',')))
                     {
-                        Add-ADPermission -Identity $Name -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false -DomainController $PSBoundParameters['DomainController']
+                        Add-ADPermission -Identity $Name -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false
                     }
                 }
             }
@@ -391,6 +414,12 @@ function Set-TargetResource
             $PSBoundParameters['Identity'] = $Name
             Set-SendConnector  @PSBoundParameters
 
+            if ($null -ne $PSBoundParameters['DomainController'])
+            {
+                $PSDefaultParameterValues = @{
+                    'Add-ADPermission:DomainController' = $DomainController
+                }
+            }
             # Set AD permissions
             if ($ExtendedRightAllowEntries)
             {
@@ -398,7 +427,7 @@ function Set-TargetResource
                 {
                     foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(',')))
                     {
-                        Add-ADPermission -Identity $Name -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value -DomainController $PSBoundParameters['DomainController']
+                        Add-ADPermission -Identity $Name -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
                     }
                 }
             }
@@ -409,7 +438,7 @@ function Set-TargetResource
                 {
                     foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(',')))
                     {
-                        Add-ADPermission -Identity $Name -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false -DomainController $PSBoundParameters['DomainController']
+                        Add-ADPermission -Identity $Name -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false
                     }
                 }
             }
@@ -655,7 +684,7 @@ function Test-TargetResource
     )
 
     Write-FunctionEntry -Parameters @{
-        'Identity' = $Identity
+        'Identity' = $Name
     } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
