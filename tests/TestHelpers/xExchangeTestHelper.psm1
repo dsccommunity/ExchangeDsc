@@ -757,13 +757,13 @@ function Test-CimArrayContainsSubArray
         {
             if (-not (Compare-Object -DifferenceObject $subItem -ReferenceObject $item -Property Key, Value))
             {
-                #found a match, skip to next $subItem
+                # Found a match, skip to next $subItem
                 $equalFound = $true
                 break
             }
             if (Test-ArrayElementsInSecondArray -Array1 $subItem.value.Split(',') -Array2 $item.Value.Split(',') -IgnoreCase)
             {
-                #found a match, skip to next $subItem
+                # Found a match, skip to next $subItem
                 $equalFound = $true
                 break
             }

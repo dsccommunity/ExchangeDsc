@@ -2571,7 +2571,7 @@ function Set-DSCMachineStatus
 #>
 function Test-ExtendedRightsPresent
 {
-    [cmdletbinding()]
+    [CmdletBinding()]
     [OutputType([System.Boolean])]
     param
     (
