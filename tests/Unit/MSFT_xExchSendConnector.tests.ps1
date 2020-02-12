@@ -17,6 +17,13 @@ try
     InModuleScope $script:DSCResourceName {
         function Get-ADPermission
         {
+            param(
+                $Identity
+            )
+        }
+        function Get-DomainController
+        {
+
         }
         function Add-ADPermission
         {
@@ -66,7 +73,7 @@ try
             }
 
             $getSendConnectorOutput = @{
-                Name                = 'MySendConnector'
+                Identity            = 'MySendConnector'
                 AddressSpaces       = 'contoso.com'
                 DNSRoutingEnabled   = $true
                 DomainSecureEnabled = $true
@@ -80,15 +87,15 @@ try
 
             Context 'When Get-TargetResource is called and resource is present' {
                 Mock -CommandName Get-SendConnector -Verifiable -MockWith { return [PSCustomObject] $getSendConnectorOutput }
-                Mock -CommandName Get-ADPermission
+
+                Mock -CommandName Get-ADPermission -ModuleName 'xExchangeHelper'
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
             }
-
             Context 'When resource is not present' {
                 It 'Should return Absent' {
                     Mock -CommandName Get-SendConnector -Verifiable
-                    Mock -CommandName Get-ADPermission
+                    Mock -CommandName Get-ADPermission -ModuleName 'xExchangeHelper'
 
                     $result = Get-TargetResource @getTargetResourceParams
                     $result['Ensure'] | Should -be 'Absent'
@@ -97,6 +104,7 @@ try
             Context 'When resource is present' {
                 It 'When Name matches' {
                     Mock -CommandName Get-SendConnector -MockWith { $getSendConnectorOutput } -Verifiable
+                    Mock -CommandName Get-ADPermission -ModuleName 'xExchangeHelper'
 
                     $result = Get-TargetResource @getTargetResourceParams
                     $result['Ensure'] | Should -Be 'Present'
@@ -109,6 +117,7 @@ try
                         'SMTP:tailspintoys.com; 1'
                     )
 
+                    Mock -CommandName Get-ADPermission -ModuleName 'xExchangeHelper'
                     Mock -CommandName Get-SendConnector -MockWith { $getSendConnectorOutput } -Verifiable
 
                     $result = Get-TargetResource @getTargetResourceParams
@@ -116,59 +125,59 @@ try
                 }
 
                 Context 'Extended rights are present' {
-                    $ADPermissions = @()
-                    $permission += [PSCustomObject] @{
-                        IsInherited    = $false
-                        User           = [PSCustomObject] @{
-                            RawIdentity = 'User1Allow'
-                        }
-                        Deny           = $false
-                        ExtendedRights = [PSCustomObject] @{
-                            RawIdentity = 'ms-Exch-SMTP-Accept-Any-Recipient'
-                        }
-                    }
-                    $ADPermissions += $permission
-
-                    $permission = [PSCustomObject] @{
-                        IsInherited    = $false
-                        User           = [PSCustomObject] @{
-                            RawIdentity = 'User1Allow'
-                        }
-                        Deny           = $false
-                        ExtendedRights = [PSCustomObject] @{
-                            RawIdentity = 'ms-Exch-SMTP-Accept-Any-Sender'
-                        }
-                    }
-                    $ADPermissions += $permission
-
-                    $permission = [PSCustomObject] @{
-                        IsInherited    = $false
-                        User           = [PSCustomObject] @{
-                            RawIdentity = 'User2Deny'
-                        }
-                        Deny           = $true
-                        ExtendedRights = [PSCustomObject] @{
-                            RawIdentity = 'ms-Exch-SMTP-Accept-Any-Recipient'
-                        }
-                    }
-                    $ADPermissions += $permission
-
-                    $permission = [PSCustomObject] @{
-                        IsInherited    = $false
-                        User           = [PSCustomObject] @{
-                            RawIdentity = 'User2Deny'
-                        }
-                        Deny           = $true
-                        ExtendedRights = [PSCustomObject] @{
-                            RawIdentity = 'ms-Exch-SMTP-Accept-Any-Sender'
-                        }
-                    }
-                    $ADPermissions += $permission
-
                     Mock -CommandName Get-SendConnector -MockWith { $getSendConnectorOutput } -Verifiable
                     Mock -CommandName Get-ADPermission -MockWith {
+                        $ADPermissions = @()
+                        $permission += [PSCustomObject] @{
+                            IsInherited    = $false
+                            User           = [PSCustomObject] @{
+                                RawIdentity = 'User1Allow'
+                            }
+                            Deny           = $false
+                            ExtendedRights = [PSCustomObject] @{
+                                RawIdentity = 'ms-Exch-SMTP-Accept-Any-Recipient'
+                            }
+                        }
+                        $ADPermissions += $permission
+
+                        $permission = [PSCustomObject] @{
+                            IsInherited    = $false
+                            User           = [PSCustomObject] @{
+                                RawIdentity = 'User1Allow'
+                            }
+                            Deny           = $false
+                            ExtendedRights = [PSCustomObject] @{
+                                RawIdentity = 'ms-Exch-SMTP-Accept-Any-Sender'
+                            }
+                        }
+                        $ADPermissions += $permission
+
+                        $permission = [PSCustomObject] @{
+                            IsInherited    = $false
+                            User           = [PSCustomObject] @{
+                                RawIdentity = 'User2Deny'
+                            }
+                            Deny           = $true
+                            ExtendedRights = [PSCustomObject] @{
+                                RawIdentity = 'ms-Exch-SMTP-Accept-Any-Recipient'
+                            }
+                        }
+                        $ADPermissions += $permission
+
+                        $permission = [PSCustomObject] @{
+                            IsInherited    = $false
+                            User           = [PSCustomObject] @{
+                                RawIdentity = 'User2Deny'
+                            }
+                            Deny           = $true
+                            ExtendedRights = [PSCustomObject] @{
+                                RawIdentity = 'ms-Exch-SMTP-Accept-Any-Sender'
+                            }
+                        }
+                        $ADPermissions += $permission
+
                         return $ADPermissions
-                    }
+                    } -ModuleName 'xExchangeHelper'
 
                     It 'Should yield the correct pemissions' {
                         $result = Get-TargetResource @getTargetResourceParams
@@ -206,6 +215,7 @@ try
                 $getSendConnectorOutput = @{
                     Ensure = 'Present'
                 }
+
                 Mock -CommandName Get-TargetResource -MockWith { return $getSendConnectorOutput }
 
                 Context 'When Absent is specified' {
@@ -261,6 +271,121 @@ try
                         Set-TargetResource @setTargetResourcePermissions }
                 }
             }
+            Context 'When resource is not present' {
+                $getSendConnectorOutput = @{
+                    Ensure = 'Absent'
+                }
+
+                Mock -CommandName Get-TargetResource -MockWith { return $getSendConnectorOutput }
+
+                It 'Should call New-SendConnector' {
+                    Mock -CommandName New-SendConnector -ParameterFilter { $Name -eq 'MySendConnector' } -Verifiable
+
+                    Set-TargetResource @setTargetResourceParams
+                }
+
+                Context 'When extended allow permissions are specified and no DC is specified' {
+                    $setTargetResourcePermissions = @{ } + $setTargetResourceParams
+                    $setTargetResourcePermissions['ExtendedRightAllowEntries'] = New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                        key   = 'User1Allow'
+                        value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
+                    } -ClientOnly
+
+                    It 'Should call the Add-ADPermission' {
+                        Mock -CommandName 'New-SendConnector' -ParameterFilter { $Name -eq 'MySendConnector' } -Verifiable
+                        Mock -CommandName 'Get-ADPermission' -ParameterFilter { $Identity -eq 'MySendConnector' } -Verifiable -MockWith {
+                            return $setTargetResourcePermissions['ExtendedRightAllowEntries']
+                        }
+                        Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
+                            $Identity -eq 'MySendConnector' -and
+                            $User -eq 'User1Allow' -and
+                            ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
+                                $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient')
+                        }
+
+                        Set-TargetResource @setTargetResourcePermissions
+                    }
+                    It 'Should throw if the connector was not found after 2 minutes' {
+                        Mock -CommandName 'New-SendConnector' -ParameterFilter { $Name -eq 'MySendConnector' } -Verifiable
+                        Mock -CommandName 'Get-ADPermission' -ParameterFilter { $Identity -eq 'MySendConnector' } -Verifiable
+
+                        { Set-TargetResource @setTargetResourcePermissions } | Should -Throw 'The new send connector was not found after 2 minutes of wait time. Please check AD replication!'
+                    }
+                }
+
+                Context 'When extended allow permissions are specified and DC is specified' {
+                    $setTargetResourcePermissions = @{ } + $setTargetResourceParams
+                    $setTargetResourcePermissions['ExtendedRightAllowEntries'] = New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                        key   = 'User1Allow'
+                        value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
+                    } -ClientOnly
+                    $setTargetResourcePermissions['DomainController'] = 'dc.contoso.com'
+
+                    It 'Should call the Add-ADPermission' {
+                        Mock -CommandName 'New-SendConnector' -ParameterFilter { $Name -eq 'MySendConnector' } -Verifiable
+                        Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
+                            $Identity -eq 'MySendConnector' -and
+                            $User -eq 'User1Allow' -and
+                            ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
+                                $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient') -and
+                            $DomainController -eq 'dc.contoso.com'
+                        }
+
+                        Set-TargetResource @setTargetResourcePermissions
+                    }
+                }
+
+                Context 'When extended deny permissions are specified and no DC is specified' {
+                    $setTargetResourcePermissions = @{ } + $setTargetResourceParams
+                    $setTargetResourcePermissions['ExtendedRightDenyEntries'] = New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                        key   = 'User2Deny'
+                        value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
+                    } -ClientOnly
+
+                    It 'Should call the Add-ADPermission' {
+                        Mock -CommandName 'New-SendConnector' -ParameterFilter { $Name -eq 'MySendConnector' } -Verifiable
+                        Mock -CommandName 'Get-ADPermission' -ParameterFilter { $Identity -eq 'MySendConnector' } -Verifiable -MockWith {
+                            return $setTargetResourcePermissions['ExtendedRightDenyEntries']
+                        }
+                        Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
+                            $Identity -eq 'MySendConnector' -and
+                            $User -eq 'User2Deny' -and
+                            ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
+                                $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Sender')
+                        }
+
+                        Set-TargetResource @setTargetResourcePermissions
+                    }
+                    It 'Should throw if the connector was not found after 2 minutes' {
+                        Mock -CommandName 'New-SendConnector' -ParameterFilter { $Name -eq 'MySendConnector' } -Verifiable
+                        Mock -CommandName 'Get-ADPermission' -ParameterFilter { $Identity -eq 'MySendConnector' } -Verifiable
+
+                        { Set-TargetResource @setTargetResourcePermissions } | Should -Throw 'The new send connector was not found after 2 minutes of wait time. Please check AD replication!'
+                    }
+                }
+
+                Context 'When extended deny permissions are specified and DC is specified' {
+                    $setTargetResourcePermissions = @{ } + $setTargetResourceParams
+                    $setTargetResourcePermissions['ExtendedRightDenyEntries'] = New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                        key   = 'User2Deny'
+                        value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
+                    } -ClientOnly
+                    $setTargetResourcePermissions['DomainController'] = 'dc.contoso.com'
+
+                    It 'Should call the Add-ADPermission' {
+                        Mock -CommandName 'New-SendConnector' -ParameterFilter { $Name -eq 'MySendConnector' } -Verifiable
+                        Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
+                            $Identity -eq 'MySendConnector' -and
+                            $User -eq 'User2Deny' -and
+                            ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
+                                $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient') -and
+                            $DomainController -eq 'dc.contoso.com'
+                        }
+
+                        Set-TargetResource @setTargetResourcePermissions
+                    }
+                }
+            }
         }
 
         Describe 'MSFT_xExchSendConnector\Test-TargetResource' -Tag 'Test' {
@@ -294,7 +419,7 @@ try
             Context 'When resource exists' {
 
                 $getSendConnectorOutput = @{
-                    Name                = 'MySendConnector'
+                    Identity            = 'MySendConnector'
                     AddressSpaces       = @('contoso.com' , 'SMTP:tailspintoys.com:1')
                     DNSRoutingEnabled   = $true
                     DomainSecureEnabled = $true
@@ -342,7 +467,7 @@ try
                         User           = [PSCustomObject] @{
                             RawIdentity = 'User1Allow'
                         }
-                        Deny           = $false
+                        Deny           = [System.Management.Automation.SwitchParameter]::new($false)
                         ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Recipient'
                         }
@@ -354,7 +479,7 @@ try
                         User           = [PSCustomObject] @{
                             RawIdentity = 'User1Allow'
                         }
-                        Deny           = $false
+                        Deny           = [System.Management.Automation.SwitchParameter]::new($false)
                         ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Sender'
                         }
@@ -366,7 +491,7 @@ try
                         User           = [PSCustomObject] @{
                             RawIdentity = 'User2Deny'
                         }
-                        Deny           = $true
+                        Deny           = [System.Management.Automation.SwitchParameter]::new($true)
                         ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Recipient'
                         }
@@ -378,7 +503,7 @@ try
                         User           = [PSCustomObject] @{
                             RawIdentity = 'User2Deny'
                         }
-                        Deny           = $true
+                        Deny           = [System.Management.Automation.SwitchParameter]::new($true)
                         ExtendedRights = [PSCustomObject] @{
                             RawIdentity = 'ms-Exch-SMTP-Accept-Any-Sender'
                         }
@@ -394,7 +519,8 @@ try
                             $TestTargetResourceParamsFalse['ExtendedRightAllowEntries'] = (
                                 New-CimInstance -ClassName 'MSFT_KeyValuePair' -Property @{
                                     key   = 'User1Allow'
-                                    value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
+                                    # Picking 2 random permissions to test with
+                                    value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Authoritative-Domain-Sender'
                                 } -ClientOnly
                             )
 

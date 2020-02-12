@@ -17,6 +17,9 @@
 
     .PARAMETER ExpectedTestResult
         The expected return value from Test-TargetResource.
+
+    .PARAMETER Sleep
+        Specifies sleep time in seconds between calling Set-TargetResource and Test-TargetResource functions.
 #>
 function Test-TargetResourceFunctionality
 {
@@ -28,6 +31,10 @@ function Test-TargetResourceFunctionality
         $Params,
 
         [Parameter()]
+        [System.Collections.Hashtable]
+        $GetParams,
+
+        [Parameter()]
         [System.String]
         $ContextLabel,
 
@@ -37,7 +44,11 @@ function Test-TargetResourceFunctionality
 
         [Parameter()]
         [System.Boolean]
-        $ExpectedTestResult = $true
+        $ExpectedTestResult = $true,
+
+        [Parameter()]
+        [System.Int32]
+        $Sleep
     )
 
     Context $ContextLabel {
@@ -48,6 +59,10 @@ function Test-TargetResourceFunctionality
             $Params.Add('Verbose', $true)
             $addedVerbose = $true
         }
+        if ($null -eq $GetParams)
+        {
+            $GetParams = $Params
+        }
 
         [System.Boolean] $testResult = Test-TargetResource @Params
 
@@ -55,7 +70,12 @@ function Test-TargetResourceFunctionality
 
         Set-TargetResource @Params
 
-        [System.Collections.Hashtable] $getResult = Get-TargetResource @Params
+        if ($Sleep)
+        {
+            Start-Sleep -Seconds $Sleep
+        }
+
+        [System.Collections.Hashtable] $getResult = Get-TargetResource @GetParams
         [System.Boolean] $testResult = Test-TargetResource @Params
 
         # The ExpectedGetResults are $null, so let's check that what we got back is $null
@@ -82,7 +102,7 @@ function Test-TargetResourceFunctionality
                 {
                     if ($getResult.ContainsKey($key))
                     {
-                        switch ((Get-Command Get-TargetResource).Parameters[$key].ParameterType)
+                        switch ((Get-Command Set-TargetResource).Parameters[$key].ParameterType)
                         {
                             ([System.String[]])
                             {
@@ -91,6 +111,10 @@ function Test-TargetResourceFunctionality
                             ([System.Management.Automation.PSCredential])
                             {
                                 $getValueMatchesForKey = $getResult[$key].UserName -like $ExpectedGetResults[$key].UserName
+                            }
+                            ([Microsoft.Management.Infrastructure.CimInstance[]])
+                            {
+                                $getValueMatchesForKey = Test-CimArrayContainsSubArray -Array $getResult[$key] -SubArray $ExpectedGetResults[$key]
                             }
                             default
                             {
@@ -387,7 +411,7 @@ function Remove-CopiesOfTestDatabase
         Get-MailboxDatabaseCopyStatus -Identity "$($DatabaseName)" | Where-Object -FilterScript {
             $_.Status -notlike 'Mounted'
         } | Remove-MailboxDatabaseCopy -Confirm:$false
-    }
+}
 }
 
 <#
@@ -419,12 +443,12 @@ function Remove-TestDatabase
         $_.Name -like "$($DatabaseName)"
     } | Remove-MailboxDatabase -Confirm:$false
 
-    # Remove the files
-    foreach ($server in $ServerName)
-    {
-        Get-ChildItem -LiteralPath "\\$($server)\c`$\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($DatabaseName)" `
-            -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
-    }
+# Remove the files
+foreach ($server in $ServerName)
+{
+    Get-ChildItem -LiteralPath "\\$($server)\c`$\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($DatabaseName)" `
+        -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
+}
 }
 
 <#
@@ -714,5 +738,44 @@ function Invoke-TestSetup
     Initialize-TestEnvironment @splat
 }
 
+function Test-CimArrayContainsSubArray
+{
+    param (
+        [Parameter(Mandatory = $true)]
+        [System.Object[]]
+        $Array,
+
+        [Parameter(Mandatory = $true)]
+        [System.Object[]]
+        $SubArray
+    )
+
+    foreach ($subItem in $SubArray)
+    {
+        $equalFound = $false
+        foreach ($item in $Array)
+        {
+            if (-not (Compare-Object -DifferenceObject $subItem -ReferenceObject $item -Property Key, Value))
+            {
+                # Found a match, skip to next $subItem
+                $equalFound = $true
+                break
+            }
+            if (Test-ArrayElementsInSecondArray -Array1 $subItem.value.Split(',') -Array2 $item.Value.Split(',') -IgnoreCase)
+            {
+                # Found a match, skip to next $subItem
+                $equalFound = $true
+                break
+            }
+        }
+
+        if ($equalFound -eq $false)
+        {
+            return $false
+        }
+    }
+
+    return $true
+}
 Export-ModuleMember -Function *
 

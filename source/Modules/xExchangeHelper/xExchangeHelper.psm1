@@ -86,6 +86,7 @@ function Get-RemoteExchangeSession
     }
     else # Import the session globally
     {
+        $CommandsToLoad += 'Get-DomainController'
         Import-RemoteExchangeSession -Session $session -CommandsToLoad $CommandsToLoad -Verbose:([System.Management.Automation.ActionPreference]::SilentlyContinue)
     }
 }
@@ -535,13 +536,15 @@ function Test-ShouldUpgradeExchange
                 -and $null -ne $exchangeDisplayVersion.VersionMajor`
                 -and $null -ne $exchangeDisplayVersion.VersionMinor`
                 -and $null -ne $exchangeDisplayVersion.VersionBuild)
-        { # If we have an exchange installed
+        {
+            # If we have an exchange installed
             Write-Verbose -Message "Exchange version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $exchangeDisplayVersion.VersionMajor,$exchangeDisplayVersion.VersionMinor, $exchangeDisplayVersion.VersionBuild)'"
 
             if (($exchangeDisplayVersion.VersionMajor -eq $setupExeVersion.VersionMajor)`
                     -and ($exchangeDisplayVersion.VersionMinor -eq $setupExeVersion.VersionMinor)`
                     -and ($exchangeDisplayVersion.VersionBuild -lt $setupExeVersion.VersionBuild) )
-            { # If server has lower version of CU installed
+            {
+                # If server has lower version of CU installed
                 Write-Verbose -Message 'Version upgrade is requested.'
                 # Executing with the upgrade.
                 $shouldUpgrade = $true
@@ -2555,3 +2558,199 @@ function Set-DSCMachineStatus
 
     $global:DSCMachineStatus = $NewDSCMachineStatus
 }
+
+<#
+    .SYNOPSIS
+        Checks if Extended rights on a AD object are correct.
+    .PARAMETER ADPermissions
+        The current permissions set on a AD object.
+    .PARAMETER ExtendedRights
+        The expected permissions to be present.
+    .PARAMETER Deny
+        Specifies if the permissions being checked have 'Deny' option set.
+#>
+function Test-ExtendedRightsPresent
+{
+    [CmdletBinding()]
+    [OutputType([System.Boolean])]
+    param
+    (
+        [Parameter()]
+        $ADPermissions,
+
+        [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance[]]
+        $ExtendedRights,
+
+        [Parameter()]
+        [System.Boolean]
+        $Deny
+    )
+
+    foreach ($Right in $ExtendedRights)
+    {
+        foreach ($Value in $($Right.Value.Split(',')))
+        {
+            $permissionsFound = $ADPermissions | Where-Object { ($_.User.RawIdentity -eq $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value) }
+            if ($null -ne $permissionsFound)
+            {
+                if ($Deny -eq $true -and $permissionsFound.Deny -eq $false -or
+                    $Deny -eq $false -and $permissionsFound.Deny -eq $true)
+                {
+                    Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue 'Present' -Verbose:$VerbosePreference
+                    return $false
+                }
+            }
+            else
+            {
+                Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue 'Absent' -Verbose:$VerbosePreference
+                return $false
+            }
+        }
+    }
+}
+
+<#
+    .SYNOPSIS
+        Verifies whether the required Extended permissions are correctly set.
+    .DESCRIPTION
+        This functions checkes where all ExtendedRightAllowEntries and ExtendedRightDenyEntries are corretly set on an AD object.
+    .PARAMETER ExtendedRightAllowEntries
+        The desired ExtendedRightAllowEntries.
+    .PARAMETER ExtendedRightDenyEntries
+        The desired ExtendedRightDenyEntries.
+    .PARAMETER ADPermissions
+        The currently present active directory permissions.
+    .OUTPUTS
+        Boolean
+#>
+function Test-ExtendedRights
+{
+    [CmdletBinding()]
+    param (
+        [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance[]]
+        $ExtendedRightAllowEntries,
+
+        [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance[]]
+        $ExtendedRightDenyEntries,
+
+        [Parameter(Mandatory = $true)]
+        [System.Object]
+        $ADPermissions
+    )
+    if ($ExtendedRightAllowEntries -and $ADPermissions.Deny -contains $false)
+    {
+        $splat = @{
+            ADPermissions  = $adPermissions
+            ExtendedRights = $ExtendedRightAllowEntries
+            Deny           = $false
+            Verbose        = $VerbosePreference
+        }
+
+        $permissionsPresent = Test-ExtendedRightsPresent @splat
+
+        if ($permissionsPresent -eq $false)
+        {
+            return $false
+        }
+    }
+    if (-not $ExtendedRightAllowEntries -and $ADPermissions -and $ADPermissions.Deny -notcontains $false)
+    {
+        return $false
+    }
+    if ($ExtendedRightDenyEntries -and $ADPermissions.Deny -contains $true)
+    {
+        $splat = @{
+            ADPermissions  = $ADPermissions
+            ExtendedRights = $ExtendedRightDenyEntries
+            Deny           = $true
+            Verbose        = $VerbosePreference
+        }
+
+        $permissionsPresent = Test-ExtendedRightsPresent @splat
+
+        if ($permissionsPresent -eq $false)
+        {
+            return $false
+        }
+    }
+    if (-not $ExtendedRightDenyEntries -and $ADPermissions -and $ADPermissions.Deny -contains $true)
+    {
+        return $false
+    }
+
+    return $true
+}
+
+<#
+    .SYNOPSIS
+        This functions returns the extended permissions for an Exchnage object.
+    .DESCRIPTION
+        All non-inherited allow and deny permissions are chcked and returned in the
+        form of CimInstance list.
+    .OUTPUTS
+        System.Hashtable
+#>
+function Get-ADExtendedPermissions
+{
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Identity
+    )
+
+    $adPermissions = Get-ADPermission -Identity $Identity -ErrorAction SilentlyContinue | Where-Object { $_.IsInherited -eq $false -and $null -ne $_.ExtendedRights }
+
+    if ($null -eq $adPermissions)
+    {
+        return @{
+            ExtendedRightAllowEntries = $null
+            ExtendedRightDenyEntries  = $null
+        }
+    }
+
+    $userNames = $ADPermissions.User | Select-Object -Property RawIdentity -Unique | ForEach-Object -MemberName RawIdentity
+    $ExtendedRightAllowEntries = [System.Collections.Generic.List[Microsoft.Management.Infrastructure.CimInstance]]::new()
+    $ExtendedRightDenyEntries = [System.Collections.Generic.List[Microsoft.Management.Infrastructure.CimInstance]]::new()
+
+    foreach ($user in $userNames)
+    {
+        $allowPermissions = ($ADPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $false } |
+                ForEach-Object -MemberName ExtendedRights | ForEach-Object -MemberName RawIdentity) -join ','
+$denyPermissions = ($ADPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $true } |
+        ForEach-Object -MemberName ExtendedRights | ForEach-Object -MemberName RawIdentity) -join ','
+
+if ($allowPermissions)
+{
+    $ExtendedRightAllowEntries.Add(
+        (
+            New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                key   = $user
+                value = $allowPermissions
+            } -ClientOnly
+        )
+    )
+}
+if ($denyPermissions)
+{
+    $ExtendedRightDenyEntries.Add(
+        (
+            New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                key   = $user
+                value = $denyPermissions
+            } -ClientOnly
+        )
+    )
+}
+}
+
+return @{
+    ExtendedRightAllowEntries = $ExtendedRightAllowEntries
+    ExtendedRightDenyEntries  = $ExtendedRightDenyEntries
+}
+}
+
+Export-ModuleMember -Function *
