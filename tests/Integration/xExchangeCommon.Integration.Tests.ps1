@@ -20,7 +20,7 @@ function Remove-ExistingPSSession
     param ()
 
     Context 'Remove existing Remote PowerShell Session to Exchange' {
-        Remove-RemoteExchangeSession
+        Remove-RemoteExchangeModule
 
         $Session = $null
         $Session = Get-ExistingRemoteExchangeSession

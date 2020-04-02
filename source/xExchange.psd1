@@ -29,7 +29,7 @@
         'Get-RemoteExchangeSession',
         'New-RemoteExchangeSession',
         'Import-RemoteExchangeSession',
-        'Remove-RemoteExchangeSession',
+        'Remove-RemoteExchangeModule',
         'Test-ExchangePresent',
         'Get-ExchangeVersionYear',
         'Get-ExchangeUninstallKey'

@@ -135,7 +135,7 @@ function Set-TargetResource
     if ($AllowServiceRestart -eq $true)
     {
         # Remove existing PS sessions, as we're about to break them
-        Remove-RemoteExchangeSession -Verbose:$VerbosePreference
+        Remove-RemoteExchangeModule -Verbose:$VerbosePreference
 
         Write-Verbose -Message 'Recycling MSExchangePowerShellAppPool and MSExchangePowerShellFrontEndAppPool'
 

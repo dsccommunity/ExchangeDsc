@@ -45,7 +45,7 @@ function Clear-ExchDscServerADProperty
         $Property
     )
 
-    Get-ADObject -SearchBase "$($exchangeServerDN)" -Filter {ObjectClass -eq 'msExchExchangeServer'} | Where-Object -FilterScript {
+    Get-ADObject -SearchBase "$($exchangeServerDN)" -Filter { ObjectClass -eq 'msExchExchangeServer' } | Where-Object -FilterScript {
         $_.ObjectClass -eq 'msExchExchangeServer'
     } | Set-ADObject -Clear "$($Property)"
 }
@@ -98,7 +98,7 @@ if ($null -ne $adModule)
             }
 
             # Remove our remote Exchange session so as not to interfere with actual Integration testing
-            Remove-RemoteExchangeSession
+            Remove-RemoteExchangeModule
         }
 
         # Get the product key to use for testing
@@ -107,7 +107,7 @@ if ($null -ne $adModule)
             $productKey = Read-Host -Prompt 'Enter the product key to license Exchange with, or press ENTER to skip testing the licensing of the server.'
         }
 
-        $testDC = [System.Net.Dns]::GetHostByName($env:LOGONSERVER.Replace('\\','')).HostName
+        $testDC = [System.Net.Dns]::GetHostByName($env:LOGONSERVER.Replace('\\', '')).HostName
 
         $serverVersion = Get-ExchangeVersionYear
 
@@ -126,7 +126,7 @@ if ($null -ne $adModule)
             }
 
             $expectedGetResults = @{
-                Identity = $env:COMPUTERNAME
+                Identity                        = $env:COMPUTERNAME
                 ErrorReportingEnabled           = $false
                 InternetWebProxy                = ''
                 MonitoringGroup                 = ''
@@ -149,8 +149,8 @@ if ($null -ne $adModule)
 
             # Now do tests
             Test-TargetResourceFunctionality -Params $testParams `
-                                             -ContextLabel 'Standard xExchExchangeServer tests' `
-                                             -ExpectedGetResults $expectedGetResults
+                -ContextLabel 'Standard xExchExchangeServer tests' `
+                -ExpectedGetResults $expectedGetResults
 
             # Alter a number of parameters
             $testParams.InternetWebProxy = $expectedGetResults.InternetWebProxy = 'http://someproxy.local/'
@@ -176,8 +176,8 @@ if ($null -ne $adModule)
 
             # Re-run tests
             Test-TargetResourceFunctionality -Params $testParams `
-                                             -ContextLabel 'Altered xExchExchangeServer tests' `
-                                             -ExpectedGetResults $expectedGetResults
+                -ContextLabel 'Altered xExchExchangeServer tests' `
+                -ExpectedGetResults $expectedGetResults
 
             # Try licensing server with AllowServiceRestart set to True
             Clear-PropsForExchDscServer
@@ -187,8 +187,8 @@ if ($null -ne $adModule)
 
             # Re-run tests
             Test-TargetResourceFunctionality -Params $testParams `
-                                             -ContextLabel 'Service restart after licensing tests' `
-                                             -ExpectedGetResults $expectedGetResults
+                -ContextLabel 'Service restart after licensing tests' `
+                -ExpectedGetResults $expectedGetResults
         }
     }
     else

@@ -43,14 +43,14 @@ function Initialize-ExchDscDatabase
         $_.Name -like "$($Database)"
     } | Remove-MailboxDatabase -Confirm:$false
 
-    Get-ChildItem -LiteralPath "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($Database)" -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
+Get-ChildItem -LiteralPath "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($Database)" -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force -Confirm:$false -ErrorAction SilentlyContinue
 
-    if ($null -ne (Get-MailboxDatabase | Where-Object {$_.Name -like "$($Database)"}))
-    {
-        throw 'Failed to cleanup test database'
-    }
+if ($null -ne (Get-MailboxDatabase | Where-Object { $_.Name -like "$($Database)" }))
+{
+    throw 'Failed to cleanup test database'
+}
 
-    Write-Verbose -Message 'Finished cleaning up test database'
+Write-Verbose -Message 'Finished cleaning up test database'
 }
 
 if ($exchangeInstalled)
@@ -70,81 +70,81 @@ if ($exchangeInstalled)
     # Get Test Mailbox Information
     $testMailbox = Get-DSCTestMailbox -Verbose
     $testMailboxADObjectIDString = ([Microsoft.Exchange.Data.Directory.ADObjectId]::ParseDnOrGuid($testMailbox.DistinguishedName)).ToString()
-    $testMailboxSecondaryAddress = ($testMailbox.EmailAddresses | Where-Object {$_.IsPrimaryAddress -eq $false -and $_.Prefix -like 'SMTP'} | Select-Object -First 1).AddressString
+    $testMailboxSecondaryAddress = ($testMailbox.EmailAddresses | Where-Object { $_.IsPrimaryAddress -eq $false -and $_.Prefix -like 'SMTP' } | Select-Object -First 1).AddressString
 
     # Remove our remote Exchange session so as not to interfere with actual Integration testing
-    Remove-RemoteExchangeSession
+    Remove-RemoteExchangeModule
 
     Describe 'Test Creating a DB and Setting Properties with xExchMailboxDatabase' {
         # First create and set properties on a test database
         $testParams = @{
-            Name = $TestDBName
-            Credential = $shellCredentials
-            Server = $env:COMPUTERNAME
-            EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)\$($TestDBName).edb"
-            LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)"
-            AllowFileRestore = $true
-            AllowServiceRestart = $true
-            AutoDagExcludeFromMonitoring = $true
+            Name                          = $TestDBName
+            Credential                    = $shellCredentials
+            Server                        = $env:COMPUTERNAME
+            EdbFilePath                   = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)\$($TestDBName).edb"
+            LogFolderPath                 = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)"
+            AllowFileRestore              = $true
+            AllowServiceRestart           = $true
+            AutoDagExcludeFromMonitoring  = $true
             BackgroundDatabaseMaintenance = $true
-            CalendarLoggingQuota = 'unlimited'
-            CircularLoggingEnabled = $true
-            DatabaseCopyCount = 1
+            CalendarLoggingQuota          = 'unlimited'
+            CircularLoggingEnabled        = $true
+            DatabaseCopyCount             = 1
             DataMoveReplicationConstraint = 'None'
-            DeletedItemRetention = '14.00:00:00'
-            EventHistoryRetentionPeriod = '03:04:05'
-            IsExcludedFromProvisioning = $false
-            IsSuspendedFromProvisioning = $false
-            JournalRecipient = $testMailbox.PrimarySmtpAddress.Address
-            MailboxRetention = '30.00:00:00'
-            MountAtStartup = $true
-            OfflineAddressBook = $testOabName
+            DeletedItemRetention          = '14.00:00:00'
+            EventHistoryRetentionPeriod   = '03:04:05'
+            IsExcludedFromProvisioning    = $false
+            IsSuspendedFromProvisioning   = $false
+            JournalRecipient              = $testMailbox.PrimarySmtpAddress.Address
+            MailboxRetention              = '30.00:00:00'
+            MountAtStartup                = $true
+            OfflineAddressBook            = $testOabName
             RetainDeletedItemsUntilBackup = $false
-            IssueWarningQuota = '27 MB'
-            ProhibitSendQuota = '1GB'
-            ProhibitSendReceiveQuota = '1.5 GB'
-            RecoverableItemsQuota = 'uNlImItEd'
-            RecoverableItemsWarningQuota = '1,000,448'
+            IssueWarningQuota             = '27 MB'
+            ProhibitSendQuota             = '1GB'
+            ProhibitSendReceiveQuota      = '1.5 GB'
+            RecoverableItemsQuota         = 'uNlImItEd'
+            RecoverableItemsWarningQuota  = '1,000,448'
         }
 
         $expectedGetResults = @{
-            Name = $TestDBName
-            Server = $env:COMPUTERNAME
-            EdbFilePath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)\$($TestDBName).edb"
-            LogFolderPath = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)"
-            AllowFileRestore = $true
-            AutoDagExcludeFromMonitoring = $true
+            Name                          = $TestDBName
+            Server                        = $env:COMPUTERNAME
+            EdbFilePath                   = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)\$($TestDBName).edb"
+            LogFolderPath                 = "C:\Program Files\Microsoft\Exchange Server\V15\Mailbox\$($TestDBName)"
+            AllowFileRestore              = $true
+            AutoDagExcludeFromMonitoring  = $true
             BackgroundDatabaseMaintenance = $true
-            CalendarLoggingQuota = 'unlimited'
-            CircularLoggingEnabled = $true
-            DatabaseCopyCount = 1
+            CalendarLoggingQuota          = 'unlimited'
+            CircularLoggingEnabled        = $true
+            DatabaseCopyCount             = 1
             DataMoveReplicationConstraint = 'None'
-            DeletedItemRetention = '14.00:00:00'
-            EventHistoryRetentionPeriod = '03:04:05'
-            IsExcludedFromProvisioning = $false
-            IsSuspendedFromProvisioning = $false
-            JournalRecipient = $testMailboxADObjectIDString
-            MailboxRetention = '30.00:00:00'
-            MountAtStartup = $true
-            OfflineAddressBook = "\$testOabName"
+            DeletedItemRetention          = '14.00:00:00'
+            EventHistoryRetentionPeriod   = '03:04:05'
+            IsExcludedFromProvisioning    = $false
+            IsSuspendedFromProvisioning   = $false
+            JournalRecipient              = $testMailboxADObjectIDString
+            MailboxRetention              = '30.00:00:00'
+            MountAtStartup                = $true
+            OfflineAddressBook            = "\$testOabName"
             RetainDeletedItemsUntilBackup = $false
-            IssueWarningQuota = '27 MB (28,311,552 bytes)'
-            ProhibitSendQuota = '1 GB (1,073,741,824 bytes)'
-            ProhibitSendReceiveQuota = '1.5 GB (1,610,612,736 bytes)'
-            RecoverableItemsQuota = 'uNlImItEd'
-            RecoverableItemsWarningQuota = '977 KB (1,000,448 bytes)'
+            IssueWarningQuota             = '27 MB (28,311,552 bytes)'
+            ProhibitSendQuota             = '1 GB (1,073,741,824 bytes)'
+            ProhibitSendReceiveQuota      = '1.5 GB (1,610,612,736 bytes)'
+            RecoverableItemsQuota         = 'uNlImItEd'
+            RecoverableItemsWarningQuota  = '977 KB (1,000,448 bytes)'
         }
 
         Test-TargetResourceFunctionality -Params $testParams `
-                                         -ContextLabel 'Create Test Database' `
-                                         -ExpectedGetResults $expectedGetResults
+            -ContextLabel 'Create Test Database' `
+            -ExpectedGetResults $expectedGetResults
 
         # Try changing Journal Recipient address to secondary address
         $testParams.JournalRecipient = $testMailboxSecondaryAddress
 
         Test-TargetResourceFunctionality -Params $testParams `
-                                         -ContextLabel 'Use secondary journaling address test' `
-                                         -ExpectedGetResults $expectedGetResults
+            -ContextLabel 'Use secondary journaling address test' `
+            -ExpectedGetResults $expectedGetResults
 
         # Now change properties on the test database
         $testParams.AllowFileRestore = $false
@@ -304,8 +304,8 @@ if ($exchangeInstalled)
         $expectedGetResults.RecoverableItemsWarningQuota = 'unlimited'
 
         Test-TargetResourceFunctionality -Params $testParams `
-                                         -ContextLabel 'Set remaining quotas to Unlimited' `
-                                         -ExpectedGetResults $expectedGetResults
+            -ContextLabel 'Set remaining quotas to Unlimited' `
+            -ExpectedGetResults $expectedGetResults
     }
 
     # Clean up the test database

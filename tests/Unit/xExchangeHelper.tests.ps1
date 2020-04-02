@@ -5,7 +5,14 @@ param()
 $script:projectPath = "$PSScriptRoot\..\.." | Convert-Path
 $script:projectName = (Get-ChildItem -Path "$script:projectPath\*\*.psd1" | Where-Object -FilterScript {
         ($_.Directory.Name -match 'source|src' -or $_.Directory.Name -eq $_.BaseName) -and
-        $(try { Test-ModuleManifest -Path $_.FullName -ErrorAction Stop } catch { $false })
+        $(try
+            {
+                Test-ModuleManifest -Path $_.FullName -ErrorAction Stop
+            }
+            catch
+            {
+                $false
+            })
     }).BaseName
 
 $script:parentModule = Get-Module -Name $script:projectName -ListAvailable | Select-Object -First 1
@@ -38,7 +45,7 @@ try
         Describe 'xExchangeHelper\Get-ExchangeInstallStatus' -Tag 'Helper' {
             # Used for calls to Get-InstallStatus
             $getInstallStatusParams = @{
-                Path = 'C:\Exchange\setup.exe'
+                Path      = 'C:\Exchange\setup.exe'
                 Arguments = '/mode:Install /role:Mailbox /Iacceptexchangeserverlicenseterms'
             }
 
@@ -154,7 +161,7 @@ try
                     Mock -CommandName Test-ShouldUpgradeExchange -MockWith { return $true }
 
                     $getInstallStatusParams = @{
-                        Path = 'C:\Exchange\setup.exe'
+                        Path      = 'C:\Exchange\setup.exe'
                         Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
                     }
 
@@ -200,7 +207,7 @@ try
                     $error2 = Get-PreviousError
 
                     # Run a command that should always succeed
-                    Get-ChildItem  | Out-Null
+                    Get-ChildItem | Out-Null
 
                     # Get the previous error one more time
                     $error3 = Get-PreviousError
@@ -239,13 +246,13 @@ try
 
         Describe 'xExchangeHelper\Assert-IsSupportedWithExchangeVersion' -Tag 'Helper' {
             $supportedVersionTestCases = @(
-                @{Name='2013 Operation Supported on 2013';      ExchangeVersion='2013'; SupportedVersions='2013'}
-                @{Name='2013 Operation Supported on 2013,2019'; ExchangeVersion='2013'; SupportedVersions='2013', '2019'}
+                @{Name = '2013 Operation Supported on 2013'; ExchangeVersion = '2013'; SupportedVersions = '2013' }
+                @{Name = '2013 Operation Supported on 2013,2019'; ExchangeVersion = '2013'; SupportedVersions = '2013', '2019' }
             )
 
             $notSupportedVersionTestCases = @(
-                @{Name='2013 Operation Not Supported on 2016';      ExchangeVersion='2013'; SupportedVersions='2016'}
-                @{Name='2013 Operation Not Supported on 2016,2019'; ExchangeVersion='2013'; SupportedVersions='2016', '2019'}
+                @{Name = '2013 Operation Not Supported on 2016'; ExchangeVersion = '2013'; SupportedVersions = '2016' }
+                @{Name = '2013 Operation Not Supported on 2016,2019'; ExchangeVersion = '2013'; SupportedVersions = '2016', '2019' }
             )
 
             Context 'When a supported version is passed' {
@@ -274,14 +281,16 @@ try
                 Define an empty function for Get-Recipient, so Pester has something to Mock.
                 This cmdlet is normally loaded as part of GetRemoteExchangeSession.
             #>
-            function Get-Recipient {}
+            function Get-Recipient
+            {
+            }
 
             AfterEach {
                 Assert-VerifiableMock
             }
 
             # Setup test objects for calls to Compare-ADObjectIdToSmtpAddressString
-            $testADObjectID = New-Object -TypeName PSObject -Property @{DistinguishedName='CN=TestUser,DC=contoso,DC=local'}
+            $testADObjectID = New-Object -TypeName PSObject -Property @{DistinguishedName = 'CN=TestUser,DC=contoso,DC=local' }
             $testAddress = 'testuser@contoso.local'
             $testBadAddress = 'baduser@contoso.local'
 
@@ -403,7 +412,7 @@ try
 
                     $processes = Invoke-DotSourcedScript -ScriptPath 'Get-Process' -ScriptParams $scriptParams
 
-                    ($processes | Where-Object -FilterScript {$_.ProcessName -like $testProcess}).Count | Should -BeGreaterThan 0
+                    ($processes | Where-Object -FilterScript { $_.ProcessName -like $testProcess }).Count | Should -BeGreaterThan 0
                 }
             }
 
@@ -424,7 +433,7 @@ try
                         }
                     }
 
-                    $returnValues = Invoke-DotSourcedScript -ScriptPath 'Start-Sleep' -ScriptParams @{Seconds=0} -CommandsToExecuteInScope $commandToExecuteAfterDotSourcing -ParamsForCommandsToExecuteInScope $commandParamsToExecuteAfterDotSourcing
+                    $returnValues = Invoke-DotSourcedScript -ScriptPath 'Start-Sleep' -ScriptParams @{Seconds = 0 } -CommandsToExecuteInScope $commandToExecuteAfterDotSourcing -ParamsForCommandsToExecuteInScope $commandParamsToExecuteAfterDotSourcing
 
                     $returnValues.Count -gt 0 -and $returnValues.ContainsKey('Get-Process') -and $null -ne $returnValues['Get-Process'] | Should -Be $true
                 }
@@ -463,9 +472,9 @@ try
             }
 
             $validExchangeYears = @(
-                @{Year='2013'}
-                @{Year='2016'}
-                @{Year='2019'}
+                @{Year = '2013' }
+                @{Year = '2016' }
+                @{Year = '2019' }
             )
 
             Context 'When Test-ExchangePresent is called with a valid Exchange Version' {
@@ -483,10 +492,10 @@ try
             }
 
             $inValidExchangeYears = @(
-                @{Year='2012'}
-                @{Year=''}
-                @{Year='N/A'}
-                @{Year=$null}
+                @{Year = '2012' }
+                @{Year = '' }
+                @{Year = 'N/A' }
+                @{Year = $null }
             )
 
             Context 'When Test-ExchangePresent is called with an invalid Exchange Version' {
@@ -604,9 +613,9 @@ try
                     Watermark         = 1
                 }
                 @{
-                    UnpackedVersion   = 1
-                    Action            = 1
-                    Watermark         = 1
+                    UnpackedVersion = 1
+                    Action          = 1
+                    Watermark       = 1
                 }
             )
 
@@ -644,7 +653,9 @@ try
 
         Describe 'xExchangeHelper\Set-WSManConfigStatus' -Tag 'Helper' {
             # Define an empty winrm function so we can Mock calls to the winrm executable
-            function winrm {}
+            function winrm
+            {
+            }
 
             AfterEach {
                 Assert-VerifiableMock
@@ -652,7 +663,7 @@ try
 
             Context 'When Set-WSManConfigStatus is called and the UpdatedConfig key does not exist' {
                 It 'Should attempt to configure WinRM' {
-                    Mock -CommandName Get-ItemProperty -Verifiable -MockWith { return @{SomeOtherProp = 'SomeOtherValue'} }
+                    Mock -CommandName Get-ItemProperty -Verifiable -MockWith { return @{SomeOtherProp = 'SomeOtherValue' } }
                     Mock -CommandName Set-Location -Verifiable
                     Mock -CommandName winrm -Verifiable
 
@@ -662,7 +673,7 @@ try
 
             Context 'When Set-WSManConfigStatus is called and the UpdatedConfig key exists' {
                 It 'Should execute without attempting to configure WinRM' {
-                    Mock -CommandName Get-ItemProperty -Verifiable -MockWith { return @{UpdatedConfig = 'SomeValue'} }
+                    Mock -CommandName Get-ItemProperty -Verifiable -MockWith { return @{UpdatedConfig = 'SomeValue' } }
                     Mock -CommandName winrm
 
                     Set-WSManConfigStatus
@@ -689,7 +700,7 @@ try
 
             Context 'When Test-UMLanguagePackInstalled is called and the specified Culture key exists' {
                 It 'Should return true' {
-                    Mock -CommandName Get-ItemProperty -Verifiable -MockWith { return @{TestCulture = $testCultureName} }
+                    Mock -CommandName Get-ItemProperty -Verifiable -MockWith { return @{TestCulture = $testCultureName } }
 
                     Test-UMLanguagePackInstalled -Culture $testCultureName | Should -Be $true
                 }
@@ -697,7 +708,7 @@ try
 
             Context 'When Test-UMLanguagePackInstalled is called and the specified Culture key does not exist' {
                 It 'Should return false' {
-                    Mock -CommandName Get-ItemProperty -Verifiable -MockWith { return @{SomeOtherCulture = 'SomeOtherCulture'} }
+                    Mock -CommandName Get-ItemProperty -Verifiable -MockWith { return @{SomeOtherCulture = 'SomeOtherCulture' } }
 
                     Test-UMLanguagePackInstalled -Culture $testCultureName | Should -Be $false
                 }
@@ -705,9 +716,9 @@ try
         }
 
         Describe 'xExchangeHelper\Test-ShouldInstallUMLanguagePack' -Tag 'Helper' {
-            $noLanguagePackArgs     = '/IAcceptExchangeServerLicenseTerms /mode:Install /r:MB'
+            $noLanguagePackArgs = '/IAcceptExchangeServerLicenseTerms /mode:Install /r:MB'
             $singleLanguagePackArgs = '/AddUmLanguagePack:ja-JP /s:d:\Exchange\UMLanguagePacks /IAcceptExchangeServerLicenseTerms'
-            $multiLanguagePackArgs  = '/AddUmLanguagePack:es-MX,de-DE /s:d:\Exchange\UMLanguagePacks /IAcceptExchangeServerLicenseTerms'
+            $multiLanguagePackArgs = '/AddUmLanguagePack:es-MX,de-DE /s:d:\Exchange\UMLanguagePacks /IAcceptExchangeServerLicenseTerms'
 
             AfterEach {
                 Assert-VerifiableMock
@@ -981,7 +992,7 @@ try
 
             Context 'When Get-ExchangeUninstallKey is called and Exchange 2016 or 2019 is installed' {
                 It 'Should return the 2016/2019 uninstall key' {
-                    Mock -CommandName Get-Item -Verifiable -ParameterFilter {$Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}'} -MockWith { return $true }
+                    Mock -CommandName Get-Item -Verifiable -ParameterFilter { $Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}' } -MockWith { return $true }
 
                     Get-ExchangeUninstallKey | Should -Be -Not $Null
                 }
@@ -989,8 +1000,8 @@ try
 
             Context 'When Get-ExchangeUninstallKey is called and Exchange 2013 is installed' {
                 It 'Should return the 2016/2019 uninstall key' {
-                    Mock -CommandName Get-Item -Verifiable -ParameterFilter {$Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}'} -MockWith { return $null }
-                    Mock -CommandName Get-Item -Verifiable -ParameterFilter {$Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4934D1EA-BE46-48B1-8847-F1AF20E892C1}'} -MockWith { return $true }
+                    Mock -CommandName Get-Item -Verifiable -ParameterFilter { $Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}' } -MockWith { return $null }
+                    Mock -CommandName Get-Item -Verifiable -ParameterFilter { $Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4934D1EA-BE46-48B1-8847-F1AF20E892C1}' } -MockWith { return $true }
 
                     Get-ExchangeUninstallKey | Should -Be -Not $Null
                 }
@@ -998,8 +1009,8 @@ try
 
             Context 'When Get-ExchangeUninstallKey is called and no Exchange is installed' {
                 It 'Should return NULL' {
-                    Mock -CommandName Get-Item -Verifiable -ParameterFilter {$Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}'} -MockWith { return $null }
-                    Mock -CommandName Get-Item -Verifiable -ParameterFilter {$Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4934D1EA-BE46-48B1-8847-F1AF20E892C1}'} -MockWith { return $null }
+                    Mock -CommandName Get-Item -Verifiable -ParameterFilter { $Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{CD981244-E9B8-405A-9026-6AEB9DCEF1F1}' } -MockWith { return $null }
+                    Mock -CommandName Get-Item -Verifiable -ParameterFilter { $Path -like 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{4934D1EA-BE46-48B1-8847-F1AF20E892C1}' } -MockWith { return $null }
 
                     Get-ExchangeUninstallKey | Should -Be $Null
                 }
@@ -1013,12 +1024,12 @@ try
 
             Context 'When DetailedInstalledVersion is called and a valid key is returned by Get-ExchangeUninstallKey' {
                 It 'Should return custom object with VersionMajor and VersionMinor properties' {
-                    Mock -CommandName Get-ExchangeUninstallKey -Verifiable -MockWith { return @{Name = 'SomeKeyName'} }
-                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter {$Name -eq 'DisplayVersion'} -MockWith {
-                        return [PSCustomObject] @{DisplayVersion = '15.1.1531.13'} }
-                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter {$Name -eq 'VersionMajor'} -MockWith {
-                        return [PSCustomObject] @{VersionMajor = 15} }
-                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter {$Name -eq 'VersionMinor'} -MockWith {
+                    Mock -CommandName Get-ExchangeUninstallKey -Verifiable -MockWith { return @{Name = 'SomeKeyName' } }
+                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter { $Name -eq 'DisplayVersion' } -MockWith {
+                        return [PSCustomObject] @{DisplayVersion = '15.1.1531.13' } }
+                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter { $Name -eq 'VersionMajor' } -MockWith {
+                        return [PSCustomObject] @{VersionMajor = 15 } }
+                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter { $Name -eq 'VersionMinor' } -MockWith {
                         return [PSCustomObject] @{ VersionMinor = 1 }
                     }
 
@@ -1046,62 +1057,62 @@ try
             }
 
             $cases = @(
-                        @{
-                            Case = 'Setup.exe is newer. Commandline Argment is /mode:Upgrade'
-                            SetupVersionMajor = 15
-                            SetupVersionMinor = 1
-                            SetupVersionBuild = 2000
-                            ExchangeVersionMajor = 15
-                            ExchangeVersionMinor = 1
-                            ExchangeVersionBuild = 1800
-                            Result = $true
-                            Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
-                        }
-                        @{
-                            Case = 'Setup.exe is newer. Commandline Argment is /m:Upgrade'
-                            SetupVersionMajor = 15
-                            SetupVersionMinor = 1
-                            SetupVersionBuild = 2000
-                            ExchangeVersionMajor = 15
-                            ExchangeVersionMinor = 1
-                            ExchangeVersionBuild = 1800
-                            Result = $true
-                            Arguments = '/m:upgrade /Iacceptexchangeserverlicenseterms'
-                        }
-                        @{
-                            Case = 'Setup.exe and installed Exchange version is the same.'
-                            SetupVersionMajor = 15
-                            SetupVersionMinor = 1
-                            SetupVersionBuild = 2000
-                            ExchangeVersionMajor = 15
-                            ExchangeVersionMinor = 1
-                            ExchangeVersionBuild = 2000
-                            Result = $false
-                            Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
-                        }
-                        @{
-                            Case = 'Installed Exchange version is different than the setup.exe. e.g. 2013, 2016'
-                            SetupVersionMajor = 15
-                            SetupVersionMinor = 1
-                            SetupVersionBuild = 2000
-                            ExchangeVersionMajor = 15
-                            ExchangeVersionMinor = 0
-                            ExchangeVersionBuild = 2000
-                            Result = $false
-                            Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
-                        }
-                        @{
-                            Case = 'Setup.exe version is different than the installed Exchange. e.g. 2013, 2016'
-                            SetupVersionMajor = 15
-                            SetupVersionMinor = 0
-                            SetupVersionBuild = 2000
-                            ExchangeVersionMajor = 15
-                            ExchangeVersionMinor = 1
-                            ExchangeVersionBuild = 2000
-                            Result = $false
-                            Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
-                        }
-                    )
+                @{
+                    Case                 = 'Setup.exe is newer. Commandline Argment is /mode:Upgrade'
+                    SetupVersionMajor    = 15
+                    SetupVersionMinor    = 1
+                    SetupVersionBuild    = 2000
+                    ExchangeVersionMajor = 15
+                    ExchangeVersionMinor = 1
+                    ExchangeVersionBuild = 1800
+                    Result               = $true
+                    Arguments            = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
+                }
+                @{
+                    Case                 = 'Setup.exe is newer. Commandline Argment is /m:Upgrade'
+                    SetupVersionMajor    = 15
+                    SetupVersionMinor    = 1
+                    SetupVersionBuild    = 2000
+                    ExchangeVersionMajor = 15
+                    ExchangeVersionMinor = 1
+                    ExchangeVersionBuild = 1800
+                    Result               = $true
+                    Arguments            = '/m:upgrade /Iacceptexchangeserverlicenseterms'
+                }
+                @{
+                    Case                 = 'Setup.exe and installed Exchange version is the same.'
+                    SetupVersionMajor    = 15
+                    SetupVersionMinor    = 1
+                    SetupVersionBuild    = 2000
+                    ExchangeVersionMajor = 15
+                    ExchangeVersionMinor = 1
+                    ExchangeVersionBuild = 2000
+                    Result               = $false
+                    Arguments            = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
+                }
+                @{
+                    Case                 = 'Installed Exchange version is different than the setup.exe. e.g. 2013, 2016'
+                    SetupVersionMajor    = 15
+                    SetupVersionMinor    = 1
+                    SetupVersionBuild    = 2000
+                    ExchangeVersionMajor = 15
+                    ExchangeVersionMinor = 0
+                    ExchangeVersionBuild = 2000
+                    Result               = $false
+                    Arguments            = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
+                }
+                @{
+                    Case                 = 'Setup.exe version is different than the installed Exchange. e.g. 2013, 2016'
+                    SetupVersionMajor    = 15
+                    SetupVersionMinor    = 0
+                    SetupVersionBuild    = 2000
+                    ExchangeVersionMajor = 15
+                    ExchangeVersionMinor = 1
+                    ExchangeVersionBuild = 2000
+                    Result               = $false
+                    Arguments            = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
+                }
+            )
 
             Context 'When Test-ShouldUpgradeExchange is called for different cases.' {
                 It 'For case <Case> should return <Result>' -TestCases $cases {
@@ -1163,7 +1174,7 @@ try
                         return $null
                     }
 
-                    Mock -CommandName Write-Error -Verifiable -MockWith {}
+                    Mock -CommandName Write-Error -Verifiable -MockWith { }
 
                     Test-ShouldUpgradeExchange -Path 'test' -Arguments $Arguments | Should -Be $false
                 }
@@ -1173,7 +1184,7 @@ try
                 It 'Should return with $false' {
                     $Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
 
-                    Mock -CommandName Write-Error -Verifiable -MockWith {}
+                    Mock -CommandName Write-Error -Verifiable -MockWith { }
 
                     Mock -CommandName Get-SetupExeVersion -Verifiable -MockWith {
                         return [PSCustomObject] @{
@@ -1195,7 +1206,7 @@ try
                 It 'Should return with $false' {
                     $Arguments = '/mode:Upgrade /Iacceptexchangeserverlicenseterms'
 
-                    Mock -CommandName Write-Error -Verifiable -MockWith {}
+                    Mock -CommandName Write-Error -Verifiable -MockWith { }
 
                     Mock -CommandName Get-SetupExeVersion -Verifiable -MockWith {
                         return $false
@@ -1249,45 +1260,6 @@ try
             }
         }
 
-        Describe 'xExchangeHelper\Get-ExistingRemoteExchangeSession' -Tag 'Helper' {
-            AfterEach {
-                Assert-VerifiableMock
-            }
-
-            Context 'When Get-ExistingRemoteExchangeSession is called and there is an existing Remote Exchange Session in an Opened state' {
-                It 'Should return the session' {
-                    Mock -CommandName Get-PSSession -Verifiable -MockWith {
-                        return @{
-                            State = 'Opened'
-                        }
-                    }
-
-                    Get-ExistingRemoteExchangeSession | Should -Be -Not $null
-                }
-            }
-
-            Context 'When Get-ExistingRemoteExchangeSession is called and there is an existing Remote Exchange Session in a state other than Opened' {
-                It 'Should return null' {
-                    Mock -CommandName Get-PSSession -Verifiable -MockWith {
-                        return @{
-                            State = 'Broken'
-                        }
-                    }
-                    Mock -CommandName Remove-RemoteExchangeSession -Verifiable
-
-                    Get-ExistingRemoteExchangeSession | Should -Be $null
-                }
-            }
-
-            Context 'When Get-ExistingRemoteExchangeSession is called and there is not an existing Remote Exchange Session' {
-                It 'Should return null' {
-                    Mock -CommandName Get-PSSession -Verifiable -MockWith { return $null }
-
-                    Get-ExistingRemoteExchangeSession | Should -Be $null
-                }
-            }
-        }
-
         Describe 'xExchangeHelper\Get-RemoteExchangeSession' -Tag 'Helper' {
             AfterEach {
                 Assert-VerifiableMock
@@ -1298,12 +1270,12 @@ try
                     Mock -CommandName Test-ExchangeSetupRunning -Verifiable -MockWith { return $true }
 
                     { Get-RemoteExchangeSession } | `
-                        Should -Throw -ExpectedMessage 'Exchange Setup is currently running. Preventing creation of new Remote PowerShell session to Exchange.'
+                            Should -Throw -ExpectedMessage 'Exchange Setup is currently running. Preventing creation of new Remote PowerShell session to Exchange.'
                 }
             }
 
-            Context 'When Get-RemoteExchangeSession is called, setup is not running, and an existing session exists' {
-                It 'Should return the existing session' {
+            Context 'When Get-RemoteExchangeSession is called, setup is not running, and no exported module exists' {
+                It 'Should export the module' {
                     Mock -CommandName Test-ExchangeSetupRunning -Verifiable -MockWith { return $false }
                     Mock -CommandName Get-ExistingRemoteExchangeSession -Verifiable -MockWith {
                         return @{
@@ -1311,43 +1283,60 @@ try
                         }
                     }
                     Mock -CommandName New-RemoteExchangeSession
-                    Mock -CommandName Import-RemoteExchangeSession
+                    Mock -CommandName Export-PSSession
+                    Mock -CommandName Import-Module
 
                     Get-RemoteExchangeSession
 
-                    Assert-MockCalled -CommandName New-RemoteExchangeSession -Times 0
+                    Assert-MockCalled -CommandName New-RemoteExchangeSession -Times 1
+                    Assert-MockCalled -CommandName Export-PSSession -Times 1
+                    Assert-MockCalled -CommandName Import-Module -Times 1
                 }
             }
 
-            Context 'When Get-RemoteExchangeSession is called, setup is not running, and no existing session exists' {
-                It 'Should create and return the existing session' {
+            Context 'When Get-RemoteExchangeSession is called, setup is not running, exported module exists and there is no existing session' {
+                It 'Should create a session and import the module' {
                     Mock -CommandName Test-ExchangeSetupRunning -Verifiable -MockWith { return $false }
                     Mock -CommandName Get-ExistingRemoteExchangeSession -Verifiable -MockWith { return $null }
+                    Mock -CommandName Test-Path -ParameterFilter { $Path -eq "$env:TEMP\DSCExchangeModule" } -Verifiable -MockWith { $true }
                     Mock -CommandName New-RemoteExchangeSession -Verifiable -MockWith {
                         return @{
                             State = 'Opened'
                         }
                     }
-                    Mock -CommandName Import-RemoteExchangeSession -Verifiable
+                    Mock -CommandName Import-Module -ParameterFilter { $ArgumentList.State -eq 'Opened' } -Verifiable
 
                     Get-RemoteExchangeSession
+
+                    Assert-MockCalled -CommandName New-RemoteExchangeSession -Times 1
+                    Assert-MockCalled -CommandName Import-Module -Times 1
                 }
             }
 
-            Context 'When Get-RemoteExchangeSession is called, setup is not running, no existing session exists, and creation of the session fails' {
-                It 'Should throw an exception' {
+            Context 'When Get-RemoteExchangeSession is called, setup is not running, exported module exists and there is a existing session' {
+                It 'Should create only import the module' {
                     Mock -CommandName Test-ExchangeSetupRunning -Verifiable -MockWith { return $false }
-                    Mock -CommandName Get-ExistingRemoteExchangeSession -Verifiable -MockWith { return $null }
-                    Mock -CommandName New-RemoteExchangeSession -Verifiable -MockWith { return $null }
+                    Mock -CommandName Get-ExistingRemoteExchangeSession -Verifiable -MockWith {
+                        return @{
+                            State = 'Opened'
+                        }
+                    }
+                    Mock -CommandName New-RemoteExchangeSession -Verifiable
+                    Mock -CommandName Import-Module -ParameterFilter { $ArgumentList.State -eq 'Opened' } -Verifiable
 
-                    { Get-RemoteExchangeSession } | Should -Throw -ExpectedMessage 'Failed to establish remote PowerShell session to local server.'
+                    Get-RemoteExchangeSession
+
+                    Assert-MockCalled -CommandName New-RemoteExchangeSession -Times 0
+                    Assert-MockCalled -CommandName Import-Module -Times 1
                 }
             }
         }
 
         Describe 'xExchangeHelper\New-RemoteExchangeSession' -Tag 'Helper' {
             # Define empty function _NewExchangeRunspace so Mock can override it
-            function _NewExchangeRunspace {}
+            function _NewExchangeRunspace
+            {
+            }
 
             AfterEach {
                 Assert-VerifiableMock
@@ -1358,7 +1347,7 @@ try
                     Mock -CommandName Test-ExchangeSetupComplete -Verifiable -MockWith { return $false }
 
                     { New-RemoteExchangeSession } | `
-                        Should -Throw -ExpectedMessage 'A supported version of Exchange is either not present, or not fully installed on this machine.'
+                            Should -Throw -ExpectedMessage 'A supported version of Exchange is either not present, or not fully installed on this machine.'
                 }
             }
 
@@ -1388,10 +1377,14 @@ try
             }
         }
 
-        Describe 'xExchangeHelper\Import-RemoteExchangeSession' -Tag 'Helper' {
+        Describe 'xExchangeHelper\Import-RemoteExchangeModule' -Tag 'Helper' {
             # Override functions which have non-Mockable parameter types
-            function Import-PSSession {}
-            function Import-Module {}
+            function Export-PSSession
+            {
+            }
+            function Import-Module
+            {
+            }
 
             AfterEach {
                 Assert-VerifiableMock
@@ -1400,45 +1393,52 @@ try
             $commandToLoad = 'Get-ExchangeServer'
             $commandsToLoad = @($commandToLoad)
 
-            Context 'When Import-RemoteExchangeSession is called and CommandsToLoad is passed' {
+            Context 'When Import-RemoteExchangeModule is called and CommandsToLoad is passed' {
                 It 'Should import the session and load the commands' {
                     Mock `
-                        -CommandName Import-PSSession `
+                        -CommandName Export-PSSession `
                         -Verifiable `
-                        -ParameterFilter {$CommandsToLoad.Count -eq 1 -and $CommandsToLoad[0] -like $commandToLoad} -MockWith { return $true }
-                    Mock -CommandName Import-Module -Verifiable
+                        -ParameterFilter { $OutputModule -eq "$env:TEMP\DSCExchangeModule" } -MockWith { return $true }
+                    Mock `
+                        -CommandName Import-Module `
+                        -ParameterFilter { $Function.Count -eq 1 -and $Function[0] -like $commandToLoad } `
+                        -Verifiable
 
-                    Import-RemoteExchangeSession -Session 'SomeSession' -CommandsToLoad $commandsToLoad
+                    Import-RemoteExchangeModule -Session 'SomeSession' -CommandsToLoad $commandsToLoad
                 }
             }
 
-            Context 'When Import-RemoteExchangeSession is called and CommandsToLoad is not passed' {
+            Context 'When Import-RemoteExchangeModule is called and CommandsToLoad is not passed' {
                 It 'Should import the session and load all commands' {
                     Mock `
-                        -CommandName Import-PSSession `
+                        -CommandName Export-PSSession `
                         -Verifiable `
-                        -ParameterFilter {$CommandsToLoad.Count -eq 1 -and $CommandsToLoad[0] -like '*'} -MockWith { return $true }
-                    Mock -CommandName Import-Module -Verifiable
+                        -ParameterFilter { $OutputModule -eq "$env:TEMP\DSCExchangeModule" } -MockWith { return $true }
+                    Mock `
+                        -CommandName Import-Module `
+                        -ParameterFilter { $Function.Count -eq 1 -and $Function[0] -eq '*' } `
+                        -Verifiable
 
-                    Import-RemoteExchangeSession -Session 'SomeSession'
+                    Import-RemoteExchangeModule -Session 'SomeSession'
                 }
             }
         }
 
-        Describe 'xExchangeHelper\Remove-RemoteExchangeSession' -Tag 'Helper' {
+        Describe 'xExchangeHelper\Remove-RemoteExchangeModule' -Tag 'Helper' {
             # Override functions which have non-Mockable parameter types
-            function Remove-PSSession {}
+            function Remove-PSSession
+            {
+            }
 
             AfterEach {
                 Assert-VerifiableMock
             }
 
-            Context 'When Remove-RemoteExchangeSession is called and sessions exist' {
-                It 'Should remove the sessions' {
-                    Mock -CommandName Get-ExistingRemoteExchangeSession -Verifiable -MockWith { return 'SomeSession' }
-                    Mock -CommandName Remove-PSSession -Verifiable
+            Context 'When Remove-RemoteExchangeModule is called' {
+                It 'Should remove the module' {
+                    Mock -CommandName Remove-Module -Verifiable
 
-                    Remove-RemoteExchangeSession
+                    Remove-RemoteExchangeModule
                 }
             }
         }
@@ -1629,7 +1629,9 @@ try
 
         Describe 'xExchangeHelper\Compare-UnlimitedToString' -Tag 'Helper' {
             # Override functions which have non-Mockable parameter types
-            function Compare-ByteQuantifiedSizeToString {}
+            function Compare-ByteQuantifiedSizeToString
+            {
+            }
 
             AfterEach {
                 Assert-VerifiableMock
@@ -1643,7 +1645,7 @@ try
                 It 'Should call Compare-StringToString, passing Unlimited as the first string, and the input string as the second' {
                     Mock `
                         -CommandName Compare-StringToString `
-                        -ParameterFilter {$String2 -eq 'unlimitedUnlimitedComp'} `
+                        -ParameterFilter { $String2 -eq 'unlimitedUnlimitedComp' } `
                         -Verifiable `
                         -MockWith { return $true }
 
@@ -1658,7 +1660,7 @@ try
 
             Context 'When Compare-UnlimitedToString is called, the Unlimited is not set to Unlimited, and the string equals Unlimited' {
                 It 'Should return false' {
-                    Mock -CommandName Compare-StringToString -ParameterFilter {$String2 -eq 'Unlimited'} -Verifiable -MockWith { return $true }
+                    Mock -CommandName Compare-StringToString -ParameterFilter { $String2 -eq 'Unlimited' } -Verifiable -MockWith { return $true }
 
                     Compare-UnlimitedToString -Unlimited $unlimitedInt32 -String 'Unlimited' | Should -Be $false
                 }
@@ -1668,7 +1670,7 @@ try
                 It 'Should call Compare-StringToString, passing the Unlimited value as the first string, and the input string as the second' {
                     Mock `
                         -CommandName Compare-StringToString `
-                        -ParameterFilter {$String1 -eq $unlimitedInt32.Value.ToString() -and $String2 -eq '2'} `
+                        -ParameterFilter { $String1 -eq $unlimitedInt32.Value.ToString() -and $String2 -eq '2' } `
                         -Verifiable `
                         -MockWith { return $true }
 
@@ -1790,12 +1792,12 @@ try
 
                     Mock `
                         -CommandName Convert-StringArrayToLowerCase `
-                        -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 )} `
+                        -ParameterFilter { $null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 ) } `
                         -Verifiable `
                         -MockWith { return $Array1Lower }
                     Mock `
                         -CommandName Convert-StringArrayToLowerCase `
-                        -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 )} `
+                        -ParameterFilter { $null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 ) } `
                         -Verifiable `
                         -MockWith { return $Array2Lower }
 
@@ -1843,12 +1845,12 @@ try
 
                     Mock `
                         -CommandName Convert-StringArrayToLowerCase `
-                        -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 )} `
+                        -ParameterFilter { $null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 ) } `
                         -Verifiable `
                         -MockWith { return $Array1Lower }
                     Mock `
                         -CommandName Convert-StringArrayToLowerCase `
-                        -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 )} `
+                        -ParameterFilter { $null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 ) } `
                         -Verifiable `
                         -MockWith { return $Array2Lower }
 
@@ -1976,12 +1978,12 @@ try
 
                     Mock `
                         -CommandName Convert-StringArrayToLowerCase `
-                        -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 )} `
+                        -ParameterFilter { $null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 ) } `
                         -Verifiable `
                         -MockWith { return $Array1Lower }
                     Mock `
                         -CommandName Convert-StringArrayToLowerCase `
-                        -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 )} `
+                        -ParameterFilter { $null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 ) } `
                         -Verifiable `
                         -MockWith { return $Array2Lower }
 
@@ -2023,12 +2025,12 @@ try
 
                     Mock `
                         -CommandName Convert-StringArrayToLowerCase `
-                        -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 )} `
+                        -ParameterFilter { $null -eq (Compare-Object -ReferenceObject $Array1Param -DifferenceObject $Array1 ) } `
                         -Verifiable `
                         -MockWith { return $Array1Lower }
                     Mock `
                         -CommandName Convert-StringArrayToLowerCase `
-                        -ParameterFilter {$null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 )} `
+                        -ParameterFilter { $null -eq (Compare-Object -ReferenceObject $Array2Param -DifferenceObject $Array2 ) } `
                         -Verifiable `
                         -MockWith { return $Array2Lower }
 
@@ -2112,11 +2114,11 @@ try
 
             Context 'When Add-ToPSBoundParametersFromHashtable is called, a parameter is added, and a parameter is changed' {
                 It 'Should add a new parameter and change the existing parameter' {
-                    $param1    = 'abc'
-                    $param2    = $null
+                    $param1 = 'abc'
+                    $param2 = $null
                     $param2new = 'notnull'
-                    $param3    = 'def'
-                    $param4    = 'ghi'
+                    $param3 = 'def'
+                    $param4 = 'ghi'
 
                     $psBoundParametersIn = @{
                         Param1 = $param1
@@ -2146,8 +2148,8 @@ try
 
             Context 'When Remove-FromPSBoundParametersUsingHashtable is called and both ParamsToKeep and ParamsToRemove are specified' {
                 It 'Should throw an exception' {
-                    { Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn @{} -ParamsToKeep @('Param1') -ParamsToRemove @('Param2') } | `
-                        Should -Throw -ExpectedMessage 'Remove-FromPSBoundParametersUsingHashtable does not support using both ParamsToKeep and ParamsToRemove'
+                    { Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn @{ } -ParamsToKeep @('Param1') -ParamsToRemove @('Param2') } | `
+                            Should -Throw -ExpectedMessage 'Remove-FromPSBoundParametersUsingHashtable does not support using both ParamsToKeep and ParamsToRemove'
                 }
             }
 
@@ -2275,11 +2277,11 @@ try
 
             Context 'When Write-InvalidSettingVerbose is called' {
                 It 'Should call Write-Verbose, and the message should contain the input values' {
-                    $setting  = 'TestSetting'
+                    $setting = 'TestSetting'
                     $expected = 'ExpectedTestValue'
-                    $actual   = 'ActualTestValue'
+                    $actual = 'ActualTestValue'
 
-                    Mock -CommandName Write-Verbose -ParameterFilter {$Message.Contains($setting) -and $Message.Contains($expected) -and $Message.Contains($actual)} -Verifiable
+                    Mock -CommandName Write-Verbose -ParameterFilter { $Message.Contains($setting) -and $Message.Contains($expected) -and $Message.Contains($actual) } -Verifiable
 
                     Write-InvalidSettingVerbose -SettingName $setting -ExpectedValue $expected -ActualValue $actual
                 }
@@ -2297,11 +2299,11 @@ try
                 It 'Should write the calling function name and no parameters' {
                     Mock -CommandName Get-PSCallStack -Verifiable -MockWith {
                         return @(
-                            @{FunctionName = 'Bottom-O-Stack'},
-                            @{FunctionName = $functionName}
+                            @{FunctionName = 'Bottom-O-Stack' },
+                            @{FunctionName = $functionName }
                         )
                     }
-                    Mock -CommandName Write-Verbose -ParameterFilter {$Message.Contains($functionName) -and !$Message.Contains('parameters')} -Verifiable
+                    Mock -CommandName Write-Verbose -ParameterFilter { $Message.Contains($functionName) -and !$Message.Contains('parameters') } -Verifiable
 
                     Write-FunctionEntry
                 }
@@ -2311,16 +2313,16 @@ try
                 It 'Should write the calling function name and parameters' {
                     Mock -CommandName Get-PSCallStack -Verifiable -MockWith {
                         return @(
-                            @{FunctionName = 'Bottom-O-Stack'},
-                            @{FunctionName = $functionName}
+                            @{FunctionName = 'Bottom-O-Stack' },
+                            @{FunctionName = $functionName }
                         )
                     }
                     Mock `
                         -CommandName Write-Verbose `
-                        -ParameterFilter {$Message.Contains($functionName) -and $Message.Contains('Param1') -and $Message.Contains('123') -and $Message.Contains('Param2') -and $Message.Contains('321')} `
+                        -ParameterFilter { $Message.Contains($functionName) -and $Message.Contains('Param1') -and $Message.Contains('123') -and $Message.Contains('Param2') -and $Message.Contains('321') } `
                         -Verifiable
 
-                    Write-FunctionEntry -Parameters @{Param1 = 123; Param2 = 321}
+                    Write-FunctionEntry -Parameters @{Param1 = 123; Param2 = 321 }
                 }
             }
         }
@@ -2365,10 +2367,18 @@ try
 
         Describe 'xExchangeHelper\Test-ExchangeSetting' -Tag 'Helper' {
             # Override functions that require types loaded by Exchange DLLs
-            function Compare-TimespanToString {}
-            function Compare-ByteQuantifiedSizeToString {}
-            function Compare-SmtpAddressToString {}
-            function Compare-PSCredential {}
+            function Compare-TimespanToString
+            {
+            }
+            function Compare-ByteQuantifiedSizeToString
+            {
+            }
+            function Compare-SmtpAddressToString
+            {
+            }
+            function Compare-PSCredential
+            {
+            }
 
             AfterEach {
                 Assert-VerifiableMock
@@ -2376,8 +2386,8 @@ try
 
             Context 'When Test-ExchangeSetting is called and the target type is not handled by the function' {
                 It 'Should throw an exception' {
-                    { Test-ExchangeSetting -Name 'Setting' -Type 'MissingType' -ExpectedValue 1 -ActualValue 2 -PSBoundParametersIn @{Setting = 1} } | `
-                        Should -Throw -ExpectedMessage 'Type not found: MissingType'
+                    { Test-ExchangeSetting -Name 'Setting' -Type 'MissingType' -ExpectedValue 1 -ActualValue 2 -PSBoundParametersIn @{Setting = 1 } } | `
+                            Should -Throw -ExpectedMessage 'Type not found: MissingType'
                 }
             }
 
@@ -2441,7 +2451,7 @@ try
 
                     Mock -CommandName $Function -Verifiable -MockWith { return $true }
 
-                    Test-ExchangeSetting -Name 'Setting' -Type $Type -ExpectedValue 1 -ActualValue 2 -PSBoundParametersIn @{Setting = 1} | Should -Be $true
+                    Test-ExchangeSetting -Name 'Setting' -Type $Type -ExpectedValue 1 -ActualValue 2 -PSBoundParametersIn @{Setting = 1 } | Should -Be $true
                 }
             }
 
@@ -2459,13 +2469,13 @@ try
                     Mock -CommandName $Function -Verifiable -MockWith { return $false }
                     Mock -CommandName Write-InvalidSettingVerbose -Verifiable
 
-                    Test-ExchangeSetting -Name 'Setting' -Type $Type -ExpectedValue 1 -ActualValue 2 -PSBoundParametersIn @{Setting = 1} | Should -Be $false
+                    Test-ExchangeSetting -Name 'Setting' -Type $Type -ExpectedValue 1 -ActualValue 2 -PSBoundParametersIn @{Setting = 1 } | Should -Be $false
                 }
             }
 
             Context 'When Test-ExchangeSetting is called, the Type is Int, and the types are equal' {
                 It 'Should return true' {
-                    Test-ExchangeSetting -Name 'Setting' -Type 'Int' -ExpectedValue 1 -ActualValue 1 -PSBoundParametersIn @{Setting = 1} | Should -Be $true
+                    Test-ExchangeSetting -Name 'Setting' -Type 'Int' -ExpectedValue 1 -ActualValue 1 -PSBoundParametersIn @{Setting = 1 } | Should -Be $true
                 }
             }
 
@@ -2473,7 +2483,7 @@ try
                 It 'Should return false' {
                     Mock -CommandName Write-InvalidSettingVerbose -Verifiable
 
-                    Test-ExchangeSetting -Name 'Setting' -Type 'Int' -ExpectedValue 1 -ActualValue 2 -PSBoundParametersIn @{Setting = 1} | Should -Be $false
+                    Test-ExchangeSetting -Name 'Setting' -Type 'Int' -ExpectedValue 1 -ActualValue 2 -PSBoundParametersIn @{Setting = 1 } | Should -Be $false
                 }
             }
 
@@ -2481,7 +2491,7 @@ try
                 It 'Should return true' {
                     Mock -CommandName Convert-StringArrayToLowerCase -Verifiable -MockWith { return @('none') }
 
-                    Test-ExchangeSetting -Name 'Setting' -Type 'ExtendedProtection' -ExpectedValue 1 -ActualValue '' -PSBoundParametersIn @{Setting = 1} | Should -Be $true
+                    Test-ExchangeSetting -Name 'Setting' -Type 'ExtendedProtection' -ExpectedValue 1 -ActualValue '' -PSBoundParametersIn @{Setting = 1 } | Should -Be $true
                 }
             }
 
@@ -2490,7 +2500,7 @@ try
                     Mock -CommandName Convert-StringArrayToLowerCase -Verifiable -MockWith { return @('none') }
                     Mock -CommandName Write-InvalidSettingVerbose -Verifiable
 
-                    Test-ExchangeSetting -Name 'Setting' -Type 'ExtendedProtection' -ExpectedValue 1 -ActualValue 'notempty' -PSBoundParametersIn @{Setting = 1} | Should -Be $false
+                    Test-ExchangeSetting -Name 'Setting' -Type 'ExtendedProtection' -ExpectedValue 1 -ActualValue 'notempty' -PSBoundParametersIn @{Setting = 1 } | Should -Be $false
                 }
             }
 
@@ -2498,7 +2508,7 @@ try
                 It 'Should return true' {
                     Mock -CommandName Compare-ArrayContent -Verifiable -MockWith { return $true }
 
-                    Test-ExchangeSetting -Name 'Setting' -Type 'ExtendedProtection' -ExpectedValue 1 -ActualValue '' -PSBoundParametersIn @{Setting = 1} | Should -Be $true
+                    Test-ExchangeSetting -Name 'Setting' -Type 'ExtendedProtection' -ExpectedValue 1 -ActualValue '' -PSBoundParametersIn @{Setting = 1 } | Should -Be $true
                 }
             }
 
@@ -2507,7 +2517,7 @@ try
                     Mock -CommandName Compare-ArrayContent -Verifiable -MockWith { return $false }
                     Mock -CommandName Write-InvalidSettingVerbose -Verifiable
 
-                    Test-ExchangeSetting -Name 'Setting' -Type 'ExtendedProtection' -ExpectedValue 1 -ActualValue '' -PSBoundParametersIn @{Setting = 1} | Should -Be $false
+                    Test-ExchangeSetting -Name 'Setting' -Type 'ExtendedProtection' -ExpectedValue 1 -ActualValue '' -PSBoundParametersIn @{Setting = 1 } | Should -Be $false
                 }
             }
         }
@@ -2711,8 +2721,12 @@ try
 
         Describe 'xExchangeHelper\Restart-ExistingAppPool' -Tag 'Helper' {
             # Allow override of IIS commands
-            function Get-WebAppPoolState {}
-            function Restart-WebAppPool {}
+            function Get-WebAppPoolState
+            {
+            }
+            function Restart-WebAppPool
+            {
+            }
 
             AfterEach {
                 Assert-VerifiableMock
@@ -2744,12 +2758,12 @@ try
                 Assert-VerifiableMock
             }
 
-            $password1      = ConvertTo-SecureString 'Password1' -AsPlainText -Force
+            $password1 = ConvertTo-SecureString 'Password1' -AsPlainText -Force
             $password1Upper = ConvertTo-SecureString 'PASSWORD1' -AsPlainText -Force
 
-            $user1      = 'user1'
+            $user1 = 'user1'
             $user1Upper = 'USER1'
-            $user2      = 'user2'
+            $user2 = 'user2'
 
             $trueCredentialComps = @(
                 @{
@@ -2818,9 +2832,15 @@ try
 
         Describe 'xExchangeHelper\Start-ExchangeScheduledTask' -Tag 'Helper' {
             # Override functions with non-Mockable parameter types
-            function Register-ScheduledTask {}
-            function Set-ScheduledTask {}
-            function Start-ScheduledTask {}
+            function Register-ScheduledTask
+            {
+            }
+            function Set-ScheduledTask
+            {
+            }
+            function Start-ScheduledTask
+            {
+            }
 
             AfterEach {
                 Assert-VerifiableMock

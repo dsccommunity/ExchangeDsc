@@ -70,24 +70,37 @@ function Get-RemoteExchangeSession
         throw 'Exchange Setup is currently running. Preventing creation of new Remote PowerShell session to Exchange.'
     }
 
-    # See if the session already exists
+    #See if there is already an Exchange Session
     $session = Get-ExistingRemoteExchangeSession -Verbose:$VerbosePreference
 
-    # Either the session didn't exist, or it was broken and we nulled it out. Create a new one
-    if ($null -eq $session)
+    # See if the Exchange Module is alredy export to $env:Temp
+    $exportedModule = Test-Path -Path "$env:TEMP\DSCExchangeModule"
+
+    # If the exported Exchange module does not exist, create a session and export it
+    if ($exportedModule -eq $false)
     {
         $session = New-RemoteExchangeSession -Credential $Credential -Verbose:$VerbosePreference
-    }
 
-    # If the session is still null here, things went wrong. Throw exception
-    if ($null -eq $session)
-    {
-        throw 'Failed to establish remote PowerShell session to local server.'
+        # If the session is still null here, things went wrong. Throw exception
+        if ($null -eq $session)
+        {
+            throw 'Failed to establish remote PowerShell session to local server.'
+        }
+        else # Import the session globally
+        {
+            Import-RemoteExchangeModule -Session $session -Verbose:([System.Management.Automation.ActionPreference]::SilentlyContinue) -CommandsToLoad $CommandsToLoad
+        }
     }
-    else # Import the session globally
+    else
     {
-        $CommandsToLoad += 'Get-DomainController'
-        Import-RemoteExchangeSession -Session $session -CommandsToLoad $CommandsToLoad -Verbose:([System.Management.Automation.ActionPreference]::SilentlyContinue)
+        Write-Verbose -Message 'Importing the DSCExchangeModule.'
+
+        if ($null -eq $session)
+        {
+            $session = New-RemoteExchangeSession -Credential $Credential -Verbose:$VerbosePreference
+        }
+
+        Import-Module $env:Temp\DSCExchangeModule\DSCExchangeModule.psm1 -ArgumentList $session -Global -DisableNameChecking -Function $CommandsToLoad -Force
     }
 }
 
@@ -177,7 +190,7 @@ function New-RemoteExchangeSession
         A list of the cmdlets that should be imported in the remote PowerShell
         session.
 #>
-function Import-RemoteExchangeSession
+function Import-RemoteExchangeModule
 {
     [CmdletBinding()]
     param
@@ -191,9 +204,8 @@ function Import-RemoteExchangeSession
         $CommandsToLoad = @('*')
     )
 
-    $moduleInfo = Import-PSSession $Session -WarningAction SilentlyContinue -DisableNameChecking -AllowClobber -CommandName $CommandsToLoad -Verbose:0
-
-    Import-Module $moduleInfo -Global -DisableNameChecking
+    Export-PSSession -Session $Session -OutputModule $env:Temp\DSCExchangeModule
+    Import-Module $env:Temp\DSCExchangeModule -Global -DisableNameChecking -Function $CommandsToLoad
 }
 
 <#
@@ -201,12 +213,12 @@ function Import-RemoteExchangeSession
         Removes any Remote Exchange PowerShell Sessions that have been setup by
         xExchange.
 #>
-function Remove-RemoteExchangeSession
+function Remove-RemoteExchangeModule
 {
     [CmdletBinding()]
     param ()
 
-    Get-ExistingRemoteExchangeSession | Remove-PSSession
+    Remove-Module -Name 'DSCExchangeModule' -Force
 }
 
 <#
