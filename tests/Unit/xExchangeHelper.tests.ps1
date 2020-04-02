@@ -1282,7 +1282,11 @@ try
                             State = 'Opened'
                         }
                     }
-                    Mock -CommandName New-RemoteExchangeSession
+                    Mock -CommandName New-RemoteExchangeSession -Verifiable -MockWith {
+                        return @{
+                            State = 'Opened'
+                        }
+                    }
                     Mock -CommandName Export-PSSession
                     Mock -CommandName Import-Module
 
@@ -1304,7 +1308,7 @@ try
                             State = 'Opened'
                         }
                     }
-                    Mock -CommandName Import-Module -ParameterFilter { $ArgumentList.State -eq 'Opened' } -Verifiable
+                    Mock -CommandName Import-Module -Verifiable
 
                     Get-RemoteExchangeSession
 
@@ -1314,7 +1318,7 @@ try
             }
 
             Context 'When Get-RemoteExchangeSession is called, setup is not running, exported module exists and there is a existing session' {
-                It 'Should create only import the module' {
+                It 'Should only import the module' {
                     Mock -CommandName Test-ExchangeSetupRunning -Verifiable -MockWith { return $false }
                     Mock -CommandName Get-ExistingRemoteExchangeSession -Verifiable -MockWith {
                         return @{
@@ -1322,7 +1326,7 @@ try
                         }
                     }
                     Mock -CommandName New-RemoteExchangeSession -Verifiable
-                    Mock -CommandName Import-Module -ParameterFilter { $ArgumentList.State -eq 'Opened' } -Verifiable
+                    Mock -CommandName Import-Module -ParameterFilter -Verifiable
 
                     Get-RemoteExchangeSession
 
@@ -1381,9 +1385,15 @@ try
             # Override functions which have non-Mockable parameter types
             function Export-PSSession
             {
+                param(
+                    $OutputModule
+                )
             }
             function Import-Module
             {
+                param(
+                    $Function
+                )
             }
 
             AfterEach {
@@ -1398,7 +1408,7 @@ try
                     Mock `
                         -CommandName Export-PSSession `
                         -Verifiable `
-                        -ParameterFilter { $OutputModule -eq "$env:TEMP\DSCExchangeModule" } -MockWith { return $true }
+                        -ParameterFilter { $OutputModule -eq "$env:TEMP\DSCExchangeModule" }
                     Mock `
                         -CommandName Import-Module `
                         -ParameterFilter { $Function.Count -eq 1 -and $Function[0] -like $commandToLoad } `
@@ -1413,7 +1423,7 @@ try
                     Mock `
                         -CommandName Export-PSSession `
                         -Verifiable `
-                        -ParameterFilter { $OutputModule -eq "$env:TEMP\DSCExchangeModule" } -MockWith { return $true }
+                        -ParameterFilter { $OutputModule -eq "$env:TEMP\DSCExchangeModule" }
                     Mock `
                         -CommandName Import-Module `
                         -ParameterFilter { $Function.Count -eq 1 -and $Function[0] -eq '*' } `
