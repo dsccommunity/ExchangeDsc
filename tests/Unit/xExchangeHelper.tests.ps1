@@ -1261,6 +1261,9 @@ try
         }
 
         Describe 'xExchangeHelper\Get-RemoteExchangeSession' -Tag 'Helper' {
+            function Export-PSSession {
+
+            }
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -1325,12 +1328,11 @@ try
                             State = 'Opened'
                         }
                     }
-                    Mock -CommandName New-RemoteExchangeSession -Verifiable
-                    Mock -CommandName Import-Module -ParameterFilter -Verifiable
+                    Mock -CommandName Test-Path -ParameterFilter { $Path -eq "$env:TEMP\DSCExchangeModule" } -Verifiable -MockWith { $true }
+                    Mock -CommandName Import-Module -Verifiable
 
                     Get-RemoteExchangeSession
 
-                    Assert-MockCalled -CommandName New-RemoteExchangeSession -Times 0
                     Assert-MockCalled -CommandName Import-Module -Times 1
                 }
             }

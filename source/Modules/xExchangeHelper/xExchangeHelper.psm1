@@ -88,7 +88,14 @@ function Get-RemoteExchangeSession
         }
         else # Import the session globally
         {
-            Import-RemoteExchangeModule -Session $session -Verbose:([System.Management.Automation.ActionPreference]::SilentlyContinue) -CommandsToLoad $CommandsToLoad
+            if ($CommandsToLoad)
+            {
+                $PSDefaultParameterValues = @{
+                    "Import-RemoteExchangeModule:CommandsToLoad" = $CommandsToLoad
+                }
+            }
+
+            Import-RemoteExchangeModule -Session $session -Verbose:$VerbosePreference
         }
     }
     else
@@ -99,8 +106,14 @@ function Get-RemoteExchangeSession
         {
             $session = New-RemoteExchangeSession -Credential $Credential -Verbose:$VerbosePreference
         }
+        if ($CommandsToLoad)
+        {
+            $PSDefaultParameterValues = @{
+                "Import-Module:Function" = $CommandsToLoad
+            }
+        }
 
-        Import-Module $env:Temp\DSCExchangeModule\DSCExchangeModule.psm1 -ArgumentList $session -Global -DisableNameChecking -Function $CommandsToLoad -Force
+        Import-Module $env:Temp\DSCExchangeModule\DSCExchangeModule.psm1 -ArgumentList $session -Global -DisableNameChecking -Force
     }
 }
 
