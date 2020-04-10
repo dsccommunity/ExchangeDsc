@@ -8,7 +8,7 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 ## [Unreleased]
 
 - xExchange
-  - A remote implicing module with all Exchange cmdlets will be created under 
+  - A remote implicing module with all Exchange cmdlets will be created under
   $env:Temp and reused every time DSC check runs, instead of creating a new
   module every time.
 

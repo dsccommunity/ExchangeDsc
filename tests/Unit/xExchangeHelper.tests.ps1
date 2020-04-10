@@ -1261,12 +1261,15 @@ try
         }
 
         Describe 'xExchangeHelper\Get-RemoteExchangeSession' -Tag 'Helper' {
-            function Export-PSSession {
+            function Export-PSSession
+            {
 
             }
             AfterEach {
                 Assert-VerifiableMock
             }
+
+            $DSCExchangeModulePath = "$env:TEMP\DSCExchangeModule"
 
             Context 'When Get-RemoteExchangeSession is called and Exchange setup is running' {
                 It 'Should throw an exception' {
@@ -1305,7 +1308,7 @@ try
                 It 'Should create a session and import the module' {
                     Mock -CommandName Test-ExchangeSetupRunning -Verifiable -MockWith { return $false }
                     Mock -CommandName Get-ExistingRemoteExchangeSession -Verifiable -MockWith { return $null }
-                    Mock -CommandName Test-Path -ParameterFilter { $Path -eq "$env:TEMP\DSCExchangeModule" } -Verifiable -MockWith { $true }
+                    Mock -CommandName Test-Path -ParameterFilter { $Path -eq $DSCExchangeModulePath } -Verifiable -MockWith { $true }
                     Mock -CommandName New-RemoteExchangeSession -Verifiable -MockWith {
                         return @{
                             State = 'Opened'
@@ -1328,7 +1331,7 @@ try
                             State = 'Opened'
                         }
                     }
-                    Mock -CommandName Test-Path -ParameterFilter { $Path -eq "$env:TEMP\DSCExchangeModule" } -Verifiable -MockWith { $true }
+                    Mock -CommandName Test-Path -ParameterFilter { $Path -eq $DSCExchangeModulePath } -Verifiable -MockWith { $true }
                     Mock -CommandName Import-Module -Verifiable
 
                     Get-RemoteExchangeSession
@@ -1410,7 +1413,7 @@ try
                     Mock `
                         -CommandName Export-PSSession `
                         -Verifiable `
-                        -ParameterFilter { $OutputModule -eq "$env:TEMP\DSCExchangeModule" }
+                        -ParameterFilter { $OutputModule -eq $DSCExchangeModulePath }
                     Mock `
                         -CommandName Import-Module `
                         -ParameterFilter { $Function.Count -eq 1 -and $Function[0] -like $commandToLoad } `
@@ -1425,7 +1428,7 @@ try
                     Mock `
                         -CommandName Export-PSSession `
                         -Verifiable `
-                        -ParameterFilter { $OutputModule -eq "$env:TEMP\DSCExchangeModule" }
+                        -ParameterFilter { $OutputModule -eq $DSCExchangeModulePath }
                     Mock `
                         -CommandName Import-Module `
                         -ParameterFilter { $Function.Count -eq 1 -and $Function[0] -eq '*' } `

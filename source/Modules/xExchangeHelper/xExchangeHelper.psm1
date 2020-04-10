@@ -1,3 +1,6 @@
+$script:DSCExchangeModuleName = 'DSCExchangeModule'
+$script:DSCExchangeModulePath = "$env:Temp\DSCExchangeModuleName"
+
 <#
     .SYNOPSIS
         Gets the existing Remote PowerShell session to Exchange, if it exists
@@ -73,8 +76,8 @@ function Get-RemoteExchangeSession
     #See if there is already an Exchange Session
     $session = Get-ExistingRemoteExchangeSession -Verbose:$VerbosePreference
 
-    # See if the Exchange Module is alredy export to $env:Temp
-    $exportedModule = Test-Path -Path "$env:TEMP\DSCExchangeModule"
+    # See if the Exchange Module is already exported to $env:Temp
+    $exportedModule = Test-Path -Path $script:DSCExchangeModulePath
 
     # If the exported Exchange module does not exist, create a session and export it
     if ($exportedModule -eq $false)
@@ -91,7 +94,7 @@ function Get-RemoteExchangeSession
             if ($CommandsToLoad)
             {
                 $PSDefaultParameterValues = @{
-                    "Import-RemoteExchangeModule:CommandsToLoad" = $CommandsToLoad
+                    'Import-RemoteExchangeModule:CommandsToLoad' = $CommandsToLoad
                 }
             }
 
@@ -100,7 +103,7 @@ function Get-RemoteExchangeSession
     }
     else
     {
-        Write-Verbose -Message 'Importing the DSCExchangeModule.'
+        Write-Verbose -Message 'Importing the xExchange Remote PowerShell Module.'
 
         if ($null -eq $session)
         {
@@ -109,11 +112,11 @@ function Get-RemoteExchangeSession
         if ($CommandsToLoad)
         {
             $PSDefaultParameterValues = @{
-                "Import-Module:Function" = $CommandsToLoad
+                'Import-Module:Function' = $CommandsToLoad
             }
         }
 
-        Import-Module $env:Temp\DSCExchangeModule\DSCExchangeModule.psm1 -ArgumentList $session -Global -DisableNameChecking -Force
+        Import-Module $script:DSCExchangeModulePath\$script:DSCExchangeModuleName.psm1 -ArgumentList $session -Global -DisableNameChecking -Force
     }
 }
 
@@ -217,8 +220,8 @@ function Import-RemoteExchangeModule
         $CommandsToLoad = @('*')
     )
 
-    Export-PSSession -Session $Session -OutputModule $env:Temp\DSCExchangeModule
-    Import-Module $env:Temp\DSCExchangeModule -Global -DisableNameChecking -Function $CommandsToLoad
+    Export-PSSession -Session $Session -OutputModule $script:DSCExchangeModulePath
+    Import-Module $script:DSCExchangeModulePath -Global -DisableNameChecking -Function $CommandsToLoad
 }
 
 <#
@@ -231,7 +234,7 @@ function Remove-RemoteExchangeModule
     [CmdletBinding()]
     param ()
 
-    Remove-Module -Name 'DSCExchangeModule' -Force
+    Remove-Module -Name $script:DSCExchangeModuleName -Force
 }
 
 <#
