@@ -43,114 +43,72 @@ function Get-TargetResource
 
     if ($null -ne $connector)
     {
-        if ($adObject = $Identity.Split('\')[1])
-        {
-            $adPermissions = Get-ADPermission -Identity $adObject | Where-Object { $_.IsInherited -eq $false -and $null -ne $_.ExtendedRights }
+        $adPermissions = Get-ADExtendedPermissions -Identity $Identity.Split('\')[1]
+
+        $returnValue = @{
+            Identity                                = [System.String] $Identity
+            AdvertiseClientSettings                 = [System.Boolean] $connector.AdvertiseClientSettings
+            AuthTarpitInterval                      = [System.String] $connector.AuthTarpitInterval
+            AuthMechanism                           = [System.String[]] $connector.AuthMechanism.ToString().Split(',').Trim()
+            Banner                                  = [System.String] $connector.Banner
+            BareLinefeedRejectionEnabled            = [System.Boolean] $connector.BareLinefeedRejectionEnabled
+            BinaryMimeEnabled                       = [System.Boolean] $connector.BinaryMimeEnabled
+            Bindings                                = [System.String[]] $connector.Bindings
+            ChunkingEnabled                         = [System.Boolean] $connector.ChunkingEnabled
+            Comment                                 = [System.String] $connector.Comment
+            ConnectionInactivityTimeout             = [System.String] $connector.ConnectionInactivityTimeout
+            ConnectionTimeout                       = [System.String] $connector.ConnectionTimeout
+            DefaultDomain                           = [System.String] $connector.DefaultDomain
+            DeliveryStatusNotificationEnabled       = [System.Boolean] $connector.DeliveryStatusNotificationEnabled
+            DomainSecureEnabled                     = [System.Boolean] $connector.DomainSecureEnabled
+            EightBitMimeEnabled                     = [System.Boolean] $connector.EightBitMimeEnabled
+            EnableAuthGSSAPI                        = [System.Boolean] $connector.EnableAuthGSSAPI
+            Enabled                                 = [System.Boolean] $connector.Enabled
+            EnhancedStatusCodesEnabled              = [System.Boolean] $connector.EnhancedStatusCodesEnabled
+            ExtendedProtectionPolicy                = [System.String] $connector.ExtendedProtectionPolicy
+            ExtendedRightAllowEntries               = [Microsoft.Management.Infrastructure.CimInstance[]] $adPermissions['ExtendedRightAllowEntries']
+            ExtendedRightDenyEntries                = [Microsoft.Management.Infrastructure.CimInstance[]] $adPermissions['ExtendedRightDenyEntries']
+            Fqdn                                    = [System.String] $connector.Fqdn
+            LongAddressesEnabled                    = [System.Boolean] $connector.LongAddressesEnabled
+            MaxAcknowledgementDelay                 = [System.String] $connector.MaxAcknowledgementDelay
+            MaxHeaderSize                           = [System.String] $connector.MaxHeaderSize
+            MaxHopCount                             = [System.Int32] $connector.MaxHopCount
+            MaxInboundConnection                    = [System.String] $connector.MaxInboundConnection
+            MaxInboundConnectionPercentagePerSource = [System.Int32] $connector.MaxInboundConnectionPercentagePerSource
+            MaxInboundConnectionPerSource           = [System.String] $connector.MaxInboundConnectionPerSource
+            MaxLocalHopCount                        = [System.Int32] $connector.MaxLocalHopCount
+            MaxLogonFailures                        = [System.Int32] $connector.MaxLogonFailures
+            MaxMessageSize                          = [System.String] $connector.MaxMessageSize
+            MaxProtocolErrors                       = [System.String] $connector.MaxProtocolErrors
+            MaxRecipientsPerMessage                 = [System.Int32] $connector.MaxRecipientsPerMessage
+            MessageRateLimit                        = [System.String] $connector.MessageRateLimit
+            MessageRateSource                       = [System.String] $connector.MessageRateSource
+            OrarEnabled                             = [System.Boolean] $connector.OrarEnabled
+            PermissionGroups                        = [System.String[]] $connector.PermissionGroups.ToString().Split(',').Trim()
+            PipeliningEnabled                       = [System.Boolean] $connector.PipeliningEnabled
+            ProtocolLoggingLevel                    = [System.String] $connector.ProtocolLoggingLevel
+            RemoteIPRanges                          = [System.String[]] $connector.RemoteIPRanges
+            RequireEHLODomain                       = [System.Boolean] $connector.RequireEHLODomain
+            RequireTLS                              = [System.Boolean] $connector.RequireTLS
+            ServiceDiscoveryFqdn                    = [System.String] $connector.ServiceDiscoveryFqdn
+            SizeEnabled                             = [System.String] $connector.SizeEnabled
+            SuppressXAnonymousTls                   = [System.Boolean] $connector.SuppressXAnonymousTls
+            TarpitInterval                          = [System.String] $connector.TarpitInterval
+            TlsCertificateName                      = [System.String] $connector.TlsCertificateName
+            TlsDomainCapabilities                   = [System.String[]] $connector.TlsDomainCapabilities
+            TransportRole                           = [System.String] $connector.TransportRole
+            Usage                                   = [System.String[]] $connector.Usage
+            Ensure                                  = 'Present'
         }
-        else
-        {
-            $adPermissions = Get-ADPermission -Identity $Identity | Where-Object { $_.IsInherited -eq $false -and $null -ne $_.ExtendedRights }
-        }
-
-        $userNames = $adPermissions.User | Select-Object -Property RawIdentity -Unique | ForEach-Object -MemberName RawIdentity
-        $ExtendedRightAllowEntries = [System.Collections.Generic.List[Microsoft.Management.Infrastructure.CimInstance]]::new()
-        $ExtendedRightDenyEntries = [System.Collections.Generic.List[Microsoft.Management.Infrastructure.CimInstance]]::new()
-
-        foreach ($user in $userNames)
-        {
-            $allowPermissions = ($adPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $false } |
-                    ForEach-Object -MemberName ExtendedRights | ForEach-Object -MemberName RawIdentity) -join ','
-    $denyPermissions = ($adPermissions | Where-Object -FilterScript { $_.User.RawIdentity -eq $user -and $_.Deny -eq $true } |
-            ForEach-Object -MemberName ExtendedRights | ForEach-Object -MemberName RawIdentity) -join ','
-
-if ($allowPermissions)
-{
-    $ExtendedRightAllowEntries.Add(
-        (
-            New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
-                key   = $user
-                value = $allowPermissions
-            } -ClientOnly
-        )
-    )
-}
-if ($denyPermissions)
-{
-    $ExtendedRightDenyEntries.Add(
-        (
-            New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
-                key   = $user
-                value = $denyPermissions
-            } -ClientOnly
-        )
-    )
-}
-}
-
-$returnValue = @{
-    Identity                                = [System.String] $Identity
-    AdvertiseClientSettings                 = [System.Boolean] $connector.AdvertiseClientSettings
-    AuthTarpitInterval                      = [System.String] $connector.AuthTarpitInterval
-    AuthMechanism                           = [System.String[]] $connector.AuthMechanism.ToString().Split(',').Trim()
-    Banner                                  = [System.String] $connector.Banner
-    BareLinefeedRejectionEnabled            = [System.Boolean] $connector.BareLinefeedRejectionEnabled
-    BinaryMimeEnabled                       = [System.Boolean] $connector.BinaryMimeEnabled
-    Bindings                                = [System.String[]] $connector.Bindings
-    ChunkingEnabled                         = [System.Boolean] $connector.ChunkingEnabled
-    Comment                                 = [System.String] $connector.Comment
-    ConnectionInactivityTimeout             = [System.String] $connector.ConnectionInactivityTimeout
-    ConnectionTimeout                       = [System.String] $connector.ConnectionTimeout
-    DefaultDomain                           = [System.String] $connector.DefaultDomain
-    DeliveryStatusNotificationEnabled       = [System.Boolean] $connector.DeliveryStatusNotificationEnabled
-    DomainSecureEnabled                     = [System.Boolean] $connector.DomainSecureEnabled
-    EightBitMimeEnabled                     = [System.Boolean] $connector.EightBitMimeEnabled
-    EnableAuthGSSAPI                        = [System.Boolean] $connector.EnableAuthGSSAPI
-    Enabled                                 = [System.Boolean] $connector.Enabled
-    EnhancedStatusCodesEnabled              = [System.Boolean] $connector.EnhancedStatusCodesEnabled
-    ExtendedProtectionPolicy                = [System.String] $connector.ExtendedProtectionPolicy
-    ExtendedRightAllowEntries               = [Microsoft.Management.Infrastructure.CimInstance[]] $ExtendedRightAllowEntries
-    ExtendedRightDenyEntries                = [Microsoft.Management.Infrastructure.CimInstance[]] $ExtendedRightDenyEntries
-    Fqdn                                    = [System.String] $connector.Fqdn
-    LongAddressesEnabled                    = [System.Boolean] $connector.LongAddressesEnabled
-    MaxAcknowledgementDelay                 = [System.String] $connector.MaxAcknowledgementDelay
-    MaxHeaderSize                           = [System.String] $connector.MaxHeaderSize
-    MaxHopCount                             = [System.Int32] $connector.MaxHopCount
-    MaxInboundConnection                    = [System.String] $connector.MaxInboundConnection
-    MaxInboundConnectionPercentagePerSource = [System.Int32] $connector.MaxInboundConnectionPercentagePerSource
-    MaxInboundConnectionPerSource           = [System.String] $connector.MaxInboundConnectionPerSource
-    MaxLocalHopCount                        = [System.Int32] $connector.MaxLocalHopCount
-    MaxLogonFailures                        = [System.Int32] $connector.MaxLogonFailures
-    MaxMessageSize                          = [System.String] $connector.MaxMessageSize
-    MaxProtocolErrors                       = [System.String] $connector.MaxProtocolErrors
-    MaxRecipientsPerMessage                 = [System.Int32] $connector.MaxRecipientsPerMessage
-    MessageRateLimit                        = [System.String] $connector.MessageRateLimit
-    MessageRateSource                       = [System.String] $connector.MessageRateSource
-    OrarEnabled                             = [System.Boolean] $connector.OrarEnabled
-    PermissionGroups                        = [System.String[]] $connector.PermissionGroups.ToString().Split(',').Trim()
-    PipeliningEnabled                       = [System.Boolean] $connector.PipeliningEnabled
-    ProtocolLoggingLevel                    = [System.String] $connector.ProtocolLoggingLevel
-    RemoteIPRanges                          = [System.String[]] $connector.RemoteIPRanges
-    RequireEHLODomain                       = [System.Boolean] $connector.RequireEHLODomain
-    RequireTLS                              = [System.Boolean] $connector.RequireTLS
-    ServiceDiscoveryFqdn                    = [System.String] $connector.ServiceDiscoveryFqdn
-    SizeEnabled                             = [System.String] $connector.SizeEnabled
-    SuppressXAnonymousTls                   = [System.Boolean] $connector.SuppressXAnonymousTls
-    TarpitInterval                          = [System.String] $connector.TarpitInterval
-    TlsCertificateName                      = [System.String] $connector.TlsCertificateName
-    TlsDomainCapabilities                   = [System.String[]] $connector.TlsDomainCapabilities
-    TransportRole                           = [System.String] $connector.TransportRole
-    Usage                                   = [System.String[]] $connector.Usage
-    Ensure                                  = 'Present'
-}
-}
-else
-{
-    $returnValue = @{
-        Ensure = 'Absent'
     }
-}
+    else
+    {
+        $returnValue = @{
+            Ensure = 'Absent'
+        }
+    }
 
-$returnValue
+    $returnValue
 }
 
 <#
@@ -563,6 +521,56 @@ function Set-TargetResource
             Write-Verbose -Message 'Setting the receive connector properties.'
 
             Set-ReceiveConnector @PSBoundParameters
+
+            if (($ExtendedRightAllowEntries -or $ExtendedRightDenyEntries) -and $null -eq $PSBoundParameters['DomainController'])
+            {
+                $receiveConnectorFound = Get-ADPermission -Identity $Name -ErrorAction SilentlyContinue
+                $itt = 0
+
+                while ($null -eq $receiveConnectorFound -and $itt -le 3)
+                {
+                    Write-Verbose -Message 'Extended AD permissions were specified and the new connector is still not found in AD. Sleeping for 30 seconds.'
+                    Start-Sleep -Seconds 30
+                    $itt++
+                    $receiveConnectorFound = Get-ADPermission -Identity $Name -ErrorAction SilentlyContinue
+                }
+
+                if ($null -eq $receiveConnectorFound)
+                {
+                    throw 'The new send connector was not found after 2 minutes of wait time. Please check AD replication!'
+                }
+            }
+            if ($null -ne $PSBoundParameters['DomainController'])
+            {
+                Write-Verbose -Message 'Setting domain controller as default parameter.'
+                $PSDefaultParameterValues = @{
+                    'Add-ADPermission:DomainController' = $DomainController
+                }
+            }
+            if ($ExtendedRightAllowEntries)
+            {
+                Write-Verbose -Message "Setting ExtendedRightAllowEntries for receive connector: $($Identity.Split('\')[1])."
+
+                foreach ($ExtendedRightAllowEntry in $ExtendedRightAllowEntries)
+                {
+                    foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(',')))
+                    {
+                        Add-ADPermission -Identity $Identity.Split('\')[1] -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
+                    }
+                }
+            }
+            if ($ExtendedRightDenyEntries)
+            {
+                Write-Verbose -Message "Setting ExtendedRightDenyEntries for receive connector: $($Identity.Split('\')[1])."
+
+                foreach ($ExtendedRightDenyEntry in $ExtendedRightDenyEntries)
+                {
+                    foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(',')))
+                    {
+                        Add-ADPermission -Identity $Identity.Split('\')[1] -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false
+                    }
+                }
+            }
         }
         else
         {
@@ -570,26 +578,30 @@ function Set-TargetResource
             Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove 'Usage', 'ExtendedRightAllowEntries', 'ExtendedRightDenyEntries'
 
             Set-ReceiveConnector @PSBoundParameters
-        }
-        # set AD permissions
-        if ($ExtendedRightAllowEntries)
-        {
-            foreach ($ExtendedRightAllowEntry in $ExtendedRightAllowEntries)
+
+            # set AD permissions
+            if ($ExtendedRightAllowEntries)
             {
-                foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(',')))
+                Write-Verbose -Message "Setting ExtendedRightAllowEntries for receive connector: $($Identity.Split('\')[1])."
+
+                foreach ($ExtendedRightAllowEntry in $ExtendedRightAllowEntries)
                 {
-                    Add-ADPermission -Identity $Identity.Split('\')[1] -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
+                    foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(',')))
+                    {
+                        Add-ADPermission -Identity $Identity.Split('\')[1] -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
+                    }
                 }
             }
-        }
-
-        if ($ExtendedRightDenyEntries)
-        {
-            foreach ($ExtendedRightDenyEntry in $ExtendedRightDenyEntries)
+            if ($ExtendedRightDenyEntries)
             {
-                foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(',')))
+                Write-Verbose -Message "Setting ExtendedRightDenyEntries for receive connector: $($Identity.Split('\')[1])."
+
+                foreach ($ExtendedRightDenyEntry in $ExtendedRightDenyEntries)
                 {
-                    Add-ADPermission -Identity $Identity.Split('\')[1] -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false
+                    foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(',')))
+                    {
+                        Add-ADPermission -Identity $Identity.Split('\')[1] -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false
+                    }
                 }
             }
         }
@@ -980,7 +992,22 @@ function Test-TargetResource
             # Get AD permissions if necessary
             if (($ExtendedRightAllowEntries) -or ($ExtendedRightDenyEntries))
             {
-                $adPermissions = Get-ADPermission -Identity $Identity.Split('\')[1] | Where-Object { $_.IsInherited -eq $false }
+                if ($PSBoundParameters.ContainsKey('DomainController'))
+                {
+                    $adPermissions = Get-ADPermission -Identity $Identity.Split('\')[1] -DomainController $DomainController | Where-Object { $_.IsInherited -eq $false }
+                }
+                else
+                {
+                    $adPermissions = Get-ADPermission -Identity $Identity.Split('\')[1] | Where-Object { $_.IsInherited -eq $false }
+                }
+
+                $splat = @{
+                    ExtendedRightAllowEntries = $ExtendedRightAllowEntries
+                    ExtendedRightDenyEntries  = $ExtendedRightDenyEntries
+                    ADPermissions             = $adPermissions
+                }
+
+                $testResults = Test-ExtendedRights @splat
             }
 
             # remove "Custom" from PermissionGroups
@@ -1225,39 +1252,6 @@ function Test-TargetResource
             {
                 $testResults = $false
             }
-
-            if ($ExtendedRightAllowEntries)
-            {
-                $splat = @{
-                    ADPermissions  = $adPermissions
-                    ExtendedRights = $ExtendedRightAllowEntries
-                    Deny           = $false
-                    Verbose        = $VerbosePreference
-                }
-
-                $permissionsPresent = Test-ExtendedRightsPresent @splat
-
-                if ($permissionsPresent -eq $false)
-                {
-                    $testResults = $false
-                }
-            }
-            if ($ExtendedRightDenyEntries)
-            {
-                $splat = @{
-                    ADPermissions  = $adPermissions
-                    ExtendedRights = $ExtendedRightDenyEntries
-                    Deny           = $true
-                    Verbose        = $VerbosePreference
-                }
-
-                $permissionsPresent = Test-ExtendedRightsPresent @splat
-
-                if ($permissionsPresent -eq $false)
-                {
-                    $testResults = $false
-                }
-            }
         }
     }
 
@@ -1278,50 +1272,6 @@ function Assert-IdentityIsValid
     {
         throw "Identity must be in the format: 'SERVERNAME\Connector Name' (No quotes)"
     }
-}
-
-# check a connector for specific extended rights
-function Test-ExtendedRightsPresent
-{
-    [cmdletbinding()]
-    [OutputType([System.Boolean])]
-    param
-    (
-        [Parameter()]
-        $ADPermissions,
-
-        [Parameter()]
-        [Microsoft.Management.Infrastructure.CimInstance[]]
-        $ExtendedRights,
-
-        [Parameter()]
-        [System.Boolean]
-        $Deny
-    )
-
-    foreach ($Right in $ExtendedRights)
-    {
-        foreach ($Value in $($Right.Value.Split(',')))
-        {
-            $permissionsFound = $ADPermissions | Where-Object { ($_.User.RawIdentity -eq $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value) }
-            if ($null -ne $permissionsFound)
-            {
-                if (($Deny -eq $true -and $permissionsFound.Deny.ToBool() -eq $false) -or
-                    ($Deny -eq $false -and $permissionsFound.Deny.ToBool() -eq $true))
-                {
-                    Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue "Deny: $($permissionsFound.Deny)" -Verbose:$VerbosePreference
-                    return $false
-                }
-            }
-            else
-            {
-                Write-InvalidSettingVerbose -SettingName 'ExtendedRight' -ExpectedValue "User:$($Right.Key) Value:$Value" -ActualValue 'Absent' -Verbose:$VerbosePreference
-                return $false
-            }
-        }
-    }
-
-    return $true
 }
 
 Export-ModuleMember -Function *-TargetResource
