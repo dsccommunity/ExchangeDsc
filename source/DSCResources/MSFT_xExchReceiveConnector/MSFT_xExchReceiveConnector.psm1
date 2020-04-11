@@ -524,7 +524,7 @@ function Set-TargetResource
 
             if (($ExtendedRightAllowEntries -or $ExtendedRightDenyEntries) -and $null -eq $PSBoundParameters['DomainController'])
             {
-                $receiveConnectorFound = Get-ADPermission -Identity $Name -ErrorAction SilentlyContinue
+                $receiveConnectorFound = Get-ADPermission -Identity $Identity.Split('\')[1] -ErrorAction SilentlyContinue
                 $itt = 0
 
                 while ($null -eq $receiveConnectorFound -and $itt -le 3)
@@ -532,7 +532,7 @@ function Set-TargetResource
                     Write-Verbose -Message 'Extended AD permissions were specified and the new connector is still not found in AD. Sleeping for 30 seconds.'
                     Start-Sleep -Seconds 30
                     $itt++
-                    $receiveConnectorFound = Get-ADPermission -Identity $Name -ErrorAction SilentlyContinue
+                    $receiveConnectorFound = Get-ADPermission -Identity $Identity.Split('\')[1] -ErrorAction SilentlyContinue
                 }
 
                 if ($null -eq $receiveConnectorFound)
