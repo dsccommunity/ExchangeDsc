@@ -27,7 +27,9 @@ try
         }
         function Get-ADPermission
         {
-            param()
+            param(
+                $Identity
+            )
         }
         function Get-ReceiveConnector
         {
@@ -215,7 +217,8 @@ try
                 }
             }
             Context 'When the receive connector is not present' {
-                Mock -CommandName Get-TargetResource -MockWith { return @{
+                Mock -CommandName Get-TargetResource -MockWith {
+                    return @{
                         Ensure = 'Absent'
                     }
                 } -Verifiable
@@ -238,6 +241,9 @@ try
                             value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
                         } -ClientOnly
 
+                        Mock -CommandName 'Get-ADPermission' -Verifiable -ParameterFilter { $Identity -eq 'ReceiveConnector' } -MockWith {
+                            return $setTargetResourcePermissions['ExtendedRightAllowEntries']
+                        }
                         Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
                             $Identity -eq 'ReceiveConnector' -and
                             $User -eq 'User1Allow' -and
@@ -254,6 +260,9 @@ try
                             value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
                         } -ClientOnly
 
+                        Mock -CommandName 'Get-ADPermission' -Verifiable -ParameterFilter { $Identity -eq 'ReceiveConnector' } -MockWith {
+                            $setTargetResourcePermissions['ExtendedRightDenyEntries']
+                        }
                         Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
                             $Identity -eq 'ReceiveConnector' -and
                             $User -eq 'User2Deny' -and
