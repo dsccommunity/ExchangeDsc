@@ -119,6 +119,7 @@ try
                 Mock -CommandName Write-FunctionEntry -Verifiable
                 Mock -CommandName Get-RemoteExchangeSession -Verifiable
                 Mock -CommandName Get-ReceiveConnector -Verifiable -MockWith { return $getReceiveConnectorStandardOutput }
+                Mock -CommandName Get-ADPermission -ModuleName 'xExchangeHelper'
 
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $getTargetResourceParams
                 $results = Get-TargetResource @getTargetResourceParams
