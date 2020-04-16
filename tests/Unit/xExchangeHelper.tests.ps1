@@ -3137,6 +3137,139 @@ try
                 }
             }
         }
+
+        Describe 'xExchangeHelper\Set-ADExtendedPermissions' -Tag 'Helper' {
+            AfterEach {
+                Assert-VerifiableMock
+            }
+
+            function Add-ADPermission
+            {
+                param(
+                    $Identity,
+                    $User,
+                    $ExtendedRights,
+                    [Switch]
+                    $Deny
+                )
+            }
+            function Get-ADPermission
+            {
+                param(
+                    $Identity
+                )
+            }
+
+            Context 'When it is a new object' {
+                It 'Should throw when the object is not found' {
+                    Mock -CommandName 'Get-ADPermission' -Verifiable -ParameterFilter { $Identity -eq 'FakeADObject' }
+
+                    & { Set-ADExtendedPermissions -Identity 'FakeADobject' -NewObject } | Should -Throw "The AD Object $Identity was not found after 2 minutes of wait time. Please check AD replication!"
+                }
+                It 'Should set the allow Permissions when specified' {
+                    $ExtendedRightAllowEntries = New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                        key   = 'User1Allow'
+                        value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
+                    } -ClientOnly
+
+                    Mock -CommandName 'Get-ADPermission' -Verifiable -ParameterFilter { $Identity -eq 'FakeADObject' } -MockWith {
+                        return 'DummyOutput'
+                    }
+                    Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
+                        $Identity -eq 'FakeADObject' -and
+                        $DomainController -eq 'FakeDC.local.com' -and
+                        $User -eq 'User1Allow' -and
+                        ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
+                            $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Sender')
+                    }
+
+                    $splat = @{
+                        ExtendedRightAllowEntries = $ExtendedRightAllowEntries
+                        DomainController          = 'FakeDC.local.com'
+                        Identity                  = 'FakeADObject'
+                        NewObject                 = $true
+                    }
+
+                    Set-ADExtendedPermissions @splat
+                }
+                It 'Should set the deny Permissions when specified' {
+                    $ExtendedRightDenyEntries = New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                        key   = 'User2Deny'
+                        value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
+                    } -ClientOnly
+
+                    Mock -CommandName 'Get-ADPermission' -Verifiable -ParameterFilter { $Identity -eq 'FakeADObject' } {
+                        return 'DummyOutput'
+                    }
+                    Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
+                        $Identity -eq 'FakeADObject' -and
+                        $DomainController -eq 'FakeDC.local.com' -and
+                        $User -eq 'User2Deny' -and
+                        $Deny -eq $true -and
+                        ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
+                            $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Sender')
+                    }
+
+                    $splat = @{
+                        ExtendedRightDenyEntries = $ExtendedRightDenyEntries
+                        DomainController         = 'FakeDC.local.com'
+                        Identity                 = 'FakeADObject'
+                        NewObject                = $true
+                    }
+
+                    Set-ADExtendedPermissions @splat
+                }
+            }
+            Context 'When it is not a new object' {
+                It 'Should set the allow Permissions when specified' {
+                    $ExtendedRightAllowEntries = New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                        key   = 'User1Allow'
+                        value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
+                    } -ClientOnly
+
+                    Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
+                        $Identity -eq 'FakeADObject' -and
+                        $DomainController -eq 'FakeDC.local.com' -and
+                        $User -eq 'User1Allow' -and
+                        ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
+                            $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Sender')
+                    }
+
+                    $splat = @{
+                        ExtendedRightAllowEntries = $ExtendedRightAllowEntries
+                        DomainController          = 'FakeDC.local.com'
+                        Identity                  = 'FakeADObject'
+                        NewObject                 = $true
+                    }
+
+                    Set-ADExtendedPermissions @splat
+                }
+                It 'Should set the deny Permissions when specified' {
+                    $ExtendedRightDenyEntries = New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
+                        key   = 'User2Deny'
+                        value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
+                    } -ClientOnly
+
+                    Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
+                        $Identity -eq 'FakeADObject' -and
+                        $DomainController -eq 'FakeDC.local.com' -and
+                        $User -eq 'User2Deny' -and
+                        $Deny -eq $true -and
+                        ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
+                            $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Sender')
+                    }
+
+                    $splat = @{
+                        ExtendedRightDenyEntries = $ExtendedRightDenyEntries
+                        DomainController         = 'FakeDC.local.com'
+                        Identity                 = 'FakeADObject'
+                        NewObject                = $true
+                    }
+
+                    Set-ADExtendedPermissions @splat
+                }
+            }
+        }
     }
 }
 finally

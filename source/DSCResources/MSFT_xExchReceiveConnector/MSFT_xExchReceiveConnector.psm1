@@ -522,54 +522,17 @@ function Set-TargetResource
 
             Set-ReceiveConnector @PSBoundParameters
 
-            if (($ExtendedRightAllowEntries -or $ExtendedRightDenyEntries) -and $null -eq $PSBoundParameters['DomainController'])
+            if ($ExtendedRightAllowEntries -or $ExtendedRightDenyEntries)
             {
-                $receiveConnectorFound = Get-ADPermission -Identity $Identity.Split('\')[1] -ErrorAction SilentlyContinue
-                $itt = 0
-
-                while ($null -eq $receiveConnectorFound -and $itt -le 3)
-                {
-                    Write-Verbose -Message 'Extended AD permissions were specified and the new connector is still not found in AD. Sleeping for 30 seconds.'
-                    Start-Sleep -Seconds 30
-                    $itt++
-                    $receiveConnectorFound = Get-ADPermission -Identity $Identity.Split('\')[1] -ErrorAction SilentlyContinue
+                $splat = @{
+                    ExtendedRightAllowEntries = $ExtendedRightAllowEntries
+                    ExtendedRightDenyEntries  = $ExtendedRightDenyEntries
+                    DomainController          = $DomainController
+                    Identity                  = $Identity.Split('\')[1]
+                    NewObject                 = $true
                 }
 
-                if ($null -eq $receiveConnectorFound)
-                {
-                    throw 'The new send connector was not found after 2 minutes of wait time. Please check AD replication!'
-                }
-            }
-            if ($null -ne $PSBoundParameters['DomainController'])
-            {
-                Write-Verbose -Message 'Setting domain controller as default parameter.'
-                $PSDefaultParameterValues = @{
-                    'Add-ADPermission:DomainController' = $DomainController
-                }
-            }
-            if ($ExtendedRightAllowEntries)
-            {
-                Write-Verbose -Message "Setting ExtendedRightAllowEntries for receive connector: $($Identity.Split('\')[1])."
-
-                foreach ($ExtendedRightAllowEntry in $ExtendedRightAllowEntries)
-                {
-                    foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(',')))
-                    {
-                        Add-ADPermission -Identity $Identity.Split('\')[1] -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
-                    }
-                }
-            }
-            if ($ExtendedRightDenyEntries)
-            {
-                Write-Verbose -Message "Setting ExtendedRightDenyEntries for receive connector: $($Identity.Split('\')[1])."
-
-                foreach ($ExtendedRightDenyEntry in $ExtendedRightDenyEntries)
-                {
-                    foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(',')))
-                    {
-                        Add-ADPermission -Identity $Identity.Split('\')[1] -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false
-                    }
-                }
+                Set-ADExtendedPermissions @splat
             }
         }
         else
@@ -580,29 +543,16 @@ function Set-TargetResource
             Set-ReceiveConnector @PSBoundParameters
 
             # set AD permissions
-            if ($ExtendedRightAllowEntries)
+            if ($ExtendedRightAllowEntries -or $ExtendedRightDenyEntries)
             {
-                Write-Verbose -Message "Setting ExtendedRightAllowEntries for receive connector: $($Identity.Split('\')[1])."
-
-                foreach ($ExtendedRightAllowEntry in $ExtendedRightAllowEntries)
-                {
-                    foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(',')))
-                    {
-                        Add-ADPermission -Identity $Identity.Split('\')[1] -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
-                    }
+                $splat = @{
+                    ExtendedRightAllowEntries = $ExtendedRightAllowEntries
+                    ExtendedRightDenyEntries  = $ExtendedRightDenyEntries
+                    DomainController          = $DomainController
+                    Identity                  = $Identity.Split('\')[1]
                 }
-            }
-            if ($ExtendedRightDenyEntries)
-            {
-                Write-Verbose -Message "Setting ExtendedRightDenyEntries for receive connector: $($Identity.Split('\')[1])."
 
-                foreach ($ExtendedRightDenyEntry in $ExtendedRightDenyEntries)
-                {
-                    foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(',')))
-                    {
-                        Add-ADPermission -Identity $Identity.Split('\')[1] -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false
-                    }
-                }
+                Set-ADExtendedPermissions @splat
             }
         }
     }
@@ -659,7 +609,7 @@ function Set-TargetResource
     .PARAMETER ExtendedRightAllowEntries
         Additional allow permissions.
     .PARAMETER ExtendedRightDenyEntries
-        Additional denz permissions.
+        Additional deny permissions.
     .PARAMETER ExtendedProtectionPolicy
         Specifies how you want to use Extended Protection for Authentication on the Receive connector.
     .PARAMETER Fqdn
