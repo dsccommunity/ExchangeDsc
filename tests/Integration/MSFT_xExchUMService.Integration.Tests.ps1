@@ -47,18 +47,18 @@ if ($exchangeInstalled)
         }
 
         # Remove our remote Exchange session so as not to interfere with actual Integration testing
-        Remove-RemoteExchangeSession
+        Remove-RemoteExchangeModule
 
         Describe 'Test Setting Properties with xExchUMService' {
             $testParams = @{
-                Identity =  $env:COMPUTERNAME
-                Credential = $shellCredentials
+                Identity      = $env:COMPUTERNAME
+                Credential    = $shellCredentials
                 UMStartupMode = 'TLS'
-                DialPlans = @()
+                DialPlans     = @()
             }
 
             $expectedGetResults = @{
-                Identity =  $env:COMPUTERNAME
+                Identity      = $env:COMPUTERNAME
                 UMStartupMode = 'TLS'
             }
 

@@ -47,113 +47,113 @@ if ($exchangeInstalled)
     }
 
     # Remove our remote Exchange session so as not to interfere with actual Integration testing
-    Remove-RemoteExchangeSession
+    Remove-RemoteExchangeModule
 
     Describe 'Test Setting Properties with xExchOwaVirtualDirectory' {
         $testParams = @{
-            Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
-            Credential = $shellCredentials
+            Identity                               = "$($env:COMPUTERNAME)\owa (Default Web Site)"
+            Credential                             = $shellCredentials
             # AdfsAuthentication = $false #Don't test AdfsAuthentication changes in dedicated OWA tests, as they have to be done to ECP at the same time
-            ActionForUnknownFileAndMIMETypes = 'ForceSave'
-            BasicAuthentication = $true
-            ChangePasswordEnabled = $true
-            DigestAuthentication = $false
-            ExternalUrl = "https://$($serverFqdn)/owa"
-            FormsAuthentication = $true
-            GzipLevel = 'Off'
-            InstantMessagingEnabled = $false
-            InstantMessagingCertificateThumbprint = ''
-            InstantMessagingServerName = ''
-            InstantMessagingType = 'None'
-            InternalUrl = "https://$($serverFqdn)/owa"
+            ActionForUnknownFileAndMIMETypes       = 'ForceSave'
+            BasicAuthentication                    = $true
+            ChangePasswordEnabled                  = $true
+            DigestAuthentication                   = $false
+            ExternalUrl                            = "https://$($serverFqdn)/owa"
+            FormsAuthentication                    = $true
+            GzipLevel                              = 'Off'
+            InstantMessagingEnabled                = $false
+            InstantMessagingCertificateThumbprint  = ''
+            InstantMessagingServerName             = ''
+            InstantMessagingType                   = 'None'
+            InternalUrl                            = "https://$($serverFqdn)/owa"
             LogonPagePublicPrivateSelectionEnabled = $true
-            LogonPageLightSelectionEnabled = $true
-            UNCAccessOnPublicComputersEnabled = $true
-            UNCAccessOnPrivateComputersEnabled = $true
-            WindowsAuthentication = $false
-            WSSAccessOnPublicComputersEnabled = $true
-            WSSAccessOnPrivateComputersEnabled = $true
-            LogonFormat = 'PrincipalName'
-            DefaultDomain = 'contoso.local'
+            LogonPageLightSelectionEnabled         = $true
+            UNCAccessOnPublicComputersEnabled      = $true
+            UNCAccessOnPrivateComputersEnabled     = $true
+            WindowsAuthentication                  = $false
+            WSSAccessOnPublicComputersEnabled      = $true
+            WSSAccessOnPrivateComputersEnabled     = $true
+            LogonFormat                            = 'PrincipalName'
+            DefaultDomain                          = 'contoso.local'
         }
 
         $expectedGetResults = @{
-            Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
-            BasicAuthentication = $true
-            ActionForUnknownFileAndMIMETypes = 'ForceSave'
-            ChangePasswordEnabled = $true
-            DigestAuthentication = $false
-            ExternalUrl = "https://$($serverFqdn)/owa"
-            FormsAuthentication = $true
-            GzipLevel = 'Off'
-            InstantMessagingEnabled = $false
-            InstantMessagingCertificateThumbprint = ''
-            InstantMessagingServerName = ''
-            InstantMessagingType = 'None'
-            InternalUrl = "https://$($serverFqdn)/owa"
+            Identity                               = "$($env:COMPUTERNAME)\owa (Default Web Site)"
+            BasicAuthentication                    = $true
+            ActionForUnknownFileAndMIMETypes       = 'ForceSave'
+            ChangePasswordEnabled                  = $true
+            DigestAuthentication                   = $false
+            ExternalUrl                            = "https://$($serverFqdn)/owa"
+            FormsAuthentication                    = $true
+            GzipLevel                              = 'Off'
+            InstantMessagingEnabled                = $false
+            InstantMessagingCertificateThumbprint  = ''
+            InstantMessagingServerName             = ''
+            InstantMessagingType                   = 'None'
+            InternalUrl                            = "https://$($serverFqdn)/owa"
             LogonPagePublicPrivateSelectionEnabled = $true
-            LogonPageLightSelectionEnabled = $true
-            UNCAccessOnPublicComputersEnabled = $true
-            UNCAccessOnPrivateComputersEnabled = $true
-            WindowsAuthentication = $false
-            WSSAccessOnPublicComputersEnabled = $true
-            WSSAccessOnPrivateComputersEnabled = $true
-            LogonFormat = 'PrincipalName'
-            DefaultDomain = 'contoso.local'
+            LogonPageLightSelectionEnabled         = $true
+            UNCAccessOnPublicComputersEnabled      = $true
+            UNCAccessOnPrivateComputersEnabled     = $true
+            WindowsAuthentication                  = $false
+            WSSAccessOnPublicComputersEnabled      = $true
+            WSSAccessOnPrivateComputersEnabled     = $true
+            LogonFormat                            = 'PrincipalName'
+            DefaultDomain                          = 'contoso.local'
         }
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Set standard parameters' -ExpectedGetResults $expectedGetResults
 
 
         $testParams = @{
-            Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
-            Credential = $shellCredentials
-            ActionForUnknownFileAndMIMETypes = 'Block'
-            BasicAuthentication = $false
-            ChangePasswordEnabled = $false
-            DigestAuthentication = $true
-            ExternalUrl = ''
-            FormsAuthentication = $false
-            GzipLevel = 'High'
-            InstantMessagingEnabled = $true
-            InstantMessagingCertificateThumbprint = $imCertThumbprint
-            InstantMessagingServerName = $env:COMPUTERNAME
-            InstantMessagingType = 'Ocs'
-            InternalUrl = ''
+            Identity                               = "$($env:COMPUTERNAME)\owa (Default Web Site)"
+            Credential                             = $shellCredentials
+            ActionForUnknownFileAndMIMETypes       = 'Block'
+            BasicAuthentication                    = $false
+            ChangePasswordEnabled                  = $false
+            DigestAuthentication                   = $true
+            ExternalUrl                            = ''
+            FormsAuthentication                    = $false
+            GzipLevel                              = 'High'
+            InstantMessagingEnabled                = $true
+            InstantMessagingCertificateThumbprint  = $imCertThumbprint
+            InstantMessagingServerName             = $env:COMPUTERNAME
+            InstantMessagingType                   = 'Ocs'
+            InternalUrl                            = ''
             LogonPagePublicPrivateSelectionEnabled = $false
-            LogonPageLightSelectionEnabled = $false
-            UNCAccessOnPublicComputersEnabled = $false
-            UNCAccessOnPrivateComputersEnabled = $false
-            WindowsAuthentication = $true
-            WSSAccessOnPublicComputersEnabled = $false
-            WSSAccessOnPrivateComputersEnabled = $false
-            LogonFormat = 'FullDomain'
-            DefaultDomain = ''
+            LogonPageLightSelectionEnabled         = $false
+            UNCAccessOnPublicComputersEnabled      = $false
+            UNCAccessOnPrivateComputersEnabled     = $false
+            WindowsAuthentication                  = $true
+            WSSAccessOnPublicComputersEnabled      = $false
+            WSSAccessOnPrivateComputersEnabled     = $false
+            LogonFormat                            = 'FullDomain'
+            DefaultDomain                          = ''
         }
 
         $expectedGetResults = @{
-            Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
-            ActionForUnknownFileAndMIMETypes = 'Block'
-            BasicAuthentication = $false
-            ChangePasswordEnabled = $false
-            DigestAuthentication = $true
-            ExternalUrl = ''
-            FormsAuthentication = $false
-            GzipLevel = 'High'
-            InstantMessagingEnabled = $true
-            InstantMessagingCertificateThumbprint = $imCertThumbprint
-            InstantMessagingServerName = $env:COMPUTERNAME
-            InstantMessagingType = 'Ocs'
-            InternalUrl = ''
+            Identity                               = "$($env:COMPUTERNAME)\owa (Default Web Site)"
+            ActionForUnknownFileAndMIMETypes       = 'Block'
+            BasicAuthentication                    = $false
+            ChangePasswordEnabled                  = $false
+            DigestAuthentication                   = $true
+            ExternalUrl                            = ''
+            FormsAuthentication                    = $false
+            GzipLevel                              = 'High'
+            InstantMessagingEnabled                = $true
+            InstantMessagingCertificateThumbprint  = $imCertThumbprint
+            InstantMessagingServerName             = $env:COMPUTERNAME
+            InstantMessagingType                   = 'Ocs'
+            InternalUrl                            = ''
             LogonPagePublicPrivateSelectionEnabled = $false
-            LogonPageLightSelectionEnabled = $false
-            UNCAccessOnPublicComputersEnabled = $false
-            UNCAccessOnPrivateComputersEnabled = $false
-            WindowsAuthentication = $true
-            WSSAccessOnPublicComputersEnabled = $false
-            WSSAccessOnPrivateComputersEnabled = $false
-            LogonFormat = 'FullDomain'
-            DefaultDomain = ''
+            LogonPageLightSelectionEnabled         = $false
+            UNCAccessOnPublicComputersEnabled      = $false
+            UNCAccessOnPrivateComputersEnabled     = $false
+            WindowsAuthentication                  = $true
+            WSSAccessOnPublicComputersEnabled      = $false
+            WSSAccessOnPrivateComputersEnabled     = $false
+            LogonFormat                            = 'FullDomain'
+            DefaultDomain                          = ''
         }
 
         Test-TargetResourceFunctionality -Params $testParams -ContextLabel 'Try with the opposite of each property value' -ExpectedGetResults $expectedGetResults
@@ -161,19 +161,19 @@ if ($exchangeInstalled)
 
         # Set Authentication values back to default
         $testParams = @{
-            Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
-            Credential = $shellCredentials
-            BasicAuthentication = $true
-            DigestAuthentication = $false
-            FormsAuthentication = $true
+            Identity              = "$($env:COMPUTERNAME)\owa (Default Web Site)"
+            Credential            = $shellCredentials
+            BasicAuthentication   = $true
+            DigestAuthentication  = $false
+            FormsAuthentication   = $true
             WindowsAuthentication = $false
         }
 
         $expectedGetResults = @{
-            Identity =  "$($env:COMPUTERNAME)\owa (Default Web Site)"
-            BasicAuthentication = $true
-            DigestAuthentication = $false
-            FormsAuthentication = $true
+            Identity              = "$($env:COMPUTERNAME)\owa (Default Web Site)"
+            BasicAuthentication   = $true
+            DigestAuthentication  = $false
+            FormsAuthentication   = $true
             WindowsAuthentication = $false
         }
 
