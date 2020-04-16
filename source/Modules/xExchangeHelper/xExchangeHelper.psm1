@@ -116,7 +116,7 @@ function Get-RemoteExchangeSession
             }
         }
 
-        Import-Module $script:DSCExchangeModulePath\$script:DSCExchangeModuleName.psm1 -ArgumentList $session -Global -DisableNameChecking -Force
+        Import-Module -Name $script:DSCExchangeModulePath\$script:DSCExchangeModuleName.psm1 -ArgumentList $session -Global -DisableNameChecking -Force
     }
 }
 
@@ -221,7 +221,7 @@ function Import-RemoteExchangeModule
     )
 
     Export-PSSession -Session $Session -OutputModule $script:DSCExchangeModulePath
-    Import-Module $script:DSCExchangeModulePath -Global -DisableNameChecking -Function $CommandsToLoad
+    Import-Module -Name $script:DSCExchangeModulePath -Global -DisableNameChecking -Function $CommandsToLoad
 }
 
 <#
