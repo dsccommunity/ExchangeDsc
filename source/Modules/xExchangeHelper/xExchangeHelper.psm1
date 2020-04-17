@@ -2799,6 +2799,7 @@ function Set-ADExtendedPermissions
 {
     [CmdletBinding()]
     param (
+        [Parameter()]
         [Microsoft.Management.Infrastructure.CimInstance[]]
         $ExtendedRightAllowEntries = @(),
 

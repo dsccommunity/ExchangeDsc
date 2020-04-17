@@ -550,6 +550,7 @@ function Set-TargetResource
                     ExtendedRightDenyEntries  = $ExtendedRightDenyEntries
                     DomainController          = $DomainController
                     Identity                  = $Identity.Split('\')[1]
+                    NewObject                 = $false
                 }
 
                 Set-ADExtendedPermissions @splat

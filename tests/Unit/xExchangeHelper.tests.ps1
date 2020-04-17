@@ -3164,7 +3164,7 @@ try
                 It 'Should throw when the object is not found' {
                     Mock -CommandName 'Get-ADPermission' -Verifiable -ParameterFilter { $Identity -eq 'FakeADObject' }
 
-                    & { Set-ADExtendedPermissions -Identity 'FakeADobject' -NewObject } | Should -Throw "The AD Object $Identity was not found after 2 minutes of wait time. Please check AD replication!"
+                    { Set-ADExtendedPermissions -Identity 'FakeADobject' -NewObject } | Should -Throw "The AD Object $Identity was not found after 2 minutes of wait time. Please check AD replication!"
                 }
                 It 'Should set the allow Permissions when specified' {
                     $ExtendedRightAllowEntries = New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
