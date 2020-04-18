@@ -3164,7 +3164,7 @@ try
                 It 'Should throw when the object is not found' {
                     Mock -CommandName 'Get-ADPermission' -Verifiable -ParameterFilter { $Identity -eq 'FakeADObject' }
 
-                    { Set-ADExtendedPermissions -Identity 'FakeADobject' -NewObject } | Should -Throw "The AD Object $Identity was not found after 2 minutes of wait time. Please check AD replication!"
+                    { Set-ADExtendedPermissions -Identity 'FakeADobject' -NewObject } | Should -Throw "The AD Object FakeADobject was not found after 2 minutes of wait time. Please check AD replication!"
                 }
                 It 'Should set the allow Permissions when specified' {
                     $ExtendedRightAllowEntries = New-CimInstance -ClassName MSFT_KeyValuePair -Property @{
@@ -3177,7 +3177,6 @@ try
                     }
                     Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
                         $Identity -eq 'FakeADObject' -and
-                        $DomainController -eq 'FakeDC.local.com' -and
                         $User -eq 'User1Allow' -and
                         ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
                             $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Sender')
@@ -3185,7 +3184,6 @@ try
 
                     $splat = @{
                         ExtendedRightAllowEntries = $ExtendedRightAllowEntries
-                        DomainController          = 'FakeDC.local.com'
                         Identity                  = 'FakeADObject'
                         NewObject                 = $true
                     }
@@ -3203,7 +3201,6 @@ try
                     }
                     Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
                         $Identity -eq 'FakeADObject' -and
-                        $DomainController -eq 'FakeDC.local.com' -and
                         $User -eq 'User2Deny' -and
                         $Deny -eq $true -and
                         ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
@@ -3212,7 +3209,6 @@ try
 
                     $splat = @{
                         ExtendedRightDenyEntries = $ExtendedRightDenyEntries
-                        DomainController         = 'FakeDC.local.com'
                         Identity                 = 'FakeADObject'
                         NewObject                = $true
                     }

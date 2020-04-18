@@ -41,6 +41,15 @@ try
                 $Identity
             )
         }
+        function Set-ADExtendedPermissions
+        {
+            param (
+                $ExtendedRightAllowEntries,
+                $ExtendedRightDenyEntries,
+                $Identity,
+                $NewObject
+            )
+        }
         function New-ReceiveConnector
         {
             param (
@@ -189,11 +198,10 @@ try
                         value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
                     } -ClientOnly
 
-                    Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
+                    Mock -CommandName 'Set-ADExtendedPermissions' -Verifiable -ParameterFilter {
                         $Identity -eq 'ReceiveConnector' -and
-                        $User -eq 'User1Allow' -and
-                        ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
-                            $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Sender')
+                        $NewObject -eq $false -and
+                        $ExtendedRightAllowEntries.Key -eq 'User1Allow'
                     }
 
                     Set-TargetResource @setTargetResourcePermissions
@@ -205,12 +213,10 @@ try
                         value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
                     } -ClientOnly
 
-                    Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
+                    Mock -CommandName 'Set-ADExtendedPermissions' -Verifiable -ParameterFilter {
                         $Identity -eq 'ReceiveConnector' -and
-                        $User -eq 'User2Deny' -and
-                        $Deny -eq $true -and
-                        ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
-                            $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Sender')
+                        $NewObject -eq $false -and
+                        $ExtendedRightDenyEntries.Key -eq 'User2Deny'
                     }
 
                     Set-TargetResource @setTargetResourcePermissions
@@ -241,7 +247,11 @@ try
                             value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
                         } -ClientOnly
 
-                        Mock -CommandName 'Set-ADExtendedPermissions ' -Verifiable -ParameterFilter { $Identity -eq 'ReceiveConnector'}
+                        Mock -CommandName 'Set-ADExtendedPermissions' -Verifiable -ParameterFilter {
+                            $Identity -eq 'ReceiveConnector' -and
+                            $NewObject -eq $true -and
+                            $ExtendedRightAllowEntries.Key -eq 'User1Allow'
+                        }
 
                         Set-TargetResource @setTargetResourcePermissions
                     }
@@ -252,15 +262,10 @@ try
                             value = 'ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-SMTP-Accept-Any-Sender'
                         } -ClientOnly
 
-                        Mock -CommandName 'Get-ADPermission' -Verifiable -ParameterFilter { $Identity -eq 'ReceiveConnector' } -MockWith {
-                            $setTargetResourcePermissions['ExtendedRightDenyEntries']
-                        }
-                        Mock -CommandName 'Add-ADPermission' -Verifiable -ParameterFilter {
+                        Mock -CommandName 'Set-ADExtendedPermissions' -Verifiable -ParameterFilter {
                             $Identity -eq 'ReceiveConnector' -and
-                            $User -eq 'User2Deny' -and
-                            $Deny -eq $true -and
-                            ($ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Recipient' -or
-                                $ExtendedRights -eq 'ms-Exch-SMTP-Accept-Any-Sender')
+                            $NewObject -eq $true -and
+                            $ExtendedRightDenyEntries.Key -eq 'User2Deny'
                         }
 
                         Set-TargetResource @setTargetResourcePermissions
