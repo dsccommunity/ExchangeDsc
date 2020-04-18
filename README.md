@@ -1574,7 +1574,7 @@ parameters.
   "Domain Users"="Ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-Bypass-Anti-Spam"}
 * **ExtendedRightDenyEntries**: Similar as ExtendedRightAllowEntries, but to
   make sure the defined permission is not set
-* **AdvertiseClientSettings**: pecifies whether the SMTP server name,port number,
+* **AdvertiseClientSettings**: Specifies whether the SMTP server name,port number,
 and authentication settings for the Receive connector are displayed to users in
 the options of Outlook on the web.
 * **AuthMechanism**: Specifies the advertised and accepted authentication
