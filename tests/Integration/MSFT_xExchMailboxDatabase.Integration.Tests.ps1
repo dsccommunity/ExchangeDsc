@@ -58,7 +58,7 @@ if ($exchangeInstalled)
     # Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
-    Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-MailboxDatabase', '*-Mailbox', '*-Recipient', 'Get-AcceptedDomain'
+    Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-MailboxDatabase', '*-Mailbox', '*-Recipient', 'Get-AcceptedDomain', '*-OfflineAddressBook' -Verbose
 
     $TestDBName = 'Mailbox Database Test 123'
 

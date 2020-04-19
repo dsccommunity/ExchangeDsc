@@ -31,6 +31,7 @@ if ($exchangeInstalled)
         $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
+    Get-RemoteExchangeSession -Credential $ShellCredentials -CommandsToLoad '*-OfflineAddressBook'
     # Get the test OAB
     $testOabName = Get-TestOfflineAddressBook -ShellCredentials $shellCredentials
 

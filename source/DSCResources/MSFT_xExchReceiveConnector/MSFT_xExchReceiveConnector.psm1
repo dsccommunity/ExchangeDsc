@@ -37,7 +37,7 @@ function Get-TargetResource
     } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
-    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ReceiveConnector' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ReceiveConnector', 'Get-ADPermission' -Verbose:$VerbosePreference
 
     $connector = Get-ReceiveConnector -Identity $Identity -ErrorAction SilentlyContinue
 
@@ -467,10 +467,10 @@ function Set-TargetResource
         'Identity' = $Identity
     } -Verbose:$VerbosePreference
 
+    $connector = Get-TargetResource -Identity $Identity -Credential $Credential -Ensure $Ensure
+
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*ReceiveConnector', '*ADPermission' -Verbose:$VerbosePreference
-
-    $connector = Get-TargetResource -Identity $Identity -Credential $Credential -Ensure $Ensure
 
     if ($Ensure -eq 'Absent')
     {
@@ -532,7 +532,7 @@ function Set-TargetResource
                     NewObject                 = $true
                 }
 
-                Set-ADExtendedPermissions @splat
+                Set-ADExtendedPermissions @splat -Verbose:$VerbosePreference
             }
         }
         else
@@ -553,7 +553,7 @@ function Set-TargetResource
                     NewObject                 = $false
                 }
 
-                Set-ADExtendedPermissions @splat
+                Set-ADExtendedPermissions @splat -Verbose:$VerbosePreference
             }
         }
     }
@@ -916,10 +916,10 @@ function Test-TargetResource
         'Identity' = $Identity
     } -Verbose:$VerbosePreference
 
+    $connector = Get-TargetResource -Identity $Identity -Credential $Credential -Ensure $Ensure
+
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-ReceiveConnector', 'Get-ADPermission' -Verbose:$VerbosePreference
-
-    $connector = Get-TargetResource -Identity $Identity -Credential $Credential -Ensure $Ensure
 
     $testResults = $true
 
@@ -958,7 +958,7 @@ function Test-TargetResource
                     ADPermissions             = $adPermissions
                 }
 
-                $testResults = Test-ExtendedRights @splat
+                $testResults = Test-ExtendedRights @splat -Verbose:$VerbosePreference
             }
 
             # remove "Custom" from PermissionGroups

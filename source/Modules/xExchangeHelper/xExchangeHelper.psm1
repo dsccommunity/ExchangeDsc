@@ -1,5 +1,5 @@
 $script:DSCExchangeModuleName = 'DSCExchangeModule'
-$script:DSCExchangeModulePath = "$env:Temp\DSCExchangeModuleName"
+$script:DSCExchangeModulePath = "$env:Temp\DSCExchangeModule"
 
 <#
     .SYNOPSIS
@@ -2619,7 +2619,7 @@ function Test-ExtendedRightsPresent
     {
         foreach ($Value in $($Right.Value.Split(',')))
         {
-            $permissionsFound = $ADPermissions | Where-Object { ($_.User.RawIdentity -eq $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value) }
+            $permissionsFound = $ADPermissions | Where-Object { ($_.User.RawIdentity -like "*$($Right.Key)*" -and ($_.ExtendedRights.RawIdentity -like "*$Value*")) }
             if ($null -ne $permissionsFound)
             {
                 if ($Deny -eq $true -and $permissionsFound.Deny -eq $false -or

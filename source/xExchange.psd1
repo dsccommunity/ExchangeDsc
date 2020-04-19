@@ -80,7 +80,8 @@
         'Set-DSCMachineStatus',
         'Test-ExtendedRightsPresent',
         'Test-ExtendedRights',
-        'Get-ADExtendedPermissions'
+        'Get-ADExtendedPermissions',
+        'Set-ADExtendedPermissions'
     )
 
     # Cmdlets to export from this module

@@ -307,9 +307,6 @@ function Set-TargetResource
         'Identity' = $Name
     } -Verbose:$VerbosePreference
 
-    # Establish remote PowerShell session
-    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*-AddressList' -Verbose:$VerbosePreference
-
     if ($PSBoundParameters.ContainsKey('RecipientFilter') -and
         ($PSBoundParameters.ContainsKey('IncludedRecipients') -or
             $PSBoundParameters.Keys -contains 'Condit'))
@@ -322,6 +319,9 @@ function Set-TargetResource
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove Credential, Ensure
 
     $addressList = Get-TargetResource -Name $Name -Credential $Credential
+
+    # Establish remote PowerShell session
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*-AddressList' -Verbose:$VerbosePreference
 
     if ($addressList['Ensure'] -eq 'Present')
     {
