@@ -796,7 +796,7 @@ function Set-TargetResource
 
         # setup params
         Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd @{
-            'Name' = $Name
+            'Identity' = $Name
         }
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters `
             -ParamsToRemove 'Name', 'Server', 'DatabaseCopyCount', 'AllowServiceRestart', 'EdbFilePath', 'LogFolderPath', 'Credential', 'AdServerSettingsPreferredServer', 'SkipInitialDatabaseMount'
@@ -1650,7 +1650,7 @@ function Get-MailboxDatabaseInternal
     )
 
     Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd  @{
-        'Name' = $Name
+        'Identity' = $Name
     }
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 
@@ -1968,7 +1968,7 @@ function Move-DatabaseOrLogPath
     )
 
     Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd  @{
-        'Name' = $Name
+        'Identity' = $Name
     }
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController', 'EdbFilePath', 'LogFolderPath'
 
@@ -2285,7 +2285,7 @@ function Mount-DatabaseInternal
     )
 
     Add-ToPSBoundParametersFromHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToAdd  @{
-        'Name' = $Name
+        'Identity' = $Name
     }
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'Identity', 'DomainController'
 

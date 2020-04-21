@@ -104,7 +104,7 @@ if ($exchangeInstalled)
             ProhibitSendQuota             = '1GB'
             ProhibitSendReceiveQuota      = '1.5 GB'
             RecoverableItemsQuota         = 'uNlImItEd'
-            RecoverableItemsWarningQuota  = '1,000,448'
+            RecoverableItemsWarningQuota  = '1000448'
         }
 
         $expectedGetResults = @{
