@@ -58,7 +58,7 @@ if ($exchangeInstalled)
     # Get required credentials to use for the test
     $shellCredentials = Get-TestCredential
 
-    Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-MailboxDatabase', '*-Mailbox', '*-Recipient', 'Get-AcceptedDomain'
+    Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-MailboxDatabase', '*-Mailbox', '*-Recipient', 'Get-AcceptedDomain', '*-OfflineAddressBook' -Verbose
 
     $TestDBName = 'Mailbox Database Test 123'
 
@@ -102,8 +102,8 @@ if ($exchangeInstalled)
             RetainDeletedItemsUntilBackup = $false
             IssueWarningQuota             = '27 MB'
             ProhibitSendQuota             = '1GB'
-            ProhibitSendReceiveQuota      = '1.5 GB'
-            RecoverableItemsQuota         = 'uNlImItEd'
+            ProhibitSendReceiveQuota      = '1,5 GB'
+            RecoverableItemsQuota         = 'unlimited'
             RecoverableItemsWarningQuota  = '1000448'
         }
 
@@ -131,7 +131,7 @@ if ($exchangeInstalled)
             IssueWarningQuota             = '27 MB (28,311,552 bytes)'
             ProhibitSendQuota             = '1 GB (1,073,741,824 bytes)'
             ProhibitSendReceiveQuota      = '1.5 GB (1,610,612,736 bytes)'
-            RecoverableItemsQuota         = 'uNlImItEd'
+            RecoverableItemsQuota         = 'unlimited'
             RecoverableItemsWarningQuota  = '977 KB (1,000,448 bytes)'
         }
 
@@ -160,9 +160,9 @@ if ($exchangeInstalled)
         $testParams.RetainDeletedItemsUntilBackup = $true
         $testParams.IssueWarningQuota = '28 MB'
         $testParams.ProhibitSendQuota = '2GB'
-        $testParams.ProhibitSendReceiveQuota = '2.5 GB'
+        $testParams.ProhibitSendReceiveQuota = '2,5 GB'
         $testParams.RecoverableItemsQuota = '2 GB'
-        $testParams.RecoverableItemsWarningQuota = '1.5 GB'
+        $testParams.RecoverableItemsWarningQuota = '1,5 GB'
 
         $expectedGetResults.AllowFileRestore = $false
         $expectedGetResults.CalendarLoggingQuota = '30 MB (31,457,280 bytes)'
@@ -308,6 +308,8 @@ if ($exchangeInstalled)
             -ExpectedGetResults $expectedGetResults
     }
 
+    #importing the required commands
+    Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-MailboxDatabase'
     # Clean up the test database
     Initialize-ExchDscDatabase -Database $TestDBName
 }
