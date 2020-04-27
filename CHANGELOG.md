@@ -19,6 +19,7 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
   - Fixing xExchSendConnector ExtendedRight functionality by moving the test function
   to the helper module and setting explicit Deny permissions, instead of removing
   the marked as 'Deny' entries.
+  - Added AD Permissions parameter for xExchReceiveConnector.
 
 ## [1.31.0] - 2020-01-27
 
