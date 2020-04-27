@@ -308,7 +308,7 @@ if ($exchangeInstalled)
             -ExpectedGetResults $expectedGetResults
     }
 
-    #importing the required commands
+    # Importing the required commands
     Get-RemoteExchangeSession -Credential $shellCredentials -CommandsToLoad '*-MailboxDatabase'
     # Clean up the test database
     Initialize-ExchDscDatabase -Database $TestDBName
