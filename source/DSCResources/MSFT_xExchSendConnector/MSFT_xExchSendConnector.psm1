@@ -34,7 +34,7 @@ function Get-TargetResource
     } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
-    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-SendConnector' -Verbose:$VerbosePreference
+    Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-SendConnector', 'Get-ADPermission' -Verbose:$VerbosePreference
 
     $connector = Get-SendConnector -ErrorAction SilentlyContinue | Where-Object -Property 'Identity' -eq $Name
 
@@ -327,10 +327,10 @@ function Set-TargetResource
         'Identity' = $Name
     } -Verbose:$VerbosePreference
 
+    $connector = Get-TargetResource -Name $Name -Credential $Credential -AddressSpaces $AddressSpaces
+
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*SendConnector', '*ADPermission' -Verbose:$VerbosePreference
-
-    $connector = Get-TargetResource -Name $Name -Credential $Credential -AddressSpaces $AddressSpaces
 
     if ($Ensure -eq 'Absent')
     {
@@ -687,10 +687,10 @@ function Test-TargetResource
         'Identity' = $Name
     } -Verbose:$VerbosePreference
 
+    $connector = Get-TargetResource -Name $Name -Credential $Credential -AddressSpaces $AddressSpaces
+
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad 'Get-SendConnector', 'Get-ADPermission' -Verbose:$VerbosePreference
-
-    $connector = Get-TargetResource -Name $Name -Credential $Credential -AddressSpaces $AddressSpaces
 
     $testResults = $true
 

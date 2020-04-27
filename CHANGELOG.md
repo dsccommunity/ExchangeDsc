@@ -17,6 +17,7 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
   - A remote implicing module with all Exchange cmdlets will be created under
   $env:Temp and reused every time DSC check runs, instead of creating a new
   module every time.
+  - Added AD Permissions parameter for xExchReceiveConnector.
 
 ## [1.31.0] - 2020-01-27
 

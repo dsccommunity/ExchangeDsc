@@ -104,26 +104,11 @@ try
         }
 
         Describe 'MSFT_xExchAddressList.tests\Set-TargetResource' -Tag 'Set' {
-            BeforeAll {
-                Mock -CommandName Write-FunctionEntry -Verifiable
-                Mock -CommandName Get-RemoteExchangeSession -Verifiable
-            }
+            Mock -CommandName Write-FunctionEntry -Verifiable
+            Mock -CommandName Get-RemoteExchangeSession -Verifiable
 
             AfterEach {
                 Assert-VerifiableMock
-            }
-
-            Context 'Customized filters and precanned filters are used simultaneously' {
-                It 'Should throw' {
-                    $setTargetResourceParams = @{
-                        Name               = 'MyCustomAddressList'
-                        Credential         = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
-                        RecipientFilter    = "(RecipientType -eq 'UserMailbox')"
-                        IncludedRecipients = 'MailUsers'
-                    }
-
-                    { Set-TargetResource @setTargetResourceParams } | Should -Throw
-                }
             }
 
             Context 'Address list is present' {
@@ -200,6 +185,27 @@ try
                 It 'Should call all functions' {
                     Set-TargetResource @setTargetResourceParams
                 }
+            }
+        }
+
+        Describe 'MSFT_xExchAddressList.tests\Set-TargetResource - wrong filters' -Tag 'Set' {
+            Context 'Customized filters and precanned filters are used simultaneously' {
+                Mock -CommandName Write-FunctionEntry -Verifiable
+
+                It 'Should throw' {
+                    $setTargetResourceParams = @{
+                        Name               = 'MyCustomAddressList'
+                        Credential         = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
+                        RecipientFilter    = "(RecipientType -eq 'UserMailbox')"
+                        IncludedRecipients = 'MailUsers'
+                    }
+
+                    Mock -CommandName Get-RemoteExchangeSession
+
+                    { Set-TargetResource @setTargetResourceParams } | Should -Throw
+                }
+
+                Assert-VerifiableMock
             }
         }
 

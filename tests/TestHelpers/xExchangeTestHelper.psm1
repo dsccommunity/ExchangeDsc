@@ -298,8 +298,6 @@ function Get-TestOfflineAddressBook
 
     [System.String] $testOabName = 'Offline Address Book (DSC Test)'
 
-    Get-RemoteExchangeSession -Credential $ShellCredentials -CommandsToLoad '*-OfflineAddressBook'
-
     if ($null -eq (Get-OfflineAddressBook -Identity $testOabName -ErrorAction SilentlyContinue))
     {
         Write-Verbose -Message "Test OAB does not exist. Creating OAB with name '$testOabName'."

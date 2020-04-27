@@ -141,14 +141,14 @@ function Set-TargetResource
         'Identity' = $DomainName
     } -Verbose:$VerbosePreference
 
+    $acceptedDomain = Get-TargetResource -DomainName $DomainName -Credential $Credential
+
     # Establish remote PowerShell session
     Get-RemoteExchangeSession -Credential $Credential -CommandsToLoad '*-AcceptedDomain' -Verbose:$VerbosePreference
 
     # Ensure an empty string is $null and not a string
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToRemove Credential, Ensure
-
-    $acceptedDomain = Get-TargetResource -DomainName $DomainName -Credential $Credential
 
     if ($acceptedDomain['Ensure'] -eq 'Present')
     {

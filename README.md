@@ -1574,55 +1574,97 @@ parameters.
   "Domain Users"="Ms-Exch-SMTP-Accept-Any-Recipient,ms-Exch-Bypass-Anti-Spam"}
 * **ExtendedRightDenyEntries**: Similar as ExtendedRightAllowEntries, but to
   make sure the defined permission is not set
-* **AdvertiseClientSettings**
-* **AuthMechanism**
-* **Banner**
-* **BareLinefeedRejectionEnabled**
-* **BinaryMimeEnabled**
-* **Bindings**
-* **ChunkingEnabled**
-* **Comment**
-* **ConnectionInactivityTimeout**
-* **ConnectionTimeout**
-* **DefaultDomain**
-* **DeliveryStatusNotificationEnabled**
-* **DomainController**
-* **DomainSecureEnabled**
-* **EightBitMimeEnabled**
-* **EnableAuthGSSAPI**
-* **Enabled**
-* **EnhancedStatusCodesEnabled**
-* **ExtendedProtectionPolicy**
-* **Fqdn**
-* **LongAddressesEnabled**
-* **MaxAcknowledgementDelay**
-* **MaxHeaderSize**
-* **MaxHopCount**
-* **MaxInboundConnection**
-* **MaxInboundConnectionPercentagePerSource**
-* **MaxInboundConnectionPerSource**
-* **MaxLocalHopCount**
-* **MaxLogonFailures**
-* **MaxMessageSize**
-* **MaxProtocolErrors**
-* **MaxRecipientsPerMessage**
-* **MessageRateLimit**
-* **MessageRateSource**
-* **OrarEnabled**
-* **PermissionGroups**
-* **PipeliningEnabled**
-* **ProtocolLoggingLevel**
-* **RemoteIPRanges**
-* **RequireEHLODomain**
-* **RequireTLS**
-* **ServiceDiscoveryFqdn**
-* **SizeEnabled**
-* **SuppressXAnonymousTls**
-* **TarpitInterval**
-* **TlsCertificateName**
-* **TlsDomainCapabilities**
-* **TransportRole**
-* **Usage**
+* **AdvertiseClientSettings**: Specifies whether the SMTP server name,port number,
+and authentication settings for the Receive connector are displayed to users in
+the options of Outlook on the web.
+* **AuthMechanism**: Specifies the advertised and accepted authentication
+mechanisms for the Receive connector.
+* **AuthTarpitInterval**: Specifies the period of time to delay responses to
+failed authentication attempts from remote servers.
+* **Banner**: Specifies a custom SMTP 220 banner that's displayed to remote
+messaging servers.
+* **BareLinefeedRejectionEnabled**: Specifies whether this Receive connector
+rejects messages that contain line feed
+* **BinaryMimeEnabled**: Specifies whether the BINARYMIME Extended SMTP extension
+is enabled or disabled.
+* **Bindings**: Specifies the local IP address and TCP port number that's used
+by the Receive connector.
+* **ChunkingEnabled**: Specifies whether the CHUNKING Extended SMTP extension
+is enabled or disabled.
+* **Comment**: Specifies an optional comment.
+* **ConnectionInactivityTimeout**: Specifies the maximum amount of idle time
+before a connection to the Receive connector is closed.
+* **ConnectionTimeout**: Specifies the maximum time that the connection to the
+Receive connector can remain open
+* **DefaultDomain**: Specifies the default accepted domain to use for the
+Exchange organization.
+* **DeliveryStatusNotificationEnabled**: Specifies whether the DSN
+* **DomainController**: Specifies the domain controller that's used by this
+cmdlet to read data from or write data to Active Directory.
+* **DomainSecureEnabled**: Specifies whether to enable or disable mutual
+Transport Layer Security
+* **EightBitMimeEnabled**: Specifies whether the 8BITMIME Extended SMTP extension
+is enabled or disabled.
+* **EnableAuthGSSAPI**: enables or disables Kerberos when Integrated Windows
+authentication is available on the Receive connector.
+* **Enabled**: Specifies whether to enable or disable the Receive connector.
+* **EnhancedStatusCodesEnabled**: Specifies whether the ENHANCEDSTATUSCODES
+Extended SMTP extension is enabled or disabled.
+* **ExtendedRightAllowEntries**: Additional allow permissions.
+* **ExtendedRightDenyEntries**: Additional denz permissions.
+* **ExtendedProtectionPolicy**: Specifies how you want to use Extended Protection
+for Authentication on the Receive connector.
+* **Fqdn**: Specifies the destination FQDN that's shown to connected messaging servers.
+* **LongAddressesEnabled**: Specifies whether the Receive connector accepts long
+X.400 email addresses.
+* **MaxAcknowledgementDelay**: Specifies the period the transport server delays
+acknowledgement when receiving messages from a host that doesn't support shadow redundancy.
+* **MaxHeaderSize**: Specifies the maximum size of the SMTP message header before
+the Receive connector closes the connection.
+* **MaxHopCount**: Specifies the maximum number of hops that a message can take
+before the message is rejected by the Receive connector.
+* **MaxInboundConnection**: Specifies the maximum number of inbound connections
+that this Receive connector serves at the same time.
+* **MaxInboundConnectionPercentagePerSource**: Specifies the maximum number of
+connections that this Receive connector serves at the same time from a single IP
+address.
+* **MaxInboundConnectionPerSource**: Specifies the maximum number of connections
+that a Receive connector serves at the same time from a single IP address
+* **MaxLocalHopCount**: Specifies the maximum number of local hops that a message
+can take before the message is rejected by the Receive connector.
+* **MaxLogonFailures**: pecifies the number of logon failures that the Receive
+connector retries before it closes the connection.
+* **MaxMessageSize**: Specifies the maximum size of a message that's allowed
+through the Receive connector.
+* **MaxProtocolErrors**: Specifies the maximum number of SMTP protocol errors
+that the Receive connector accepts before closing the connection.
+* **MaxRecipientsPerMessage**: Specifies the maximum number of recipients per
+message that the Receive connector accepts before closing the connection.
+* **MessageRateLimit**: Specifies the maximum number of messages that can be
+sent by a single client IP address per minute.
+* **MessageRateSource**: Specifies how the message submission rate is calculated.
+* **OrarEnabled**: enables or disables Originator Requested Alternate Recipient
+* **PermissionGroups**: Specifies the well
+* **PipeliningEnabled**: Specifies whether the PIPELINING Extended SMTP
+extension is enabled or disabled.
+* **ProtocolLoggingLevel**: pecifies whether to enable or disable protocol logging.
+* **RemoteIPRanges**: Specifies the remote IP addresses that the Receive
+connector accepts messages from.
+* **RequireEHLODomain**: Specifies whether the client must provide a domain name
+in the EHLO handshake after the SMTP connection is established.
+* **RequireTLS**: Specifies whether to require TLS transmission for inbound messages.
+* **SizeEnabled**: Specifies how the SIZE Extended SMTP extension is used on the
+Receive connector.
+* **SuppressXAnonymousTls**: Specifies whether the X
+* **TarpitInterval**: Specifies the period of time to delay an SMTP response to
+a remote server that may be abusing the connection.
+* **TlsCertificateName**: Specifies the X.509 certificate to use for TLS encryption.
+* **TlsDomainCapabilities**: Specifies the capabilities that the Receive connector
+makes available to specific hosts outside of the organization.
+* **TransportRole**: Specifies the transport service on the Mailbox server where
+the Receive connector is created.
+* **Usage**: Specifies the default permission groups and authentication methods
+that are assigned to the Receive connector.
 
 ### xExchRemoteDomain
 

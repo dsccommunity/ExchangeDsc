@@ -1,5 +1,5 @@
 $script:DSCExchangeModuleName = 'DSCExchangeModule'
-$script:DSCExchangeModulePath = "$env:Temp\DSCExchangeModuleName"
+$script:DSCExchangeModulePath = "$env:Temp\DSCExchangeModule"
 
 <#
     .SYNOPSIS
@@ -2619,7 +2619,7 @@ function Test-ExtendedRightsPresent
     {
         foreach ($Value in $($Right.Value.Split(',')))
         {
-            $permissionsFound = $ADPermissions | Where-Object { ($_.User.RawIdentity -eq $Right.Key) -and ($_.ExtendedRights.RawIdentity -eq $Value) }
+            $permissionsFound = $ADPermissions | Where-Object { ($_.User.RawIdentity -like "*$($Right.Key)*" -and ($_.ExtendedRights.RawIdentity -like "*$Value*")) }
             if ($null -ne $permissionsFound)
             {
                 if ($Deny -eq $true -and $permissionsFound.Deny -eq $false -or
@@ -2779,6 +2779,96 @@ return @{
     ExtendedRightAllowEntries = $ExtendedRightAllowEntries
     ExtendedRightDenyEntries  = $ExtendedRightDenyEntries
 }
+}
+
+<#
+    .SYNOPSIS
+        Set AD extendend permissions on an Exchange object.
+    .DESCRIPTION
+        Set AD extendend permissions on an Exchange object.
+    .PARAMETER ExtendedRightAllowEntries
+        Additional allow permissions.
+    .PARAMETER ExtendedRightDenyEntries
+     Additional deny permissions.
+    .PARAMETER DomainController
+        Specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory.
+    .PARAMETER NewObject
+        Specfies whether the object was just created by Set-TargetRessource
+#>
+function Set-ADExtendedPermissions
+{
+    [CmdletBinding()]
+    param (
+        [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance[]]
+        $ExtendedRightAllowEntries = @(),
+
+        [Parameter()]
+        [Microsoft.Management.Infrastructure.CimInstance[]]
+        $ExtendedRightDenyEntries = @(),
+
+        [Parameter()]
+        [System.String]
+        $DomainController,
+
+        [Parameter(Mandatory = $true)]
+        [System.String]
+        $Identity,
+
+        [Parameter(Mandatory = $true)]
+        [System.Management.Automation.SwitchParameter]
+        $NewObject
+    )
+
+    if ($NewObject -and (-not $DomainController))
+    {
+        $adObject = Get-ADPermission -Identity $Identity -ErrorAction SilentlyContinue
+        $itt = 0
+
+        while ($null -eq $adObject -and $itt -le 3)
+        {
+            Write-Verbose -Message 'Extended AD permissions were specified and the new connector is still not found in AD. Sleeping for 30 seconds.'
+            Start-Sleep -Seconds 30
+            $itt++
+            $adObject = Get-ADPermission -Identity $Identity -ErrorAction SilentlyContinue
+        }
+
+        if ($null -eq $adObject)
+        {
+            throw "The AD Object $Identity was not found after 2 minutes of wait time. Please check AD replication!"
+        }
+    }
+    if ($DomainController)
+    {
+        Write-Verbose -Message 'Setting domain controller as default parameter.'
+        $PSDefaultParameterValues = @{
+            'Add-ADPermission:DomainController' = $DomainController
+        }
+    }
+    if ($ExtendedRightAllowEntries)
+    {
+        Write-Verbose -Message "Setting ExtendedRightAllowEntries for AD Object: $Identity."
+
+        foreach ($ExtendedRightAllowEntry in $ExtendedRightAllowEntries)
+        {
+            foreach ($Value in $($ExtendedRightAllowEntry.Value.Split(',')))
+            {
+                Add-ADPermission -Identity $Identity -User $ExtendedRightAllowEntry.Key -ExtendedRights $Value
+            }
+        }
+    }
+    if ($ExtendedRightDenyEntries)
+    {
+        Write-Verbose -Message "Setting ExtendedRightDenyEntries AD Object: $Identity."
+
+        foreach ($ExtendedRightDenyEntry in $ExtendedRightDenyEntries)
+        {
+            foreach ($Value in $($ExtendedRightDenyEntry.Value.Split(',')))
+            {
+                Add-ADPermission -Identity $Identity -User $ExtendedRightDenyEntry.Key -ExtendedRights $Value -Deny -Confirm:$false
+            }
+        }
+    }
 }
 
 Export-ModuleMember -Function *
