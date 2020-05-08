@@ -72,6 +72,7 @@ function Get-TargetResource
             SourceIPAddress              = [System.String] $connector.SourceIPAddress
             SourceTransportServers       = [System.String[]] $connector.SourceTransportServers
             TlsDomain                    = [System.String] $connector.TlsDomain
+            TlsAuthLevel                 = [System.String] $connector.TlsAuthLevel
             UseExternalDNSServersEnabled = [System.Boolean] $connector.UseExternalDNSServersEnabled
             TlsCertificateName           = [System.String] $connector.TlsCertificateName
             Ensure                       = 'Present'
