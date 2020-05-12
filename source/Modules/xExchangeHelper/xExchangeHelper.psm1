@@ -23,7 +23,7 @@ function Get-ExistingRemoteExchangeSession
         }
         else # Session is in an unexpected state. Remove it so we can rebuild it
         {
-            Remove-RemoteExchangeSession
+            Remove-RemoteExchangeModule
             $session = $null
         }
     }

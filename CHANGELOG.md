@@ -19,6 +19,7 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
   module every time.
   - Added AD Permissions parameter for xExchReceiveConnector.
   - Adding missing TlsAuthLevel to xExchSendConnector Get-TargetResource function. 
+  - Small bug fix in xExchangeHelper module.
 
 ## [1.31.0] - 2020-01-27
 
