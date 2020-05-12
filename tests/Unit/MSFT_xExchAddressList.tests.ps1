@@ -90,7 +90,7 @@ try
                 Mock -CommandName Get-AddressList -Verifiable -MockWith { return [PSCustomObject] $getAddressCustomFilterOutput }
 
                 $returnValue = Get-TargetResource @getTargetResourceParams
-                $returnValue['RecipientFilter'] | Should -Be '{(RecipientType -eq "UserMailbox")}'
+                $returnValue['RecipientFilter'] | Should -Be '(RecipientType -eq "UserMailbox")'
             }
 
             Context 'When Addresslist is not present' {

@@ -114,14 +114,7 @@ function Get-TargetResource
         {
             if ($addressList.$property -and $addressListProperties -contains $property)
             {
-                if ($property -eq 'RecipientFilter')
-                {
-                    $returnValue[$property] = "{$($addressList.$property)}"
-                }
-                else
-                {
-                    $returnValue[$property] = $addressList.$property
-                }
+                $returnValue[$property] = $addressList.$property
             }
         }
     }
