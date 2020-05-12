@@ -20,6 +20,7 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
   - Added AD Permissions parameter for xExchReceiveConnector.
   - xExchAddressList: Removing the scriptblock creation for RecipientFilter
   property in Get-TargetResource.
+  - Small bug fix in xExchangeHelper module.
 
 ## [1.31.0] - 2020-01-27
 
