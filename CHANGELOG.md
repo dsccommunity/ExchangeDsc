@@ -7,6 +7,8 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ## [Unreleased]
 
+## [1.32.0] - 2020-05-13
+
 ### Changed
 
 - xExchange
