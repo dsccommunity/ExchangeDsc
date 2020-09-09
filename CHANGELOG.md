@@ -15,6 +15,7 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
   in order for Pester 5 to work properly.
   - In xExchAddressList the property IncludedRecipients should be a single string
   object and not an array.
+  - Fixing the Get-TargetResource function in xExchSendConnector.
   
 ## [1.32.0] - 2020-05-13
 

@@ -45,6 +45,7 @@ function Get-TargetResource
         $returnValue = @{
             Name                         = [System.String] $connector.Name
             AddressSpaces                = [System.String[]] $connector.AddressSpaces
+            AuthenticationCredential     = [System.Management.Automation.PSCredential] $connector.AuthenticationCredential
             Comment                      = [System.String] $connector.Comment
             ConnectionInactivityTimeout  = [System.String] $connector.ConnectionInactivityTimeout
             ConnectorType                = [System.String] $connector.ConnectorType
@@ -52,7 +53,6 @@ function Get-TargetResource
             DomainSecureEnabled          = [System.Boolean] $connector.DomainSecureEnabled
             Enabled                      = [System.Boolean] $connector.Enabled
             ErrorPolicies                = [System.String] $connector.ErrorPolicies
-            ExtendedProtectionPolicy     = [System.String] $connector.ExtendedProtectionPolicy
             ExtendedRightAllowEntries    = [Microsoft.Management.Infrastructure.CimInstance[]] $adPermissions['ExtendedRightAllowEntries']
             ExtendedRightDenyEntries     = [Microsoft.Management.Infrastructure.CimInstance[]] $adPermissions['ExtendedRightDenyEntries']
             ForceHELO                    = [System.Boolean] $connector.ForceHELO
@@ -72,7 +72,6 @@ function Get-TargetResource
             SourceIPAddress              = [System.String] $connector.SourceIPAddress
             SourceTransportServers       = [System.String[]] $connector.SourceTransportServers
             TlsDomain                    = [System.String] $connector.TlsDomain
-            TlsAuthLevel                 = [System.String] $connector.TlsAuthLevel
             UseExternalDNSServersEnabled = [System.Boolean] $connector.UseExternalDNSServersEnabled
             TlsCertificateName           = [System.String] $connector.TlsCertificateName
             Ensure                       = 'Present'
@@ -886,4 +885,5 @@ function Test-TargetResource
     }
 
     return $testResults
+}
 }
