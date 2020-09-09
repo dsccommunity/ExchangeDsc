@@ -886,4 +886,3 @@ function Test-TargetResource
 
     return $testResults
 }
-}
