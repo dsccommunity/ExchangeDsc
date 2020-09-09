@@ -114,7 +114,14 @@ function Get-TargetResource
         {
             if ($addressList.$property -and $addressListProperties -contains $property)
             {
-                $returnValue[$property] = $addressList.$property
+                if ($property -match 'Conditional')
+                {
+                    $returnValue[$property] = [System.String[]] $addressList.$property
+                }
+                else
+                {
+                    $returnValue[$property] = $addressList.$property
+                }
             }
         }
     }
