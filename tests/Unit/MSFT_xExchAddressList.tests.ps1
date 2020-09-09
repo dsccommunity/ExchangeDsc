@@ -50,7 +50,7 @@ try
 
             $getAddressPrecannedOutput = @{
                 Name                         = [System.String] 'MyCustomAddressList'
-                IncludedRecipients           = [System.String[]] 'MailboxUsers'
+                IncludedRecipients           = [System.String] 'MailboxUsers'
                 ConditionalCompany           = [System.String[]] ''
                 ConditionalCustomAttribute1  = [System.String[]] ''
                 ConditionalCustomAttribute10 = [System.String[]] ''
@@ -222,7 +222,7 @@ try
                 Mock -CommandName 'Get-TargetResource' -MockWith {
                     return @{
                         Name               = [System.String] 'MyCustomAddressList'
-                        IncludedRecipients = [System.String[]] 'MailboxUsers'
+                        IncludedRecipients = [System.String] 'MailboxUsers'
                         DisplayName        = [System.String] 'MyCustomAddressList'
                         Container          = '\'
                         Ensure             = 'Present'
@@ -232,7 +232,7 @@ try
                 Context 'When Displyname and Container are not specified' {
                     $testTargetInput = @{
                         Name               = [System.String] 'MyCustomAddressList'
-                        IncludedRecipients = [System.String[]] 'MailboxUsers'
+                        IncludedRecipients = [System.String] 'MailboxUsers'
                         Credential         = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
                     }
                     It 'Should return True when all properties match' {
@@ -248,7 +248,7 @@ try
                 Context 'When Displyname and Container are specified' {
                     $testTargetInput = @{
                         Name               = [System.String] 'MyCustomAddressList'
-                        IncludedRecipients = [System.String[]] 'MailboxUsers'
+                        IncludedRecipients = [System.String] 'MailboxUsers'
                         DisplayName        = [System.String] 'MyCustomAddressList'
                         Container          = '\'
                         Credential         = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
@@ -287,7 +287,7 @@ try
                 It 'Should return false' {
                     $testTargetInput = @{
                         Name               = [System.String] 'MyCustomAddressList'
-                        IncludedRecipients = [System.String[]] 'MailboxUsers'
+                        IncludedRecipients = [System.String] 'MailboxUsers'
                         Credential         = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
                     }
 

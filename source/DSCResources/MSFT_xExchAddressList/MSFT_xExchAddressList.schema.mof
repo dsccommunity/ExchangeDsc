@@ -24,7 +24,7 @@ class MSFT_xExchAddressList : OMI_BaseResource
     [Write, Description("The ConditionalStateOrProvince parameter specifies a precanned filter that's based on the value of the recipient's StateOrProvince  property.")] String ConditionalStateOrProvince[];
     [Write, Description("The Container parameter specifies where to create the address list.")] String Container;
     [Write, Description("The DisplayName parameter specifies where to create the address list.")] String DisplayName;
-    [Write, Description("The IncludedRecipients parameter specifies where to create the address list."), ValueMap {"MailboxUsers", "MailContacts", "MailGroups", "MailUsers", "Resources", "AllRecipients"}, Values {"MailboxUsers", "MailContacts", "MailGroups", "MailUsers", "Resources", "AllRecipients"}] String IncludedRecipients[];
+    [Write, Description("The IncludedRecipients parameter specifies where to create the address list."), ValueMap {"MailboxUsers", "MailContacts", "MailGroups", "MailUsers", "Resources", "AllRecipients"}, Values {"MailboxUsers", "MailContacts", "MailGroups", "MailUsers", "Resources", "AllRecipients"}] String IncludedRecipients;
     [Write, Description("The RecipientContainer parameter specifies a filter that's based on the recipient's location in Active Directory.")] String RecipientContainer;
     [Write, Description("The RecipientFilter parameter specifies a custom OPath filter that's based on the value of any available recipient property.")] String RecipientFilter;
 };

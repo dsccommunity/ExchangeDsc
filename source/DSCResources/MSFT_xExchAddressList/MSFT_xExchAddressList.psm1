@@ -282,7 +282,7 @@ function Set-TargetResource
 
         [Parameter()]
         [ValidateSet('MailboxUsers', 'MailContacts', 'MailGroups', 'MailUsers', 'Resources', 'AllRecipients')]
-        [System.String[]]
+        [System.String]
         $IncludedRecipients,
 
         [Parameter()]
@@ -512,7 +512,7 @@ function Test-TargetResource
 
         [Parameter()]
         [ValidateSet('MailboxUsers', 'MailContacts', 'MailGroups', 'MailUsers', 'Resources', 'AllRecipients')]
-        [System.String[]]
+        [System.String]
         $IncludedRecipients,
 
         [Parameter()]
