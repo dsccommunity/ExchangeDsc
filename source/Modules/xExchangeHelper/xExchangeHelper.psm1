@@ -234,7 +234,7 @@ function Remove-RemoteExchangeModule
     [CmdletBinding()]
     param ()
 
-    Remove-Module -Name $script:DSCExchangeModuleName -Force
+    Remove-Module -Name $script:DSCExchangeModuleName -Force -ErrorAction SilentlyContinue
 }
 
 <#
