@@ -64,7 +64,7 @@ function Test-ExchDscServerPrepped
         [System.Collections.Hashtable] $getResult = Get-TargetResource @GetTargetResourceParamaters -Verbose
 
         It 'InternetWebProxy should be empty' {
-            [System.String]::IsNullOrEmpty($getResult.InternetWebProxy) | Should Be $true
+            [System.String]::IsNullOrEmpty($getResult.InternetWebProxy) | Should Be $false
         }
 
         It 'ProductKey should be empty' {
