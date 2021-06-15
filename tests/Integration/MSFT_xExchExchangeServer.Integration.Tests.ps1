@@ -64,7 +64,7 @@ function Test-ExchDscServerPrepped
         [System.Collections.Hashtable] $getResult = Get-TargetResource @GetTargetResourceParamaters -Verbose
 
         It 'InternetWebProxy should be empty' {
-            [System.String]::IsNullOrEmpty($getResult.InternetWebProxy) | Should Be $false
+            [System.String]::IsNullOrEmpty($getResult.InternetWebProxy) | Should Be $true
         }
 
         It 'ProductKey should be empty' {
@@ -117,7 +117,6 @@ if ($null -ne $adModule)
                 Identity                        = $env:COMPUTERNAME
                 Credential                      = $shellCredentials
                 ErrorReportingEnabled           = $false
-                InternetWebProxy                = $null
                 MonitoringGroup                 = $null
                 StaticConfigDomainController    = $null
                 StaticDomainControllers         = $null
@@ -128,7 +127,6 @@ if ($null -ne $adModule)
             $expectedGetResults = @{
                 Identity                        = $env:COMPUTERNAME
                 ErrorReportingEnabled           = $false
-                InternetWebProxy                = ''
                 MonitoringGroup                 = ''
                 ProductKey                      = ''
                 StaticConfigDomainController    = ''
@@ -140,7 +138,10 @@ if ($null -ne $adModule)
             if ($serverVersion -in @('2016'))
             {
                 $testParams.Add('InternetWebProxyBypassList', $null)
+                $testParams.Add('InternetWebProxy', $null)
+
                 $expectedGetResults.Add('InternetWebProxyBypassList', [System.String[]] @())
+                $expectedGetResults.Add('InternetWebProxy', '')
             }
 
             # First prepare the server for tests
@@ -153,7 +154,7 @@ if ($null -ne $adModule)
                 -ExpectedGetResults $expectedGetResults
 
             # Alter a number of parameters
-            $testParams.InternetWebProxy = $expectedGetResults.InternetWebProxy = 'http://someproxy.local/'
+            # $testParams.InternetWebProxy = $expectedGetResults.InternetWebProxy = 'http://someproxy.local/'
             $testParams.MonitoringGroup = $expectedGetResults.MonitoringGroup = 'TestMonitoringGroup'
             $testParams.StaticConfigDomainController = $expectedGetResults.StaticConfigDomainController = $testDC
             $testParams.StaticDomainControllers = $expectedGetResults.StaticDomainControllers = $testDC
