@@ -93,7 +93,6 @@ function Test-TargetResourceFunctionality
             foreach ($key in $ExpectedGetResults.Keys)
             {
                 $getContainsKey = $getResult.ContainsKey($key)
-
                 It "Get-TargetResource: Contains Key: $($key)" {
                     $getContainsKey | Should -Be $true
                 }
@@ -126,7 +125,6 @@ function Test-TargetResourceFunctionality
                     {
                         $getValueMatchesForKey = $false
                     }
-
                     It "Get-TargetResource: Value Matches for Key: $($key)" {
                         $getValueMatchesForKey | Should -Be $true
                     }
