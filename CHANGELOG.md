@@ -9,8 +9,6 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ### Changed
 
-## [1.33.0] - 2021-03-02
-
 - xExchOwaVirtualDirectoryInternal
   - Added additional parameter SetPhotoEnabled
 - RequieredModules
