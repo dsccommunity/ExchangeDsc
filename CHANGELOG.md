@@ -21,6 +21,7 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
   - Add the function Remove-RemoteExchangeSession
 - xExchAcceptedDomain
   - Fixing the Get-TargetResource function.
+- Updated CONTRIBUTING.md file
   
 ## [1.32.0] - 2020-05-13
 
