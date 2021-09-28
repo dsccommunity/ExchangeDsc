@@ -8,6 +8,9 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 ## [Unreleased]
 
 ### Changed
+- Updated CONTRIBUTING.md file
+
+### Changed
 
 - xExchOwaVirtualDirectoryInternal
   - Added additional parameter SetPhotoEnabled
