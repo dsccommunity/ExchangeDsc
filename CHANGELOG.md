@@ -9,9 +9,11 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 ### Changed
 
+- xExchange
+  - Renamed default branch to `main` ([issue #465](https://github.com/dsccommunity/xExchange/issues/465)).
 - xExchOwaVirtualDirectoryInternal
   - Added additional parameter SetPhotoEnabled
-- RequieredModules
+- RequiredModules
   - Change pester reference to 4.10.1
     Pester 5 was released and is a breaking change,
     so we need to pin 4.10.1.
