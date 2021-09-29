@@ -24,6 +24,8 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 - xExchAcceptedDomain
   - Fixing the Get-TargetResource function.
 
+### Fixed
+
 - xExchange
   - Fixed casing on folder in repository.
 
