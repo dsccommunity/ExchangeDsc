@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update repository to use the latest pipeline ([issue #466](https://github.com/dsccommunity/xExchange/issues/466)).
   - Updated CONTRIBUTING.md file with basic information on how
     to run integration tests.
+  - Update repository to use the latest pipeline.
 - xExchOwaVirtualDirectoryInternal
   - Added additional parameter SetPhotoEnabled
 - RequiredModules
