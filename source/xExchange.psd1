@@ -93,6 +93,8 @@
     PrivateData       = @{
 
         PSData = @{
+            Prerelease = ''
+
             IconUri      = 'https://dsccommunity.org/images/DSC_Logo_300p.png'
 
             # Tags applied to this module. These help with module discovery in online galleries.
@@ -106,8 +108,6 @@
 
             # ReleaseNotes of this module
             ReleaseNotes = ''
-
-            Prerelease   = ''
         } # End of PSData hashtable
 
     } # End of PrivateData hashtable

@@ -1,19 +1,18 @@
 # xExchange
 
+This module contains DSC resources for the management and
+configuration of Microsoft Exchange Server.
+
 [![Build Status](https://dev.azure.com/dsccommunity/xExchange/_apis/build/status/dsccommunity.xExchange?branchName=main)](https://dev.azure.com/dsccommunity/xExchange/_build/latest?definitionId=15&branchName=main)
 ![Azure DevOps coverage (branch)](https://img.shields.io/azure-devops/coverage/dsccommunity/xExchange/15/main)
+[![codecov](https://codecov.io/gh/dsccommunity/xExchange/branch/main/graph/badge.svg)](https://codecov.io/gh/dsccommunity/xExchange)
 [![Azure DevOps tests](https://img.shields.io/azure-devops/tests/dsccommunity/xExchange/15/main)](https://dsccommunity.visualstudio.com/xExchange/_test/analytics?definitionId=15&contextType=build)
 [![PowerShell Gallery (with prereleases)](https://img.shields.io/powershellgallery/vpre/xExchange?label=xExchange%20Preview)](https://www.powershellgallery.com/packages/xExchange/)
 [![PowerShell Gallery](https://img.shields.io/powershellgallery/v/xExchange?label=xExchange)](https://www.powershellgallery.com/packages/xExchange/)
 
-The **xExchange** module contains many DSC resources for configuring and
-managing Exchange 2013, 2016, and 2019 servers including individual
-server properties, databases, mount points, and Database Availability Groups.
+## Code of Conduct
 
 This project has adopted this [Code of Conduct](CODE_OF_CONDUCT.md).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/)
-or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional
-questions or comments.
 
 ## Releases
 
@@ -25,6 +24,10 @@ full release to [PowerShell Gallery](https://www.powershellgallery.com/).
 ## Contributing
 
 Please check out common DSC Community [contributing guidelines](https://dsccommunity.org/guidelines/contributing).
+
+## Change log
+
+A full list of changes in each version can be found in the [change log](CHANGELOG.md).
 
 ## Installation
 
@@ -65,10 +68,6 @@ for more information.
 
 You can review the [Examples](/source/Examples) directory in the xExchange module
 for some general use scenarios for all of the resources that are in the module.
-
-## Change log
-
-A full list of changes in each version can be found in the [change log](CHANGELOG.md).
 
 ## Resources
 
