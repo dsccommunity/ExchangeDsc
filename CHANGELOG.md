@@ -10,15 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - xExchange
   - Renamed default branch to `main` ([issue #465](https://github.com/dsccommunity/xExchange/issues/465)).
   - Merged the historic changelog back into CHANGELOG.md.
+  - Update repository to use the latest pipeline.
 - xExchOwaVirtualDirectoryInternal
   - Added additional parameter SetPhotoEnabled
 - RequiredModules
   - Change pester reference to 4.10.1
     Pester 5 was released and is a breaking change,
     so we need to pin 4.10.1.
-  - Change Sampler reference to 0.109.1
-    Sampler 0.110.1 was released and is a breaking change,
-    so we need to pin 0.109.1.
   - Add the function Remove-RemoteExchangeSession
 - xExchAcceptedDomain
   - Fixing the Get-TargetResource function.
