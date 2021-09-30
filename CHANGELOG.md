@@ -11,7 +11,7 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 - xExchange
   - Renamed default branch to `main` ([issue #465](https://github.com/dsccommunity/xExchange/issues/465)).
-  - Update repository to use the latest pipeline.
+  - Update repository to use the latest pipeline ([issue #466](https://github.com/dsccommunity/xExchange/issues/466)).
 - xExchOwaVirtualDirectoryInternal
   - Added additional parameter SetPhotoEnabled
 - RequiredModules
