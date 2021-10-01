@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - xExchange
   - Fixed casing on folder in repository.
+  - Fixed unit tests so they can run using PowerShell 7.
 
 ## [1.32.0] - 2020-05-13
 

@@ -441,8 +441,33 @@ try
         }
 
         Describe 'xExchangeHelper\Remove-HelperSnapin' -Tag 'Helper' {
+            BeforeAll {
+                if (-not (Get-Command -Name 'Get-PSSnapin' -ErrorAction 'SilentlyContinue'))
+                {
+                    $createdPSSnapinStubs = $true
+
+                    function Get-PSSnapin
+                    {
+                        throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
+                    }
+
+                    function Remove-PSSnapin
+                    {
+                        throw '{0}: StubNotImplemented' -f $MyInvocation.MyCommand
+                    }
+                }
+            }
+
             AfterEach {
                 Assert-VerifiableMock
+            }
+
+            AfterAll {
+                if ($createdPSSnapinStubs)
+                {
+                    Remove-Item -Path 'function:/Get-PSSnapin' -Force
+                    Remove-Item -Path 'function:/Remove-PSSnapin' -Force
+                }
             }
 
             Context 'When Remove-HelperSnapin is called and a snapin is loaded' {
@@ -3161,6 +3186,10 @@ try
             }
 
             Context 'When it is a new object' {
+                BeforeAll {
+                    Mock -CommandName Start-Sleep
+                }
+
                 It 'Should throw when the object is not found' {
                     Mock -CommandName 'Get-ADPermission' -Verifiable -ParameterFilter { $Identity -eq 'FakeADObject' }
 
@@ -3271,4 +3300,3 @@ try
 finally
 {
 }
-
