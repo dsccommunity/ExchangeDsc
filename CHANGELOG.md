@@ -26,6 +26,7 @@ For older change log history see the [historic changelog](HISTORIC_CHANGELOG.md)
 
 - xExchange
   - Fixed casing on folder in repository.
+  - Fixed unit tests so they can run using PowerShell 7.
 
 ## [1.32.0] - 2020-05-13
 
