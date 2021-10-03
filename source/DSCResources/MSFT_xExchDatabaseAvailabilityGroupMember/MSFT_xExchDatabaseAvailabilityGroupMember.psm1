@@ -90,7 +90,7 @@ function Set-TargetResource
 
     Write-FunctionEntry -Parameters @{
         'MailboxServer' = $MailboxServer
-        'DAGName' = $DAGName
+        'DAGName'       = $DAGName
     } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session
@@ -152,7 +152,7 @@ function Test-TargetResource
 
     Write-FunctionEntry -Parameters @{
         'MailboxServer' = $MailboxServer
-        'DAGName' = $DAGName
+        'DAGName'       = $DAGName
     } -Verbose:$VerbosePreference
 
     # Establish remote PowerShell session

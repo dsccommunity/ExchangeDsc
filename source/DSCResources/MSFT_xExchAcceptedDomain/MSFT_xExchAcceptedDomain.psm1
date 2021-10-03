@@ -65,7 +65,9 @@ function Get-TargetResource
                 if ($property -eq 'Default')
                 {
                     $returnValue['MakeDefault'] = $acceptedDomain.$property
-                } else {
+                }
+                else
+                {
                     $returnValue[$property] = $acceptedDomain.$property
                 }
             }

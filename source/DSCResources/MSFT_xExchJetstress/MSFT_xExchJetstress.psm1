@@ -232,7 +232,7 @@ function Test-TargetResource
     )
 
     Write-FunctionEntry -Parameters @{
-        'JetstressPath' = $JetstressPath
+        'JetstressPath'   = $JetstressPath
         'JetstressParams' = $JetstressParams
     } -Verbose:$VerbosePreference
 

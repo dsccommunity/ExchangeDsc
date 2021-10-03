@@ -248,7 +248,7 @@ function Set-TargetResource
     if ($null -ne $AlternateServiceAccountCredential)
     {
         $asaParams = @{
-            Identity = $Identity
+            Identity                          = $Identity
             AlternateServiceAccountCredential = $AlternateServiceAccountCredential
         }
 
@@ -266,7 +266,7 @@ function Set-TargetResource
     if ($RemoveAlternateServiceAccountCredentials)
     {
         $asaParams = @{
-            Identity = $Identity
+            Identity                                 = $Identity
             RemoveAlternateServiceAccountCredentials = $true
         }
 
@@ -513,7 +513,7 @@ function Get-ClientAccessServerInternal
     $serverVersion = Get-ExchangeVersionYear -ThrowIfUnknownVersion $true
     if (($null -ne $AlternateServiceAccountCredential) -or ($RemoveAlternateServiceAccountCredentials))
     {
-        $PSBoundParameters.Add('IncludeAlternateServiceAccountCredentialPassword',$true)
+        $PSBoundParameters.Add('IncludeAlternateServiceAccountCredentialPassword', $true)
     }
 
     if ($serverVersion -in '2016', '2019')

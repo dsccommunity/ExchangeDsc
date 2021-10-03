@@ -3,7 +3,7 @@
         AddToPath  = $true
         Target     = 'output\RequiredModules'
         Parameters = @{
-           Repository = 'PSGallery'
+            Repository = 'PSGallery'
         }
     }
 
@@ -21,7 +21,7 @@
     xDscResourceDesigner        = 'latest'
     'DscResource.DocGenerator'  = 'latest'
 
-     # Prerequisites modules needed for examples or integration tests
+    # Prerequisites modules needed for examples or integration tests
     'xPendingReboot'            = '0.4.0'
     'xWebAdministration'        = '3.1.1'
 }

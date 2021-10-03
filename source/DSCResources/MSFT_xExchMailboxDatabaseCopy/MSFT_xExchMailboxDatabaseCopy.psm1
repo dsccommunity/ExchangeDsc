@@ -812,7 +812,7 @@ function Add-MailboxDatabaseCopyInternal
     $copyCount++
 
     # Create a copy of the original parameters
-    $originalPSBoundParameters =@{} + $PSBoundParameters
+    $originalPSBoundParameters = @{} + $PSBoundParameters
 
     Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters `
         -ParamsToRemove 'Credential', 'AllowServiceRestart', 'AdServerSettingsPreferredServer'

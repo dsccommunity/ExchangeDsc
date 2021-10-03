@@ -1144,12 +1144,15 @@ function Get-FirstAvailableVolumeNumber
         return 1
     }
 
-    $currentFolders = Get-ChildItem -LiteralPath "$($AutoDagVolumesRootFolderPath)" | Where-Object {$_.GetType().Name -eq 'DirectoryInfo'} | Sort-Object
+    $currentFolders = Get-ChildItem -LiteralPath "$($AutoDagVolumesRootFolderPath)" |
+        Where-Object { $_.GetType().Name -eq 'DirectoryInfo' } |
+        Sort-Object
 
     for ($i = 1; $i -lt 999; $i++)
     {
         $existing = $null
-        $existing = $currentFolders | Where-Object {$_.Name -eq "$($VolumePrefix)$($i)"}
+        $existing = $currentFolders |
+            Where-Object { $_.Name -eq "$($VolumePrefix)$($i)" }
 
         if ($null -eq $existing)
         {
@@ -1472,7 +1475,7 @@ function Initialize-ExchangeVolume
 
         Start-Sleep -Seconds 15
 
-        Get-Partition -DiskNumber $DiskNumber -PartitionNumber 2| Format-Volume -AllocationUnitSize $UnitSizeBytes -FileSystem REFS -NewFileSystemLabel $Label -SetIntegrityStreams:$false -Confirm:$false
+        Get-Partition -DiskNumber $DiskNumber -PartitionNumber 2 | Format-Volume -AllocationUnitSize $UnitSizeBytes -FileSystem REFS -NewFileSystemLabel $Label -SetIntegrityStreams:$false -Confirm:$false
         Add-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber 2 -AccessPath $Folder -PassThru | Set-Partition -NoDefaultDriveLetter $true
     }
 }
