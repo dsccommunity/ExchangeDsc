@@ -685,7 +685,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated Exchange Server Role Requirement Calculator examples
   from version 6.3 to 6.6
 
-## [1.0.0.0] 
+## [1.0.0.0] - 2015-04-15
 
 ### Changed
 
