@@ -1,13 +1,14 @@
 mode: ContinuousDelivery
 next-version: 1.31.0
-major-version-bump-message: '\s?(breaking|major|breaking\schange)'
-minor-version-bump-message: '\s?(add|feature|minor)'
+major-version-bump-message: '(breaking\schange|breaking|major)\b'
+minor-version-bump-message: '(adds?|features?|minor)\b'
 patch-version-bump-message: '\s?(fix|patch)'
 no-bump-message: '\+semver:\s?(none|skip)'
 assembly-informational-format: '{NuGetVersionV2}+Sha.{Sha}.Date.{CommitDate}'
 branches:
   master:
     tag: preview
+    regex: ^main$
   pull-request:
     tag: PR
   feature:
