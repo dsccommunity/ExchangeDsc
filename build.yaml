@@ -62,6 +62,7 @@ DscTest:
     - output
     - Examples
   ExcludeModuleFile:
+  MainGitBranch: main
 
 Resolve-Dependency:
   Gallery: 'PSGallery'
