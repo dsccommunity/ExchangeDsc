@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - xExchange
   - Renamed default branch to `main` ([issue #465](https://github.com/dsccommunity/xExchange/issues/465)).
   - Merged the historic changelog back into CHANGELOG.md.
+  - Updated CONTRIBUTING.md file with basic information on how
+    to run integration tests.
 - xExchOwaVirtualDirectoryInternal
   - Added additional parameter SetPhotoEnabled
 - RequiredModules
