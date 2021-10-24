@@ -93,7 +93,7 @@
     PrivateData       = @{
 
         PSData = @{
-            Prerelease = ''
+            Prerelease   = ''
 
             IconUri      = 'https://dsccommunity.org/images/DSC_Logo_300p.png'
 

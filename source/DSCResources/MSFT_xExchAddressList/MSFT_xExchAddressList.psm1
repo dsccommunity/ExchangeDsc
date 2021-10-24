@@ -302,7 +302,7 @@ function Set-TargetResource
 
     if ($PSBoundParameters.ContainsKey('RecipientFilter') -and
         ($PSBoundParameters.ContainsKey('IncludedRecipients') -or
-            $PSBoundParameters.Keys -contains 'Condit'))
+        $PSBoundParameters.Keys -contains 'Condit'))
     {
         throw 'You can''t use customized filters and precanned filters at the same time!'
     }

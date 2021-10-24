@@ -383,7 +383,7 @@ function Set-TargetResource
                 -value @{
                     name = 'Exchange ActiveSync ISAPI Filter'
                     path = "$env:ExchangeInstallPath\FrontEnd\HttpProxy\bin\AirFilter.dll"
-            }
+                }
         }
     }
 }

@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update repository to use the latest pipeline ([issue #466](https://github.com/dsccommunity/xExchange/issues/466)).
   - Updated CONTRIBUTING.md file with basic information on how
     to run integration tests.
+  - Update repository to use the latest pipeline.
+    - Update the pipeline to use the build worker Ubuntu 18.04 instead of
+      Ubuntu 16.04.
 - xExchOwaVirtualDirectoryInternal
   - Added additional parameter SetPhotoEnabled
 - RequiredModules
@@ -28,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - xExchange
   - Fixed casing on folder in repository.
   - Fixed unit tests so they can run using PowerShell 7.
+  - Fix style according to style guideline.
 
 ## [1.32.0] - 2020-05-13
 

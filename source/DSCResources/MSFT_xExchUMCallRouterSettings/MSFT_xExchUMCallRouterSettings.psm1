@@ -19,7 +19,7 @@ function Get-TargetResource
         $DialPlans,
 
         [Parameter()]
-        [ValidateSet('IPv4Only','IPv6Only','Any')]
+        [ValidateSet('IPv4Only', 'IPv6Only', 'Any')]
         [System.String]
         $IPAddressFamily,
 
@@ -99,7 +99,7 @@ function Set-TargetResource
         $DialPlans,
 
         [Parameter()]
-        [ValidateSet('IPv4Only','IPv6Only','Any')]
+        [ValidateSet('IPv4Only', 'IPv6Only', 'Any')]
         [System.String]
         $IPAddressFamily,
 
@@ -164,7 +164,7 @@ function Test-TargetResource
         $DialPlans,
 
         [Parameter()]
-        [ValidateSet('IPv4Only','IPv6Only','Any')]
+        [ValidateSet('IPv4Only', 'IPv6Only', 'Any')]
         [System.String]
         $IPAddressFamily,
 

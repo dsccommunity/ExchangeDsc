@@ -84,7 +84,7 @@ function Get-TargetResource
         Remove-FromPSBoundParametersUsingHashtable -PSBoundParametersIn $PSBoundParameters -ParamsToKeep 'DomainController'
 
         # Get all OAB's which this VDir distributes for, and add their names to an array
-        $oabs = Get-OfflineAddressBook @PSBoundParameters | Where-Object {$_.VirtualDirectories -like "*$($Identity)*"}
+        $oabs = Get-OfflineAddressBook @PSBoundParameters | Where-Object { $_.VirtualDirectories -like "*$($Identity)*" }
 
         [System.String[]] $oabNames = @()
 

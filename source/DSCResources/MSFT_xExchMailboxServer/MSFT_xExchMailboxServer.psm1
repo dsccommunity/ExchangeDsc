@@ -526,7 +526,7 @@ function Set-TargetResource
     if ($serverVersion -eq '2013')
     {
         # Check for non-existent parameters in Exchange 2013
-        Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016','2019'
+        Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016', '2019'
     }
     elseif ($serverVersion -in '2016', '2019')
     {
@@ -774,7 +774,7 @@ function Test-TargetResource
     if ($serverVersion -eq '2013')
     {
         # Check for non-existent parameters in Exchange 2013
-        Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016','2019'
+        Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters -ParamName 'WacDiscoveryEndpoint' -ResourceName 'xExchMailboxServer' -ParamExistsInVersion '2016', '2019'
     }
     elseif ($serverVersion -in '2016', '2019')
     {
