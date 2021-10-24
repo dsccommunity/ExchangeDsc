@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated CONTRIBUTING.md file with basic information on how
     to run integration tests.
   - Update repository to use the latest pipeline.
+    - Update the pipeline to use the build worker Ubuntu 18.04 instead of
+      Ubuntu 16.04.
 - xExchOwaVirtualDirectoryInternal
   - Added additional parameter SetPhotoEnabled
 - RequiredModules
