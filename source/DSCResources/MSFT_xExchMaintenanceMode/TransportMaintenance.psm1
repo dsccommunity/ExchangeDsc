@@ -1958,12 +1958,13 @@ function Wait-EmptyDiscardsCompletion
 
     # log the undrainable entries
     $discardInfo = Get-DiscardInfo -server $Server
-    $discardInfo | Where-Object { $ActiveServers -notcontains $_.Id.Split('.')[0] } | ForEach-Object {
-        Write-SkippedEvent -Source $Server -Stage ShadowDiscardDrain -Id $_.Id `
-            -Count $_.Count -Reason @{
-            Reason = $Script:ServerInMM
+    $discardInfo |
+        Where-Object { $ActiveServers -notcontains $_.Id.Split('.')[0] } |
+        ForEach-Object {
+            Write-SkippedEvent -Source $Server -Stage ShadowDiscardDrain -Id $_.Id -Count $_.Count -Reason @{
+                Reason = $Script:ServerInMM
+            }
         }
-    }
 
     # wait for discard events to be drained
     $getDiscardInfo = `
