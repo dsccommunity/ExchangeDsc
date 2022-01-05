@@ -49,6 +49,10 @@ function Get-TargetResource
 
         [Parameter()]
         [System.String]
+        $ExternalDownloadHostName,
+
+        [Parameter()]
+        [System.String]
         $ExternalUrl,
 
         [Parameter()]
@@ -76,6 +80,10 @@ function Get-TargetResource
         [ValidateSet('None', 'Ocs')]
         [System.String]
         $InstantMessagingType,
+
+        [Parameter()]
+        [System.String]
+        $InternalDownloadHostName,
 
         [Parameter()]
         [System.String]
@@ -143,6 +151,7 @@ function Get-TargetResource
             DefaultDomain                          = [System.String] $OwaVdir.DefaultDomain
             DigestAuthentication                   = [System.Boolean] $OwaVdir.DigestAuthentication
             ExternalAuthenticationMethods          = [System.String[]] $OwaVdir.ExternalAuthenticationMethods
+            ExternalDownloadHostName               = [System.String] $OwaVdir.ExternalDownloadHostName
             ExternalUrl                            = [System.String] $OwaVdir.ExternalUrl.AbsoluteUri
             FormsAuthentication                    = [System.Boolean] $OwaVdir.FormsAuthentication
             GzipLevel                              = [System.String] $OwaVdir.GzipLevel
@@ -151,6 +160,7 @@ function Get-TargetResource
             InstantMessagingServerName             = [System.String] $OwaVdir.InstantMessagingServerName
             InstantMessagingType                   = [System.String] $OwaVdir.InstantMessagingType
             InternalUrl                            = [System.String] $OwaVdir.InternalUrl.AbsoluteUri
+            InternalDownloadHostName               = [System.String] $OwaVdir.InternalDownloadHostName
             LogonFormat                            = [System.String] $OwaVdir.LogonFormat
             LogonPageLightSelectionEnabled         = [System.Boolean] $OwaVdir.LogonPageLightSelectionEnabled
             LogonPagePublicPrivateSelectionEnabled = [System.Boolean] $OwaVdir.LogonPagePublicPrivateSelectionEnabled
@@ -214,6 +224,10 @@ function Set-TargetResource
 
         [Parameter()]
         [System.String]
+        $ExternalDownloadHostName,
+
+        [Parameter()]
+        [System.String]
         $ExternalUrl,
 
         [Parameter()]
@@ -241,6 +255,10 @@ function Set-TargetResource
         [ValidateSet('None', 'Ocs')]
         [System.String]
         $InstantMessagingType,
+
+        [Parameter()]
+        [System.String]
+        $InternalDownloadHostName,
 
         [Parameter()]
         [System.String]
@@ -365,6 +383,10 @@ function Test-TargetResource
 
         [Parameter()]
         [System.String]
+        $ExternalDownloadHostName,
+
+        [Parameter()]
+        [System.String]
         $ExternalUrl,
 
         [Parameter()]
@@ -392,6 +414,10 @@ function Test-TargetResource
         [ValidateSet('None', 'Ocs')]
         [System.String]
         $InstantMessagingType,
+
+        [Parameter()]
+        [System.String]
+        $InternalDownloadHostName,
 
         [Parameter()]
         [System.String]
@@ -580,6 +606,16 @@ function Test-TargetResource
         {
             $testResults = $false
         }
+
+        if (!(Test-ExchangeSetting -Name 'ExternalDownloadHostName' -Type 'String' -ExpectedValue $ExternalDownloadHostName -ActualValue $OwaVdir.ExternalDownloadHostName -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'InternalDownloadHostName' -Type 'String' -ExpectedValue $InternalDownloadHostName -ActualValue $OwaVdir.InternalDownloadHostName -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
     }
 
     return $testResults
@@ -634,6 +670,10 @@ function Get-OwaVirtualDirectoryInternal
 
         [Parameter()]
         [System.String]
+        $ExternalDownloadHostName,
+
+        [Parameter()]
+        [System.String]
         $ExternalUrl,
 
         [Parameter()]
@@ -661,6 +701,10 @@ function Get-OwaVirtualDirectoryInternal
         [ValidateSet('None', 'Ocs')]
         [System.String]
         $InstantMessagingType,
+
+        [Parameter()]
+        [System.String]
+        $InternalDownloadHostName,
 
         [Parameter()]
         [System.String]
