@@ -159,8 +159,8 @@ function Get-TargetResource
             InstantMessagingEnabled                = [System.Boolean] $OwaVdir.InstantMessagingEnabled
             InstantMessagingServerName             = [System.String] $OwaVdir.InstantMessagingServerName
             InstantMessagingType                   = [System.String] $OwaVdir.InstantMessagingType
-            InternalUrl                            = [System.String] $OwaVdir.InternalUrl.AbsoluteUri
             InternalDownloadHostName               = [System.String] $OwaVdir.InternalDownloadHostName
+            InternalUrl                            = [System.String] $OwaVdir.InternalUrl.AbsoluteUri
             LogonFormat                            = [System.String] $OwaVdir.LogonFormat
             LogonPageLightSelectionEnabled         = [System.Boolean] $OwaVdir.LogonPageLightSelectionEnabled
             LogonPagePublicPrivateSelectionEnabled = [System.Boolean] $OwaVdir.LogonPagePublicPrivateSelectionEnabled
