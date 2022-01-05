@@ -58,6 +58,7 @@ if ($exchangeInstalled)
             BasicAuthentication                    = $true
             ChangePasswordEnabled                  = $true
             DigestAuthentication                   = $false
+            ExternalDownloadHostName               = 'downloaddomain.contoso.local'
             ExternalUrl                            = "https://$($serverFqdn)/owa"
             FormsAuthentication                    = $true
             GzipLevel                              = 'Off'
@@ -65,6 +66,7 @@ if ($exchangeInstalled)
             InstantMessagingCertificateThumbprint  = ''
             InstantMessagingServerName             = ''
             InstantMessagingType                   = 'None'
+            InternalDownloadHostName               = 'downloaddomain.contoso.local'
             InternalUrl                            = "https://$($serverFqdn)/owa"
             LogonPagePublicPrivateSelectionEnabled = $true
             LogonPageLightSelectionEnabled         = $true
@@ -84,6 +86,7 @@ if ($exchangeInstalled)
             ActionForUnknownFileAndMIMETypes       = 'ForceSave'
             ChangePasswordEnabled                  = $true
             DigestAuthentication                   = $false
+            ExternalDownloadHostName               = 'downloaddomain.contoso.local'
             ExternalUrl                            = "https://$($serverFqdn)/owa"
             FormsAuthentication                    = $true
             GzipLevel                              = 'Off'
@@ -91,6 +94,7 @@ if ($exchangeInstalled)
             InstantMessagingCertificateThumbprint  = ''
             InstantMessagingServerName             = ''
             InstantMessagingType                   = 'None'
+            InternalDownloadHostName               = 'downloaddomain.contoso.local'
             InternalUrl                            = "https://$($serverFqdn)/owa"
             LogonPagePublicPrivateSelectionEnabled = $true
             LogonPageLightSelectionEnabled         = $true
@@ -114,6 +118,7 @@ if ($exchangeInstalled)
             BasicAuthentication                    = $false
             ChangePasswordEnabled                  = $false
             DigestAuthentication                   = $true
+            ExternalDownloadHostName               = ''
             ExternalUrl                            = ''
             FormsAuthentication                    = $false
             GzipLevel                              = 'High'
@@ -121,6 +126,7 @@ if ($exchangeInstalled)
             InstantMessagingCertificateThumbprint  = $imCertThumbprint
             InstantMessagingServerName             = $env:COMPUTERNAME
             InstantMessagingType                   = 'Ocs'
+            InternalDownloadHostName               = ''
             InternalUrl                            = ''
             LogonPagePublicPrivateSelectionEnabled = $false
             LogonPageLightSelectionEnabled         = $false
@@ -140,6 +146,7 @@ if ($exchangeInstalled)
             BasicAuthentication                    = $false
             ChangePasswordEnabled                  = $false
             DigestAuthentication                   = $true
+            ExternalDownloadHostName               = ''
             ExternalUrl                            = ''
             FormsAuthentication                    = $false
             GzipLevel                              = 'High'
@@ -147,6 +154,7 @@ if ($exchangeInstalled)
             InstantMessagingCertificateThumbprint  = $imCertThumbprint
             InstantMessagingServerName             = $env:COMPUTERNAME
             InstantMessagingType                   = 'Ocs'
+            InternalDownloadHostName               = ''
             InternalUrl                            = ''
             LogonPagePublicPrivateSelectionEnabled = $false
             LogonPageLightSelectionEnabled         = $false
