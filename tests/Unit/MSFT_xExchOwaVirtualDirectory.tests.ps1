@@ -33,6 +33,7 @@ try
                 DefaultDomain                          = [System.String] ''
                 DigestAuthentication                   = [System.Boolean] $false
                 ExternalAuthenticationMethods          = [System.String[]] @()
+                ExternalDownloadHostName               = [System.String] ''
                 ExternalUrl                            = [System.String] ''
                 FormsAuthentication                    = [System.Boolean] $false
                 GzipLevel                              = [System.String] ''
@@ -40,6 +41,7 @@ try
                 InstantMessagingEnabled                = [System.Boolean] $false
                 InstantMessagingServerName             = [System.String] ''
                 InstantMessagingType                   = [System.String] ''
+                InternalDownloadHostName               = [System.String] ''
                 InternalUrl                            = [System.String] ''
                 LogonFormat                            = [System.String] ''
                 LogonPageLightSelectionEnabled         = [System.Boolean] $false
@@ -65,4 +67,3 @@ finally
 {
     Invoke-TestCleanup
 }
-
