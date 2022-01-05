@@ -4,7 +4,7 @@ The format is based on and uses the types of changes according to [Keep a Change
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-  - xExchOwaVirtualDirectory
+  - xExchOwaVirtualDirectoryInternal
     - Added parameters ExternalDownloadHostName and InternalDownloadHostName
 
 ## [1.33.0] - 2021-10-31
