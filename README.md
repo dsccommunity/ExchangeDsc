@@ -1530,6 +1530,8 @@ parameters.
 - **ExternalConnectionSettings**: Specifies the host name, port, and encryption
   type that Exchange uses when POP clients connect to their email from the outside.
 - **LoginType**: The LoginType to be used for POP
+- **ProtocolLogEnabled**: The ProtocolLogEnabled parameter specifies whether to
+  enable protocol logging for POP.
 - **X509CertificateName**: Specifies the host name in the SSL certificate
   from the Associated Subject field.
 
