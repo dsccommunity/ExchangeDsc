@@ -94,7 +94,7 @@ function Get-RemoteExchangeSession
     $session = Get-ExistingRemoteExchangeSession -Verbose:$VerbosePreference
 
     # See if the Exchange Module is already exported to $env:Temp
-    $exportedModule = Test-Path -Path $script:DSCExchangeModulePath$script:DSCExchangeModuleName.psm1
+    $exportedModule = Test-Path -Path $script:DSCExchangeModulePath\$script:DSCExchangeModuleName.psm1
 
     # If the exported Exchange module does not exist, create a session and export it
     if ($exportedModule -eq $false)
