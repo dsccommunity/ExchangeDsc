@@ -11,7 +11,7 @@ Encoding: UTF8
 VersionedOutputDirectory: true
 
 ####################################################
-#       xExchange Pipeline Configuration           #
+#       Sampler Pipeline Configuration             #
 ####################################################
 BuildWorkflow:
   '.':
@@ -41,7 +41,6 @@ BuildWorkflow:
     - publish_module_to_gallery
     - Publish_Release_To_GitHub
     - Publish_GitHub_Wiki_Content
-    - Create_ChangeLog_GitHub_PR
 
 ####################################################
 #       PESTER  Configuration                      #
