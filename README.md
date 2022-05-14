@@ -32,8 +32,7 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 ## Documentation
 
 The documentation can be found in the [xExchange Wiki](https://github.com/dsccommunity/xExchange/wiki).
-The DSC resources schema files is used to automatically update the
-documentation on each PR merge.
+The resource documentation can be found below.
 
 ## Examples
 
