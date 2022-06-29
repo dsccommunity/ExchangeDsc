@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - xExchange
   - Update the pipeline files from the latest template in Sampler.
 
+- xExchWebServicesVirtualDirectory
+  - Fixed Typo
+
 ## [1.33.0] - 2021-10-31
 
 ### Changed
