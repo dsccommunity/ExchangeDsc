@@ -332,7 +332,7 @@ function Test-TargetResource
 
     if ($null -eq $EwsVdir)
     {
-        Write-Error -Message 'Unable to retrieve ActiveSync Virtual Directory for server'
+        Write-Error -Message 'Unable to retrieve EWS Virtual Directory for server'
 
         $testResults = $false
     }
