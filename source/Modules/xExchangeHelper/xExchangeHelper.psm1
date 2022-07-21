@@ -1,6 +1,5 @@
 $script:DSCExchangeModuleName = 'DSCExchangeModule'
 $script:DSCExchangeModulePath = "$env:Temp\DSCExchangeModule"
-New-Item -Path $script:DSCExchangeModulePath -Type Directory -Force
 
 <#
     .SYNOPSIS
@@ -237,6 +236,7 @@ function Import-RemoteExchangeModule
         $CommandsToLoad = @('*')
     )
 
+    New-Item -Path $script:DSCExchangeModulePath -Type Directory -Force
     Export-PSSession -Session $Session -OutputModule $script:DSCExchangeModulePath -Force
     Import-Module -Name $script:DSCExchangeModulePath -Global -DisableNameChecking -Function $CommandsToLoad
 }

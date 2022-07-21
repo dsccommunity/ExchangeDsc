@@ -1335,7 +1335,7 @@ try
                 It 'Should create a session and import the module' {
                     Mock -CommandName Test-ExchangeSetupRunning -Verifiable -MockWith { return $false }
                     Mock -CommandName Get-ExistingRemoteExchangeSession -Verifiable -MockWith { return $null }
-                    Mock -CommandName Test-Path -ParameterFilter { $Path -eq $(Join-Path -Path $script:DSCExchangeModulePath -ChildPath "$script:DSCExchangeModuleName.psm1") } -Verifiable -MockWith { $true }
+                    Mock -CommandName Test-Path -ParameterFilter { $Path -eq $script:DSCExchangeModulePath } -Verifiable -MockWith { $true }
                     Mock -CommandName New-RemoteExchangeSession -Verifiable -MockWith {
                         return @{
                             State = 'Opened'
@@ -1358,7 +1358,7 @@ try
                             State = 'Opened'
                         }
                     }
-                    Mock -CommandName Test-Path -ParameterFilter { $Path -eq $(Join-Path -Path $script:DSCExchangeModulePath -ChildPath "$script:DSCExchangeModuleName.psm1") } -Verifiable -MockWith { $true }
+                    Mock -CommandName Test-Path -ParameterFilter { $Path -eq $DSCExchangeModulePath } -Verifiable -MockWith { $true }
                     Mock -CommandName Import-Module -Verifiable
 
                     Get-RemoteExchangeSession
