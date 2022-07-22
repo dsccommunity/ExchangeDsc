@@ -28,6 +28,10 @@ function Get-TargetResource
         $LoginType,
 
         [Parameter()]
+        [System.Boolean]
+        $ProtocolLogEnabled,
+
+        [Parameter()]
         [System.String[]]
         $ExternalConnectionSettings,
 
@@ -51,6 +55,7 @@ function Get-TargetResource
             Server                     = [System.String] $Identity
             ExternalConnectionSettings = [System.String[]] $pop.ExternalConnectionSettings
             LoginType                  = [System.String] $pop.LoginType
+            ProtocolLogEnabled         = [System.Boolean] $pop.ProtocolLogEnabled
             X509CertificateName        = [System.String] $pop.X509CertificateName
         }
     }
@@ -84,6 +89,10 @@ function Set-TargetResource
         [ValidateSet('PlainTextLogin', 'PlainTextAuthentication', 'SecureLogin')]
         [System.String]
         $LoginType,
+
+        [Parameter()]
+        [System.Boolean]
+        $ProtocolLogEnabled,
 
         [Parameter()]
         [System.String[]]
@@ -147,6 +156,10 @@ function Test-TargetResource
         $LoginType,
 
         [Parameter()]
+        [System.Boolean]
+        $ProtocolLogEnabled,
+
+        [Parameter()]
         [System.String[]]
         $ExternalConnectionSettings,
 
@@ -178,6 +191,11 @@ function Test-TargetResource
     {
 
         if (!(Test-ExchangeSetting -Name 'LoginType' -Type 'String' -ExpectedValue $LoginType -ActualValue $pop.LoginType -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'ProtocolLogEnabled' -Type 'Boolean' -ExpectedValue $ProtocolLogEnabled -ActualValue $pop.ProtocolLogEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
@@ -222,6 +240,10 @@ function Get-PopSettingsInternal
         [ValidateSet('PlainTextLogin', 'PlainTextAuthentication', 'SecureLogin')]
         [System.String]
         $LoginType,
+
+        [Parameter()]
+        [System.Boolean]
+        $ProtocolLogEnabled,
 
         [Parameter()]
         [System.String[]]
