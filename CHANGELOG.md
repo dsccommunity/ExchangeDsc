@@ -1,4 +1,4 @@
-# Change log for xExchange
+# Changelog for xExchange
 
 The format is based on and uses the types of changes according to [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -6,8 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+
+- xExchange
+  - Update the pipeline files from the latest template in Sampler.
 - xExchPopSettings
   - Add missing ProtocolLogEnabled parameter
+- xExchWebServicesVirtualDirectory
+  - Fixed Typo
 
 ## [1.33.0] - 2021-10-31
 

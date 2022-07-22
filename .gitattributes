@@ -8,13 +8,8 @@
 # Ensure any exe files are treated as binary
 *.exe binary
 *.jpg binary
-
-# Allow Excel files in examples to be saved as binary files
 *.xl* binary
-
-# Allow test .PFX files to be saved as binary files
 *.pfx binary
-
 *.png binary
 *.dll binary
 *.so  binary
