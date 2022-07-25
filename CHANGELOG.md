@@ -4,20 +4,22 @@ The format is based on and uses the types of changes according to [Keep a Change
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-  - xExchOwaVirtualDirectoryInternal
-    - Added parameters ExternalDownloadHostName and InternalDownloadHostName
+
+### Added
+
+- xExchOwaVirtualDirectoryInternal
+  - Added parameters `ExternalDownloadHostName` and `InternalDownloadHostName`.
 
 ### Changed
 
 - xExchange
   - Update the pipeline files from the latest template in Sampler.
 - xExchPopSettings
-  - Add missing ProtocolLogEnabled parameter
+  - Add missing ProtocolLogEnabled parameter.
 - xExchWebServicesVirtualDirectory
-  - Fixed Typo
-
+  - Fixed typo.
 - xExchangeHelper
-  - Fixed module import error ([Issue #481](https://github.com/dsccommunity/xExchange/issues/481))
+  - Fixed module import error ([issue #481](https://github.com/dsccommunity/xExchange/issues/481)).
 
 ## [1.33.0] - 2021-10-31
 
