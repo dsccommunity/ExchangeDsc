@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - xExchWebServicesVirtualDirectory
   - Fixed Typo
 
+- xExchangeHelper
+  - Fixed module import error ([Issue #481](https://github.com/dsccommunity/xExchange/issues/481))
+
 ## [1.33.0] - 2021-10-31
 
 ### Changed
