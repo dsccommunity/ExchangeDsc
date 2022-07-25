@@ -15,9 +15,11 @@ class MSFT_xExchOwaVirtualDirectory : OMI_BaseResource
     [Write] Boolean DigestAuthentication;
     [Write] String DomainController;
     [Write] String ExternalAuthenticationMethods[];
+    [Write] String ExternalDownloadHostName;
     [Write] String ExternalUrl;
     [Write] Boolean FormsAuthentication;
     [Write, ValueMap{"Off", "Low", "High", "Error"}, Values{"Off", "Low", "High", "Error"}] String GzipLevel;
+    [Write] String InternalDownloadHostName;
     [Write] String InternalUrl;
     [Write] Boolean InstantMessagingEnabled;
     [Write] String InstantMessagingCertificateThumbprint;
@@ -34,6 +36,3 @@ class MSFT_xExchOwaVirtualDirectory : OMI_BaseResource
     [Write] String DefaultDomain;
     [Write] Boolean SetPhotoEnabled;
 };
-
-
-

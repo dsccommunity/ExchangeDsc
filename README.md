@@ -1464,9 +1464,11 @@ parameters.
 - **DigestAuthentication**
 - **DomainController**
 - **ExternalAuthenticationMethods**
+- **ExternalDownloadHostName**
 - **ExternalUrl**
 - **FormsAuthentication**
 - **GzipLevel**
+- **InternalDownloadHostName**
 - **InternalUrl**
 - **InstantMessagingEnabled**
 - **InstantMessagingCertificateThumbprint**
