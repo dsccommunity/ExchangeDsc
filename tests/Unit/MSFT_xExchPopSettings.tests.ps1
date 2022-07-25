@@ -28,6 +28,7 @@ try
             $getPopSettingsStandardOutput = @{
                 ExternalConnectionSettings = [System.String[]] @()
                 LoginType                  = [System.String] ''
+                ProtocolLogEnabled         = [System.Boolean] $false
                 X509CertificateName        = [System.String] ''
             }
 

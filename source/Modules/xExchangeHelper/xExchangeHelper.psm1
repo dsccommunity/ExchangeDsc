@@ -236,7 +236,8 @@ function Import-RemoteExchangeModule
         $CommandsToLoad = @('*')
     )
 
-    Export-PSSession -Session $Session -OutputModule $script:DSCExchangeModulePath
+    New-Item -Path $script:DSCExchangeModulePath -Type Directory -Force | Out-Null
+    Export-PSSession -Session $Session -OutputModule $script:DSCExchangeModulePath -Force
     Import-Module -Name $script:DSCExchangeModulePath -Global -DisableNameChecking -Function $CommandsToLoad
 }
 
