@@ -108,15 +108,12 @@ stages:
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
-              # If several pipeline jobs are generating test result, consider renaming this title:
               testRunTitle: 'Unit'
           - task: PublishPipelineArtifact@1
             displayName: 'Publish Test Artifact'
             inputs:
               targetPath: '$(buildFolderName)/$(testResultFolderName)/'
               artifactName: $(testArtifactName)
-              # If several pipeline jobs are generating code coverage, replace above with this:
-              #artifactName: 'CodeCoverageWindows' # Can be any, in the pipeline, unique name
               parallel: true
 
       - job: Code_Coverage
@@ -126,12 +123,6 @@ stages:
           vmImage: 'ubuntu-latest'
         timeoutInMinutes: 0
         steps:
-          - pwsh: |
-              $repositoryOwner,$repositoryName = $env:BUILD_REPOSITORY_NAME -split '/'
-              echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
-              echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
-            name: dscBuildVariable
-            displayName: 'Set Environment Variables'
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
             inputs:
@@ -139,11 +130,9 @@ stages:
               artifactName: $(buildArtifactName)
               targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
           - task: DownloadPipelineArtifact@2
-            # If several pipeline jobs are generating code coverage, consider renaming this display name:
             displayName: 'Download Test Artifact'
             inputs:
               buildType: 'current'
-              # If several pipeline jobs are generating code coverage, set the correct artifact name:
               artifactName: $(testArtifactName)
               targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
           - task: PublishCodeCoverageResults@1

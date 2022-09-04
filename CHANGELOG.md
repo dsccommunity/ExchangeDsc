@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - xExchange
-  - Update the pipeline files from the latest template in Sampler.
+  - Update the pipeline files to the latest from template in Sampler.
 - xExchPopSettings
   - Add missing ProtocolLogEnabled parameter.
 - xExchWebServicesVirtualDirectory
