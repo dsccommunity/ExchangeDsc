@@ -114,7 +114,7 @@ function Get-RemoteExchangeSession
                 }
             }
 
-            Import-RemoteExchangeModule -Session $session -Verbose:$VerbosePreference
+            Import-RemoteExchangeModule -Session $session -Verbose:$VerbosePreference | Out-Null
         }
     }
     else
