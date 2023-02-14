@@ -1,0 +1,16 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("ExchMailboxDatabaseCopy")]
+class DSC_ExchMailboxDatabaseCopy : OMI_BaseResource
+{
+    [Key, Description("The Identity parameter specifies the name of the database whose copy is being modified.")] String Identity;
+    [Required, Description("Credentials used to establish a remote PowerShell session to Exchange"), EmbeddedInstance("MSFT_Credential")] String Credential;
+    [Required, Description("The MailboxServer parameter specifies the name of the server that will host the database copy.")] String MailboxServer;
+    [Write, Description("An optional domain controller to pass to Set-AdServerSettings -PreferredServer.")] String AdServerSettingsPreferredServer;
+    [Write, Description("Whether it is OK to restart Information Store after adding copy.")] Boolean AllowServiceRestart;
+    [Write, Description("The ActivationPreference parameter value is used as part of Active Managers best copy selection process and to redistribute active mailbox databases throughout the database availability group (DAG) when using the RedistributeActiveDatabases.ps1 script.")] Uint32 ActivationPreference;
+    [Write, Description("The DomainController parameter specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory. You identify the domain controller by its fully qualified domain name (FQDN). For example, dc01.contoso.com.")] String DomainController;
+    [Write, Description("The ReplayLagMaxDelay parameter specifies the maximum delay for lagged database copy play down.")] String ReplayLagMaxDelay;
+    [Write, Description("The ReplayLagTime parameter specifies the amount of time that the Microsoft Exchange Replication service should wait before replaying log files that have been copied to the passive database copy.")] String ReplayLagTime;
+    [Write, Description("The SeedingPostponed switch specifies that the task doesn't seed the database copy, so you need to explicitly seed the database copy.")] Boolean SeedingPostponed;
+    [Write, Description("The TruncationLagTime parameter specifies the amount of time that the Microsoft Exchange Replication service should wait before truncating log files that have replayed into the passive copy of the database.")] String TruncationLagTime;
+};

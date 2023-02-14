@@ -14,11 +14,11 @@ Configuration Example
         $ExchangeAdminCredential
     )
 
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
 
     node localhost
     {
-        xExchWaitForADPrep WaitForADPrep
+        ExchWaitForADPrep WaitForADPrep
         {
             Identity            = "Doesn'tMatter"
             Credential          = $ExchangeAdminCredential

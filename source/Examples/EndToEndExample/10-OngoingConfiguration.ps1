@@ -134,10 +134,10 @@ Configuration Example
     )
 
     # Import required DSC Modules
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
     Import-DscResource -Module xWebAdministration
 
-    Import-Module -Name (Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath 'Modules\xExchangeCalculatorHelper\xExchangeCalculatorHelper.psd1')
+    Import-Module -Name (Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath 'Modules\ExchangeDscCalculatorHelper\ExchangeDscCalculatorHelper.psd1')
 
     Node $AllNodes.NodeName
     {
@@ -155,7 +155,7 @@ Configuration Example
             Credential      = $ExchangeFileCopyCredential
         }
 
-        xExchExchangeCertificate Certificate
+        ExchExchangeCertificate Certificate
         {
             Thumbprint         = $dagSettings.Thumbprint
             Credential         = $ExchangeAdminCredential
@@ -169,7 +169,7 @@ Configuration Example
 
         ###CAS specific settings###
         # The following section shows how to configure commonly configured URL's on various virtual directories
-        xExchClientAccessServer CAS
+        ExchClientAccessServer CAS
         {
             Identity                       = $Node.NodeName
             Credential                     = $ExchangeAdminCredential
@@ -177,7 +177,7 @@ Configuration Example
             AutoDiscoverSiteScope          = $casSettingsPerSite.AutoDiscoverSiteScope
         }
 
-        xExchActiveSyncVirtualDirectory ASVdir
+        ExchActiveSyncVirtualDirectory ASVdir
         {
             Identity    = "$($Node.NodeName)\Microsoft-Server-ActiveSync (Default Web Site)"
             Credential  = $ExchangeAdminCredential
@@ -185,7 +185,7 @@ Configuration Example
             InternalUrl = "https://$($casSettingsPerSite.InternalNamespace)/Microsoft-Server-ActiveSync"
         }
 
-        xExchEcpVirtualDirectory ECPVDir
+        ExchEcpVirtualDirectory ECPVDir
         {
             Identity    = "$($Node.NodeName)\ecp (Default Web Site)"
             Credential  = $ExchangeAdminCredential
@@ -193,7 +193,7 @@ Configuration Example
             InternalUrl = "https://$($casSettingsPerSite.InternalNamespace)/ecp"
         }
 
-        xExchMapiVirtualDirectory MAPIVdir
+        ExchMapiVirtualDirectory MAPIVdir
         {
             Identity                 = "$($Node.NodeName)\mapi (Default Web Site)"
             Credential               = $ExchangeAdminCredential
@@ -202,7 +202,7 @@ Configuration Example
             IISAuthenticationMethods = 'Ntlm', 'OAuth', 'Negotiate'
         }
 
-        xExchOabVirtualDirectory OABVdir
+        ExchOabVirtualDirectory OABVdir
         {
             Identity    = "$($Node.NodeName)\OAB (Default Web Site)"
             Credential  = $ExchangeAdminCredential
@@ -210,7 +210,7 @@ Configuration Example
             InternalUrl = "https://$($casSettingsPerSite.InternalNamespace)/oab"
         }
 
-        xExchOutlookAnywhere OAVdir
+        ExchOutlookAnywhere OAVdir
         {
             Identity                           = "$($Node.NodeName)\Rpc (Default Web Site)"
             Credential                         = $ExchangeAdminCredential
@@ -243,7 +243,7 @@ Configuration Example
         }
 
         # Sets OWA url's, and enables Lync integration on the OWA front end directory
-        xExchOwaVirtualDirectory OWAVdir
+        ExchOwaVirtualDirectory OWAVdir
         {
             Identity                              = "$($Node.NodeName)\owa (Default Web Site)"
             Credential                            = $ExchangeAdminCredential
@@ -253,10 +253,10 @@ Configuration Example
             InstantMessagingCertificateThumbprint = $dagSettings.Thumbprint
             InstantMessagingServerName            = $casSettingsPerSite.InstantMessagingServerName
             InstantMessagingType                  = 'Ocs'
-            DependsOn                             = '[xExchExchangeCertificate]Certificate' # Can't configure the IM cert until it's valid
+            DependsOn                             = '[ExchExchangeCertificate]Certificate' # Can't configure the IM cert until it's valid
         }
 
-        xExchWebServicesVirtualDirectory EWSVdir
+        ExchWebServicesVirtualDirectory EWSVdir
         {
             Identity             = "$($Node.NodeName)\EWS (Default Web Site)"
             Credential           = $ExchangeAdminCredential
@@ -279,7 +279,7 @@ Configuration Example
                                                              -DbNameReplacements $dagSettings.DbNameReplacements
 
         # Create all mount points on the server
-        xExchAutoMountPoint AMP
+        ExchAutoMountPoint AMP
         {
             Identity                       = $Node.NodeName
             AutoDagDatabasesRootFolderPath = 'C:\ExchangeDatabases'
@@ -295,7 +295,7 @@ Configuration Example
             # Need to define a unique ID for each database
             $resourceId = "MDB_$($DB.Name)"
 
-            xExchMailboxDatabase $resourceId
+            ExchMailboxDatabase $resourceId
             {
                 Name                            = $DB.Name
                 Credential                      = $ExchangeAdminCredential
@@ -306,7 +306,7 @@ Configuration Example
                 DatabaseCopyCount               = $dagSettings.AutoDagDatabaseCopiesPerVolume
                 OfflineAddressBook              = $casSettingsPerSite.DefaultOAB
                 SkipInitialDatabaseMount        = $true
-                DependsOn                       = '[xExchAutoMountPoint]AMP' # Can't create databases until the mount points exist
+                DependsOn                       = '[ExchAutoMountPoint]AMP' # Can't create databases until the mount points exist
             }
         }
 
@@ -320,13 +320,13 @@ Configuration Example
             $copyResourceId = "MDBCopy_$($DB.Name)"
 
             # Need to wait for a primary copy to be created before we add a copy
-            xExchWaitForMailboxDatabase $waitResourceId
+            ExchWaitForMailboxDatabase $waitResourceId
             {
                 Identity   = $DB.Name
                 Credential = $ExchangeAdminCredential
             }
 
-            xExchMailboxDatabaseCopy $copyResourceId
+            ExchMailboxDatabaseCopy $copyResourceId
             {
                 Identity                        = $DB.Name
                 Credential                      = $ExchangeAdminCredential
@@ -334,7 +334,7 @@ Configuration Example
                 ActivationPreference            = $DB.ActivationPreference
                 # ReplayLagTime                   = $DB.ReplayLagTime #Note that ReplayLagTime is being excluded for the ongoing configuration so that it's easier to disable lags, if necessary
                 AllowServiceRestart             = $false
-                DependsOn                       = "[xExchWaitForMailboxDatabase]$($waitResourceId)"
+                DependsOn                       = "[ExchWaitForMailboxDatabase]$($waitResourceId)"
             }
         }
     }
@@ -346,7 +346,7 @@ Configuration Example
         $dagSettings = $ConfigurationData[$Node.DAGId] # Look up and retrieve the DAG settings for this node
 
         # Create the DAG
-        xExchDatabaseAvailabilityGroup DAG
+        ExchDatabaseAvailabilityGroup DAG
         {
             Name                                 = $dagSettings.DAGName
             Credential                           = $ExchangeAdminCredential

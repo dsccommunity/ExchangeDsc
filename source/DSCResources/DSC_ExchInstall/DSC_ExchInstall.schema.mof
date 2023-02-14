@@ -1,0 +1,7 @@
+[ClassVersion("1.0.0"), FriendlyName("ExchInstall")]
+class DSC_ExchInstall : OMI_BaseResource
+{
+    [Key, Description("Full path to setup.exe in the Exchange 2013 setup directory")] String Path;
+    [Key, Description("Command line arguments to pass to setup.exe")] String Arguments;
+    [Required, Description("The credentials to use to perform the installation"), EmbeddedInstance("MSFT_Credential")] String Credential;
+};

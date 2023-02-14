@@ -1,0 +1,11 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("ExchWaitForMailboxDatabase")]
+class DSC_ExchWaitForMailboxDatabase : OMI_BaseResource
+{
+    [Key] String Identity; //The name of the Mailbox Database
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange
+    [Write] String AdServerSettingsPreferredServer; //An optional domain controller to pass to Set-AdServerSettings -PreferredServer
+    [Write] String DomainController; //Domain controller to talk to when running Get-MailboxDatabase
+    [Write] Uint32 RetryIntervalSec; //How many seconds to wait between retries when checking whether the database exists. Defaults to 60.
+    [Write] Uint32 RetryCount; //Mount many retry attempts should be made to find the database before an exception is thrown. Defaults to 5.
+};

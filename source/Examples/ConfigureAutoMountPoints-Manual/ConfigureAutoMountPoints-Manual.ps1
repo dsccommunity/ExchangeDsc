@@ -18,11 +18,11 @@ $ConfigurationData = @{
 
 Configuration Example
 {
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
 
     Node $AllNodes.NodeName
     {
-        xExchAutoMountPoint AMP
+        ExchAutoMountPoint AMP
         {
             Identity                       = $Node.NodeName
             AutoDagDatabasesRootFolderPath = 'C:\ExchangeDatabases'

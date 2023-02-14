@@ -1,0 +1,41 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("ExchSendConnector")]
+class DSC_ExchSendConnector : OMI_BaseResource
+{
+    [Key, Description("Specifies a descriptive name for the connector.")] String Name;
+    [Required, Description("Credentials used to establish a remote PowerShell session to Exchange."), EmbeddedInstance("MSFT_Credential")] String Credential;
+    [Write, Description("Whether the connector should be present or not."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Required, Description("Specifies the domain names to which the Send connector routes mail.")] String AddressSpaces[];
+    [Write, Description("Specifies the username and password that's required to use the connector."), EmbeddedInstance("MSFT_Credential")] String AuthenticationCredential;
+    [Write, Description("Specifies an optional comment.")] String Comment;
+    [Write, Description("Specifies the maximum time an idle connection can remain open.")] String ConnectionInactivityTimeout;
+    [Write, Description("Specifies whether the connector is used in hybrid deployments to send messages to Office 365."), ValueMap{"Default","XPremises"}, Values{"Default","XPremises"}] String ConnectorType;
+    [Write, Description("Specifies whether the Send connector uses Domain Name System (DNS) to route mail.")] Boolean DNSRoutingEnabled;
+    [Write, Description("Specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory.")] String DomainController;
+    [Write, Description("Enables mutual Transport Layer Security (TLS) authentication.")] Boolean DomainSecureEnabled;
+    [Write, Description("Specifies whether to enable the Send connector to process email messages.")] Boolean Enabled;
+    [Write, Description("Specifies how communication errors are treated."), ValueMap{"Default","DowngradeAuthFailures","DowngradeDNSFailures"}, Values{"Default","DowngradeAuthFailures","DowngradeDNSFailures"}] String ErrorPolicies;
+    [Write, Description("Additional allow permissions."), EmbeddedInstance("MSFT_KeyValuePair")] String ExtendedRightAllowEntries[];
+    [Write, Description("Additional deny permissions."), EmbeddedInstance("MSFT_KeyValuePair")] String ExtendedRightDenyEntries[];
+    [Write, Description("Specifies whether HELO is sent instead of the default EHLO.")] Boolean ForceHELO;
+    [Write, Description("Routes outbound messages through the CAS server,where destination specific routing, such as DNS or IP address, is set.")] Boolean FrontendProxyEnabled;
+    [Write, Description("Specifies the FQDN used as the source server.")] String Fqdn;
+    [Write, Description("Specifies whether to ignore the StartTLS option offered by a remote sending server.")] Boolean IgnoreSTARTTLS;
+    [Write, Description("Specifies whether this Send connector is used for secure mail flow between your on-premises deployment and your Microsoft Office 365 organization.")] Boolean IsCoexistenceConnector;
+    [Write, Description("Specifies the availability of the connector to other Mailbox servers with the Transport service.")] Boolean IsScopedConnector;
+    [Write, Description("Specifies whether to force all messages received by the specified Receive connector out through this Send connector.")] String LinkedReceiveConnector;
+    [Write, Description("Specifies the maximum size of a message that can pass through a connector.")] String MaxMessageSize;
+    [Write, Description("Specifies the port number for smart host forwarding.")] Sint32 Port;
+    [Write, Description("Specifies whether to enable protocol logging."), ValueMap{"None","Verbose"}, Values{"None","Verbose"}] String ProtocolLoggingLevel;
+    [Write, Description("Specifies whether all messages sent through this connector must be transmitted using TLS.")] Boolean RequireTLS;
+    [Write, Description("Specifies the smart host authentication mechanism to use for authentication."), ValueMap{"None","BasicAuth","BasicAuthRequireTLS","ExchangeServer","ExternalAuthoritative"}, Values{"None","BasicAuth","BasicAuthRequireTLS","ExchangeServer","ExternalAuthoritative"}] String SmartHostAuthMechanism;
+    [Write, Description("Specifies the smart hosts the Send connector uses to route mail.")] String SmartHosts[];
+    [Write, Description("Specifies the maximum number of messages the server can send per connection.")] Sint32 SmtpMaxMessagesPerConnection;
+    [Write, Description("Specifies the local IP address to use as the endpoint for an SMTP connection.")] String SourceIPAddress;
+    [Write, Description("Specifies the names of the Mailbox servers that can use this Send connector.")] String SourceTransportServers[];
+    [Write, Description("Specifies the TLS authentication level that is used for outbound TLS connections."), ValueMap{"EncryptionOnly","CertificateValidation","DomainValidation"}, Values{"EncryptionOnly","CertificateValidation","DomainValidation"}] String TlsAuthLevel;
+    [Write, Description("Specifies the domain name that the Send connector uses to verify the FQDN of the target certificate.")] String TlsDomain;
+    [Write, Description("Specifies whether the connector uses the external DNS list specified by the ExternalDNSServers parameter of the Set-TransportService cmdlet.")] Boolean UseExternalDNSServersEnabled;
+    [Write, Description("Specifies the X.509 certificate to use for TLS encryption.")] String TlsCertificateName;
+    [Write, Description("Specifies the default permissions and authentication methods assigned to the Send connector."), ValueMap{"Internal","Internet","Partner","Custom"}, Values{"Internal","Internet","Partner","Custom"}] String Usage;
+};

@@ -29,11 +29,11 @@ Configuration Example
         $ExchangeAdminCredential
     )
 
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
 
     Node $AllNodes.NodeName
     {
-        xExchClientAccessServer CAS
+        ExchlientAccessServer CAS
         {
             Identity                       = $Node.NodeName
             Credential                     = $ExchangeAdminCredential
@@ -41,7 +41,7 @@ Configuration Example
             AutoDiscoverSiteScope          = 'Site1', 'Site2'
         }
 
-        xExchActiveSyncVirtualDirectory ASVdir
+        ExchctiveSyncVirtualDirectory ASVdir
         {
             Identity    = "$($Node.NodeName)\Microsoft-Server-ActiveSync (Default Web Site)"
             Credential  = $ExchangeAdminCredential
@@ -49,7 +49,7 @@ Configuration Example
             InternalUrl = 'https://mail.contoso.local/Microsoft-Server-ActiveSync'
         }
 
-        xExchEcpVirtualDirectory ECPVDir
+        ExchcpVirtualDirectory ECPVDir
         {
             Identity    = "$($Node.NodeName)\ecp (Default Web Site)"
             Credential  = $ExchangeAdminCredential
@@ -57,7 +57,7 @@ Configuration Example
             InternalUrl = 'https://mail.contoso.local/ecp'
         }
 
-        xExchMapiVirtualDirectory MAPIVdir
+        ExchapiVirtualDirectory MAPIVdir
         {
             Identity                 = "$($Node.NodeName)\mapi (Default Web Site)"
             Credential               = $ExchangeAdminCredential
@@ -67,7 +67,7 @@ Configuration Example
             AllowServiceRestart      = $true               # Since we are changing the default auth method, we allow the app pool to be restarted right away so the change goes into effect immediately
         }
 
-        xExchOabVirtualDirectory OABVdir
+        ExchabVirtualDirectory OABVdir
         {
             Identity    = "$($Node.NodeName)\OAB (Default Web Site)"
             Credential  = $ExchangeAdminCredential
@@ -75,7 +75,7 @@ Configuration Example
             InternalUrl = 'https://mail.contoso.local/oab'
         }
 
-        xExchOutlookAnywhere OAVdir
+        ExchutlookAnywhere OAVdir
         {
             Identity                           = "$($Node.NodeName)\Rpc (Default Web Site)"
             Credential                         = $ExchangeAdminCredential
@@ -88,7 +88,7 @@ Configuration Example
             AllowServiceRestart                = $true  # Since we are changing the default auth method, we allow the app pool to be restarted right away so the change goes into effect immediately
         }
 
-        xExchOwaVirtualDirectory OWAVdir
+        ExchwaVirtualDirectory OWAVdir
         {
             Identity    = "$($Node.NodeName)\owa (Default Web Site)"
             Credential  = $ExchangeAdminCredential
@@ -96,7 +96,7 @@ Configuration Example
             InternalUrl = 'https://mail.contoso.local/owa'
         }
 
-        xExchWebServicesVirtualDirectory EWSVdir
+        ExchebServicesVirtualDirectory EWSVdir
         {
             Identity    = "$($Node.NodeName)\EWS (Default Web Site)"
             Credential  = $ExchangeAdminCredential

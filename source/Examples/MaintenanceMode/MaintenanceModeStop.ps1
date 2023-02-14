@@ -40,11 +40,11 @@ Configuration Example
         $ExchangeAdminCredential
     )
 
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
 
     Node $AllNodes.NodeName
     {
-        xExchMaintenanceMode ExitMaintenanceMode
+        ExchaintenanceMode ExitMaintenanceMode
         {
             Enabled                                         = $false
             Credential                                      = $ExchangeAdminCredential
