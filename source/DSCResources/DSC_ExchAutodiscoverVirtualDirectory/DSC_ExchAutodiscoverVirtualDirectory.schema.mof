@@ -1,0 +1,17 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("ExchAutodiscoverVirtualDirectory")]
+class DSC_ExchAutodiscoverVirtualDirectory : OMI_BaseResource
+{
+    [Key, Description ("The Identity parameter specifies the Autodiscover virtual directory that you want to modify.")] String Identity;
+    [Required, EmbeddedInstance("MSFT_Credential"), Description("Credentials used to establish a remote PowerShell session to Exchange.")] String Credential;
+    [Write, Description("Whether it is OK to recycle the app pool after making changes. Defaults to $true.")] Boolean AllowServiceRestart;
+    [Write, Description("Specifies whether Basic authentication is enabled on the virtual directory.")] Boolean BasicAuthentication;
+    [Write, Description("Specifies whether Digest authentication is enabled on the virtual directory.")] Boolean DigestAuthentication;
+    [Write, Description("Specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory.")] String DomainController;
+    [Write, Description("Specifies custom settings for Extended Protection for Authentication on the virtual directory."), ValueMap{"None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting"}, Values{"None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting"}] String ExtendedProtectionFlags[];
+    [Write, Description("Specifies a list of valid Service Principal Names (SPNs) if you're using Extended Protection for Authentication on the virtual directory.")] String ExtendedProtectionSPNList[];
+    [Write, Description("Defines how you want to use Extended Protection for Authentication on the virtual directory."), ValueMap{"None","Allow","Require"}, Values{"None","Allow","Require"}] String ExtendedProtectionTokenChecking;
+    [Write, Description("Specifies whether OAuth authentication is enabled on the virtual directory.")] Boolean OAuthAuthentication;
+    [Write, Description("Specifies whether Integrated Windows authentication is enabled on the virtual directory.")] Boolean WindowsAuthentication;
+    [Write, Description("Specifies whether WS-Security (Web Services Security) authentication is enabled on the virtual directory.")] Boolean WSSecurityAuthentication;
+};

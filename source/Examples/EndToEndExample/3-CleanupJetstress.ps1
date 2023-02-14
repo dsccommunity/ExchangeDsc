@@ -38,7 +38,7 @@ $ConfigurationData = @{
 Configuration Example
 {
 
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
 
     Node $AllNodes.NodeName
     {
@@ -52,7 +52,7 @@ Configuration Example
         }
 
         # Clean up Jetstress databases, mount points, and binaries
-        xExchJetstressCleanup CleanupJetstress
+        ExchetstressCleanup CleanupJetstress
         {
             JetstressPath               = 'C:\Program Files\Exchange Jetstress'
             ConfigFilePath              = 'C:\Program Files\Exchange Jetstress\JetstressConfig.xml'

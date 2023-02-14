@@ -34,9 +34,9 @@ $ConfigurationData = @{
 
 Configuration Example
 {
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
 
-    Import-Module -Name (Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath 'Modules\xExchangeCalculatorHelper\xExchangeCalculatorHelper.psd1')
+    Import-Module -Name (Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath 'Modules\ExchangeDscCalculatorHelper\ExchangeDscCalculatorHelper.psd1')
 
     Node $AllNodes.NodeName
     {
@@ -47,7 +47,7 @@ Configuration Example
             -ServerNameInCsv $Node.ServerNameInCsv `
             -DbNameReplacements $dagSettings.DbNameReplacements
 
-        xExchAutoMountPoint AMP
+        ExchAutoMountPoint AMP
         {
             Identity                       = $Node.NodeName
             AutoDagDatabasesRootFolderPath = 'C:\ExchangeDatabases'

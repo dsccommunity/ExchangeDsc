@@ -1,0 +1,30 @@
+[ClassVersion("1.0.0.0"), FriendlyName("ExchAddressList")]
+class DSC_ExchAddressList : OMI_BaseResource
+{
+    [Key, Description("The name of the address list.")] String Name;
+    [Required, Description("Credentials used to establish a remote PowerShell session to Exchange."), EmbeddedInstance("MSFT_Credential")] String Credential;
+    [Write, Description("Should this resource be present or absent"), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write, Description("The ConditionalCompany parameter specifies a precanned filter that's based on the value of the recipient's Company property.")] String ConditionalCompany[];
+    [Write, Description("The ConditionalCustomAttribute1 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute1 property.")] String ConditionalCustomAttribute1[];
+    [Write, Description("The ConditionalCustomAttribute2 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute2 property.")] String ConditionalCustomAttribute2[];
+    [Write, Description("The ConditionalCustomAttribute3 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute3 property.")] String ConditionalCustomAttribute3[];
+    [Write, Description("The ConditionalCustomAttribute4 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute4 property.")] String ConditionalCustomAttribute4[];
+    [Write, Description("The ConditionalCustomAttribute5 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute5 property.")] String ConditionalCustomAttribute5[];
+    [Write, Description("The ConditionalCustomAttribute6 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute6 property.")] String ConditionalCustomAttribute6[];
+    [Write, Description("The ConditionalCustomAttribute7 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute7 property.")] String ConditionalCustomAttribute7[];
+    [Write, Description("The ConditionalCustomAttribute8 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute8 property.")] String ConditionalCustomAttribute8[];
+    [Write, Description("The ConditionalCustomAttribute9 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute9 property.")] String ConditionalCustomAttribute9[];
+    [Write, Description("The ConditionalCustomAttribute10 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute10 property.")] String ConditionalCustomAttribute10[];
+    [Write, Description("The ConditionalCustomAttribute11 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute11 property.")] String ConditionalCustomAttribute11[];
+    [Write, Description("The ConditionalCustomAttribute12 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute12 property.")] String ConditionalCustomAttribute12[];
+    [Write, Description("The ConditionalCustomAttribute13 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute13 property.")] String ConditionalCustomAttribute13[];
+    [Write, Description("The ConditionalCustomAttribute14 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute14 property.")] String ConditionalCustomAttribute14[];
+    [Write, Description("The ConditionalCustomAttribute15 parameter specifies a precanned filter that's based on the value of the recipient's ConditionalCustomAttribute15 property.")] String ConditionalCustomAttribute15[];
+    [Write, Description("The ConditionalDepartment parameter specifies a precanned filter that's based on the value of the recipient's Department property.")] String ConditionalDepartment[];
+    [Write, Description("The ConditionalStateOrProvince parameter specifies a precanned filter that's based on the value of the recipient's StateOrProvince  property.")] String ConditionalStateOrProvince[];
+    [Write, Description("The Container parameter specifies where to create the address list.")] String Container;
+    [Write, Description("The DisplayName parameter specifies where to create the address list.")] String DisplayName;
+    [Write, Description("The IncludedRecipients parameter specifies where to create the address list."), ValueMap {"MailboxUsers", "MailContacts", "MailGroups", "MailUsers", "Resources", "AllRecipients"}, Values {"MailboxUsers", "MailContacts", "MailGroups", "MailUsers", "Resources", "AllRecipients"}] String IncludedRecipients[];
+    [Write, Description("The RecipientContainer parameter specifies a filter that's based on the recipient's location in Active Directory.")] String RecipientContainer;
+    [Write, Description("The RecipientFilter parameter specifies a custom OPath filter that's based on the value of any available recipient property.")] String RecipientFilter;
+};

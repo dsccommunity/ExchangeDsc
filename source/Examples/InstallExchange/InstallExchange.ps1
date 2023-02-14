@@ -24,7 +24,7 @@ Configuration Example
         $ExchangeAdminCredential
     )
 
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
     Import-DscResource -Module xPendingReboot
 
     Node $AllNodes.NodeName
@@ -47,7 +47,7 @@ Configuration Example
         }
 
         # Do the Exchange install
-        xExchInstall InstallExchange
+        ExchInstall InstallExchange
         {
             Path       = 'C:\Binaries\E15CU6\Setup.exe'
             Arguments  = '/mode:Install /role:Mailbox /Iacceptexchangeserverlicenseterms'
@@ -59,7 +59,7 @@ Configuration Example
         xPendingReboot AfterExchangeInstall
         {
             Name      = 'AfterExchangeInstall'
-            DependsOn = '[xExchInstall]InstallExchange'
+            DependsOn = '[ExchInstall]InstallExchange'
         }
     }
 }

@@ -1,0 +1,40 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("ExchMailboxDatabase")]
+class DSC_ExchailboxDatabase : OMI_BaseResource
+{
+    [Key, Description("The Name parameter specifies the unique name of the mailbox database.")] String Name;
+    [Required, Description("Credentials used to establish a remote PowerShell session to Exchange"), EmbeddedInstance("MSFT_Credential")] String Credential;
+    [Required, Description("The number of copies that the database will have once fully configured")] Uint32 DatabaseCopyCount;
+    [Required, Description("The EdbFilePath parameter specifies the path to the database files.")] String EdbFilePath;
+    [Required, Description("The LogFolderPath parameter specifies the folder location for log files.")] String LogFolderPath;
+    [Required, Description("The Server parameter specifies the server on which you want to create the database.")] String Server;
+    [Write, Description("An optional domain controller to pass to Set-AdServerSettings -PreferredServer")] String AdServerSettingsPreferredServer;
+    [Write, Description("Whether it is okay to restart the Information Store Service after adding a database. Defaults to $false.")] Boolean AllowServiceRestart;
+    [Write, Description("The AllowFileRestore parameter specifies whether to allow a database to be restored from a backup.")] Boolean AllowFileRestore;
+    [Write, Description("The AutoDagExcludedFromMonitoringparameter specifies whether to exclude the mailbox database from the ServerOneCopyMonitor, which alerts an administrator when a replicated database has only one healthy copy available.")] Boolean AutoDagExcludeFromMonitoring;
+    [Write, Description("The BackgroundDatabaseMaintenance parameter specifies whether the Extensible Storage Engine (ESE) performs database maintenance.")] Boolean BackgroundDatabaseMaintenance;
+    [Write, Description("The CalendarLoggingQuota parameter specifies the maximum size of the log in the Recoverable Items folder of the mailbox that stores changes to calendar items.")] String CalendarLoggingQuota;
+    [Write, Description("The CircularLoggingEnabled parameter specifies whether circular logging is enabled for the database.")] Boolean CircularLoggingEnabled; //Will not be enabled until all copies have been added
+    [Write, Description("The DataMoveReplicationConstraint parameter specifies the throttling behavior for high availability mailbox moves."), ValueMap{"None","SecondCopy","SecondDatacenter","AllDatacenters","AllCopies"}, Values{"None","SecondCopy","SecondDatacenter","AllDatacenters","AllCopies"}] String DataMoveReplicationConstraint;
+    [Write, Description("The DeletedItemRetention parameter specifies the length of time to keep deleted items in the Recoverable Items\\Deletions folder in mailboxes.")] String DeletedItemRetention;
+    [Write, Description("The DomainController parameter specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory. You identify the domain controller by its fully qualified domain name (FQDN). For example, dc01.contoso.com.")] String DomainController;
+    [Write, Description("The EventHistoryRetentionPeriod parameter specifies the length of time to keep event data.")] String EventHistoryRetentionPeriod;
+    [Write, Description("The IndexEnabled parameter specifies whether Exchange Search indexes the mailbox database.")] Boolean IndexEnabled;
+    [Write, Description("The IsExcludedFromProvisioning parameter specifies whether to exclude the database from the mailbox provisioning load balancer that distributes new mailboxes randomly and evenly across the available databases.")] Boolean IsExcludedFromProvisioning;
+    [Write, Description("The IIsExcludedFromProvisioningByOperator parameter specifies whether to exclude the database from the mailbox provisioning load balancer that distributes new mailboxes randomly and evenly across the available databases.")] Boolean IsExcludedFromProvisioningByOperator;
+    [Write, Description("The IsExcludedFromProvisioningDueToLogicalCorruption parameter specifies whether to exclude the database from the mailbox provisioning load balancer that distributes new mailboxes randomly and evenly across the available databases.")] Boolean IsExcludedFromProvisioningDueToLogicalCorruption;
+    [Write, Description("The IsExcludedFromProvisioningReason parameter specifies the reason why you excluded the mailbox database from the mailbox provisioning load balancer.")] String IsExcludedFromProvisioningReason;
+    [Write, Description("The IssueWarningQuota parameter specifies the warning threshold for the size of the mailbox.")] String IssueWarningQuota;
+    [Write, Description("The IsSuspendedFromProvisioning parameter specifies whether to exclude the database from the mailbox provisioning load balancer that distributes new mailboxes randomly and evenly across the available databases.")] Boolean IsSuspendedFromProvisioning;
+    [Write, Description("The JournalRecipient parameter specifies the journal recipient to use for per-database journaling for all mailboxes on the database.")] String JournalRecipient;
+    [Write, Description("The MailboxRetention parameter specifies the length of time to keep deleted mailboxes before they are permanently deleted or purged.")] String MailboxRetention;
+    [Write, Description("The MetaCacheDatabaseMaxCapacityInBytes parameter specifies the size of the metacache database in bytes. To convert gigabytes to bytes, multiply the value by 1024^3. For terabytes to bytes, multiply by 1024^4.")] Sint64 MetaCacheDatabaseMaxCapacityInBytes;
+    [Write, Description("The MountAtStartup parameter specifies whether to mount the mailbox database when the Microsoft Exchange Information Store service starts.")] Boolean MountAtStartup;
+    [Write, Description("The OfflineAddressBook parameter specifies the offline address book that's associated with the mailbox database.")] String OfflineAddressBook;
+    [Write, Description("The ProhibitSendQuota parameter specifies a size limit for the mailbox. If the mailbox reaches or exceeds this size, the mailbox can't send new messages, and the user receives a descriptive warning message.")] String ProhibitSendQuota;
+    [Write, Description("The ProhibitSendReceiveQuota parameter specifies a size limit for the mailbox. If the mailbox reaches or exceeds this size, the mailbox can't send or receive new messages. Messages sent to the mailbox are returned to the sender with a descriptive error message. This value effectively determines the maximum size of the mailbox.")] String ProhibitSendReceiveQuota;
+    [Write, Description("The RecoverableItemsQuota parameter specifies the maximum size for the Recoverable Items folder of the mailbox.")] String RecoverableItemsQuota;
+    [Write, Description("The RecoverableItemsWarningQuota parameter specifies the warning threshold for the size of the Recoverable Items folder for the mailbox.")] String RecoverableItemsWarningQuota;
+    [Write, Description("The RetainDeletedItemsUntilBackup parameter specifies whether to keep items in the Recoverable Items\\Deletions folder of the mailbox until the next database backup occurs.")] Boolean RetainDeletedItemsUntilBackup;
+    [Write, Description("Whether the initial mount of databases should be skipped after database creation")] Boolean SkipInitialDatabaseMount;
+};

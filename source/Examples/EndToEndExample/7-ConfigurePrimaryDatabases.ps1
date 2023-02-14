@@ -120,9 +120,9 @@ Configuration Example
         $ExchangeAdminCredential
     )
 
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
 
-    Import-Module -Name (Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath 'Modules\xExchangeCalculatorHelper\xExchangeCalculatorHelper.psd1')
+    Import-Module -Name (Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath 'Modules\ExchangeDscCalculatorHelper\ExchangeDscCalculatorHelper.psd1')
 
     # This section will handle configuring all non-DAG specific settings, including CAS and MBX settings.
     Node $AllNodes.NodeName
@@ -140,7 +140,7 @@ Configuration Example
             -DbNameReplacements $dagSettings.DbNameReplacements
 
         # Create all mount points on the server
-        xExchAutoMountPoint AMP
+        ExchAutoMountPoint AMP
         {
             Identity                       = $Node.NodeName
             AutoDagDatabasesRootFolderPath = 'C:\ExchangeDatabases'
@@ -156,7 +156,7 @@ Configuration Example
             # Need to define a unique ID for each database
             $resourceId = "MDB_$($DB.Name)"
 
-            xExchMailboxDatabase $resourceId
+            ExchMailboxDatabase $resourceId
             {
                 Name                     = $DB.Name
                 Credential               = $ExchangeAdminCredential
@@ -167,7 +167,7 @@ Configuration Example
                 DatabaseCopyCount        = $dagSettings.AutoDagDatabaseCopiesPerVolume
                 OfflineAddressBook       = $casSettingsPerSite.DefaultOAB
                 SkipInitialDatabaseMount = $true
-                DependsOn                = '[xExchAutoMountPoint]AMP' # Can't create databases until the mount points exist
+                DependsOn                = '[ExchAutoMountPoint]AMP' # Can't create databases until the mount points exist
             }
         }
     }

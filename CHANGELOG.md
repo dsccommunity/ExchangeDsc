@@ -1,4 +1,4 @@
-# Changelog for xExchange
+# Changelog for ExchangeDsc
 
 The format is based on and uses the types of changes according to [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+
+- BREAKING CHANGE: 
+  - Renamed all resources with new prefix - fixes [Issue #484](https://github.com/dsccommunity/xExchange/issues/484)
 - xExchange
   - Update the pipeline files to the latest from template in Sampler.
 - xExchPopSettings

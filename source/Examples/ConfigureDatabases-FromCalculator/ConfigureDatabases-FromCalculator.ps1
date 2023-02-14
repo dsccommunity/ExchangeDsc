@@ -32,9 +32,9 @@ Configuration Example
         $ExchangeAdminCredential
     )
 
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
 
-    Import-Module -Name (Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath 'Modules\xExchangeCalculatorHelper\xExchangeCalculatorHelper.psd1')
+    Import-Module -Name (Join-Path -Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) -ChildPath 'Modules\ExchangeDscCalculatorHelper\ExchangeDscCalculatorHelper.psd1')
 
     Node $AllNodes.NodeName
     {
@@ -55,7 +55,7 @@ Configuration Example
             # Need to define a unique ID for each database
             $resourceId = "MDB:$($DB.Name)"
 
-            xExchMailboxDatabase $resourceId
+            ExchMailboxDatabase $resourceId
             {
                 Name                     = $DB.Name
                 Credential               = $ExchangeAdminCredential
@@ -74,20 +74,20 @@ Configuration Example
         # Create the copies
         foreach ($DB in $copyDbList)
         {
-            # Unique ID for the xExchWaitForMailboxDatabase resource
+            # Unique ID for the ExchWaitForMailboxDatabase resource
             $waitResourceId = "WaitForDB_$($DB.Name)"
 
-            # Unique ID for the xExchMailboxDatabaseCopy resource
+            # Unique ID for the ExchMailboxDatabaseCopy resource
             $copyResourceId = "MDBCopy_$($DB.Name)"
 
             # Need to wait for a primary copy to be created before we add a copy
-            xExchWaitForMailboxDatabase $waitResourceId
+            ExchWaitForMailboxDatabase $waitResourceId
             {
                 Identity   = $DB.Name
                 Credential = $ExchangeAdminCredential
             }
 
-            xExchMailboxDatabaseCopy $copyResourceId
+            ExchMailboxDatabaseCopy $copyResourceId
             {
                 Identity             = $DB.Name
                 Credential           = $ExchangeAdminCredential
@@ -95,7 +95,7 @@ Configuration Example
                 ActivationPreference = $DB.ActivationPreference
                 ReplayLagTime        = $DB.ReplayLagTime
                 AllowServiceRestart  = $true
-                DependsOn            = "[xExchWaitForMailboxDatabase]$($waitResourceId)"
+                DependsOn            = "[ExchWaitForMailboxDatabase]$($waitResourceId)"
             }
         }
     }

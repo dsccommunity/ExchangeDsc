@@ -64,7 +64,7 @@ Configuration Example
         $ExchangeAdminCredential
     )
 
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
     Import-DscResource -Module xPendingReboot
 
     Node $AllNodes.NodeName
@@ -88,7 +88,7 @@ Configuration Example
         }
 
         # Do the Exchange install
-        xExchInstall InstallExchange
+        ExchInstall InstallExchange
         {
             Path       = "C:\Binaries\E2K13CU8\Setup.exe"
             Arguments  = "/mode:Install /role:Mailbox /IAcceptExchangeServerLicenseTerms"
@@ -97,20 +97,20 @@ Configuration Example
         }
 
         # This section licenses the server
-        xExchExchangeServer EXServer
+        ExchExchangeServer EXServer
         {
             Identity            = $Node.NodeName
             Credential          = $ExchangeInstallCredential
             ProductKey          = $Node.ProductKey
             AllowServiceRestart = $true
-            DependsOn           = '[xExchInstall]InstallExchange'
+            DependsOn           = '[ExchInstall]InstallExchange'
         }
 
         # See if a reboot is required after installing Exchange
         xPendingReboot AfterExchangeInstall
         {
             Name      = "AfterExchangeInstall"
-            DependsOn = '[xExchInstall]InstallExchange'
+            DependsOn = '[ExchInstall]InstallExchange'
         }
     }
 }

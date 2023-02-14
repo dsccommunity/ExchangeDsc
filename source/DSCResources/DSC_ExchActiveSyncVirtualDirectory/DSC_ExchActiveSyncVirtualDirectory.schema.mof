@@ -1,0 +1,38 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("ExchActiveSyncVirtualDirectory")]
+class DSC_ExchActiveSyncVirtualdirectory : OMI_BaseResource
+{
+    [Key] String Identity; //The Identity of the ActiveSync Virtual Directory
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange
+    [Write] Boolean AllowServiceRestart; //Whether it is OK to recycle the app pool, or restart IIS after making changes. Defaults to $true.
+    [Write] Boolean AutoCertBasedAuth; //Automates the IIS configuration portion of certificate based authentication. Only works against the Default Web Site. Does not configure ClientCertAuth parameter, which must be specified separately. Does not install 'Client Certificate Mapping Authentication' or 'IIS Client Certificate Mapping Authentication' roles of IIS, which also must be configured separately.
+    [Write] String AutoCertBasedAuthThumbprint; //The thumbprint of the in use Exchange certificate for IIS
+    [Write] String AutoCertBasedAuthHttpsBindings[]; //The (IP:PORT)'s of the HTTPS bindings on the Default Web Site. Defaults to "0.0.0.0:443","127.0.0.1:443"
+
+    //Remaining properties correspond directly to Set-ActiveSyncVirtualDirectory parameters
+    //https://technet.microsoft.com/en-us/library/bb123679(v=exchg.160).aspx
+    [Write] String ActiveSyncServer;
+    [Write] Boolean BadItemReportingEnabled;
+    [Write] Boolean BasicAuthEnabled;
+    [Write, ValueMap{"Ignore","Accepted","Required"}, Values{"Ignore","Accepted","Required"}] String ClientCertAuth;
+    [Write] Boolean CompressionEnabled;
+    [Write] String DomainController;
+    [Write, ValueMap{"None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting"}, Values{"None","Proxy","NoServiceNameCheck","AllowDotlessSpn","ProxyCohosting"}] String ExtendedProtectionFlags[];
+    [Write] String ExtendedProtectionSPNList[];
+    [Write, ValueMap{"None","Allow","Require"}, Values{"None","Allow","Require"}] String ExtendedProtectionTokenChecking;
+    [Write] String ExternalAuthenticationMethods[];
+    [Write] String ExternalUrl;
+    [Write] Boolean InstallIsapiFilter;
+    [Write] String InternalAuthenticationMethods[];
+    [Write] String InternalUrl;
+    [Write] String MobileClientCertificateAuthorityURL;
+    [Write] Boolean MobileClientCertificateProvisioningEnabled;
+    [Write] String MobileClientCertTemplateName;
+    [Write] String Name;
+    [Write, ValueMap{"Allow","Block"}, Values{"Allow","Block"}] String RemoteDocumentsActionForUnknownServers;
+    [Write] String RemoteDocumentsAllowedServers[];
+    [Write] String RemoteDocumentsBlockedServers[];
+    [Write] String RemoteDocumentsInternalDomainSuffixList[];
+    [Write] Boolean SendWatsonReport;
+    [Write] Boolean WindowsAuthEnabled;
+};

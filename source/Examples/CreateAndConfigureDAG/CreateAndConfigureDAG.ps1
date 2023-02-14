@@ -71,7 +71,7 @@ Configuration Example
         $ExchangeAdminCredential
     )
 
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
 
     # This section only configures a single DAG node, the first member of the DAG.
     # The first member of the DAG will be responsible for DAG creation and maintaining its configuration
@@ -80,7 +80,7 @@ Configuration Example
         $dagSettings = $ConfigurationData[$Node.DAGId] # Look up and retrieve the DAG settings for this node
 
         # Create the DAG
-        xExchDatabaseAvailabilityGroup DAG
+        ExchDatabaseAvailabilityGroup DAG
         {
             Name                                 = $dagSettings.DAGName
             Credential                           = $ExchangeAdminCredential
@@ -98,17 +98,17 @@ Configuration Example
         }
 
         # Add this server as member
-        xExchDatabaseAvailabilityGroupMember DAGMember
+        ExchDatabaseAvailabilityGroupMember DAGMember
         {
             MailboxServer     = $Node.NodeName
             Credential        = $ExchangeAdminCredential
             DAGName           = $dagSettings.DAGName
             SkipDagValidation = $true
-            DependsOn         = '[xExchDatabaseAvailabilityGroup]DAG'
+            DependsOn         = '[ExchDatabaseAvailabilityGroup]DAG'
         }
 
         # Create two new DAG Networks
-        xExchDatabaseAvailabilityGroupNetwork DAGNet1
+        ExchDatabaseAvailabilityGroupNetwork DAGNet1
         {
             Name                      = $dagSettings.DAGNet1NetworkName
             Credential                = $ExchangeAdminCredential
@@ -116,10 +116,10 @@ Configuration Example
             Ensure                    = 'Present'
             ReplicationEnabled        = $dagSettings.DAGNet1ReplicationEnabled
             Subnets                   = $dagSettings.DAGNet1Subnets
-            DependsOn                 = '[xExchDatabaseAvailabilityGroupMember]DAGMember' # Can't do work on DAG networks until at least one member is in the DAG...
+            DependsOn                 = '[ExchDatabaseAvailabilityGroupMember]DAGMember' # Can't do work on DAG networks until at least one member is in the DAG...
         }
 
-        xExchDatabaseAvailabilityGroupNetwork DAGNet2
+        ExchDatabaseAvailabilityGroupNetwork DAGNet2
         {
             Name                      = $dagSettings.DAGNet2NetworkName
             Credential                = $ExchangeAdminCredential
@@ -127,17 +127,17 @@ Configuration Example
             Ensure                    = 'Present'
             ReplicationEnabled        = $dagSettings.DAGNet2ReplicationEnabled
             Subnets                   = $dagSettings.DAGNet2Subnets
-            DependsOn                 = '[xExchDatabaseAvailabilityGroupMember]DAGMember' # Can't do work on DAG networks until at least one member is in the DAG...
+            DependsOn                 = '[ExchDatabaseAvailabilityGroupMember]DAGMember' # Can't do work on DAG networks until at least one member is in the DAG...
         }
 
         # Remove the original DAG Network
-        xExchDatabaseAvailabilityGroupNetwork DAGNetOld
+        ExchDatabaseAvailabilityGroupNetwork DAGNetOld
         {
             Name                      = $dagSettings.OldNetworkName
             Credential                = $ExchangeAdminCredential
             DatabaseAvailabilityGroup = $dagSettings.DAGName
             Ensure                    = 'Absent'
-            DependsOn                 = '[xExchDatabaseAvailabilityGroupNetwork]DAGNet1', '[xExchDatabaseAvailabilityGroupNetwork]DAGNet2' # Dont remove the old one until the new one is in place
+            DependsOn                 = '[ExchDatabaseAvailabilityGroupNetwork]DAGNet1', '[ExchDatabaseAvailabilityGroupNetwork]DAGNet2' # Dont remove the old one until the new one is in place
         }
     }
 
@@ -147,19 +147,19 @@ Configuration Example
         $dagSettings = $ConfigurationData[$Node.DAGId] # Look up and retrieve the DAG settings for this node
 
         # Can't join until the DAG exists...
-        xExchWaitForDAG WaitForDAG
+        ExchWaitForDAG WaitForDAG
         {
             Identity   = $dagSettings.DAGName
             Credential = $ExchangeAdminCredential
         }
 
-        xExchDatabaseAvailabilityGroupMember DAGMember
+        ExchDatabaseAvailabilityGroupMember DAGMember
         {
             MailboxServer     = $Node.NodeName
             Credential        = $ExchangeAdminCredential
             DAGName           = $dagSettings.DAGName
             SkipDagValidation = $true
-            DependsOn         = '[xExchWaitForDAG]WaitForDAG'
+            DependsOn         = '[ExchWaitForDAG]WaitForDAG'
         }
     }
 }

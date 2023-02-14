@@ -1,0 +1,10 @@
+
+[ClassVersion("1.0.0.0"), FriendlyName("ExchDatabaseAvailabilityGroupMember")]
+class DSC_ExchatabaseAvailabilityGroupMember : OMI_BaseResource
+{
+    [Key] String MailboxServer; //Must be Hostname of Server, not FQDN
+    [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange
+    [Required] String DAGName; //Name of DAG to add member to
+    [Write] String DomainController; //Domain controller to talk to when running Add-DatabaseAvailabilityGroupMember
+    [Write] Boolean SkipDagValidation; //Whether SkipDagValidation should be passed to Add-DatabaseAvailabilityGroupMember
+};
