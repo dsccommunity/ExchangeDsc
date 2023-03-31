@@ -3,6 +3,7 @@
 #          ModuleBuilder Configuration             #
 ####################################################
 
+BuiltModuleSubdirectory: module
 CopyPaths:
   - en-US
   - DSCResources
