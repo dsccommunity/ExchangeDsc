@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - xExchange
   - Update the pipeline files to the latest from template in Sampler.
+  - Update to CI worker that allow building MOF-based resources.
 - xExchPopSettings
   - Add missing ProtocolLogEnabled parameter.
 - xExchWebServicesVirtualDirectory
