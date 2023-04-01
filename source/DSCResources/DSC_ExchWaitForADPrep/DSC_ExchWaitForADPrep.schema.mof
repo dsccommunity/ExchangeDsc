@@ -1,4 +1,3 @@
-
 [ClassVersion("1.0.0.0"), FriendlyName("ExchWaitForADPrep")]
 class DSC_ExchWaitForADPrep : OMI_BaseResource
 {

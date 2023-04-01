@@ -1,4 +1,3 @@
-
 [ClassVersion("1.0.0.0"), FriendlyName("ExchMailboxDatabase")]
 class DSC_ExchMailboxDatabase : OMI_BaseResource
 {

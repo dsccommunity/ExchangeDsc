@@ -1,4 +1,3 @@
-
 [ClassVersion("1.0.0.0"), FriendlyName("ExchPowerShellVirtualDirectory")]
 class DSC_ExchPowerShellVirtualDirectory : OMI_BaseResource
 {

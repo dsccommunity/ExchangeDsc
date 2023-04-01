@@ -1,4 +1,3 @@
-
 [ClassVersion("1.0.0.0"), FriendlyName("ExchOwaVirtualDirectory")]
 class DSC_ExchOwaVirtualDirectory : OMI_BaseResource
 {

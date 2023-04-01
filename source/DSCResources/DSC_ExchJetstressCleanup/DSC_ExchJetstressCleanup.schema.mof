@@ -1,4 +1,3 @@
-
 [ClassVersion("1.0.0.0"), FriendlyName("ExchJetstressCleanup")]
 class DSC_ExchJetstressCleanup : OMI_BaseResource
 {

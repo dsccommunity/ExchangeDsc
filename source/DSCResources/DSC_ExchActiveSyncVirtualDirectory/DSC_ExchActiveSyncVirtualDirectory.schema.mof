@@ -1,4 +1,3 @@
-
 [ClassVersion("1.0.0.0"), FriendlyName("ExchActiveSyncVirtualDirectory")]
 class DSC_ExchActiveSyncVirtualdirectory : OMI_BaseResource
 {
