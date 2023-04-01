@@ -1,5 +1,5 @@
 $script:DSCModuleName = 'ExchangeDsc'
-$script:DSCResourceName = 'DSC_ExchailboxDatabaseCopy'
+$script:DSCResourceName = 'DSC_ExchMailboxDatabaseCopy'
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'ExchangeDscTestHelper.psm1'))) -Global -Force
@@ -23,7 +23,7 @@ try
         }
 
 
-        Describe 'DSC_ExchailboxDatabaseCopy\Get-TargetResource' -Tag 'Get' {
+        Describe 'DSC_ExchMailboxDatabaseCopy\Get-TargetResource' -Tag 'Get' {
             # Override Exchange cmdlets
             function Set-ADServerSettings
             {
@@ -75,7 +75,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchailboxDatabaseCopy\Set-TargetResource' -Tag 'Set' {
+        Describe 'DSC_ExchMailboxDatabaseCopy\Set-TargetResource' -Tag 'Set' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -102,7 +102,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchailboxDatabaseCopy\Test-TargetResource' -Tag 'Test' {
+        Describe 'DSC_ExchMailboxDatabaseCopy\Test-TargetResource' -Tag 'Test' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -137,7 +137,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchailboxDatabaseCopy\Get-MailboxDatabaseInternal' -Tag 'Helper' {
+        Describe 'DSC_ExchMailboxDatabaseCopy\Get-MailboxDatabaseInternal' -Tag 'Helper' {
             # Override Exchange cmdlets
             function Get-MailboxDatabase
             {
@@ -157,7 +157,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchailboxDatabaseCopy\Get-MailboxDatabaseCopyCount' -Tag 'Helper' {
+        Describe 'DSC_ExchMailboxDatabaseCopy\Get-MailboxDatabaseCopyCount' -Tag 'Helper' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -177,7 +177,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchailboxDatabaseCopy\Add-MailboxDatabaseCopyInternal' -Tag 'Helper' {
+        Describe 'DSC_ExchMailboxDatabaseCopy\Add-MailboxDatabaseCopyInternal' -Tag 'Helper' {
             # Override Exchange cmdlets
             function Add-MailboxDatabaseCopy
             {
@@ -255,7 +255,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchailboxDatabaseCopy\Set-MailboxDatabaseCopyInternal' -Tag 'Helper' {
+        Describe 'DSC_ExchMailboxDatabaseCopy\Set-MailboxDatabaseCopyInternal' -Tag 'Helper' {
             # Override Exchange cmdlets
             function Set-MailboxDatabaseCopy
             {

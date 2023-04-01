@@ -1,5 +1,5 @@
 $script:DSCModuleName = 'ExchangeDsc'
-$script:DSCResourceName = 'DSC_ExchailboxTransportService'
+$script:DSCResourceName = 'DSC_ExchMailboxTransportService'
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 $script:testEnvironment = Invoke-TestSetup -DSCModuleName $script:dscModuleName -DSCResourceName $script:dscResourceName
 
@@ -61,7 +61,7 @@ try
 
         Mock -CommandName Get-RemoteExchangeSession -Verifiable
 
-        Describe 'DSC_ExchailboxTransportService\Get-TargetResource' -Tag 'Get' {
+        Describe 'DSC_ExchMailboxTransportService\Get-TargetResource' -Tag 'Get' {
             # Override Exchange cmdlets
             function Get-MailboxTransportService
             {
@@ -79,7 +79,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchailboxTransportService\Set-TargetResource' -Tag 'Set' {
+        Describe 'DSC_ExchMailboxTransportService\Set-TargetResource' -Tag 'Set' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -108,7 +108,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchailboxTransportService\Test-TargetResource' -Tag 'Test' {
+        Describe 'DSC_ExchMailboxTransportService\Test-TargetResource' -Tag 'Test' {
             # Override Exchange cmdlets
             AfterEach {
                 Assert-VerifiableMock

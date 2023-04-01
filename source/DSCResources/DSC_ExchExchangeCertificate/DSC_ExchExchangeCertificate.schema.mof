@@ -1,6 +1,6 @@
 
-[ClassVersion("1.0.0.0"), FriendlyName("ExchxchangeCertificate")]
-class DSC_ExchxchangeCertificate : OMI_BaseResource
+[ClassVersion("1.0.0.0"), FriendlyName("ExchExchangeCertificate")]
+class DSC_ExchExchangeCertificate : OMI_BaseResource
 {
     [Key, Description("Thumbprint of the certificate to work on.")] String Thumbprint;
     [Required, Description("Credentials used to establish a remote PowerShell session to Exchange."), EmbeddedInstance("MSFT_Credential")] String Credential;

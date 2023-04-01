@@ -1,6 +1,6 @@
 
 [ClassVersion("1.0.0.0"), FriendlyName("ExchDatabaseAvailabilityGroupMember")]
-class DSC_ExchatabaseAvailabilityGroupMember : OMI_BaseResource
+class DSC_ExchDatabaseAvailabilityGroupMember : OMI_BaseResource
 {
     [Key] String MailboxServer; //Must be Hostname of Server, not FQDN
     [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange

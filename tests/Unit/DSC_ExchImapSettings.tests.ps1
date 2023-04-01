@@ -1,6 +1,6 @@
 #region HEADER
 $script:DSCModuleName = 'ExchangeDsc'
-$script:DSCResourceName = 'DSC_ExchmapSettings'
+$script:DSCResourceName = 'DSC_ExchImapSettings'
 
 # Unit Test Template Version: 1.2.4
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
@@ -54,7 +54,7 @@ try
             UnencryptedOrTLSBindings          = [System.String[]] @()
         }
 
-        Describe 'DSC_ExchmapSettings\Get-TargetResource' -Tag 'Get' {
+        Describe 'DSC_ExchImapSettings\Get-TargetResource' -Tag 'Get' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -68,7 +68,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchmapSettings\Set-TargetResource' -Tag 'Set' {
+        Describe 'DSC_ExchImapSettings\Set-TargetResource' -Tag 'Set' {
             # Override Exchange cmdlets
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
             function Set-ImapSettings
@@ -100,7 +100,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchmapSettings\Test-TargetResource' -Tag 'Test' {
+        Describe 'DSC_ExchImapSettings\Test-TargetResource' -Tag 'Test' {
             # Override Exchange cmdlets
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
 
@@ -131,7 +131,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchmapSettings\Get-ImapSettingsInternal' -Tag 'Helper' {
+        Describe 'DSC_ExchImapSettings\Get-ImapSettingsInternal' -Tag 'Helper' {
             # Override Exchange cmdlets
             function Get-ImapSettings
             {
@@ -150,7 +150,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchmapSettings\Get-ImapSettingsInternal' -Tag 'Helper' {
+        Describe 'DSC_ExchImapSettings\Get-ImapSettingsInternal' -Tag 'Helper' {
             # Override Exchange cmdlets
             function Get-ImapSettings
             {
@@ -170,7 +170,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchmapSettings\Get-ImapSettingsInternal' -Tag 'Helper' {
+        Describe 'DSC_ExchImapSettings\Get-ImapSettingsInternal' -Tag 'Helper' {
             # Override Exchange cmdlets
             function Get-ImapSettings { }
 

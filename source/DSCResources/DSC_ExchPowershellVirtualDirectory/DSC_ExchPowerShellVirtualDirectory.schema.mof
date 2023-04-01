@@ -1,6 +1,6 @@
 
 [ClassVersion("1.0.0.0"), FriendlyName("ExchPowerShellVirtualDirectory")]
-class DSC_ExchowerShellVirtualDirectory : OMI_BaseResource
+class DSC_ExchPowerShellVirtualDirectory : OMI_BaseResource
 {
     [Key] String Identity; //Identity of PS Vdir. Should be in the format 'SERVERNAME\Vdir', as in 'SERVER\PowerShell (Default Web Site)'
     [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange

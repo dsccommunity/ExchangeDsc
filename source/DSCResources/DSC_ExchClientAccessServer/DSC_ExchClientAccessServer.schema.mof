@@ -1,6 +1,6 @@
 
-[ClassVersion("1.0.0.0"), FriendlyName("ExchientAccessServer")]
-class DSC_ExchentAccessServer : OMI_BaseResource
+[ClassVersion("1.0.0.0"), FriendlyName("ExchClientAccessServer")]
+class DSC_ExchClientAccessServer : OMI_BaseResource
 {
     [Key, Description("The hostname of the Client Access Server.")] String Identity;
     [Required, Description("Credentials used to establish a remote PowerShell session to Exchange."), EmbeddedInstance("MSFT_Credential")] String Credential;

@@ -1,6 +1,6 @@
 
 [ClassVersion("1.0.0.0"), FriendlyName("ExchImapSettings")]
-class DSC_ExchmapSettings : OMI_BaseResource
+class DSC_ExchImapSettings : OMI_BaseResource
 {
     [Key, Description("The IMAP server to configure.")] String Server;
     [Required, Description("Credentials used to establish a remote PowerShell session to Exchange."), EmbeddedInstance("MSFT_Credential")] String Credential;

@@ -1,6 +1,6 @@
 
-[ClassVersion("1.0.0.0"), FriendlyName("ExchventLogLevel")]
-class DSC_ExchventLogLevel : OMI_BaseResource
+[ClassVersion("1.0.0.0"), FriendlyName("ExchEventLogLevel")]
+class DSC_ExchEventLogLevel : OMI_BaseResource
 {
     [Key, Description("The Identity parameter specifies the name of the event logging category for which you want to set the event logging level.")] String Identity;
     [Required, Description("Credentials used to establish a remote PowerShell session to Exchange"), EmbeddedInstance("MSFT_Credential")] String Credential;

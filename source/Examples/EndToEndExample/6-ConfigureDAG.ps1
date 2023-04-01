@@ -125,7 +125,7 @@ Configuration Example
         $dagSettings = $ConfigurationData[$Node.DAGId] # Look up and retrieve the DAG settings for this node
 
         # Create the DAG
-        ExchatabaseAvailabilityGroup DAG
+        ExchDatabaseAvailabilityGroup DAG
         {
             Name                                 = $dagSettings.DAGName
             Credential                           = $ExchangeAdminCredential
@@ -143,13 +143,13 @@ Configuration Example
         }
 
         # Add this server as member
-        ExchatabaseAvailabilityGroupMember DAGMember
+        ExchDatabaseAvailabilityGroupMember DAGMember
         {
             MailboxServer     = $Node.NodeName
             Credential        = $ExchangeAdminCredential
             DAGName           = $dagSettings.DAGName
             SkipDagValidation = $true
-            DependsOn         = '[ExchatabaseAvailabilityGroup]DAG'
+            DependsOn         = '[ExchDatabaseAvailabilityGroup]DAG'
         }
     }
 
@@ -159,13 +159,13 @@ Configuration Example
         $dagSettings = $ConfigurationData[$Node.DAGId] # Look up and retrieve the DAG settings for this node
 
         # Can't join until the DAG exists...
-        ExchaitForDAG WaitForDAG
+        ExchWaitForDAG WaitForDAG
         {
             Identity         = $dagSettings.DAGName
             Credential       = $ExchangeAdminCredential
         }
 
-        ExchatabaseAvailabilityGroupMember DAGMember
+        ExchDatabaseAvailabilityGroupMember DAGMember
         {
             MailboxServer     = $Node.NodeName
             Credential        = $ExchangeAdminCredential

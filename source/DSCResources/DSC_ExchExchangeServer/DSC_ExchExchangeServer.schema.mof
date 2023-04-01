@@ -1,6 +1,6 @@
 
 [ClassVersion("1.0.0.0"), FriendlyName("ExchExchangeServer")]
-class DSC_ExchxchangeServer : OMI_BaseResource
+class DSC_ExchExchangeServer : OMI_BaseResource
 {
     [Key, Description("The Identity parameter specifies the GUID, distinguished name (DN), or name of the server.")] String Identity;
     [Required, Description("Credentials used to establish a remote PowerShell session to Exchange."), EmbeddedInstance("MSFT_Credential")] String Credential;

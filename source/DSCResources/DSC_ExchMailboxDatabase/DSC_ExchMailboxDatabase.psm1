@@ -698,29 +698,29 @@ function Set-TargetResource
     # Check for non-existent parameters in Exchange 2013
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
         -ParamName 'IsExcludedFromProvisioningByOperator' `
-        -ResourceName 'ExchailboxDatabase' `
+        -ResourceName 'ExchMailboxDatabase' `
         -ParamExistsInVersion '2016', '2019'
 
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
         -ParamName 'IsExcludedFromProvisioningDueToLogicalCorruption' `
-        -ResourceName 'ExchailboxDatabase' `
+        -ResourceName 'ExchMailboxDatabase' `
         -ParamExistsInVersion '2016', '2019'
 
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
         -ParamName 'IsExcludedFromProvisioningReason' `
-        -ResourceName 'ExchailboxDatabase' `
+        -ResourceName 'ExchMailboxDatabase' `
         -ParamExistsInVersion '2016', '2019'
 
     # Check for non-existent parameters in Exchange 2013 or 2016
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
         -ParamName 'MetaCacheDatabaseMaxCapacityInBytes' `
-        -ResourceName 'ExchailboxDatabase' `
+        -ResourceName 'ExchMailboxDatabase' `
         -ParamExistsInVersion '2019'
 
     # Check for non-existent parameters in Exchange 2019
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
         -ParamName 'IndexEnabled' `
-        -ResourceName 'ExchailboxDatabase' `
+        -ResourceName 'ExchMailboxDatabase' `
         -ParamExistsInVersion '2013', '2016'
 
     Set-EmptyStringParamsToNull -PSBoundParametersIn $PSBoundParameters
@@ -1136,29 +1136,29 @@ function Test-TargetResource
     # Check for non-existent parameters in Exchange 2013
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
         -ParamName 'IsExcludedFromProvisioningByOperator' `
-        -ResourceName 'ExchailboxDatabase' `
+        -ResourceName 'ExchMailboxDatabase' `
         -ParamExistsInVersion '2016', '2019'
 
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
         -ParamName 'IsExcludedFromProvisioningDueToLogicalCorruption' `
-        -ResourceName 'ExchailboxDatabase' `
+        -ResourceName 'ExchMailboxDatabase' `
         -ParamExistsInVersion '2016', '2019'
 
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
         -ParamName 'IsExcludedFromProvisioningReason' `
-        -ResourceName 'ExchailboxDatabase' `
+        -ResourceName 'ExchMailboxDatabase' `
         -ParamExistsInVersion '2016', '2019'
 
     # Check for non-existent parameters in Exchange 2013 or 2016
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
         -ParamName 'MetaCacheDatabaseMaxCapacityInBytes' `
-        -ResourceName 'ExchailboxDatabase' `
+        -ResourceName 'ExchMailboxDatabase' `
         -ParamExistsInVersion '2019'
 
     # Check for non-existent parameters in Exchange 2019
     Remove-NotApplicableParamsForVersion -PSBoundParametersIn $PSBoundParameters `
         -ParamName 'IndexEnabled' `
-        -ResourceName 'ExchailboxDatabase' `
+        -ResourceName 'ExchMailboxDatabase' `
         -ParamExistsInVersion '2013', '2016'
 
     if ($PSBoundParameters.ContainsKey('AdServerSettingsPreferredServer') -and ![System.String]::IsNullOrEmpty($AdServerSettingsPreferredServer))

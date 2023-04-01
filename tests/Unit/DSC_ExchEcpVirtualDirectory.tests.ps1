@@ -1,5 +1,5 @@
 $script:DSCModuleName = 'ExchangeDsc'
-$script:DSCResourceName = 'DSC_ExchcpVirtualDirectory'
+$script:DSCResourceName = 'DSC_ExchEcpVirtualDirectory'
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'ExchangeDscTestHelper.psm1'))) -Global -Force
@@ -42,7 +42,7 @@ try
             OwaOptionsEnabled               = [System.Boolean] $false
         }
 
-        Describe 'DSC_ExchcpVirtualDirectory\Get-TargetResource' -Tag 'Get' {
+        Describe 'DSC_ExchEcpVirtualDirectory\Get-TargetResource' -Tag 'Get' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -55,7 +55,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchcpVirtualDirectory\Set-TargetResource' -Tag 'Set' {
+        Describe 'DSC_ExchEcpVirtualDirectory\Set-TargetResource' -Tag 'Set' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -89,7 +89,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchcpVirtualDirectory\Test-TargetResource' -Tag 'Test' {
+        Describe 'DSC_ExchEcpVirtualDirectory\Test-TargetResource' -Tag 'Test' {
             AfterEach {
                 Assert-VerifiableMock
             }

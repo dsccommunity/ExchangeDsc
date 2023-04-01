@@ -54,7 +54,7 @@ Configuration Example
     {
         $casSettings = $ConfigurationData[$Node.CASId] # Look up and retrieve the CAS settings for this node
 
-        ExchlientAccessServer CAS
+        ExchClientAccessServer CAS
         {
             Identity                       = $Node.NodeName
             Credential                     = $ExchangeAdminCredential
@@ -62,7 +62,7 @@ Configuration Example
             AutoDiscoverSiteScope          = $casSettings.AutoDiscoverSiteScope
         }
 
-        ExchctiveSyncVirtualDirectory ASVdir
+        ExchActiveSyncVirtualDirectory ASVdir
         {
             Identity    = "$($Node.NodeName)\Microsoft-Server-ActiveSync (Default Web Site)"
             Credential  = $ExchangeAdminCredential
@@ -70,7 +70,7 @@ Configuration Example
             InternalUrl = "https://$($casSettings.InternalNLBFqdn)/Microsoft-Server-ActiveSync"
         }
 
-        ExchcpVirtualDirectory ECPVDir
+        ExchEcpVirtualDirectory ECPVDir
         {
             Identity    = "$($Node.NodeName)\ecp (Default Web Site)"
             Credential  = $ExchangeAdminCredential
@@ -78,7 +78,7 @@ Configuration Example
             InternalUrl = "https://$($casSettings.InternalNLBFqdn)/ecp"
         }
 
-        ExchapiVirtualDirectory MAPIVdir
+        ExchMapiVirtualDirectory MAPIVdir
         {
             Identity                 = "$($Node.NodeName)\mapi (Default Web Site)"
             Credential               = $ExchangeAdminCredential
@@ -88,7 +88,7 @@ Configuration Example
             AllowServiceRestart      = $true               # Since we are changing the default auth method, we allow the app pool to be restarted right away so the change goes into effect immediately
         }
 
-        ExchabVirtualDirectory OABVdir
+        ExchOabVirtualDirectory OABVdir
         {
             Identity    = "$($Node.NodeName)\OAB (Default Web Site)"
             Credential  = $ExchangeAdminCredential
@@ -96,7 +96,7 @@ Configuration Example
             InternalUrl = "https://$($casSettings.InternalNLBFqdn)/oab"
         }
 
-        ExchutlookAnywhere OAVdir
+        ExchOutlookAnywhere OAVdir
         {
             Identity                           = "$($Node.NodeName)\Rpc (Default Web Site)"
             Credential                         = $ExchangeAdminCredential
@@ -109,7 +109,7 @@ Configuration Example
             AllowServiceRestart                = $true  # Since we are changing the default auth method, we allow the app pool to be restarted right away so the change goes into effect immediately
         }
 
-        ExchwaVirtualDirectory OWAVdir
+        ExchOwaVirtualDirectory OWAVdir
         {
             Identity    = "$($Node.NodeName)\owa (Default Web Site)"
             Credential  = $ExchangeAdminCredential
@@ -117,7 +117,7 @@ Configuration Example
             InternalUrl = "https://$($casSettings.InternalNLBFqdn)/owa"
         }
 
-        ExchebServicesVirtualDirectory EWSVdir
+        ExchWebServicesVirtualDirectory EWSVdir
         {
             Identity    = "$($Node.NodeName)\EWS (Default Web Site)"
             Credential  = $ExchangeAdminCredential

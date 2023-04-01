@@ -1,6 +1,6 @@
 
 [ClassVersion("1.0.0.0"), FriendlyName("ExchWebServicesVirtualDirectory")]
-class DSC_ExchebServicesVirtualDirectory : OMI_BaseResource
+class DSC_ExchWebServicesVirtualDirectory : OMI_BaseResource
 {
     [Key] String Identity; //The Identity of the EWS Virtual Directory
     [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange

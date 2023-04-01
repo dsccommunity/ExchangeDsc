@@ -44,7 +44,7 @@ Configuration Example
 
     Node $AllNodes.NodeName
     {
-        ExchaintenanceMode ExitMaintenanceMode
+        ExchMaintenanceMode ExitMaintenanceMode
         {
             Enabled                                         = $false
             Credential                                      = $ExchangeAdminCredential

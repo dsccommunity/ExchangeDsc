@@ -1,6 +1,6 @@
 
 [ClassVersion("1.0.0.0"), FriendlyName("ExchJetstress")]
-class DSC_Exchetstress : OMI_BaseResource
+class DSC_ExchJetstress : OMI_BaseResource
 {
     [Key, Description("Specifies the Type which was defined in the JetstressConfig.xml file. Valid values are Performance, Stress, DatabaseBackup, or SoftRecovery. Defaults to Performance."), ValueMap{"Performance","Stress","DatabaseBackup","SoftRecovery"}, Values{"Performance","Stress","DatabaseBackup","SoftRecovery"}] String Type;
     [Required, Description("The path to the folder where Jetstress is installed, and which contains JetstressCmd.exe")] String JetstressPath;

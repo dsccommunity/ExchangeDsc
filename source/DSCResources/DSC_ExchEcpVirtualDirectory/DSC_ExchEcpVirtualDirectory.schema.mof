@@ -1,6 +1,6 @@
 
-[ClassVersion("1.0.0.0"), FriendlyName("ExchcpVirtualDirectory")]
-class DSC_ExchcpVirtualDirectory : OMI_BaseResource
+[ClassVersion("1.0.0.0"), FriendlyName("ExchEcpVirtualDirectory")]
+class DSC_ExchEcpVirtualDirectory : OMI_BaseResource
 {
     [Key, Description("The Identity of the ECP Virtual Directory.")] String Identity;
     [Required, Description("Credentials used to establish a remote PowerShell session to Exchange."), EmbeddedInstance("MSFT_Credential")] String Credential;

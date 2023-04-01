@@ -1,6 +1,6 @@
 
-[ClassVersion("1.0.0.0"), FriendlyName("ExchMService")]
-class DSC_ExchService : OMI_BaseResource
+[ClassVersion("1.0.0.0"), FriendlyName("ExchUMService")]
+class DSC_ExchUMService : OMI_BaseResource
 {
     [Key] String Identity; //Hostname of the UM server to configure
     [Required, Description("Credentials used to establish a remote PowerShell session to Exchange"), EmbeddedInstance("MSFT_Credential")] String Credential;

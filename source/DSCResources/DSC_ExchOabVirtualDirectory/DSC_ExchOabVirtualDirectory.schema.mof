@@ -1,6 +1,6 @@
 
-[ClassVersion("1.0.0.0"), FriendlyName("ExchabVirtualDirectory")]
-class DSC_ExchbVirtualDirectory : OMI_BaseResource
+[ClassVersion("1.0.0.0"), FriendlyName("ExchOabVirtualDirectory")]
+class DSC_ExchOabVirtualDirectory : OMI_BaseResource
 {
     [Key] String Identity; //Identity of OAB Vdir. Should be in the format 'SERVERNAME\Vdir', as in 'SERVER\OAB (Default Web Site)'
     [Required, EmbeddedInstance("MSFT_Credential")] String Credential; //Credentials used to establish a remote PowerShell session to Exchange

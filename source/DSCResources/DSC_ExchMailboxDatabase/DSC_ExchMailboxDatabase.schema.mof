@@ -1,6 +1,6 @@
 
 [ClassVersion("1.0.0.0"), FriendlyName("ExchMailboxDatabase")]
-class DSC_ExchailboxDatabase : OMI_BaseResource
+class DSC_ExchMailboxDatabase : OMI_BaseResource
 {
     [Key, Description("The Name parameter specifies the unique name of the mailbox database.")] String Name;
     [Required, Description("Credentials used to establish a remote PowerShell session to Exchange"), EmbeddedInstance("MSFT_Credential")] String Credential;

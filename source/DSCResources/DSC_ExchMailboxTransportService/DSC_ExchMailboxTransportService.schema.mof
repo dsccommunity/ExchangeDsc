@@ -1,5 +1,5 @@
 [ClassVersion("1.0.0.0"), FriendlyName("ExchMailboxTransportService")]
-class DSC_ExchailboxTransportService : OMI_BaseResource
+class DSC_ExchMailboxTransportService : OMI_BaseResource
 {
     [Key, Description("Exchange server")] String Identity;
     [Required, EmbeddedInstance("MSFT_Credential"), Description("Credentials used to establish a remote PowerShell session to Exchange")] String Credential;

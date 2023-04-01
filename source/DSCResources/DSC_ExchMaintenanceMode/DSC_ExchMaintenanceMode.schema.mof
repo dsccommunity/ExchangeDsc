@@ -1,6 +1,6 @@
 
 [ClassVersion("1.0.0.0"), FriendlyName("ExchMaintenanceMode")]
-class DSC_ExchaintenanceMode : OMI_BaseResource
+class DSC_ExchMaintenanceMode : OMI_BaseResource
 {
     [Key, Description("Whether the server should be put into Maintenance Mode. When Enabled is set to True, the server will be put in Maintenance Mode. If False, the server will be taken out of Maintenance Mode.")] Boolean Enabled;
     [Required, Description("Credentials used to establish a remote PowerShell session to Exchange"), EmbeddedInstance("MSFT_Credential")] String Credential;

@@ -24,7 +24,7 @@ Configuration Example
         }
 
         # Clean up Jetstress databases, mount points, and binaries
-        ExchetstressCleanup CleanupJetstress
+        ExchJetstressCleanup CleanupJetstress
         {
             JetstressPath               = 'C:\Program Files\Exchange Jetstress'
             ConfigFilePath              = 'C:\Program Files\Exchange Jetstress\JetstressConfig.xml'
