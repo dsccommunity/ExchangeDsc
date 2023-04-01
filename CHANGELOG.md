@@ -22,10 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-
-- BREAKING CHANGE: 
-  - Renamed all resources with new prefix - fixes [Issue #484](https://github.com/dsccommunity/xExchange/issues/484)
 - xExchange
+  - BREAKING CHANGE: Renamed module and all resources, removing prefix 'x'
+    ([issue #484](https://github.com/dsccommunity/xExchange/issues/484)).
   - Update the pipeline files to the latest from template in Sampler.
   - Update to CI worker that allow building MOF-based resources.
 - xExchPopSettings
