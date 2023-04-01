@@ -5,6 +5,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Deprecated
+
+- **The module _xExchange_ will be renamed to _ExchangeDsc_
+  ([issue #484](https://github.com/dsccommunity/xExchange/issues/484)).
+  The version `v1.33.1` will be the the last release of _xExchange_.
+  Version `v2.0.0` will be released as _ExchangeDsc_, it will be released
+  shortly after the `v1.33.1` release to be able to start transition to
+  the new module. The prefix 'x' will be removed from all resources in
+  _ExchangeDsc_.**
+
 ### Added
 
 - xExchOwaVirtualDirectoryInternal
