@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Automated integration test for DSC_ExchctiveSyncVirtualDirectory DSC Resource.
+        Automated integration test for DSC_ExchActiveSyncVirtualDirectory DSC Resource.
         This test module requires use of credentials.
         The first run through of the tests will prompt for credentials from the logged on user.
 #>

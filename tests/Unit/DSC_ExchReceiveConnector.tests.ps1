@@ -1,5 +1,5 @@
 $script:DSCModuleName = 'ExchangeDsc'
-$script:DSCResourceName = 'DSC_ExcheceiveConnector'
+$script:DSCResourceName = 'DSC_ExchReceiveConnector'
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'ExchangeDscTestHelper.psm1'))) -Global -Force
@@ -62,7 +62,7 @@ try
                 $Identity
             )
         }
-        Describe 'DSC_ExcheceiveConnector\Get-TargetResource' -Tag 'Get' {
+        Describe 'DSC_ExchReceiveConnector\Get-TargetResource' -Tag 'Get' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -155,7 +155,7 @@ try
                 }
             }
         }
-        Describe 'DSC_ExcheceiveConnector\Set-TargetResource' -Tag 'Set' {
+        Describe 'DSC_ExchReceiveConnector\Set-TargetResource' -Tag 'Set' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -281,7 +281,7 @@ try
                 }
             }
         }
-        Describe 'DSC_ExcheceiveConnector\Test-TargetResource' -Tag 'Test' {
+        Describe 'DSC_ExchReceiveConnector\Test-TargetResource' -Tag 'Test' {
             AfterEach {
                 Assert-VerifiableMock
             }

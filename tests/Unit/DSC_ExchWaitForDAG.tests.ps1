@@ -1,5 +1,5 @@
 $script:DSCModuleName = 'ExchangeDsc'
-$script:DSCResourceName = 'DSC_ExchaitForDAG'
+$script:DSCResourceName = 'DSC_ExchWaitForDAG'
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'ExchangeDscTestHelper.psm1'))) -Global -Force
@@ -20,7 +20,7 @@ try
             Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'fakeuser', (New-Object -TypeName System.Security.SecureString)
         }
 
-        Describe 'DSC_ExchaitForDAG\Get-TargetResource' -Tag 'Get' {
+        Describe 'DSC_ExchWaitForDAG\Get-TargetResource' -Tag 'Get' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -35,7 +35,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchaitForDAG\Set-TargetResource' -Tag 'Set' {
+        Describe 'DSC_ExchWaitForDAG\Set-TargetResource' -Tag 'Set' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -60,7 +60,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchaitForDAG\Test-TargetResource' -Tag 'Test' {
+        Describe 'DSC_ExchWaitForDAG\Test-TargetResource' -Tag 'Test' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -115,7 +115,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchaitForDAG\Get-DatabaseAvailabilityGroupInternal' -Tag 'Helper' {
+        Describe 'DSC_ExchWaitForDAG\Get-DatabaseAvailabilityGroupInternal' -Tag 'Helper' {
             # Override Exchange cmdlets
             function Get-DatabaseAvailabilityGroup {}
 
@@ -133,7 +133,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchaitForDAG\Get-DAGComputerObject' -Tag 'Helper' {
+        Describe 'DSC_ExchWaitForDAG\Get-DAGComputerObject' -Tag 'Helper' {
             # Override Active Directory cmdlets
             function Get-ADComputer {}
 
@@ -167,7 +167,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchaitForDAG\Wait-ForDatabaseAvailabilityGroup' -Tag 'Helper' {
+        Describe 'DSC_ExchWaitForDAG\Wait-ForDatabaseAvailabilityGroup' -Tag 'Helper' {
             AfterEach {
                 Assert-VerifiableMock
             }

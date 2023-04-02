@@ -1,5 +1,5 @@
 $script:DSCModuleName = 'ExchangeDsc'
-$script:DSCResourceName = 'DSC_ExchentLogLevel'
+$script:DSCResourceName = 'DSC_ExchEventLogLevel'
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'ExchangeDscTestHelper.psm1'))) -Global -Force
@@ -15,7 +15,7 @@ function Invoke-TestCleanup
 try
 {
         InModuleScope $script:DSCResourceName {
-        Describe 'DSC_ExchentLogLevel\Get-TargetResource' -Tag 'Get' {
+        Describe 'DSC_ExchEventLogLevel\Get-TargetResource' -Tag 'Get' {
             # Override Exchange cmdlets
             function Get-EventLogLevel {}
 

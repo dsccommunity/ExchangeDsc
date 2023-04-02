@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Automated integration test for DSC_ExchopSettings DSC Resource.
+        Automated integration test for DSC_ExchPopSettings DSC Resource.
         This test module requires use of credentials.
         The first run through of the tests will prompt for credentials from the logged on user.
 #>
@@ -8,7 +8,7 @@
 #region HEADER
 [System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 [System.String] $script:DSCModuleName = 'ExchangeDsc'
-[System.String] $script:DSCResourceFriendlyName = 'ExchopSettings'
+[System.String] $script:DSCResourceFriendlyName = 'ExchPopSettings'
 [System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'ExchangeDscTestHelper.psm1'))) -Force
@@ -31,7 +31,7 @@ if ($exchangeInstalled)
         $serverFqdn = [System.Net.Dns]::GetHostByName($env:COMPUTERNAME).HostName
     }
 
-    Describe 'Test Setting Properties with ExchopSettings' {
+    Describe 'Test Setting Properties with ExchPopSettings' {
         $testParams = @{
             Server =  $env:COMPUTERNAME
             Credential = $shellCredentials

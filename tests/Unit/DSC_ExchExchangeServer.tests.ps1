@@ -1,6 +1,6 @@
 #region HEADER
 $script:DSCModuleName = 'ExchangeDsc'
-$script:DSCResourceName = 'DSC_ExchchangeServer'
+$script:DSCResourceName = 'DSC_ExchExchangeServer'
 
 # Unit Test Template Version: 1.2.4
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
@@ -38,7 +38,7 @@ try
         Mock -CommandName Write-FunctionEntry -Verifiable
         Mock -CommandName Get-RemoteExchangeSession -Verifiable
 
-        Describe 'DSC_ExchchangeServer\Get-TargetResource' -Tag 'Get' {
+        Describe 'DSC_ExchExchangeServer\Get-TargetResource' -Tag 'Get' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -92,7 +92,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchchangeServer\Set-TargetResource' -Tag 'Set' {
+        Describe 'DSC_ExchExchangeServer\Set-TargetResource' -Tag 'Set' {
             # Override Exchange cmdlets
             function Set-ExchangeServer
             {
@@ -145,7 +145,7 @@ try
             #endregion
         }
 
-        Describe 'DSC_ExchchangeServer\Test-TargetResource' -Tag 'Test' {
+        Describe 'DSC_ExchExchangeServer\Test-TargetResource' -Tag 'Test' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -228,7 +228,7 @@ try
             #endregion
         }
 
-        Describe 'DSC_ExchchangeServer\Get-ExchangeServerInternal' -Tag 'Helper' {
+        Describe 'DSC_ExchExchangeServer\Get-ExchangeServerInternal' -Tag 'Helper' {
             # Override Exchange cmdlets
             function Get-ExchangeServer
             {
@@ -248,7 +248,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchchangeServer\Remove-NotApplicableParamsForCurrentState' -Tag 'Helper' {
+        Describe 'DSC_ExchExchangeServer\Remove-NotApplicableParamsForCurrentState' -Tag 'Helper' {
             AfterEach {
                 Assert-VerifiableMock
             }

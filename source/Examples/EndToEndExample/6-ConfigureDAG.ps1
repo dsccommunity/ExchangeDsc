@@ -171,7 +171,7 @@ Configuration Example
             Credential        = $ExchangeAdminCredential
             DAGName           = $dagSettings.DAGName
             SkipDagValidation = $true
-            DependsOn         = '[ExchaitForDAG]WaitForDAG'
+            DependsOn         = '[ExchWaitForDAG]WaitForDAG'
         }
     }
 }

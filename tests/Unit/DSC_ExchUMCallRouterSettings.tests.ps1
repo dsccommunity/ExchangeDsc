@@ -2,7 +2,7 @@
 param()
 
 $script:DSCModuleName = 'ExchangeDsc'
-$script:DSCResourceName = 'DSC_ExchMCallRouterSettings'
+$script:DSCResourceName = 'DSC_ExchUMCallRouterSettings'
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'ExchangeDscTestHelper.psm1'))) -Global -Force
@@ -36,7 +36,7 @@ try
             SipTlsListeningPort         = [System.Int32] '5061'
         }
 
-        Describe 'DSC_ExchMCallRouterSettings\Get-TargetResource' -Tag 'Get' {
+        Describe 'DSC_ExchUMCallRouterSettings\Get-TargetResource' -Tag 'Get' {
             # Override Exchange cmdlets
             function Get-UMCallRouterSettings
             {
@@ -56,7 +56,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchMCallRouterSettings\Set-TargetResource' -Tag 'Set' {
+        Describe 'DSC_ExchUMCallRouterSettings\Set-TargetResource' -Tag 'Set' {
             # Override Exchange cmdlets
             function Set-UMCallRouterSettings
             {
@@ -78,7 +78,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchMCallRouterSettings\Test-TargetResource' -Tag 'Test' {
+        Describe 'DSC_ExchUMCallRouterSettings\Test-TargetResource' -Tag 'Test' {
             # Override Exchange cmdlets
             function Get-UMCallRouterSettings
             {

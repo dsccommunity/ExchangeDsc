@@ -1,5 +1,5 @@
 $script:DSCModuleName = 'ExchangeDsc'
-$script:DSCResourceName = 'DSC_ExchailboxServer'
+$script:DSCResourceName = 'DSC_ExchMailboxServer'
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'ExchangeDscTestHelper.psm1'))) -Global -Force
@@ -15,7 +15,7 @@ function Invoke-TestCleanup
 try
 {
         InModuleScope $script:DSCResourceName {
-        Describe 'DSC_ExchailboxServer\Get-TargetResource' -Tag 'Get' {
+        Describe 'DSC_ExchMailboxServer\Get-TargetResource' -Tag 'Get' {
             AfterEach {
                 Assert-VerifiableMock
             }

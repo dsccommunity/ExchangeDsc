@@ -1,5 +1,5 @@
 $script:DSCModuleName = 'ExchangeDsc'
-$script:DSCResourceName = 'DSC_ExchutodiscoverVirtualDirectory'
+$script:DSCResourceName = 'DSC_ExchAutodiscoverVirtualDirectory'
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'ExchangeDscTestHelper.psm1'))) -Global -Force
@@ -33,7 +33,7 @@ try
             WSSecurityAuthentication        = [System.Boolean] $false
         }
 
-        Describe 'DSC_ExchutodiscoverVirtualDirectory\Get-TargetResource' -Tag 'Get' {
+        Describe 'DSC_ExchAutodiscoverVirtualDirectory\Get-TargetResource' -Tag 'Get' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -46,7 +46,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchutodiscoverVirtualDirectory\Set-TargetResource' -Tag 'Set' {
+        Describe 'DSC_ExchAutodiscoverVirtualDirectory\Set-TargetResource' -Tag 'Set' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -81,7 +81,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchutodiscoverVirtualDirectory\Test-TargetResource' -Tag 'Test' {
+        Describe 'DSC_ExchAutodiscoverVirtualDirectory\Test-TargetResource' -Tag 'Test' {
             # Override Exchange cmdlets
             AfterEach {
                 Assert-VerifiableMock
@@ -111,7 +111,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchutodiscoverVirtualDirectory\Get-AutodiscoverVirtualDirectoryInternal' -Tag 'Helper' {
+        Describe 'DSC_ExchAutodiscoverVirtualDirectory\Get-AutodiscoverVirtualDirectoryInternal' -Tag 'Helper' {
             AfterEach {
                 Assert-VerifiableMock
             }

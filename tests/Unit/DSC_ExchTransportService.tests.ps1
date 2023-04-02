@@ -1,5 +1,5 @@
 $script:DSCModuleName = 'ExchangeDsc'
-$script:DSCResourceName = 'DSC_ExchportService'
+$script:DSCResourceName = 'DSC_ExchTransportService'
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'ExchangeDscTestHelper.psm1'))) -Global -Force
@@ -113,7 +113,7 @@ try
 
         Mock -CommandName Write-FunctionEntry -Verifiable
 
-        Describe 'DSC_ExchportService\Get-TargetResource' -Tag 'Get' {
+        Describe 'DSC_ExchTransportService\Get-TargetResource' -Tag 'Get' {
             # Override Exchange cmdlets
             function Get-TransportService
             {
@@ -130,7 +130,7 @@ try
                 Test-CommonGetTargetResourceFunctionality -GetTargetResourceParams $commonTargetResourceParams
             }
         }
-        Describe 'DSC_ExchportService\Set-TargetResource' -Tag 'Set' {
+        Describe 'DSC_ExchTransportService\Set-TargetResource' -Tag 'Set' {
             # Override Exchange cmdlets
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
             function Set-TransportService
@@ -207,7 +207,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchportService\Test-TargetResource' -Tag 'Test' {
+        Describe 'DSC_ExchTransportService\Test-TargetResource' -Tag 'Test' {
             # Override Exchange cmdlets
             Mock -CommandName Get-RemoteExchangeSession -Verifiable
 

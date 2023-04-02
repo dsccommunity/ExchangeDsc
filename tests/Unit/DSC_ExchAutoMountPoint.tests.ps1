@@ -1,5 +1,5 @@
 $script:DSCModuleName = 'ExchangeDsc'
-$script:DSCResourceName = 'DSC_ExchutoMountPoint'
+$script:DSCResourceName = 'DSC_ExchAutoMountPoint'
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'ExchangeDscTestHelper.psm1'))) -Global -Force
@@ -19,7 +19,7 @@ try
         {
 
         }
-        Describe 'DSC_ExchutoMountPoint\Get-TargetResource' -Tag 'Get' {
+        Describe 'DSC_ExchAutoMountPoint\Get-TargetResource' -Tag 'Get' {
             AfterEach {
                 Assert-VerifiableMock
             }

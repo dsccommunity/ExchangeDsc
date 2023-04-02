@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Automated unit integration for DSC_ExchutodiscoverVirtualDirectory DSC Resource.
+        Automated unit integration for DSC_ExchAutodiscoverVirtualDirectory DSC Resource.
         This test module requires use of credentials.
         The first run through of the tests will prompt for credentials from the logged on user.
 #>

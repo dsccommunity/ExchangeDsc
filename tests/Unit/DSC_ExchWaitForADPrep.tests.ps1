@@ -1,5 +1,5 @@
 $script:DSCModuleName = 'ExchangeDsc'
-$script:DSCResourceName = 'DSC_ExchaitForADPrep'
+$script:DSCResourceName = 'DSC_ExchWaitForADPrep'
 $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'ExchangeDscTestHelper.psm1'))) -Global -Force
@@ -15,7 +15,7 @@ function Invoke-TestCleanup
 try
 {
     InModuleScope $script:DSCResourceName {
-        Describe 'DSC_ExchaitForADPrep\Get-TargetResource' -Tag 'Get' {
+        Describe 'DSC_ExchWaitForADPrep\Get-TargetResource' -Tag 'Get' {
             # Override Active Directory cmdlets
             function Get-ADRootDSE {}
 
@@ -48,7 +48,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchaitForADPrep\Set-TargetResource' -Tag 'Get' {
+        Describe 'DSC_ExchWaitForADPrep\Set-TargetResource' -Tag 'Get' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -76,7 +76,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchaitForADPrep\Test-TargetResource' -Tag 'Get' {
+        Describe 'DSC_ExchWaitForADPrep\Test-TargetResource' -Tag 'Get' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -173,7 +173,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchaitForADPrep\Get-ADRootDSEInternal' -Tag 'Helper' {
+        Describe 'DSC_ExchWaitForADPrep\Get-ADRootDSEInternal' -Tag 'Helper' {
             # Override Active Directory cmdlets
             function Get-ADRootDSE {}
 
@@ -192,7 +192,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchaitForADPrep\Get-ADObjectInternal' -Tag 'Helper' {
+        Describe 'DSC_ExchWaitForADPrep\Get-ADObjectInternal' -Tag 'Helper' {
             # Override Active Directory cmdlets
             function Get-ADObject {}
 
@@ -230,7 +230,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchaitForADPrep\Get-SchemaVersion' -Tag 'Helper' {
+        Describe 'DSC_ExchWaitForADPrep\Get-SchemaVersion' -Tag 'Helper' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -259,7 +259,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchaitForADPrep\Get-OrganizationVersion' -Tag 'Helper' {
+        Describe 'DSC_ExchWaitForADPrep\Get-OrganizationVersion' -Tag 'Helper' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -312,7 +312,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchaitForADPrep\Get-DomainsVersion' -Tag 'Helper' {
+        Describe 'DSC_ExchWaitForADPrep\Get-DomainsVersion' -Tag 'Helper' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -364,7 +364,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchaitForADPrep\Get-EachExchangeDomainFQDN' -Tag 'Helper' {
+        Describe 'DSC_ExchWaitForADPrep\Get-EachExchangeDomainFQDN' -Tag 'Helper' {
             AfterEach {
                 Assert-VerifiableMock
             }
@@ -407,7 +407,7 @@ try
             }
         }
 
-        Describe 'DSC_ExchaitForADPrep\Wait-ForTrueTestTargetResource' -Tag 'Helper' {
+        Describe 'DSC_ExchWaitForADPrep\Wait-ForTrueTestTargetResource' -Tag 'Helper' {
             AfterEach {
                 Assert-VerifiableMock
             }

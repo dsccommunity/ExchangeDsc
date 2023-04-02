@@ -1,6 +1,6 @@
 <#
     .SYNOPSIS
-        Automated integration test for DSC_ExcheceiveConnector DSC Resource.
+        Automated integration test for DSC_ExchReceiveConnector DSC Resource.
         This test module requires use of credentials.
         The first run through of the tests will prompt for credentials from the logged on user.
 #>
@@ -8,7 +8,7 @@
 #region HEADER
 [System.String] $script:moduleRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 [System.String] $script:DSCModuleName = 'ExchangeDsc'
-[System.String] $script:DSCResourceFriendlyName = 'ExcheceiveConnector'
+[System.String] $script:DSCResourceFriendlyName = 'ExchReceiveConnector'
 [System.String] $script:DSCResourceName = "MSFT_$($script:DSCResourceFriendlyName)"
 
 Import-Module -Name (Join-Path -Path $script:moduleRoot -ChildPath (Join-Path -Path 'tests' -ChildPath (Join-Path -Path 'TestHelpers' -ChildPath 'ExchangeDscTestHelper.psm1'))) -Force
