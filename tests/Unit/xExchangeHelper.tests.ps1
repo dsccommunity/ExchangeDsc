@@ -1270,9 +1270,9 @@ try
 
                     $version = Get-SetupExeVersion -Path 'SomePath'
 
-                    $version.VersionMajor | Should -Be 1
-                    $version.VersionMinor | Should -Be 2
-                    $version.VersionBuild | Should -Be 3
+                    $version.Major | Should -Be 1
+                    $version.Minor | Should -Be 2
+                    $version.Build | Should -Be 3
                 }
             }
 
