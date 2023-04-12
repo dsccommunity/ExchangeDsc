@@ -305,11 +305,11 @@ function Get-ExchangeVersionYear
 
     if ($null -ne $installedVersionDetails)
     {
-        switch ($installedVersionDetails.VersionMajor)
+        switch ($installedVersionDetails.Major)
         {
             15
             {
-                switch ($installedVersionDetails.VersionMinor)
+                switch ($installedVersionDetails.Minor)
                 {
                     0
                     {
@@ -490,7 +490,7 @@ function Test-ExchangeSetupPartiallyCompleted
 <#
     .SYNOPSIS
        Gets Exchange's setup.exe file's version info.
-       It will return VersionMajor, VersionMinor, VersionBuild values as PSCustomObject
+       It will return a System.Version object
        or NULL if not readable.
 
     .PARAMETER Path
@@ -564,7 +564,7 @@ function Test-ShouldUpgradeExchange
             -and $null -ne $setupExeVersion.Minor`
             -and $null -ne $setupExeVersion.Build)
     {
-        Write-Verbose -Message "Setup.exe version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $setupExeVersion.VersionMajor,$setupexeVersion.VersionMinor, $setupexeVersion.VersionBuild)'"
+        Write-Verbose -Message "Setup.exe version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $setupExeVersion.Major, $setupexeVersion.Minor, $setupexeVersion.Build)'"
 
         $exchangeDisplayVersion = Get-DetailedInstalledVersion
 
@@ -574,7 +574,7 @@ function Test-ShouldUpgradeExchange
                 -and $null -ne $exchangeDisplayVersion.Build)
         {
             # If we have an exchange installed
-            Write-Verbose -Message "Exchange version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $exchangeDisplayVersion.VersionMajor,$exchangeDisplayVersion.VersionMinor, $exchangeDisplayVersion.VersionBuild)'"
+            Write-Verbose -Message "Exchange version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $exchangeDisplayVersion.Major, $exchangeDisplayVersion.Minor, $exchangeDisplayVersion.Build)'"
 
             if (($exchangeDisplayVersion.Major -eq $setupExeVersion.Major)`
                     -and ($exchangeDisplayVersion.Minor -eq $setupExeVersion.Minor)`
