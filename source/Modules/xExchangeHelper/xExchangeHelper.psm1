@@ -385,17 +385,17 @@ function Get-DetailedInstalledVersion
         $displayVersion = Get-ItemProperty -Path $uninstallKeyPath -Name 'DisplayVersion' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty DisplayVersion
 
         $versionBuild = $null
-        $displayVersion -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionBuild>\d+)'
 
-        if ($Matches)
+        if ($displayVersion -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionBuild>\d+).(?<VersionRevision>\d+)')
         {
             $versionBuild = $Matches['VersionBuild']
+            $versionRevision = $Matches['VersionRevision']
         }
 
         $versionMajor = Get-ItemProperty -Path $uninstallKeyPath -Name 'VersionMajor' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VersionMajor
         $versionMinor = Get-ItemProperty -Path $uninstallKeyPath -Name 'VersionMinor' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VersionMinor
 
-        $installedVersionDetails = [System.Version]::new($versionMajor, $versionMinor, $versionBuild)
+        $installedVersionDetails = [System.Version]::new($versionMajor, $versionMinor, $versionBuild, $versionRevision)
     }
 
     return $installedVersionDetails
