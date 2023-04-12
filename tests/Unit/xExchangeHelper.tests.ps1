@@ -1049,13 +1049,13 @@ try
 
             Context 'When DetailedInstalledVersion is called and a valid key is returned by Get-ExchangeUninstallKey' {
                 It 'Should return custom object with Major and Minor properties' {
-                    Mock -CommandName Get-ExchangeUninstallKey -Verifiable -MockWith { return @{Name = 'SomeKeyName' } }
+                    Mock -CommandName Get-ExchangeUninstallKey -Verifiable -MockWith { return @{ Name = 'SomeKeyName' } }
                     Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter { $Name -eq 'DisplayVersion' } -MockWith {
                         return [PSCustomObject] @{ DisplayVersion = '15.1.1531.13' } }
-                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter { $Name -eq 'Major' } -MockWith {
-                        return [PSCustomObject] @{ Major = 15 } }
-                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter { $Name -eq 'Minor' } -MockWith {
-                        return [PSCustomObject] @{ Minor = 1 }
+                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter { $Name -eq 'VersionMajor' } -MockWith {
+                        return [PSCustomObject] @{ VersionMajor = 15 } }
+                    Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter { $Name -eq 'VersionMinor' } -MockWith {
+                        return [PSCustomObject] @{ VersionMinor = 1 }
                     }
 
                     $installedVersionDetails = Get-DetailedInstalledVersion
