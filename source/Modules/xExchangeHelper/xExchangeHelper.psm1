@@ -305,11 +305,11 @@ function Get-ExchangeVersionYear
 
     if ($null -ne $installedVersionDetails)
     {
-        switch ($installedVersionDetails.VersionMajor)
+        switch ($installedVersionDetails.Major)
         {
             15
             {
-                switch ($installedVersionDetails.VersionMinor)
+                switch ($installedVersionDetails.Minor)
                 {
                     0
                     {
@@ -385,21 +385,17 @@ function Get-DetailedInstalledVersion
         $displayVersion = Get-ItemProperty -Path $uninstallKeyPath -Name 'DisplayVersion' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty DisplayVersion
 
         $versionBuild = $null
-        $displayVersion -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionBuild>\d+)'
 
-        if ($Matches)
+        if ($displayVersion -match '(?<VersionMajor>\d+).(?<VersionMinor>\d+).(?<VersionBuild>\d+).(?<VersionRevision>\d+)')
         {
             $versionBuild = $Matches['VersionBuild']
+            $versionRevision = $Matches['VersionRevision']
         }
 
-        $versionDetails = @{
-            VersionMajor   = Get-ItemProperty -Path $uninstallKeyPath -Name 'VersionMajor' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VersionMajor
-            VersionMinor   = Get-ItemProperty -Path $uninstallKeyPath -Name 'VersionMinor' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VersionMinor
-            VersionBuild   = $versionBuild
-            DisplayVersion = $displayVersion
-        }
+        $versionMajor = Get-ItemProperty -Path $uninstallKeyPath -Name 'VersionMajor' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VersionMajor
+        $versionMinor = Get-ItemProperty -Path $uninstallKeyPath -Name 'VersionMinor' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VersionMinor
 
-        $installedVersionDetails = New-Object -TypeName PSCustomObject -Property $versionDetails
+        $installedVersionDetails = [System.Version]::new($versionMajor, $versionMinor, $versionBuild, $versionRevision)
     }
 
     return $installedVersionDetails
@@ -494,7 +490,7 @@ function Test-ExchangeSetupPartiallyCompleted
 <#
     .SYNOPSIS
        Gets Exchange's setup.exe file's version info.
-       It will return VersionMajor, VersionMinor, VersionBuild values as PSCustomObject
+       It will return a System.Version object
        or NULL if not readable.
 
     .PARAMETER Path
@@ -518,17 +514,12 @@ function Get-SetupExeVersion
     {
         $setupexeVersionInfo = (Get-ChildItem -Path $Path).VersionInfo
 
-        $setupexeVersionInfo = @{
-            VersionMajor = [System.Int32] $setupexeVersionInfo.ProductMajorPart
-            VersionMinor = [System.Int32] $setupexeVersionInfo.ProductMinorPart
-            VersionBuild = [System.Int32] $setupexeVersionInfo.ProductBuildPart
-        }
-
-        $version = New-Object -TypeName PSCustomObject -Property $setupexeVersionInfo
+        $version = [System.Version]::new($setupexeVersionInfo.ProductMajorPart, $setupexeVersionInfo.ProductMinorPart, $setupexeVersionInfo.ProductBuildPart)
     }
 
     return $version
 }
+
 
 <#
     .SYNOPSIS
@@ -569,25 +560,25 @@ function Test-ShouldUpgradeExchange
     $setupExeVersion = Get-SetupExeVersion -Path $Path
 
     if ($null -ne $setupExeVersion`
-            -and $null -ne $setupExeVersion.VersionMajor`
-            -and $null -ne $setupExeVersion.VersionMinor`
-            -and $null -ne $setupExeVersion.VersionBuild)
+            -and $null -ne $setupExeVersion.Major`
+            -and $null -ne $setupExeVersion.Minor`
+            -and $null -ne $setupExeVersion.Build)
     {
-        Write-Verbose -Message "Setup.exe version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $setupExeVersion.VersionMajor,$setupexeVersion.VersionMinor, $setupexeVersion.VersionBuild)'"
+        Write-Verbose -Message "Setup.exe version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $setupExeVersion.Major, $setupexeVersion.Minor, $setupexeVersion.Build)'"
 
         $exchangeDisplayVersion = Get-DetailedInstalledVersion
 
         if ($null -ne $exchangeDisplayVersion`
-                -and $null -ne $exchangeDisplayVersion.VersionMajor`
-                -and $null -ne $exchangeDisplayVersion.VersionMinor`
-                -and $null -ne $exchangeDisplayVersion.VersionBuild)
+                -and $null -ne $exchangeDisplayVersion.Major`
+                -and $null -ne $exchangeDisplayVersion.Minor`
+                -and $null -ne $exchangeDisplayVersion.Build)
         {
             # If we have an exchange installed
-            Write-Verbose -Message "Exchange version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $exchangeDisplayVersion.VersionMajor,$exchangeDisplayVersion.VersionMinor, $exchangeDisplayVersion.VersionBuild)'"
+            Write-Verbose -Message "Exchange version is: '$('Major: {0}, Minor: {1}, Build: {2}' -f $exchangeDisplayVersion.Major, $exchangeDisplayVersion.Minor, $exchangeDisplayVersion.Build)'"
 
-            if (($exchangeDisplayVersion.VersionMajor -eq $setupExeVersion.VersionMajor)`
-                    -and ($exchangeDisplayVersion.VersionMinor -eq $setupExeVersion.VersionMinor)`
-                    -and ($exchangeDisplayVersion.VersionBuild -lt $setupExeVersion.VersionBuild) )
+            if (($exchangeDisplayVersion.Major -eq $setupExeVersion.Major)`
+                    -and ($exchangeDisplayVersion.Minor -eq $setupExeVersion.Minor)`
+                    -and ($exchangeDisplayVersion.Build -lt $setupExeVersion.Build) )
             {
                 # If server has lower version of CU installed
                 Write-Verbose -Message 'Version upgrade is requested.'

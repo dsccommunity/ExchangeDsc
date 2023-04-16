@@ -905,44 +905,44 @@ try
 
             $validProductVersions = @(
                 @{
-                    VersionMajor = 15
-                    VersionMinor = 0
+                    Major = 15
+                    Minor = 0
                     Year         = '2013'
                 }
                 @{
-                    VersionMajor = 15
-                    VersionMinor = 1
+                    Major = 15
+                    Minor = 1
                     Year         = '2016'
                 }
                 @{
-                    VersionMajor = 15
-                    VersionMinor = 2
+                    Major = 15
+                    Minor = 2
                     Year         = '2019'
                 }
             )
 
             $invalidProductVersions = @(
                 @{
-                    VersionMajor = 15
-                    VersionMinor = 7
+                    Major = 15
+                    Minor = 7
                     Year         = $null
                 }
                 @{
-                    VersionMajor = 14
-                    VersionMinor = 0
+                    Major = 14
+                    Minor = 0
                     Year         = $null
                 }
             )
 
-            Context 'When Get-ExchangeVersionYear is called and finds a valid VersionMajor and VersionMinor' {
+            Context 'When Get-ExchangeVersionYear is called and finds a valid Major and Minor' {
                 It 'Should return the correct Exchange year' -TestCases $validProductVersions {
                     param
                     (
                         [System.Int32]
-                        $VersionMajor,
+                        $Major,
 
                         [System.Int32]
-                        $VersionMinor,
+                        $Minor,
 
                         [System.String]
                         $Year
@@ -950,8 +950,8 @@ try
 
                     Mock -CommandName Get-DetailedInstalledVersion -Verifiable -MockWith {
                         return @{
-                            VersionMajor = $VersionMajor
-                            VersionMinor = $VersionMinor
+                            Major = $Major
+                            Minor = $Minor
                         }
                     }
 
@@ -959,15 +959,15 @@ try
                 }
             }
 
-            Context 'When Get-ExchangeVersionYear is called and finds an invalid VersionMajor or VersionMinor without ThrowIfUnknownVersion' {
+            Context 'When Get-ExchangeVersionYear is called and finds an invalid Major or Minor without ThrowIfUnknownVersion' {
                 It 'Should return <Year>' -TestCases $invalidProductVersions {
                     param
                     (
                         [System.Int32]
-                        $VersionMajor,
+                        $Major,
 
                         [System.Int32]
-                        $VersionMinor,
+                        $Minor,
 
                         [System.String]
                         $Year
@@ -975,8 +975,8 @@ try
 
                     Mock -CommandName Get-DetailedInstalledVersion -Verifiable -MockWith {
                         return @{
-                            VersionMajor = $VersionMajor
-                            VersionMinor = $VersionMinor
+                            Major = $Major
+                            Minor = $Minor
                         }
                     }
 
@@ -984,15 +984,15 @@ try
                 }
             }
 
-            Context 'When Get-ExchangeVersionYear is called and finds an invalid VersionMajor or VersionMinor and ThrowIfUnknownVersion is specified' {
+            Context 'When Get-ExchangeVersionYear is called and finds an invalid Major or Minor and ThrowIfUnknownVersion is specified' {
                 It 'Should throw an exception' -TestCases $invalidProductVersions {
                     param
                     (
                         [System.Int32]
-                        $VersionMajor,
+                        $Major,
 
                         [System.Int32]
-                        $VersionMinor,
+                        $Minor,
 
                         [System.String]
                         $Year
@@ -1000,8 +1000,8 @@ try
 
                     Mock -CommandName Get-DetailedInstalledVersion -Verifiable -MockWith {
                         return @{
-                            VersionMajor = $VersionMajor
-                            VersionMinor = $VersionMinor
+                            Major = $Major
+                            Minor = $nMinor
                         }
                     }
 
@@ -1048,22 +1048,23 @@ try
             }
 
             Context 'When DetailedInstalledVersion is called and a valid key is returned by Get-ExchangeUninstallKey' {
-                It 'Should return custom object with VersionMajor and VersionMinor properties' {
-                    Mock -CommandName Get-ExchangeUninstallKey -Verifiable -MockWith { return @{Name = 'SomeKeyName' } }
+                It 'Should return custom object with Major and Minor properties' {
+                    Mock -CommandName Get-ExchangeUninstallKey -Verifiable -MockWith { return @{ Name = 'SomeKeyName' } }
                     Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter { $Name -eq 'DisplayVersion' } -MockWith {
-                        return [PSCustomObject] @{DisplayVersion = '15.1.1531.13' } }
+                        return [PSCustomObject] @{ DisplayVersion = '15.1.1531.13' } }
                     Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter { $Name -eq 'VersionMajor' } -MockWith {
-                        return [PSCustomObject] @{VersionMajor = 15 } }
+                        return [PSCustomObject] @{ VersionMajor = 15 } }
                     Mock -CommandName Get-ItemProperty -Verifiable -ParameterFilter { $Name -eq 'VersionMinor' } -MockWith {
                         return [PSCustomObject] @{ VersionMinor = 1 }
                     }
 
                     $installedVersionDetails = Get-DetailedInstalledVersion
 
-                    $installedVersionDetails.VersionMajor | Should -Be 15
-                    $installedVersionDetails.VersionMinor | Should -Be 1
-                    $installedVersionDetails.VersionBuild | Should -Be 1531
-                    $installedVersionDetails.DisplayVersion | Should -Be '15.1.1531.13'
+                    $installedVersionDetails.Major      | Should -Be 15
+                    $installedVersionDetails.Minor      | Should -Be 1
+                    $installedVersionDetails.Build      | Should -Be 1531
+                    $installedVersionDetails.Revision   | Should -Be 13
+                    $installedVersionDetails.ToString() | Should -Be '15.1.1531.13'
                 }
             }
 
@@ -1173,17 +1174,17 @@ try
 
                     Mock -CommandName Get-SetupExeVersion -Verifiable -MockWith {
                         return [PSCustomObject] @{
-                            VersionMajor = $SetupVersionMajor
-                            VersionMinor = $SetupVersionMinor
-                            VersionBuild = $SetupVersionBuild
+                            Major = $SetupVersionMajor
+                            Minor = $SetupVersionMinor
+                            Build = $SetupVersionBuild
                         }
                     }
 
                     Mock -CommandName Get-DetailedInstalledVersion -Verifiable -MockWith {
                         return [PSCustomObject] @{
-                            VersionMajor = $ExchangeVersionMajor
-                            VersionMinor = $ExchangeVersionMinor
-                            VersionBuild = $ExchangeVersionBuild
+                            Major = $ExchangeVersionMajor
+                            Minor = $ExchangeVersionMinor
+                            Build = $ExchangeVersionBuild
                         }
                     }
 
@@ -1213,9 +1214,9 @@ try
 
                     Mock -CommandName Get-SetupExeVersion -Verifiable -MockWith {
                         return [PSCustomObject] @{
-                            VersionMajor = 15
-                            VersionMinor = 1
-                            VersionBuild = 1234
+                            Major = 15
+                            Minor = 1
+                            Build = 1234
                         }
                     }
 
@@ -1270,9 +1271,9 @@ try
 
                     $version = Get-SetupExeVersion -Path 'SomePath'
 
-                    $version.VersionMajor | Should -Be 1
-                    $version.VersionMinor | Should -Be 2
-                    $version.VersionBuild | Should -Be 3
+                    $version.Major | Should -Be 1
+                    $version.Minor | Should -Be 2
+                    $version.Build | Should -Be 3
                 }
             }
 

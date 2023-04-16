@@ -31,8 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed typo.
 - xExchangeHelper
   - Fixed module import error ([issue #481](https://github.com/dsccommunity/xExchange/issues/481)).
-- xExchangeHelper
   - Fixed error on first Exchange Module import ([Issue #488](https://github.com/dsccommunity/xExchange/issues/488)).
+  - Changed return value of `Get-SetupExeVersion` to `System.Version` which fixes #410.
 
 ## [1.33.0] - 2021-10-31
 
