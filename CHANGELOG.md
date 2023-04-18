@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.34.0] - 2023-04-18
+
 ### Deprecated
 
 - **The module _xExchange_ will be renamed to _ExchangeDsc_
