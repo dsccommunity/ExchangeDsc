@@ -61,14 +61,14 @@ Configuration Example
         $ExchangeAdminCredential
     )
 
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
 
     Node $AllNodes.NodeName
     {
         # Look up and retrieve the CAS settings for this node
         $casSettings = $ConfigurationData[$Node.CASId]
 
-        xExchClientAccessServer CAS
+        ExchClientAccessServer CAS
         {
             Identity                       = $Node.NodeName
             Credential                     = $ExchangeAdminCredential
@@ -76,7 +76,7 @@ Configuration Example
             AutoDiscoverSiteScope          = $casSettings.AutoDiscoverSiteScope
         }
 
-        xExchActiveSyncVirtualDirectory ASVdir
+        ExchActiveSyncVirtualDirectory ASVdir
         {
             Identity    = "$($Node.NodeName)\Microsoft-Server-ActiveSync (Default Web Site)"
             Credential  = $ExchangeAdminCredential
@@ -84,7 +84,7 @@ Configuration Example
             InternalUrl = "https://$($casSettings.InternalNLBFqdn)/Microsoft-Server-ActiveSync"
         }
 
-        xExchEcpVirtualDirectory ECPVDir
+        ExchEcpVirtualDirectory ECPVDir
         {
             Identity    = "$($Node.NodeName)\ecp (Default Web Site)"
             Credential  = $ExchangeAdminCredential
@@ -92,7 +92,7 @@ Configuration Example
             InternalUrl = "https://$($casSettings.InternalNLBFqdn)/ecp"
         }
 
-        xExchMapiVirtualDirectory MAPIVdir
+        ExchMapiVirtualDirectory MAPIVdir
         {
             Identity                 = "$($Node.NodeName)\mapi (Default Web Site)"
             Credential               = $ExchangeAdminCredential
@@ -104,7 +104,7 @@ Configuration Example
             AllowServiceRestart      = $true
         }
 
-        xExchOabVirtualDirectory OABVdir
+        ExchOabVirtualDirectory OABVdir
         {
             Identity    = "$($Node.NodeName)\OAB (Default Web Site)"
             Credential  = $ExchangeAdminCredential
@@ -112,7 +112,7 @@ Configuration Example
             InternalUrl = "https://$($casSettings.InternalNLBFqdn)/oab"
         }
 
-        xExchOutlookAnywhere OAVdir
+        ExchOutlookAnywhere OAVdir
         {
             Identity                           = "$($Node.NodeName)\Rpc (Default Web Site)"
             Credential                         = $ExchangeAdminCredential
@@ -130,7 +130,7 @@ Configuration Example
             AllowServiceRestart                = $true
         }
 
-        xExchOwaVirtualDirectory OWAVdir
+        ExchOwaVirtualDirectory OWAVdir
         {
             Identity    = "$($Node.NodeName)\owa (Default Web Site)"
             Credential  = $ExchangeAdminCredential
@@ -138,7 +138,7 @@ Configuration Example
             InternalUrl = "https://$($casSettings.InternalNLBFqdn)/owa"
         }
 
-        xExchWebServicesVirtualDirectory EWSVdir
+        ExchWebServicesVirtualDirectory EWSVdir
         {
             Identity    = "$($Node.NodeName)\EWS (Default Web Site)"
             Credential  = $ExchangeAdminCredential

@@ -1,14 +1,14 @@
-# xExchange
+# ExchangeDsc
 
 This module contains DSC resources for the management and
 configuration of Microsoft Exchange Server.
 
-[![Build Status](https://dev.azure.com/dsccommunity/xExchange/_apis/build/status/dsccommunity.xExchange?branchName=main)](https://dev.azure.com/dsccommunity/xExchange/_build/latest?definitionId=15&branchName=main)
-![Azure DevOps coverage (branch)](https://img.shields.io/azure-devops/coverage/dsccommunity/xExchange/15/main)
-[![codecov](https://codecov.io/gh/dsccommunity/xExchange/branch/main/graph/badge.svg)](https://codecov.io/gh/dsccommunity/xExchange)
-[![Azure DevOps tests](https://img.shields.io/azure-devops/tests/dsccommunity/xExchange/15/main)](https://dsccommunity.visualstudio.com/xExchange/_test/analytics?definitionId=15&contextType=build)
-[![PowerShell Gallery (with prereleases)](https://img.shields.io/powershellgallery/vpre/xExchange?label=xExchange%20Preview)](https://www.powershellgallery.com/packages/xExchange/)
-[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/xExchange?label=xExchange)](https://www.powershellgallery.com/packages/xExchange/)
+[![Build Status](https://dev.azure.com/dsccommunity/ExchangeDsc/_apis/build/status/dsccommunity.ExchangeDsc?branchName=main)](https://dev.azure.com/dsccommunity/ExchangeDsc/_build/latest?definitionId=15&branchName=main)
+![Azure DevOps coverage (branch)](https://img.shields.io/azure-devops/coverage/dsccommunity/ExchangeDsc/15/main)
+[![codecov](https://codecov.io/gh/dsccommunity/ExchangeDsc/branch/main/graph/badge.svg)](https://codecov.io/gh/dsccommunity/ExchangeDsc)
+[![Azure DevOps tests](https://img.shields.io/azure-devops/tests/dsccommunity/ExchangeDsc/15/main)](https://dsccommunity.visualstudio.com/ExchangeDsc/_test/analytics?definitionId=15&contextType=build)
+[![PowerShell Gallery (with prereleases)](https://img.shields.io/powershellgallery/vpre/ExchangeDsc?label=ExchangeDsc%20Preview)](https://www.powershellgallery.com/packages/ExchangeDsc/)
+[![PowerShell Gallery](https://img.shields.io/powershellgallery/v/ExchangeDsc?label=ExchangeDsc)](https://www.powershellgallery.com/packages/ExchangeDsc/)
 
 ## Code of Conduct
 
@@ -31,68 +31,68 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 
 ## Documentation
 
-The documentation can be found in the [xExchange Wiki](https://github.com/dsccommunity/xExchange/wiki).
+The documentation can be found in the [ExchangeDsc Wiki](https://github.com/dsccommunity/ExchangeDsc/wiki).
 The resource documentation can be found below.
 
 ## Examples
 
-You can review the [Examples](/source/Examples) directory in the xExchange module
+You can review the [Examples](/source/Examples) directory in the ExchangeDsc module
 for some general use scenarios for all of the resources that are in the module.
 
 ## Resources
 
-- **xExchAcceptedDomain** is used to add accepted domains
-- **xExchActiveSyncVirtualDirectory**
-- **xExchAddressList** is used to add an addess list
-- **xExchAntiMalwareScanning** is used to enable or disable Exchange
+- **ExchAcceptedDomain** is used to add accepted domains
+- **ExchActiveSyncVirtualDirectory**
+- **ExchAddressList** is used to add an addess list
+- **ExchAntiMalwareScanning** is used to enable or disable Exchange
   Anti-malware scanning
-- **xExchAutodiscoverVirtualDirectory**
-- **xExchAutoMountPoint**
-- **xExchClientAccessServer**
-- **xExchDatabaseAvailabilityGroup** configures a Database Availability Group
+- **ExchAutodiscoverVirtualDirectory**
+- **ExchAutoMountPoint**
+- **ExchClientAccessServer**
+- **ExchDatabaseAvailabilityGroup** configures a Database Availability Group
   using New/Set-DatabaseAvailibilityGroup.
-- **xExchDatabaseAvailabilityGroupMember** adds a member to
+- **ExchDatabaseAvailabilityGroupMember** adds a member to
   a Database Availability Group.
-- **xExchDatabaseAvailabilityGroupNetwork** can add, remove, or configure
+- **ExchDatabaseAvailabilityGroupNetwork** can add, remove, or configure
   a Database Availability Group Network.
-- **xExchEcpVirtualDirectory**
-- **xExchEventLogLevel** is used to configure Exchange diagnostic logging via Set-EventLogLevel.
-- **xExchExchangeCertificate** can install, remove, or configure
+- **ExchEcpVirtualDirectory**
+- **ExchEventLogLevel** is used to configure Exchange diagnostic logging via Set-EventLogLevel.
+- **ExchExchangeCertificate** can install, remove, or configure
   an ExchangeCertificate using \*-ExchangeCertificate cmdlets.
-- **xExchExchangeServer**
-- **xExchFrontendTransportService** configures Front End Transport service settings.
-- **xExchImapSettings** configures IMAP settings using Set-ImapSettings.
-- **xExchInstall** installs or updates Exchange 2013, 2016, or 2019.
-- **xExchJetstress** automatically runs Jetstress using
+- **ExchExchangeServer**
+- **ExchFrontendTransportService** configures Front End Transport service settings.
+- **ExchImapSettings** configures IMAP settings using Set-ImapSettings.
+- **ExchInstall** installs or updates Exchange 2013, 2016, or 2019.
+- **ExchJetstress** automatically runs Jetstress using
   the **JetstressCmd.exe** command line executable.
-- **xExchJetstressCleanup** cleans up the database and log
+- **ExchJetstressCleanup** cleans up the database and log
   directories created by Jetstress.
-- **xExchMailboxDatabase**
-- **xExchMailboxDatabaseCopy**
-- **xExchMailboxTransportService**
-- **xExchMailboxServer**
-- **xExchMaintenanceMode**
-- **xExchMapiVirtualDirectory**
-- **xExchOabVirtualDirectory**
-- **xExchOutlookAnywhere**
-- **xExchOwaVirtualDirectory**
-- **xExchPopSettings** configures POP settings using Set-PopSettings.
-- **xExchPowerShellVirtualDirectory**
-- **xExchReceiveConnector**
-- **xExchRemoteDomain** is used to add remote domains
-- **xExchSendConnector** is used to add a send connector
-- **xExchTransportService**
-- **xExchUMCallRouterSettings** configures the UM Call Router service using Set-UMCallRouterSettings.
-- **xExchUMService** configures a UM server using Set-UMService.
-- **xExchWaitForADPrep** ensures that Active Directory has been prepared for
+- **ExchMailboxDatabase**
+- **ExchMailboxDatabaseCopy**
+- **ExchMailboxTransportService**
+- **ExchMailboxServer**
+- **ExchMaintenanceMode**
+- **ExchMapiVirtualDirectory**
+- **ExchOabVirtualDirectory**
+- **ExchOutlookAnywhere**
+- **ExchOwaVirtualDirectory**
+- **ExchPopSettings** configures POP settings using Set-PopSettings.
+- **ExchPowerShellVirtualDirectory**
+- **ExchReceiveConnector**
+- **ExchRemoteDomain** is used to add remote domains
+- **ExchSendConnector** is used to add a send connector
+- **ExchTransportService**
+- **ExchUMCallRouterSettings** configures the UM Call Router service using Set-UMCallRouterSettings.
+- **ExchUMService** configures a UM server using Set-UMService.
+- **ExchWaitForADPrep** ensures that Active Directory has been prepared for
   Exchange 2013, 2016, or 2019.
-- **xExchWaitForDAG**
-- **xExchWaitForMailboxDatabase**
-- **xExchWebServicesVirtualDirectory**
+- **ExchWaitForDAG**
+- **ExchWaitForMailboxDatabase**
+- **ExchWebServicesVirtualDirectory**
 
-### xExchAcceptedDomain
+### ExchAcceptedDomain
 
-- **xExchAcceptedDomain** is used to add accepted domains
+- **ExchAcceptedDomain** is used to add accepted domains
 
 - **DomainName** The domain name of the accepted domain
 - **Credential**: Credentials used to establish a remote
@@ -106,9 +106,9 @@ for some general use scenarios for all of the resources that are in the module.
   subdomain
 - **Name** Specifies a unique name
 
-### xExchActiveSyncVirtualDirectory
+### ExchActiveSyncVirtualDirectory
 
-**xExchActiveSyncVirtualDirectory** is used to configure properties on an
+**ExchActiveSyncVirtualDirectory** is used to configure properties on an
 ActiveSync Virtual Directory.
 
 Where no description is listed, properties correspond directly to
@@ -163,9 +163,9 @@ The parameter Name can be a breaking setting. When you change the name the ident
 changes as well. The switch InstallIsapiFilter by the Cmdlet is doing nothing.
 Therefore Add-WebConfigurationProperty is used to add a missing IsapiFilter.
 
-### xExchAddressList
+### ExchAddressList
 
-- **xExchAddressList** is used to add an address list
+- **ExchAddressList** is used to add an address list
 
 - **Name** The name of the address list.
 - **Credential** Credentials used to establish a remote PowerShell session to
@@ -231,18 +231,18 @@ Therefore Add-WebConfigurationProperty is used to add a missing IsapiFilter.
 - **RecipientFilter** The RecipientFilter parameter specifies a custom OPath
   filter that's based on the value of any available recipient property.
 
-### xExchAntiMalwareScanning
+### ExchAntiMalwareScanning
 
-**xExchAntiMalwareScanning** is used to enable or disable Exchange Anti-malware scanning.
+**ExchAntiMalwareScanning** is used to enable or disable Exchange Anti-malware scanning.
 
 - **Enabled**: Whether Exchange Anti-malware scanning should be Enabled.
 - **Credential**: Credentials used to establish a remote PowerShell session to Exchange.
 - **AllowServiceRestart**: Whether the Transport services should be
   automatically restarted after a status change.
 
-### xExchAutodiscoverVirtualDirectory
+### ExchAutodiscoverVirtualDirectory
 
-**xExchAutodiscoverVirtualDirectory** is used to configure properties on an
+**ExchAutodiscoverVirtualDirectory** is used to configure properties on an
 AutoDiscover Virtual Directory.
 
 Where no description is listed, properties correspond directly to
@@ -263,12 +263,12 @@ parameters.
 - **WindowsAuthEnabled**
 - **WSSecurityAuthentication**
 
-### xExchAutoMountPoint
+### ExchAutoMountPoint
 
-**xExchAutoMountPoint** is used to automatically find unused disks,
+**ExchAutoMountPoint** is used to automatically find unused disks,
 and prepare them for use within AutoReseed. With the disks that are found,
 it will assign appropriate volume and database mount points. Once fully configured,
-if a disk fails and is replaced with a new disk, xExchAutoMountPoint will
+if a disk fails and is replaced with a new disk, ExchAutoMountPoint will
 automatically detect it and format and assign an Exchange volume mount point
 so that AutoReseed can detect it as a spare disk.
 
@@ -300,15 +300,15 @@ so that AutoReseed can detect it as a spare disk.
 
 #### Common Issues
 
-xExchAutoMountPoint will not assign an Exchange database mount point if
+ExchAutoMountPoint will not assign an Exchange database mount point if
 the target folder for the database already exists. If initial setup fails,
 make sure that the database folders do not already exist. Note that this only
 affects database folders. If a volume folder already exists, the resource will
 just find the next unused number and assign it to a new volume folder.
 
-### xExchClientAccessServer
+### ExchClientAccessServer
 
-**xExchClientAccessServer** is used to configure properties on a Client Access
+**ExchClientAccessServer** is used to configure properties on a Client Access
 Server.
 
 Where no description is listed, properties correspond directly to
@@ -324,13 +324,13 @@ parameters.
 - **CleanUpInvalidAlternateServiceAccountCredentials**
 - **RemoveAlternateServiceAccountCredentials**
 
-### xExchDatabaseAvailabilityGroup
+### ExchDatabaseAvailabilityGroup
 
-**xExchDatabaseAvailabilityGroup** configures a Database Availability Group
+**ExchDatabaseAvailabilityGroup** configures a Database Availability Group
 using New/Set-DatabaseAvailibilityGroup. Only a single node in a configuration
 script should implement this resource. All DAG nodes, including the node
-implementing **xExchDatabaseAvailabilityGroup**, should use
-**xExchDatabaseAvailabilityGroupMember** to join a DAG.
+implementing **ExchDatabaseAvailabilityGroup**, should use
+**ExchDatabaseAvailabilityGroupMember** to join a DAG.
 
 Where no description is listed, properties correspond directly to
 [Set-DatabaseAvailabilityGroup](https://docs.microsoft.com/en-us/powershell/module/exchange/database-availability-groups/set-databaseavailabilitygroup)
@@ -373,9 +373,9 @@ To avoid this issue, you may need to
 To disable PreferenceMoveFrequency you have to use the following value:
 "\$(([System.Threading.Timeout]::InfiniteTimeSpan).ToString())"
 
-### xExchDatabaseAvailabilityGroupMember
+### ExchDatabaseAvailabilityGroupMember
 
-**xExchDatabaseAvailabilityGroupMember** adds a member to a Database
+**ExchDatabaseAvailabilityGroupMember** adds a member to a Database
 Availability Group. This must be implemented by all nodes, including the one
 that creates and maintains the DAG.
 
@@ -389,9 +389,9 @@ parameters.
 - **DomainController**
 - **SkipDagValidation**
 
-### xExchDatabaseAvailabilityGroupNetwork
+### ExchDatabaseAvailabilityGroupNetwork
 
-**xExchDatabaseAvailabilityGroupNetwork** can add, remove, or configure
+**ExchDatabaseAvailabilityGroupNetwork** can add, remove, or configure
 a Database Availability Group Network.
 This should only be implemented by a single node in the DAG.
 
@@ -409,9 +409,9 @@ parameters.
 - **ReplicationEnabled**
 - **Subnets**
 
-### xExchEcpVirtualDirectory
+### ExchEcpVirtualDirectory
 
-**xExchEcpVirtualDirectory** is used to configure properties on an Exchange
+**ExchEcpVirtualDirectory** is used to configure properties on an Exchange
 Control Panel Virtual Directory.
 
 Where no description is listed, properties correspond directly to
@@ -435,9 +435,9 @@ parameters.
 - **WindowsAuthentication**
 - **WSSecurityAuthentication**
 
-### xExchEventLogLevel
+### ExchEventLogLevel
 
-**xExchEventLogLevel** is used to configure Exchange diagnostic logging via
+**ExchEventLogLevel** is used to configure Exchange diagnostic logging via
 Set-EventLogLevel.
 
 Properties correspond to
@@ -451,9 +451,9 @@ parameters.
 - **Level**: The Level parameter specifies the log level for the specific event
   logging category. Valid values are Lowest, Low, Medium, High, and Expert.
 
-### xExchExchangeCertificate
+### ExchExchangeCertificate
 
-**xExchExchangeCertificate** can install, remove, or configure
+**ExchExchangeCertificate** can install, remove, or configure
 an ExchangeCertificate using \*-ExchangeCertificate cmdlets.
 
 - **Thumbprint**: The Thumbprint of the Exchange Certificate to configure.
@@ -477,9 +477,9 @@ an ExchangeCertificate using \*-ExchangeCertificate cmdlets.
   See [Enable-ExchangeCertificate](https://docs.microsoft.com/en-us/powershell/module/exchange/encryption-and-certificates/enable-exchangecertificate)
   documentation.
 
-### xExchExchangeServer
+### ExchExchangeServer
 
-**xExchExchangeServer** is used to configure properties on an Exchange Server
+**ExchExchangeServer** is used to configure properties on an Exchange Server
 via Set-ExchangeServer.
 
 Most properties correspond directly to properties in
@@ -533,9 +533,9 @@ parameters.
   customized only under the direction of Microsoft Customer Service and
   Support.
 
-### xExchFrontendTransportService
+### ExchFrontendTransportService
 
-**xExchFrontendTransportService** configures the Front End Transport service
+**ExchFrontendTransportService** configures the Front End Transport service
 settings on Mailbox servers or Edge Transport servers using
 Set-FrontendTransportService.
 
@@ -696,9 +696,9 @@ ExternalDNSServers
 ExternalIPAddress
 InternalDNSServers
 
-### xExchImapSettings
+### ExchImapSettings
 
-**xExchImapSettings** configures IMAP settings using Set-ImapSettings.
+**ExchImapSettings** configures IMAP settings using Set-ImapSettings.
 
 Most properties correspond directly to properties in
 [Set-ImapSettings](https://docs.microsoft.com/en-us/powershell/module/exchange/client-access/set-imapsettings)
@@ -784,9 +784,9 @@ parameters.
 - **UnencryptedOrTLSBindings**: The X509CertificateName parameter specifies the
   certificate that's used for encrypting IMAP4 client connections.
 
-### xExchInstall
+### ExchInstall
 
-**xExchInstall** installs or updates Exchange 2013, 2016, or 2019.
+**ExchInstall** installs or updates Exchange 2013, 2016, or 2019.
 
 - **Path**: Full path to setup.exe in the Exchange 2013, 2016, or 2019
   setup directory.
@@ -795,12 +795,12 @@ parameters.
   [Install Exchange 2016 using unattended mode](https://docs.microsoft.com/en-us/Exchange/plan-and-deploy/deploy-new-installations/unattended-installs)
 - **Credential**: The credentials to use to perform the installation.
 
-### xExchJetstress
+### ExchJetstress
 
-**xExchJetstress** automatically runs Jetstress using the **JetstressCmd.exe**
+**ExchJetstress** automatically runs Jetstress using the **JetstressCmd.exe**
 command line executable. The resource launches Jetstress via a Scheduled Task,
 then monitors for JetstressCmd.exe to determine whether Jetstress is running.
-Once JetstressCmd.exe has finished, xExchJetstress looks for the existence of
+Once JetstressCmd.exe has finished, ExchJetstress looks for the existence of
 **TYPE\*.html** files in the Jetstress installation directory to determine whether
 Jetstress has already been run, or if it needs to be executed.
 **TYPE** corresponds to the Type defined in the **JetstressConfig.xml** file,
@@ -827,21 +827,21 @@ A crash of the JetstressCmd.exe process will also prevent the file from being wr
 - **WARNING 1:** Jetstress should **NEVER** be run on a server that already
   has Exchange installed.
   Jetstress is only meant to be used for pre-installation server validation.
-  As such, it is recommended that **xExchJetstress** be used in a one time script
+  As such, it is recommended that **ExchJetstress** be used in a one time script
   which is separate from the script that performs ongoing server configuration validation.
-- **WARNING 2:** **xExchJetstress** should **NOT** be used in the same
-  configuration script as **xExchJetstressCleanup**.
+- **WARNING 2:** **ExchJetstress** should **NOT** be used in the same
+  configuration script as **ExchJetstressCleanup**.
   Instead, they should be run in separate scripts.
-  Because **xExchJetstress** looks for files and folders that may have been
-  cleaned up by **xExchJetstressCleanup**, using them in the same script
+  Because **ExchJetstress** looks for files and folders that may have been
+  cleaned up by **ExchJetstressCleanup**, using them in the same script
   may result in a configuration loop.
 
-### xExchJetstressCleanup
+### ExchJetstressCleanup
 
-xExchJetstressCleanup cleans up the database and log directories created by Jetstress.
+ExchJetstressCleanup cleans up the database and log directories created by Jetstress.
 It can optionally remove mount points associated with those directories,
 and can also remove the Jetstress binaries.
-Note that **xExchJetstressCleanup** does **NOT** uninstall Jetstress.
+Note that **ExchJetstressCleanup** does **NOT** uninstall Jetstress.
 That can be accomplished using the **Package** resource which is built into DSC.
 
 - **JetstressPath**: The path to the folder where Jetstress is installed,
@@ -867,16 +867,16 @@ That can be accomplished using the **Package** resource which is built into DSC.
 Note: Either **ConfigFilePath**, or **DatabasePaths** AND **LogPaths** MUST be
 specified. **ConfigFilePath** takes precedence over **DatabasePaths** and **LogPaths**.
 
-**WARNING:** **xExchJetstress** should NOT be used in the same configuration
-script as **xExchJetstressCleanup**.
+**WARNING:** **ExchJetstress** should NOT be used in the same configuration
+script as **ExchJetstressCleanup**.
 Instead, they should be run in separate scripts.
-Because **xExchJetstress** looks for files and folders that may have been
-cleaned up by **xExchJetstressCleanup**, using them in the same script may
+Because **ExchJetstress** looks for files and folders that may have been
+cleaned up by **ExchJetstressCleanup**, using them in the same script may
 result in a configuration loop.
 
-### xExchMailboxDatabase
+### ExchMailboxDatabase
 
-**xExchMailboxDatabase** is used to create, remove, or change properties on a
+**ExchMailboxDatabase** is used to create, remove, or change properties on a
 Mailbox Database.
 
 Most properties correspond directly to
@@ -982,9 +982,9 @@ parameters.
 - **SkipInitialDatabaseMount**: Whether the initial mount of databases should
   be skipped after database creation.
 
-### xExchMailboxDatabaseCopy
+### ExchMailboxDatabaseCopy
 
-**xExchMailboxDatabaseCopy** is used to create, remove, or change properties on
+**ExchMailboxDatabaseCopy** is used to create, remove, or change properties on
 a Mailbox Database Copy.
 
 Most properties correspond directly to
@@ -1026,9 +1026,9 @@ parameters.
   truncating log files that have replayed into the passive copy of the
   database.
 
-### xExchMailboxServer
+### ExchMailboxServer
 
-**xExchMailboxServer** is used to configure Mailbox Server properties via
+**ExchMailboxServer** is used to configure Mailbox Server properties via
 Set-MailboxServer.
 
 Properties correspond to
@@ -1222,9 +1222,9 @@ parameters.
 
 The parameter Locale doesn't work.
 
-### xExchMailboxTransportService
+### ExchMailboxTransportService
 
-**xExchMailboxTransportService** configures the Mailbox Transport service
+**ExchMailboxTransportService** configures the Mailbox Transport service
 settings on Mailbox servers using Set-MailboxTransportService.
 
 Where no description is listed, properties correspond directly to
@@ -1259,9 +1259,9 @@ parameters.
 To set some settings to NULL you need to set the value to '' instead of using \$null.
 The following settings are affected: PipelineTracingSenderAddress
 
-### xExchMaintenanceMode
+### ExchMaintenanceMode
 
-**xExchMaintenanceMode** is used for putting a Database Availability Group member
+**ExchMaintenanceMode** is used for putting a Database Availability Group member
 in and out of maintenance mode. Only works with servers that have both
 the Client Access and Mailbox Server roles.
 
@@ -1328,7 +1328,7 @@ the Client Access and Mailbox Server roles.
 
 #### Maintenance Mode Procedures
 
-**xExchMaintenanceMode** performs the following steps when entering or
+**ExchMaintenanceMode** performs the following steps when entering or
 exiting Maintenance Mode
 
 #### Entering Maintenance Mode
@@ -1368,9 +1368,9 @@ exiting Maintenance Mode
   like HealthApi and Maintenance)
 - (OPTIONAL) Move back all databases with an Activation Preference of 1
 
-### xExchMapiVirtualDirectory
+### ExchMapiVirtualDirectory
 
-**xExchMapiVirtualDirectory** is used to configure properties on a MAPI
+**ExchMapiVirtualDirectory** is used to configure properties on a MAPI
 Virtual Directory.
 
 Where no description is listed, properties correspond directly to
@@ -1387,9 +1387,9 @@ parameters.
 - **IISAuthenticationMethods**
 - **InternalUrl**
 
-### xExchOabVirtualDirectory
+### ExchOabVirtualDirectory
 
-**xExchOabVirtualDirectory** is used to configure properties on an Offline
+**ExchOabVirtualDirectory** is used to configure properties on an Offline
 Address Book Virtual Directory.
 
 Where no description is listed, properties correspond directly to
@@ -1417,9 +1417,9 @@ parameters.
 - **RequireSSL**
 - **WindowsAuthentication**
 
-### xExchOutlookAnywhere
+### ExchOutlookAnywhere
 
-**xExchOutlookAnywhere** is used to configure Outlook Anywhere
+**ExchOutlookAnywhere** is used to configure Outlook Anywhere
 properties for an Exchange Server.
 
 Where no description is listed, properties correspond directly to
@@ -1443,9 +1443,9 @@ parameters.
 - **InternalHostname**
 - **SSLOffloading**
 
-### xExchOwaVirtualDirectory
+### ExchOwaVirtualDirectory
 
-**xExchOwaVirtualDirectory** is used to configure properties on an Outlook
+**ExchOwaVirtualDirectory** is used to configure properties on an Outlook
 on the Web Virtual Directory.
 
 Where no description is listed, properties correspond directly to
@@ -1485,9 +1485,9 @@ parameters.
 - **DefaultDomain**
 - **SetPhotoEnabled**
 
-### xExchPopSettings
+### ExchPopSettings
 
-**xExchPopSettings** configures POP settings using Set-PopSettings.
+**ExchPopSettings** configures POP settings using Set-PopSettings.
 
 Most properties correspond directly to
 [Set-PopSettings](https://docs.microsoft.com/en-us/powershell/module/exchange/client-access/set-popsettings)
@@ -1507,9 +1507,9 @@ parameters.
 - **X509CertificateName**: Specifies the host name in the SSL certificate
   from the Associated Subject field.
 
-### xExchPowerShellVirtualDirectory
+### ExchPowerShellVirtualDirectory
 
-**xExchPowerShellVirtualDirectory** is used to configure properties on a
+**ExchPowerShellVirtualDirectory** is used to configure properties on a
 PowerShell Virtual Directory.
 
 Where no description is listed, properties correspond directly to
@@ -1528,9 +1528,9 @@ parameters.
 - **InternalUrl**
 - **WindowsAuthentication**
 
-### xExchReceiveConnector
+### ExchReceiveConnector
 
-**xExchReceiveConnector** is used to create, remove, or change properties on a
+**ExchReceiveConnector** is used to create, remove, or change properties on a
 Receive Connector.
 
 Where no description is listed, properties correspond directly to
@@ -1640,9 +1640,9 @@ parameters.
 - **Usage**: Specifies the default permission groups and authentication methods
   that are assigned to the Receive connector.
 
-### xExchRemoteDomain
+### ExchRemoteDomain
 
-**xExchRemoteDomain** adds a remote domain
+**ExchRemoteDomain** adds a remote domain
 
 - **DomainName** Specifies the SMTP domain that you want to establish as a
   remote domain.
@@ -1678,7 +1678,7 @@ parameters.
   the sender's simple display name is used for the From email address in
   messages sent to recipients in the remote domain.
 
-### xExchSendConnector
+### ExchSendConnector
 
 - **Name** Specifies a descriptive name for the connector.
 - **Credential** Credentials used to establish a remote PowerShell session to Exchange.
@@ -1736,9 +1736,9 @@ parameters.
 - **Usage** Specifies the default permissions and authentication methods
   assigned to the Send connector.
 
-### xExchTransportService
+### ExchTransportService
 
-**xExchTransportService** configures the Transport service settings on Mailbox
+**ExchTransportService** configures the Transport service settings on Mailbox
 servers or Edge Transport servers using Set-TransportService.
 
 Where no description is listed, properties correspond directly to
@@ -1845,9 +1845,9 @@ ExternalIPAddress
 InternalDNSServers
 PipelineTracingSenderAddress
 
-### xExchUMCallRouterSettings
+### ExchUMCallRouterSettings
 
-**xExchUMCallRouterSettings** configures the UM Call Router service using
+**ExchUMCallRouterSettings** configures the UM Call Router service using
 Set-UMCallRouterSettings. This resource is NOT supported with Exchange Server
 2019 or higher.
 
@@ -1875,9 +1875,9 @@ parameters.
   Call Router service starts up in TCP, TLS, or Dual mode
 - **DomainController**: Optional Domain Controller to connect to.
 
-### xExchUMService
+### ExchUMService
 
-**xExchUMService** configures a UM server using Set-UMService. This resource is
+**ExchUMService** configures a UM server using Set-UMService. This resource is
 NOT supported with Exchange Server 2019 or higher.
 
 Where no description is listed, properties correspond directly to
@@ -1913,9 +1913,9 @@ parameters.
   Skype for Business users located outside of the network.
 - **DomainController**: Optional Domain Controller to connect to.
 
-### xExchWaitForADPrep
+### ExchWaitForADPrep
 
-**xExchWaitForADPrep** ensures that Active Directory has been prepared for
+**ExchWaitForADPrep** ensures that Active Directory has been prepared for
 Exchange 2013, 2016, or 2019 using setup /PrepareSchema, /PrepareAD,
 and /PrepareDomain. To find appropriate version values for the SchemaVersion,
 OrganizationVersion, and DomainVersion parameters, consult the 'Exchange 2016
@@ -1944,11 +1944,11 @@ Active Directory versions' section of the article
   prepped before an exception is thrown.
   Defaults to 30.
 
-### xExchWaitForDAG
+### ExchWaitForDAG
 
-**xExchWaitForDAG** is used by DAG members who are NOT maintaining the DAG
+**ExchWaitForDAG** is used by DAG members who are NOT maintaining the DAG
 configuration. Intended to be used as a DependsOn property by
-**xExchDatabaseAvailabilityGroupMember**. Throws an exception if the DAG still
+**ExchDatabaseAvailabilityGroupMember**. Throws an exception if the DAG still
 does not exist after the specified retry count and interval. If this happens,
 DSC configurations run in push mode will need to be re-executed.
 
@@ -1964,10 +1964,10 @@ DSC configurations run in push mode will need to be re-executed.
 - **RetryCount**: How many retry attempts should be made to find the DAG
   before an exception is thrown. Defaults to 5.
 
-### xExchWaitForMailboxDatabase
+### ExchWaitForMailboxDatabase
 
-**xExchWaitForMailboxDatabase** is used as a DependsOn property by
-**xExchMailboxDatabaseCopy** to ensure that a Mailbox Database exists prior to
+**ExchWaitForMailboxDatabase** is used as a DependsOn property by
+**ExchMailboxDatabaseCopy** to ensure that a Mailbox Database exists prior to
 trying to add a copy. Throws an exception if the database still does not exist
 after the specified retry count and interval. If this happens, DSC
 configurations run in push mode will need to be re-executed.
@@ -1982,9 +1982,9 @@ configurations run in push mode will need to be re-executed.
   before an exception is thrown.
   Defaults to 5.
 
-### xExchWebServicesVirtualDirectory
+### ExchWebServicesVirtualDirectory
 
-**xExchWebServicesVirtualDirectory** is used to configure properties on an
+**ExchWebServicesVirtualDirectory** is used to configure properties on an
 Exchange Web Services Virtual Directory.
 
 Where no description is listed, properties correspond directly to
@@ -2022,78 +2022,78 @@ It doesn't affect the [Servername]/ews/ virtual directory.
 ### ConfigureAutoMountPoint-FromCalculator
 
 Configures ExchangeDatabase and ExchangeVolume mount points automatically using
-the **xExchAutoMountPoint** resource.
+the **ExchAutoMountPoint** resource.
 Shows how to feed the .CSV files from the Server Role Requirements Calculator
 into the resource.
 The example code for ConfigureAutoMountPoint-FromCalculator is located in
-"ConfigureAutoMountPoints-FromCalculator.ps1" in the module folder under ...\xExchange\Examples\ConfigureAutoMountPoint-FromCalculator.
+"ConfigureAutoMountPoints-FromCalculator.ps1" in the module folder under ...\ExchangeDsc\Examples\ConfigureAutoMountPoint-FromCalculator.
 
 ### ConfigureAutoMountPoint-Manual
 
 Configures ExchangeDatabase and ExchangeVolume mount points automatically using
-the **xExchAutoMountPoint** resource.
+the **ExchAutoMountPoint** resource.
 Configures disk map manually.
 The example code for ConfigureAutoMountPoint-Manual is located in
-"ConfigureAutoMountPoints-Manual.ps1" in the module folder under ...\xExchange\Examples\ConfigureAutoMountPoints-Manual.
+"ConfigureAutoMountPoints-Manual.ps1" in the module folder under ...\ExchangeDsc\Examples\ConfigureAutoMountPoints-Manual.
 
 ### ConfigureDatabases-FromCalculator
 
-Configures primary databases and database copies using the **xExchMailboxDatabase**,
-**xExchMailboxDatabaseCopy**, and **xExchWaitForMailboxDatabase** resources.
+Configures primary databases and database copies using the **ExchMailboxDatabase**,
+**ExchMailboxDatabaseCopy**, and **ExchWaitForMailboxDatabase** resources.
 Shows how to feed the .CSV files from the Server Role Requirements Calculator
 into the resource.
 The example code for ConfigureDatabases-FromCalculator is located in
-"ConfigureDatabases-FromCalculator.ps1" in the module folder under ...\xExchange\Examples\ConfigureDatabases-FromCalculator.
+"ConfigureDatabases-FromCalculator.ps1" in the module folder under ...\ExchangeDsc\Examples\ConfigureDatabases-FromCalculator.
 
 ### ConfigureDatabases-Manual
 
-Configures primary databases and database copies using the **xExchMailboxDatabase**,
-**xExchMailboxDatabaseCopy**, and **xExchWaitForMailboxDatabase** resources.
+Configures primary databases and database copies using the **ExchMailboxDatabase**,
+**ExchMailboxDatabaseCopy**, and **ExchWaitForMailboxDatabase** resources.
 Configures database list manually.
 The example code for ConfigureDatabases-Manual is located in
-"ConfigureDatabases-Manual.ps1" in the module folder under ...\xExchange\Examples\ConfigureDatabases-Manual.
+"ConfigureDatabases-Manual.ps1" in the module folder under ...\ExchangeDsc\Examples\ConfigureDatabases-Manual.
 
 ### ConfigureNamespaces
 
 Contains three different examples, **SingleNamespace**, **RegionalNamespaces**,
 and **InternetFacingSite**, which show different ways to
 configure Client Access Namespaces.
-The three examples are in separate folders the module folder under ...\xExchange\Examples\PostInstallationConfiguration.
+The three examples are in separate folders the module folder under ...\ExchangeDsc\Examples\PostInstallationConfiguration.
 
 ### ConfigureVirtualDirectories
 
 Configures various properties on Exchange Virtual Directories, like URL's
 and Authentication settings.
 The example code for ConfigureVirtualDirectories is located in
-"ConfigureVirtualDirectories-Manual.ps1" in the module folder under ...\xExchange\Examples\ConfigureVirtualDirectories.
+"ConfigureVirtualDirectories-Manual.ps1" in the module folder under ...\ExchangeDsc\Examples\ConfigureVirtualDirectories.
 
 ### CreateAndConfigureDAG
 
 Creates a Database Availability Group, creates two new DAG networks and removes
 the default DAG network, and adds members to the DAG.
 The example code for CreateAndConfigureDAG is located in "CreateAndConfigureDAG.ps1"
-in the module folder under ...\xExchange\Examples\CreateAndConfigureDAG.
+in the module folder under ...\ExchangeDsc\Examples\CreateAndConfigureDAG.
 
 ### EndToEndExample
 
 An end to end example of how to deploy and configure an Exchange Server.
 The example scripts run Jetstress, install Exchange, create the DAG and databases,
 and configure other Exchange settings.
-The example code for EndToEndExample is located in in the module folder under ...\xExchange\Examples\EndToEndExample.
+The example code for EndToEndExample is located in in the module folder under ...\ExchangeDsc\Examples\EndToEndExample.
 
 ### InstallExchange
 
-Shows how to install Exchange using the **xExchInstall** resource.
+Shows how to install Exchange using the **ExchInstall** resource.
 The example code for InstallExchange is located in "InstallExchange.ps1" in the
-module folder under ...\xExchange\Examples\InstallExchange.
+module folder under ...\ExchangeDsc\Examples\InstallExchange.
 
 ### JetstressAutomation
 
-Contains two separate example scripts which show how to use the **xExchJetstress**
-resource to automate running Jetstress, and the **xExchJetstressCleanup** resource
+Contains two separate example scripts which show how to use the **ExchJetstress**
+resource to automate running Jetstress, and the **ExchJetstressCleanup** resource
 to cleanup a Jetstress installation.
 The example code for JetstressAutomation is located in "1-InstallAndRunJetstress.ps1"
-and "2-CleanupJetstress.ps1" in the module folder under ...\xExchange\Examples\JetstressAutomation.
+and "2-CleanupJetstress.ps1" in the module folder under ...\ExchangeDsc\Examples\JetstressAutomation.
 
 ### MaintenanceMode
 
@@ -2109,13 +2109,13 @@ of maintenance mode.
 ### PostInstallationConfiguration
 
 Shows how to use the majority of the post-installation resources in the
-**xExchange** module.
+**ExchangeDsc** module.
 The example code for PostInstallationConfiguration is located in
-"PostInstallationConfiguration.ps1" in the module folder under ...\xExchange\Examples\PostInstallationConfiguration.
+"PostInstallationConfiguration.ps1" in the module folder under ...\ExchangeDsc\Examples\PostInstallationConfiguration.
 
 ### WaitForADPrep
 
-Shows how to use the **xExchWaitForADPrep** resource to ensure that
+Shows how to use the **ExchWaitForADPrep** resource to ensure that
 Setup /PrepareSchema and /PrepareAD were run successfully.
 The example code for WaitForADPrep is located in "WaitForADPrep.ps1"
-in the module folder under ...\xExchange\Examples\WaitForADPrep.
+in the module folder under ...\ExchangeDsc\Examples\WaitForADPrep.

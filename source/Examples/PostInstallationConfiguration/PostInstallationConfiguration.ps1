@@ -1,7 +1,7 @@
 <#
 .EXAMPLE
     This example shows how to configure exchange after installation.
-    This script shows examples of how to utilize most resources in the xExchange module.
+    This script shows examples of how to utilize most resources in the ExchangeDsc module.
     Where possible, configuration settings have been entered directly into this script.
     That was done for all settings which will be common for every server being configured.
     Settings which may be different, like for DAG's, CAS in different sites, or for individual
@@ -150,7 +150,7 @@ Configuration Example
         $ExchangeCertCredential
     )
 
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
 
     # This first section only configures a single DAG node, the first member of the DAG.
     # The first member of the DAG will be responsible for DAG creation and maintaining its configuration
@@ -159,7 +159,7 @@ Configuration Example
         $dagSettings = $ConfigurationData[$Node.DAGId] # Look up and retrieve the DAG settings for this node
 
         # Create the DAG
-        xExchDatabaseAvailabilityGroup DAG
+        ExchDatabaseAvailabilityGroup DAG
         {
             Name                                 = $dagSettings.DAGName
             Credential                           = $ExchangeAdminCredential
@@ -177,17 +177,17 @@ Configuration Example
         }
 
         # Add this server as member
-        xExchDatabaseAvailabilityGroupMember DAGMember
+        ExchDatabaseAvailabilityGroupMember DAGMember
         {
             MailboxServer     = $Node.NodeName
             Credential        = $ExchangeAdminCredential
             DAGName           = $dagSettings.DAGName
             SkipDagValidation = $true
-            DependsOn         = '[xExchDatabaseAvailabilityGroup]DAG'
+            DependsOn         = '[ExchDatabaseAvailabilityGroup]DAG'
         }
 
         # Create two new DAG Networks
-        xExchDatabaseAvailabilityGroupNetwork DAGNet1
+        ExchDatabaseAvailabilityGroupNetwork DAGNet1
         {
             Name                      = $dagSettings.DAGNet1NetworkName
             Credential                = $ExchangeAdminCredential
@@ -195,10 +195,10 @@ Configuration Example
             Ensure                    = 'Present'
             ReplicationEnabled        = $dagSettings.DAGNet1ReplicationEnabled
             Subnets                   = $dagSettings.DAGNet1Subnets
-            DependsOn                 = '[xExchDatabaseAvailabilityGroupMember]DAGMember' # Can't do work on DAG networks until at least one member is in the DAG...
+            DependsOn                 = '[ExchDatabaseAvailabilityGroupMember]DAGMember' # Can't do work on DAG networks until at least one member is in the DAG...
         }
 
-        xExchDatabaseAvailabilityGroupNetwork DAGNet2
+        ExchDatabaseAvailabilityGroupNetwork DAGNet2
         {
             Name                      = $dagSettings.DAGNet2NetworkName
             Credential                = $ExchangeAdminCredential
@@ -206,17 +206,17 @@ Configuration Example
             Ensure                    = 'Present'
             ReplicationEnabled        = $dagSettings.DAGNet2ReplicationEnabled
             Subnets                   = $dagSettings.DAGNet2Subnets
-            DependsOn                 = '[xExchDatabaseAvailabilityGroupMember]DAGMember' # Can't do work on DAG networks until at least one member is in the DAG...
+            DependsOn                 = '[ExchDatabaseAvailabilityGroupMember]DAGMember' # Can't do work on DAG networks until at least one member is in the DAG...
         }
 
         # Remove the original DAG Network
-        xExchDatabaseAvailabilityGroupNetwork DAGNetOld
+        ExchDatabaseAvailabilityGroupNetwork DAGNetOld
         {
             Name                      = $dagSettings.OldNetworkName
             Credential                = $ExchangeAdminCredential
             DatabaseAvailabilityGroup = $dagSettings.DAGName
             Ensure                    = 'Absent'
-            DependsOn                 = '[xExchDatabaseAvailabilityGroupNetwork]DAGNet1', '[xExchDatabaseAvailabilityGroupNetwork]DAGNet2' # Dont remove the old one until the new one is in place
+            DependsOn                 = '[ExchDatabaseAvailabilityGroupNetwork]DAGNet1', '[ExchDatabaseAvailabilityGroupNetwork]DAGNet2' # Dont remove the old one until the new one is in place
         }
     }
 
@@ -227,19 +227,19 @@ Configuration Example
         $dagSettings = $ConfigurationData[$Node.DAGId] # Look up and retrieve the DAG settings for this node
 
         # Can't join until the DAG exists...
-        xExchWaitForDAG WaitForDAG
+        ExchWaitForDAG WaitForDAG
         {
             Identity   = $dagSettings.DAGName
             Credential = $ExchangeAdminCredential
         }
 
-        xExchDatabaseAvailabilityGroupMember DAGMember
+        ExchDatabaseAvailabilityGroupMember DAGMember
         {
             MailboxServer     = $Node.NodeName
             Credential        = $ExchangeAdminCredential
             DAGName           = $dagSettings.DAGName
             SkipDagValidation = $true
-            DependsOn         = '[xExchWaitForDAG]WaitForDAG'
+            DependsOn         = '[ExchWaitForDAG]WaitForDAG'
         }
     }
 
@@ -257,7 +257,7 @@ Configuration Example
 
         ###General server settings###
         # This section licenses the server
-        xExchExchangeServer EXServer
+        ExchExchangeServer EXServer
         {
             Identity            = $Node.NodeName
             Credential          = $ExchangeAdminCredential
@@ -266,7 +266,7 @@ Configuration Example
         }
 
         # This imports a certificate .PFX that had been previously exported, and enabled services on it
-        xExchExchangeCertificate Certificate
+        ExchExchangeCertificate Certificate
         {
             Thumbprint          = $dagSettings.Thumbprint
             Credential          = $ExchangeAdminCredential
@@ -278,7 +278,7 @@ Configuration Example
         }
 
         ###CAS specific settings###
-        xExchClientAccessServer CAS
+        ExchClientAccessServer CAS
         {
             Identity                       = $Node.NodeName
             Credential                     = $ExchangeAdminCredential
@@ -286,7 +286,7 @@ Configuration Example
             AutoDiscoverSiteScope          = $casSettings.AutoDiscoverSiteScope
         }
 
-        # Install features that are required for xExchActiveSyncVirtualDirectory to do Auto Certification Based Authentication
+        # Install features that are required for ExchActiveSyncVirtualDirectory to do Auto Certification Based Authentication
         WindowsFeature WebClientAuth
         {
             Name   = 'Web-Client-Auth'
@@ -300,7 +300,7 @@ Configuration Example
         }
 
         # This example shows how to enable Certificate Based Authentication for ActiveSync
-        xExchActiveSyncVirtualDirectory ASVdir
+        ExchActiveSyncVirtualDirectory ASVdir
         {
             Identity                    = "$($Node.NodeName)\Microsoft-Server-ActiveSync (Default Web Site)"
             Credential                  = $ExchangeAdminCredential
@@ -312,11 +312,11 @@ Configuration Example
             InternalUrl                 = "https://$($casSettings.InternalNLBFqdn)/Microsoft-Server-ActiveSync"
             WindowsAuthEnabled          = $false
             AllowServiceRestart         = $true
-            DependsOn                   = '[WindowsFeature]WebClientAuth', '[WindowsFeature]WebCertAuth', '[xExchExchangeCertificate]Certificate' # Can't configure CBA until we have a valid cert, and have required features
+            DependsOn                   = '[WindowsFeature]WebClientAuth', '[WindowsFeature]WebCertAuth', '[ExchExchangeCertificate]Certificate' # Can't configure CBA until we have a valid cert, and have required features
         }
 
         # Ensures forms based auth and configures URLs
-        xExchEcpVirtualDirectory ECPVDir
+        ExchEcpVirtualDirectory ECPVDir
         {
             Identity                      = "$($Node.NodeName)\ecp (Default Web Site)"
             Credential                    = $ExchangeAdminCredential
@@ -330,7 +330,7 @@ Configuration Example
         }
 
         # Configure URL's and for NTLM and negotiate auth
-        xExchMapiVirtualDirectory MAPIVdir
+        ExchMapiVirtualDirectory MAPIVdir
         {
             Identity                 = "$($Node.NodeName)\mapi (Default Web Site)"
             Credential               = $ExchangeAdminCredential
@@ -341,7 +341,7 @@ Configuration Example
         }
 
         # Configure URL's and add any OABs this vdir should distribute
-        xExchOabVirtualDirectory OABVdir
+        ExchOabVirtualDirectory OABVdir
         {
             Identity            = "$($Node.NodeName)\OAB (Default Web Site)"
             Credential          = $ExchangeAdminCredential
@@ -352,7 +352,7 @@ Configuration Example
         }
 
         # Configure URL's and auth settings
-        xExchOutlookAnywhere OAVdir
+        ExchOutlookAnywhere OAVdir
         {
             Identity                           = "$($Node.NodeName)\Rpc (Default Web Site)"
             Credential                         = $ExchangeAdminCredential
@@ -367,7 +367,7 @@ Configuration Example
         }
 
         # Ensures forms based auth and configures URLs and IM integration
-        xExchOwaVirtualDirectory OWAVdir
+        ExchOwaVirtualDirectory OWAVdir
         {
             Identity                              = "$($Node.NodeName)\owa (Default Web Site)"
             Credential                            = $ExchangeAdminCredential
@@ -382,11 +382,11 @@ Configuration Example
             InternalUrl                           = "https://$($casSettings.InternalNLBFqdn)/owa"
             WindowsAuthentication                 = $false
             AllowServiceRestart                   = $true
-            DependsOn                             = '[xExchExchangeCertificate]Certificate' # Can't configure the IM cert until it's valid
+            DependsOn                             = '[ExchExchangeCertificate]Certificate' # Can't configure the IM cert until it's valid
         }
 
         # Turn on Windows Integrated auth for remote powershell connections
-        xExchPowerShellVirtualDirectory PSVdir
+        ExchPowerShellVirtualDirectory PSVdir
         {
             Identity              = "$($Node.NodeName)\PowerShell (Default Web Site)"
             Credential            = $ExchangeAdminCredential
@@ -395,7 +395,7 @@ Configuration Example
         }
 
         # Configure URL's
-        xExchWebServicesVirtualDirectory EWSVdir
+        ExchWebServicesVirtualDirectory EWSVdir
         {
             Identity            = "$($Node.NodeName)\EWS (Default Web Site)"
             Credential          = $ExchangeAdminCredential
@@ -406,7 +406,7 @@ Configuration Example
 
         ###Transport specific settings###
         # Create a custom receive connector which could be used to receive SMTP mail from internal non-Exchange mail servers
-        xExchReceiveConnector CustomConnector1
+        ExchReceiveConnector CustomConnector1
         {
             Identity             = "$($Node.NodeName)\Internal SMTP Servers to $($Node.NodeName)"
             Credential           = $ExchangeAdminCredential
@@ -422,14 +422,14 @@ Configuration Example
         }
 
         # Ensures that Exchange built in AntiMalware Scanning is enabled or disabled
-        xExchAntiMalwareScanning AMS
+        ExchAntiMalwareScanning AMS
         {
             Enabled    = $true
             Credential = $ExchangeAdminCredential
         }
 
         #Ensure that the Receive Protocol logs are enabled for the Frontend Transport service and that they are kept for an adequate length of time.
-        xExchFrontendTransportService FrontendTransportService
+        ExchFrontendTransportService FrontendTransportService
         {
             Credential                         = $ExchangeAdminCredential
             Identity                           = $Node.NodeName
@@ -440,7 +440,7 @@ Configuration Example
 
         ###Mailbox Server settings###
         # Create database and volume mount points for AutoReseed
-        xExchAutoMountPoint AMP
+        ExchAutoMountPoint AMP
         {
             Identity                       = $Node.NodeName
             AutoDagDatabasesRootFolderPath = 'C:\ExchangeDatabases'
@@ -456,7 +456,7 @@ Configuration Example
             # Need to define a unique ID for each database
             $resourceId = "MDB_$($DB.Name)"
 
-            xExchMailboxDatabase $resourceId
+            ExchMailboxDatabase $resourceId
             {
                 Name                     = $DB.Name
                 Credential               = $ExchangeAdminCredential
@@ -470,7 +470,7 @@ Configuration Example
                 ProhibitSendQuota        = '5300MB'
                 ProhibitSendReceiveQuota = '5500MB'
                 AllowServiceRestart      = $true
-                DependsOn                = '[xExchAutoMountPoint]AMP' # Can"t create databases until the mount points exist
+                DependsOn                = '[ExchAutoMountPoint]AMP' # Can"t create databases until the mount points exist
             }
         }
 
@@ -484,13 +484,13 @@ Configuration Example
             $copyResourceId = "MDBCopy_$($DB.Name)"
 
             # Need to wait for a primary copy to be created before we add a copy
-            xExchWaitForMailboxDatabase $waitResourceId
+            ExchWaitForMailboxDatabase $waitResourceId
             {
                 Identity   = $DB.Name
                 Credential = $ExchangeAdminCredential
             }
 
-            xExchMailboxDatabaseCopy $copyResourceId
+            ExchMailboxDatabaseCopy $copyResourceId
             {
                 Identity             = $DB.Name
                 Credential           = $ExchangeAdminCredential
@@ -498,7 +498,7 @@ Configuration Example
                 ActivationPreference = $DB.ActivationPreference
                 ReplayLagTime        = $DB.ReplayLagTime
                 AllowServiceRestart  = $true
-                DependsOn            = "[xExchWaitForMailboxDatabase]$($waitResourceId)"
+                DependsOn            = "[ExchWaitForMailboxDatabase]$($waitResourceId)"
             }
         }
     }

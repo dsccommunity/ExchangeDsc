@@ -58,14 +58,14 @@ Configuration Example
         $ExchangeAdminCredential
     )
 
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
 
     Node $AllNodes.NodeName
     {
         $casSettings = $ConfigurationData[$Node.CASId] # Look up and retrieve the CAS settings for this node
 
         ###CAS specific settings###
-        xExchClientAccessServer CAS
+        ExchClientAccessServer CAS
         {
             Identity                       = $Node.NodeName
             Credential                     = $ExchangeAdminCredential
@@ -73,7 +73,7 @@ Configuration Example
             AutoDiscoverSiteScope          = $casSettings.AutoDiscoverSiteScope
         }
 
-        # Install features that are required for xExchActiveSyncVirtualDirectory to do Auto Certification Based Authentication
+        # Install features that are required for ExchActiveSyncVirtualDirectory to do Auto Certification Based Authentication
         WindowsFeature WebClientAuth
         {
             Name   = 'Web-Client-Auth'
@@ -87,7 +87,7 @@ Configuration Example
         }
 
         # This example shows how to enable Certificate Based Authentication for ActiveSync
-        xExchActiveSyncVirtualDirectory ASVdir
+        ExchActiveSyncVirtualDirectory ASVdir
         {
             Identity                    = "$($Node.NodeName)\Microsoft-Server-ActiveSync (Default Web Site)"
             Credential                  = $ExchangeAdminCredential
@@ -105,7 +105,7 @@ Configuration Example
         }
 
         # Ensures forms based auth and configures URLs
-        xExchEcpVirtualDirectory ECPVDir
+        ExchEcpVirtualDirectory ECPVDir
         {
             Identity                      = "$($Node.NodeName)\ecp (Default Web Site)"
             Credential                    = $ExchangeAdminCredential
@@ -119,7 +119,7 @@ Configuration Example
         }
 
         # Configure URL's and for NTLM and negotiate auth
-        xExchMapiVirtualDirectory MAPIVdir
+        ExchMapiVirtualDirectory MAPIVdir
         {
             Identity                 = "$($Node.NodeName)\mapi (Default Web Site)"
             Credential               = $ExchangeAdminCredential
@@ -130,7 +130,7 @@ Configuration Example
         }
 
         # Configure URL's and add any OABs this vdir should distribute
-        xExchOabVirtualDirectory OABVdir
+        ExchOabVirtualDirectory OABVdir
         {
             Identity            = "$($Node.NodeName)\OAB (Default Web Site)"
             Credential          = $ExchangeAdminCredential
@@ -141,7 +141,7 @@ Configuration Example
         }
 
         # Configure URL's and auth settings
-        xExchOutlookAnywhere OAVdir
+        ExchOutlookAnywhere OAVdir
         {
             Identity                           = "$($Node.NodeName)\Rpc (Default Web Site)"
             Credential                         = $ExchangeAdminCredential
@@ -156,7 +156,7 @@ Configuration Example
         }
 
         # Ensures forms based auth and configures URLs and IM integration
-        xExchOwaVirtualDirectory OWAVdir
+        ExchOwaVirtualDirectory OWAVdir
         {
             Identity                              = "$($Node.NodeName)\owa (Default Web Site)"
             Credential                            = $ExchangeAdminCredential
@@ -170,7 +170,7 @@ Configuration Example
         }
 
         # Turn on Windows Integrated auth for remote powershell connections
-        xExchPowerShellVirtualDirectory PSVdir
+        ExchPowerShellVirtualDirectory PSVdir
         {
             Identity              = "$($Node.NodeName)\PowerShell (Default Web Site)"
             Credential            = $ExchangeAdminCredential
@@ -179,7 +179,7 @@ Configuration Example
         }
 
         # Configure URL's
-        xExchWebServicesVirtualDirectory EWSVdir
+        ExchWebServicesVirtualDirectory EWSVdir
         {
             Identity            = "$($Node.NodeName)\EWS (Default Web Site)"
             Credential          = $ExchangeAdminCredential

@@ -40,7 +40,7 @@ Configuration Example
         $ExchangeAdminCredential
     )
 
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
 
     Node $AllNodes.NodeName
     {
@@ -50,17 +50,17 @@ Configuration Example
             ConfigurationMode = 'ApplyOnly' # Set to ApplyOnly, as we probably don't want to continuously check our config during Maintenance
         }
 
-        xExchMailboxServer SetMbxServerSite1
+        ExchMailboxServer SetMbxServerSite1
         {
-            Identity                         = $Node.NodeName # Use a different server Identity for each xExchMailboxServer resource to satisfy the Key requirement. Use HOSTNAME here.
+            Identity                         = $Node.NodeName # Use a different server Identity for each ExchMailboxServer resource to satisfy the Key requirement. Use HOSTNAME here.
             Credential                       = $ExchangeAdminCredential
             DatabaseCopyAutoActivationPolicy = 'Blocked'
             DomainController                 = $Node.Site1DC
         }
 
-        xExchMailboxServer SetMbxServerSite2
+        ExchMailboxServer SetMbxServerSite2
         {
-            Identity                         = $Node.NodeFqdn # Use a different server Identity for each xExchMailboxServer resource to satisfy the Key requirement. Use FQDN here.
+            Identity                         = $Node.NodeFqdn # Use a different server Identity for each ExchMailboxServer resource to satisfy the Key requirement. Use FQDN here.
             Credential                       = $ExchangeAdminCredential
             DatabaseCopyAutoActivationPolicy = 'Blocked'
             DomainController                 = $Node.Site2DC

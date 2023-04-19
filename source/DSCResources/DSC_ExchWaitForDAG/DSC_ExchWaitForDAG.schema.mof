@@ -1,0 +1,10 @@
+[ClassVersion("1.0.0.0"), FriendlyName("ExchWaitForDAG")]
+class DSC_ExchWaitForDAG : OMI_BaseResource
+{
+    [Key, Description("The name of the DAG to wait for.")] String Identity;
+    [Required, EmbeddedInstance("MSFT_Credential"), Description("Credentials used to establish a remote Powershell session to Exchange")] String Credential;
+    [Write, Description("Optional Domain controller to use when running Get-DatabaseAvailabilityGroup")] String DomainController;
+    [Write, Description("Whether DSC should also wait for the DAG Computer account object to be discovered. Defaults to False.")] Boolean WaitForComputerObject;
+    [Write, Description("How many seconds to wait between retries when checking whether the DAG exists. Defaults to 60.")] Uint32 RetryIntervalSec;
+    [Write, Description("How many retry attempts should be made to find the DAG before an exception is thrown. Defaults to 5.")] Uint32 RetryCount;
+};

@@ -1,0 +1,19 @@
+[ClassVersion("1.0.0.0"), FriendlyName("ExchExchangeServer")]
+class DSC_ExchExchangeServer : OMI_BaseResource
+{
+    [Key, Description("The Identity parameter specifies the GUID, distinguished name (DN), or name of the server.")] String Identity;
+    [Required, Description("Credentials used to establish a remote PowerShell session to Exchange."), EmbeddedInstance("MSFT_Credential")] String Credential;
+    [Write, Description("Whether it is OK to restart the Information Store service after licensing the server. Defaults to $false.")] Boolean AllowServiceRestart;
+    [Write, Description("The CustomerFeedbackEnabled parameter specifies whether the Exchange server is enrolled in the Microsoft Customer Experience Improvement Program (CEIP). The CEIP collects anonymous information about how you use Exchange and problems that you might encounter. If you decide not to participate in the CEIP, the servers are opted-out automatically.")] Boolean CustomerFeedbackEnabled;
+    [Write, Description("The DomainController parameter specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory. You identify the domain controller by its fully qualified domain name (FQDN). For example, dc01.contoso.com.")] String DomainController;
+    [Write, Description("The ErrorReportingEnabled parameter specifies whether error reporting is enabled.")] Boolean ErrorReportingEnabled;
+    [Write, Description("The InternetWebProxy parameter specifies the web proxy server that the Exchange server uses to reach the internet. A valid value for this parameter is the URL of the web proxy server.")] String InternetWebProxy;
+    [Write, Description("The InternetWebProxyBypassList parameter specifies a list of servers that bypass the web proxy server specified by the InternetWebProxy parameter. You identify the servers by their FQDN (for example, server01.contoso.com).")] String InternetWebProxyBypassList[];
+    [Write, Description("The MonitoringGroup parameter specifies how to add your Exchange servers to monitoring groups. You can add your servers to an existing group or create a monitoring group based on location or deployment, or to partition monitoring responsibility among your servers.")] String MonitoringGroup;
+    [Write, Description("The ProductKey parameter specifies the server product key.")] String ProductKey;
+    [Write, Description("The StaticConfigDomainController parameter specifies whether to configure a domain controller to be used by the server via Directory Service Access (DSAccess).")] String StaticConfigDomainController;
+    [Write, Description("The StaticDomainControllers parameter specifies whether to configure a list of domain controllers to be used by the server via DSAccess.")] String StaticDomainControllers[];
+    [Write, Description("The StaticExcludedDomainControllers parameter specifies whether to exclude a list of domain controllers from being used by the server.")] String StaticExcludedDomainControllers[];
+    [Write, Description("The StaticGlobalCatalogs parameter specifies whether to configure a list of global catalogs to be used by the server via DSAccess.")] String StaticGlobalCatalogs[];
+    [Write, Description("The *-ResourcePolicy, *-WorkloadManagementPolicy and *-WorkloadPolicy system workload management cmdlets have been deprecated. System workload management settings should be customized only under the direction of Microsoft Customer Service and Support.")] String WorkloadManagementPolicy;
+};

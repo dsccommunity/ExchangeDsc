@@ -18,7 +18,7 @@ $ConfigurationData = @{
             # Thumbprint of the certificate being used for decrypting credentials
             Thumbprint      = '39bef4b2e82599233154465323ebf96a12b60673'
 
-            # DiskToDBMap used by xExchAutoMountPoint specifically for Jetstress purposes
+            # DiskToDBMap used by ExchAutoMountPoint specifically for Jetstress purposes
             JetstressDiskToDBMap = 'DB1,DB2,DB3,DB4', 'DB5,DB6,DB7,DB8'
 
             # The base file server UNC path that will be used for copying things like certificates, Exchange binaries, and Jetstress binaries
@@ -57,13 +57,13 @@ Configuration Example
         $ExchangeAdminCredential
     )
 
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
 
     Node $AllNodes.NodeName
     {
         # Create mount points for use with Jetstress. Here I prefer to use the same database names for ALL servers,
         # that way I can use the same JetstressConfig.xml for all of them.
-        xExchAutoMountPoint AMPForJetstress
+        ExchAutoMountPoint AMPForJetstress
         {
             Identity                       = $Node.NodeName
             AutoDagDatabasesRootFolderPath = 'C:\ExchangeDatabases'
@@ -90,7 +90,7 @@ Configuration Example
             Path      = 'C:\Binaries\Jetstress\Jetstress.msi'
             Name      = 'Microsoft Exchange Jetstress 2013'
             ProductId = '75189587-0D84-4404-8F02-79C39728FA64'
-            DependsOn = '[xExchAutoMountPoint]AMPForJetstress', '[File]CopyJetstress'
+            DependsOn = '[ExchAutoMountPoint]AMPForJetstress', '[File]CopyJetstress'
         }
 
         # Copy required ESE DLL's to the Jetstress installation directory
@@ -116,7 +116,7 @@ Configuration Example
         }
 
         # Run the Jetstress test, and evaluate the results
-        xExchJetstress RunJetstress
+        ExchJetstress RunJetstress
         {
             Type            = 'Performance'
             JetstressPath   = 'C:\Program Files\Exchange Jetstress'

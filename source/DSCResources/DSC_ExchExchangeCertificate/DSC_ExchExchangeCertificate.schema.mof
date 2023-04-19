@@ -1,0 +1,14 @@
+[ClassVersion("1.0.0.0"), FriendlyName("ExchExchangeCertificate")]
+class DSC_ExchExchangeCertificate : OMI_BaseResource
+{
+    [Key, Description("Thumbprint of the certificate to work on.")] String Thumbprint;
+    [Required, Description("Credentials used to establish a remote PowerShell session to Exchange."), EmbeddedInstance("MSFT_Credential")] String Credential;
+    [Required, Description("Whether the certificate should be present or not."), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+    [Write, Description("Get-ExchangeCertificate sometimes displays more services than are actually enabled. Setting this to true allows tests to pass in that situation as long as the requested services are present.")] Boolean AllowExtraServices;
+    [Write, Description("Credentials containing the password to the .pfx file in CertFilePath."), EmbeddedInstance("MSFT_Credential")] String CertCreds;
+    [Write, Description("The file path to the certificate .pfx file that should be imported.")] String CertFilePath;
+    [Write, Description("The DomainController parameter specifies the domain controller that's used by this cmdlet to read data from or write data to Active Directory. You identify the domain controller by its fully qualified domain name (FQDN). For example, dc01.contoso.com.")] String DomainController;
+    [Write, Description("Setting DoNotRequireSsl to True prevents DSC from enabling the Require SSL setting on the Default Web Site when you enable the certificate for IIS. Defaults to False.")] Boolean DoNotRequireSsl;
+    [Write, Description("Setting NetworkServiceAllowed to True gives the built-in Network Service account permission to read the certificate's private key without enabling the certificate for SMTP. Defaults to False.")] Boolean NetworkServiceAllowed;
+    [Write, Description("The Services parameter specifies the Exchange services that the certificate is enabled for.")] String Services[];
+};

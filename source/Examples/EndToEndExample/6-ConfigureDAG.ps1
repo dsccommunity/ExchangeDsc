@@ -116,7 +116,7 @@ Configuration Example
     )
 
     # Import required DSC Modules
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
 
     # This first section only configures a single DAG node, the first member of the DAG.
     # The first member of the DAG will be responsible for DAG creation and maintaining its configuration
@@ -125,7 +125,7 @@ Configuration Example
         $dagSettings = $ConfigurationData[$Node.DAGId] # Look up and retrieve the DAG settings for this node
 
         # Create the DAG
-        xExchDatabaseAvailabilityGroup DAG
+        ExchDatabaseAvailabilityGroup DAG
         {
             Name                                 = $dagSettings.DAGName
             Credential                           = $ExchangeAdminCredential
@@ -143,13 +143,13 @@ Configuration Example
         }
 
         # Add this server as member
-        xExchDatabaseAvailabilityGroupMember DAGMember
+        ExchDatabaseAvailabilityGroupMember DAGMember
         {
             MailboxServer     = $Node.NodeName
             Credential        = $ExchangeAdminCredential
             DAGName           = $dagSettings.DAGName
             SkipDagValidation = $true
-            DependsOn         = '[xExchDatabaseAvailabilityGroup]DAG'
+            DependsOn         = '[ExchDatabaseAvailabilityGroup]DAG'
         }
     }
 
@@ -159,19 +159,19 @@ Configuration Example
         $dagSettings = $ConfigurationData[$Node.DAGId] # Look up and retrieve the DAG settings for this node
 
         # Can't join until the DAG exists...
-        xExchWaitForDAG WaitForDAG
+        ExchWaitForDAG WaitForDAG
         {
             Identity         = $dagSettings.DAGName
             Credential       = $ExchangeAdminCredential
         }
 
-        xExchDatabaseAvailabilityGroupMember DAGMember
+        ExchDatabaseAvailabilityGroupMember DAGMember
         {
             MailboxServer     = $Node.NodeName
             Credential        = $ExchangeAdminCredential
             DAGName           = $dagSettings.DAGName
             SkipDagValidation = $true
-            DependsOn         = '[xExchWaitForDAG]WaitForDAG'
+            DependsOn         = '[ExchWaitForDAG]WaitForDAG'
         }
     }
 }

@@ -76,10 +76,10 @@ the PowerShell modules and add needed tools for testing:
    ```powershell
    # Create source folder
    mkdir src
-   # Clone your forked xExchange repository
+   # Clone your forked ExchangeDsc repository
    git clone https://github.com/yourusername/PULLREQUEST
    # Go into the correct the cloned repository
-   cd .\xExchange\
+   cd .\ExchangeDsc\
    # Checkout a branch
    git checkout [branch_name]
    ```

@@ -51,7 +51,7 @@ Configuration Example
         $ExchangeAdminCredential
     )
 
-    Import-DscResource -Module xExchange
+    Import-DscResource -Module ExchangeDsc
 
     Node $AllNodes.NodeName
     {
@@ -61,7 +61,7 @@ Configuration Example
             # Need to define a unique ID for each database
             $resourceId = "MDB_$($DB.Name)"
 
-            xExchMailboxDatabase $resourceId
+            ExchMailboxDatabase $resourceId
             {
                 Name                     = $DB.Name
                 Credential               = $ExchangeAdminCredential
@@ -80,20 +80,20 @@ Configuration Example
         # Create the copies
         foreach ($DB in $Node.CopyDBList.Values)
         {
-            # Unique ID for the xExchWaitForMailboxDatabase resource
+            # Unique ID for the ExchWaitForMailboxDatabase resource
             $waitResourceId = "WaitForDB_$($DB.Name)"
 
-            # Unique ID for the xExchMailboxDatabaseCopy resource
+            # Unique ID for the ExchMailboxDatabaseCopy resource
             $copyResourceId = "MDBCopy_$($DB.Name)"
 
             # Need to wait for a primary copy to be created before we add a copy
-            xExchWaitForMailboxDatabase $waitResourceId
+            ExchWaitForMailboxDatabase $waitResourceId
             {
                 Identity   = $DB.Name
                 Credential = $ExchangeAdminCredential
             }
 
-            xExchMailboxDatabaseCopy $copyResourceId
+            ExchMailboxDatabaseCopy $copyResourceId
             {
                 Identity             = $DB.Name
                 Credential           = $ExchangeAdminCredential
@@ -101,7 +101,7 @@ Configuration Example
                 ActivationPreference = $DB.ActivationPreference
                 ReplayLagTime        = $DB.ReplayLagTime
                 AllowServiceRestart  = $true
-                DependsOn            = "[xExchWaitForMailboxDatabase]$($waitResourceId)"
+                DependsOn            = "[ExchWaitForMailboxDatabase]$($waitResourceId)"
             }
         }
     }
