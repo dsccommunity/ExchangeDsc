@@ -5,6 +5,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- xExchange
+  - BREAKING CHANGE: Renamed module and all resources, removing prefix 'x'
+    ([issue #484](https://github.com/dsccommunity/xExchange/issues/484)).
+
+## [1.34.0] - 2023-04-18
+
 ### Deprecated
 
 - **The module _xExchange_ will be renamed to _ExchangeDsc_
@@ -23,8 +31,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - xExchange
-  - BREAKING CHANGE: Renamed module and all resources, removing prefix 'x'
-    ([issue #484](https://github.com/dsccommunity/xExchange/issues/484)).
   - Update the pipeline files to the latest from template in Sampler.
   - Update to CI worker that allow building MOF-based resources.
 - xExchPopSettings
@@ -33,8 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed typo.
 - xExchangeHelper
   - Fixed module import error ([issue #481](https://github.com/dsccommunity/xExchange/issues/481)).
-- xExchangeHelper
   - Fixed error on first Exchange Module import ([Issue #488](https://github.com/dsccommunity/xExchange/issues/488)).
+  - Changed return value of `Get-SetupExeVersion` to `System.Version` which fixes #410.
 
 ## [1.33.0] - 2021-10-31
 
