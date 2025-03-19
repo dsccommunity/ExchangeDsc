@@ -99,6 +99,10 @@ function Get-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $OAuthAuthentication,
+
+        [Parameter()]
+        [System.Boolean]
         $UNCAccessOnPublicComputersEnabled,
 
         [Parameter()]
@@ -164,6 +168,7 @@ function Get-TargetResource
             LogonFormat                            = [System.String] $OwaVdir.LogonFormat
             LogonPageLightSelectionEnabled         = [System.Boolean] $OwaVdir.LogonPageLightSelectionEnabled
             LogonPagePublicPrivateSelectionEnabled = [System.Boolean] $OwaVdir.LogonPagePublicPrivateSelectionEnabled
+            OAuthAuthentication                    = [System.Boolean] $OwaVdir.OAuthAuthentication
             UNCAccessOnPublicComputersEnabled      = [System.Boolean] $OwaVdir.UNCAccessOnPublicComputersEnabled
             UNCAccessOnPrivateComputersEnabled     = [System.Boolean] $OwaVdir.UNCAccessOnPrivateComputersEnabled
             WindowsAuthentication                  = [System.Boolean] $OwaVdir.WindowsAuthentication
@@ -271,6 +276,10 @@ function Set-TargetResource
         [Parameter()]
         [System.Boolean]
         $LogonPageLightSelectionEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $OAuthAuthentication,
 
         [Parameter()]
         [System.Boolean]
@@ -430,6 +439,10 @@ function Test-TargetResource
         [Parameter()]
         [System.Boolean]
         $LogonPageLightSelectionEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $OAuthAuthentication,
 
         [Parameter()]
         [System.Boolean]
@@ -616,6 +629,11 @@ function Test-TargetResource
         {
             $testResults = $false
         }
+
+        if (!(Test-ExchangeSetting -Name 'OAuthAuthentication' -Type 'Boolean' -ExpectedValue $OAuthAuthentication -ActualValue $OwaVdir.OAuthAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
     }
 
     return $testResults
@@ -717,6 +735,10 @@ function Get-OwaVirtualDirectoryInternal
         [Parameter()]
         [System.Boolean]
         $LogonPageLightSelectionEnabled,
+
+        [Parameter()]
+        [System.Boolean]
+        $OAuthAuthentication,
 
         [Parameter()]
         [System.Boolean]

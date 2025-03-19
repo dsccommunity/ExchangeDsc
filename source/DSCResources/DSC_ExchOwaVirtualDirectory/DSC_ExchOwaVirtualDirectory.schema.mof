@@ -26,6 +26,7 @@ class DSC_ExchOwaVirtualDirectory : OMI_BaseResource
     [Write, ValueMap{"None", "Ocs"}, Values{"None", "Ocs"}] String InstantMessagingType;
     [Write] Boolean LogonPagePublicPrivateSelectionEnabled;
     [Write] Boolean LogonPageLightSelectionEnabled;
+    [Write] Boolean OAuthAuthentication;
     [Write] Boolean UNCAccessOnPublicComputersEnabled;
     [Write] Boolean UNCAccessOnPrivateComputersEnabled;
     [Write] Boolean WindowsAuthentication;

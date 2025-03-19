@@ -17,6 +17,7 @@ class DSC_ExchEcpVirtualDirectory : OMI_BaseResource
     [Write, Description("The GzipLevel parameter sets Gzip configuration information for the ECP virtual directory."), ValueMap{"Off", "Low", "High", "Error"}, Values{"Off", "Low", "High", "Error"}] String GzipLevel;
     [Write, Description("The ExternalURL parameter specifies the URL that's used to connect to the virtual directory from outside the firewall.")] String ExternalUrl;
     [Write, Description("The InternalURL parameter specifies the URL that's used to connect to the virtual directory from inside the firewall.")] String InternalUrl;
+    [Write, Description("The OAuthAuthentication parameter specifies whether OAuth authentication is enabled on the virtual directory. ")] Boolean OAuthAuthentication;
     [Write, Description("Specifies that Outlook on the web Options is enabled for end users.")] Boolean OwaOptionsEnabled;
     [Write, Description("The WindowsAuthentication parameter specifies whether Integrated Windows authentication is enabled on the virtual directory.")] Boolean WindowsAuthentication;
 };

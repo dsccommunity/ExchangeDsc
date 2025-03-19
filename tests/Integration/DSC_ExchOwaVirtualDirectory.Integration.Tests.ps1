@@ -70,6 +70,7 @@ if ($exchangeInstalled)
             InternalUrl                            = "https://$($serverFqdn)/owa"
             LogonPagePublicPrivateSelectionEnabled = $true
             LogonPageLightSelectionEnabled         = $true
+            OAuthAuthentication                    = $false
             UNCAccessOnPublicComputersEnabled      = $true
             UNCAccessOnPrivateComputersEnabled     = $true
             WindowsAuthentication                  = $false
@@ -98,6 +99,7 @@ if ($exchangeInstalled)
             InternalUrl                            = "https://$($serverFqdn)/owa"
             LogonPagePublicPrivateSelectionEnabled = $true
             LogonPageLightSelectionEnabled         = $true
+            OAuthAuthentication                    = $false
             UNCAccessOnPublicComputersEnabled      = $true
             UNCAccessOnPrivateComputersEnabled     = $true
             WindowsAuthentication                  = $false
@@ -130,6 +132,7 @@ if ($exchangeInstalled)
             InternalUrl                            = ''
             LogonPagePublicPrivateSelectionEnabled = $false
             LogonPageLightSelectionEnabled         = $false
+            OAuthAuthentication                    = $true
             UNCAccessOnPublicComputersEnabled      = $false
             UNCAccessOnPrivateComputersEnabled     = $false
             WindowsAuthentication                  = $true
@@ -158,6 +161,7 @@ if ($exchangeInstalled)
             InternalUrl                            = ''
             LogonPagePublicPrivateSelectionEnabled = $false
             LogonPageLightSelectionEnabled         = $false
+            OAuthAuthentication                    = $true
             UNCAccessOnPublicComputersEnabled      = $false
             UNCAccessOnPrivateComputersEnabled     = $false
             WindowsAuthentication                  = $true
@@ -178,6 +182,7 @@ if ($exchangeInstalled)
             BasicAuthentication   = $true
             DigestAuthentication  = $false
             FormsAuthentication   = $true
+            OAuthAuthentication   = $false
             WindowsAuthentication = $false
         }
 
@@ -186,6 +191,7 @@ if ($exchangeInstalled)
             BasicAuthentication   = $true
             DigestAuthentication  = $false
             FormsAuthentication   = $true
+            OAuthAuthentication   = $false
             WindowsAuthentication = $false
         }
 

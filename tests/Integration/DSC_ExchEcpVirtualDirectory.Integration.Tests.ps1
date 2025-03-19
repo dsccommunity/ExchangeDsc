@@ -43,6 +43,7 @@ if ($exchangeInstalled)
             FormsAuthentication = $true
             GzipLevel = 'Off'
             InternalUrl = "https://$($serverFqdn)/ecp"
+            OAuthAuthentication = $false
             WindowsAuthentication = $false
         }
 
@@ -55,6 +56,7 @@ if ($exchangeInstalled)
             FormsAuthentication = $true
             GzipLevel = 'Off'
             InternalUrl = "https://$($serverFqdn)/ecp"
+            OAuthAuthentication = $false
             WindowsAuthentication = $false
         }
 
@@ -72,6 +74,7 @@ if ($exchangeInstalled)
             FormsAuthentication = $false
             GzipLevel = 'High'
             InternalUrl = ''
+            OAuthAuthentication = $true
             WindowsAuthentication = $true
         }
 
@@ -84,6 +87,7 @@ if ($exchangeInstalled)
             FormsAuthentication = $false
             GzipLevel = 'High'
             InternalUrl = ''
+            OAuthAuthentication = $true
             WindowsAuthentication = $true
         }
 
@@ -98,6 +102,7 @@ if ($exchangeInstalled)
             BasicAuthentication = $true
             DigestAuthentication = $false
             FormsAuthentication = $true
+            OAuthAuthentication = $false
             WindowsAuthentication = $false
         }
 
@@ -106,6 +111,7 @@ if ($exchangeInstalled)
             BasicAuthentication = $true
             DigestAuthentication = $false
             FormsAuthentication = $true
+            OAuthAuthentication = $false
             WindowsAuthentication = $false
         }
 

@@ -46,6 +46,7 @@ try
                 LogonFormat                            = [System.String] ''
                 LogonPageLightSelectionEnabled         = [System.Boolean] $false
                 LogonPagePublicPrivateSelectionEnabled = [System.Boolean] $false
+                OAuthAuthentication                    = [System.Boolean] $false
                 UNCAccessOnPublicComputersEnabled      = [System.Boolean] $false
                 UNCAccessOnPrivateComputersEnabled     = [System.Boolean] $false
                 WindowsAuthentication                  = [System.Boolean] $false

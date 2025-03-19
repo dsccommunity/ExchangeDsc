@@ -140,6 +140,10 @@ function Get-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $OAuthAuthentication,
+
+        [Parameter()]
+        [System.Boolean]
         $OwaOptionsEnabled,
 
         [Parameter()]
@@ -172,6 +176,7 @@ function Get-TargetResource
             FormsAuthentication             = [System.Boolean] $EcpVdir.FormsAuthentication
             GzipLevel                       = [System.String] $EcpVdir.GzipLevel
             InternalUrl                     = [System.String] $EcpVdir.InternalUrl
+            OAuthAuthentication             = [System.Boolean] $EcpVdir.OAuthAuthentication
             WindowsAuthentication           = [System.Boolean] $EcpVdir.WindowsAuthentication
             OwaOptionsEnabled               = [System.Boolean] $EcpVdir.OwaOptionsEnabled
         }
@@ -317,6 +322,10 @@ function Set-TargetResource
         [Parameter()]
         [System.String]
         $InternalUrl,
+
+        [Parameter()]
+        [System.Boolean]
+        $OAuthAuthentication,
 
         [Parameter()]
         [System.Boolean]
@@ -503,6 +512,10 @@ function Test-TargetResource
 
         [Parameter()]
         [System.Boolean]
+        $OAuthAuthentication,
+
+        [Parameter()]
+        [System.Boolean]
         $OwaOptionsEnabled,
 
         [Parameter()]
@@ -581,7 +594,13 @@ function Test-TargetResource
         {
             $testResults = $false
         }
+
         if (!(Test-ExchangeSetting -Name 'OwaOptionsEnabled' -Type 'Boolean' -ExpectedValue $OwaOptionsEnabled -ActualValue $EcpVdir.OwaOptionsEnabled -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
+        {
+            $testResults = $false
+        }
+
+        if (!(Test-ExchangeSetting -Name 'OAuthAuthentication' -Type 'Boolean' -ExpectedValue $OAuthAuthentication -ActualValue $EcpVdir.OAuthAuthentication -PSBoundParametersIn $PSBoundParameters -Verbose:$VerbosePreference))
         {
             $testResults = $false
         }
@@ -730,6 +749,10 @@ function Get-EcpVirtualDirectoryInternal
         [Parameter()]
         [System.String]
         $InternalUrl,
+
+        [Parameter()]
+        [System.Boolean]
+        $OAuthAuthentication,
 
         [Parameter()]
         [System.Boolean]

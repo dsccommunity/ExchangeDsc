@@ -432,6 +432,7 @@ parameters.
 - **GzipLevel**
 - **ExternalUrl**
 - **InternalUrl**
+- **OAuthAuthentication**
 - **WindowsAuthentication**
 - **WSSecurityAuthentication**
 
@@ -1476,6 +1477,7 @@ parameters.
 - **InstantMessagingType**
 - **LogonPagePublicPrivateSelectionEnabled**
 - **LogonPageLightSelectionEnabled**
+- **OAuthAuthentication**
 - **UNCAccessOnPublicComputersEnabled**
 - **UNCAccessOnPrivateComputersEnabled**
 - **WindowsAuthentication**

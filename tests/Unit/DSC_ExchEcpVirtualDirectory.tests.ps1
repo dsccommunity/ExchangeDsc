@@ -38,6 +38,7 @@ try
             FormsAuthentication             = [System.Boolean] $false
             GzipLevel                       = [System.String] ''
             InternalUrl                     = [System.String] ''
+            OAuthAuthentication             = [System.Boolean] $false
             WindowsAuthentication           = [System.Boolean] $false
             OwaOptionsEnabled               = [System.Boolean] $false
         }

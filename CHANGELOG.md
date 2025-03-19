@@ -5,6 +5,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- ExchEcpVirtualDirectory
+  - Added parameter `OAuthAuthentication`
+- ExchOwaVirtualDirectory
+  - Added parameter `OAuthAuthentication`
+
+### Fixed
+
+- azure-pipelines.yml
+  - Specified version of GitVersion.Tool to use 5.*
+
 ## [2.0.0] - 2023-04-19
 
 ### Changed
